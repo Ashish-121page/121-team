@@ -361,6 +361,13 @@
                                         <div class="card-body">
                                             <div class="row">
                                                 <div class="col-md-6 col-12">
+                                                    <div class="form-group {{ $errors->has('title') ? 'has-error' : ''}}">
+                                                        <label for="title" class="control-label">Product name <span class="text-danger">*</span> </label>                                        
+                                                            <input required  class="form-control" name="title" type="text" id="title" value="{{$product->title}}" >
+                                                    </div>
+                                            
+                                                </div>
+                                                <div class="col-md-6 col-12">
                                                     <div class="form-group ">
                                                         <label for="brand_name" class="control-label">Brand Name<span class="text-danger">*</span> </label>
                                                         <input required  class="form-control" name="brand_name" type="text" id="brand_name" value="{{$prodextra->brand_name ?? ''}}" >

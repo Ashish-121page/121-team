@@ -1156,9 +1156,9 @@ class ProductController extends Controller
                 //     'price' => $request->price
                 // ]);
 
-                // magicstring($request->all());   
+                magicstring($request->all());   
                 
-                // return;  
+                return;  
                 return back()->with('success','Product Updated!');
             }
             return back()->with('error','Product not found')->withInput($request->all());
