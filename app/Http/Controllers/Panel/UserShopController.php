@@ -230,7 +230,7 @@ class UserShopController extends Controller
                 }
             }
             $testimonial= json_decode($user_shop->testimonial,true);
-            $addresses = UserAddress::whereUserId($user_shop->user_id)->simplePaginate(10);
+            $addresses = UserAddress::whereUserId($user_shop->user_id)->get();
             $shop_address= json_decode($user_shop->address,true);
             $products= json_decode($user_shop->products,true);
             $story= json_decode($user_shop->story,true);
@@ -239,9 +239,14 @@ class UserShopController extends Controller
             $about= json_decode($user_shop->about,true);
             $features= json_decode($user_shop->features,true) ?? '';
             $payments= json_decode($user_shop->payment_details,true);
-            $media = Media::whereTypeId($user_shop->id)->whereType('UserShop')->first();
+            $media = Media::whereTypeId($user_shop->id)->whereType('UserShop')->first();         
+            
             return view('panel.user_shops.edit',compact('user_shop','media','testimonial','about','payments','story','features','team','products','shop_address','addresses','vcard'));
-        }catch(Exception $e){            
+
+            
+
+            
+        }catch(\Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -297,12 +302,11 @@ class UserShopController extends Controller
             // 'slug'     => 'required|unique:user_shops,slug,'.$user_shop->id,
         ]);
         
-        // magicstring($request->all());
-        
-        // return;
-        
+    
         try{  
             $slugChk = UserShop::where('slug',$request->slug)->where('user_id','!=',$user_shop->user_id)->exists();
+
+        
             if($slugChk){
                 return back()->with('error','Slug already exists');
             }
@@ -396,18 +400,21 @@ class UserShopController extends Controller
     }
 
 
-
-
-
-
-
-
     public function otherFiledsUpdate(Request $request,UserShop $user_shop)
     {
        
         
         try{  
             if($user_shop){
+
+
+                $slugChk = UserShop::where('slug',$request->slug)->where('user_id','!=',$user_shop->user_id)->exists();
+                if ($slugChk) {
+                    return back()->with('error',"Slug Already Exist!!");
+                }
+
+                
+                
                 if($request->hasFile("img")){
                     $img = $this->uploadFile($request->file("img"), "user_shops")->getFilePath();
                     $this->deleteStorageFile($user_shop->img);

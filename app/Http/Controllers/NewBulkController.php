@@ -63,7 +63,8 @@ class NewBulkController extends Controller
         $rows = array_slice($rows,3);
         $master = $rows;
         // $head = array_shift($rows);
-        $master = $rows;
+
+        
         // * Start: Marging Both Array Custom And Default Attributes
         $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
         $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
@@ -246,12 +247,22 @@ class NewBulkController extends Controller
                 // - Conditions that are Complusaory to Match...
                 // ` Checking Material Value
                 if ($temp_item[$MaterialIndex] != null) {
-                    $Material_values = ProductAttribute::where('name','Material')->where('user_id',null)->first()->value;
-                    $chk = explode(",",json_decode($Material_values)[0]);
+                    // $Material_values = ProductAttribute::where('name','Material')->where('user_id',null)->first()->value;
+                    // $chk = explode(",",json_decode($Material_values)[0]);
+                    $tmp_chk = ProductAttributeValue::where('parent_id',3)->pluck('attribute_value')->toArray();
+                    $chkm[] = '';
+                    foreach ($tmp_chk as $key => $value) {
+                        // echo $value.newline();
+                        $value = strtolower($value);
+                        $chkm[] = ucwords($value);
+                        
+                    }
+
                     $material_arr = explode($Array_saprator,$temp_item[$MaterialIndex]);
                     foreach ($material_arr as $key => $Material) {
-                        if (!in_array($Material,$chk)) {
-                            return back()->with('error',"Material: $Material, is Not in Array at Row $row");
+                        $Material = strtolower($Material);
+                        if (!in_array(ucwords($Material),$chkm)) {
+                            return back()->with('error',"Material: $Material is Not in Array at Row $row");
                         }
                     }
                 }else{
@@ -259,12 +270,22 @@ class NewBulkController extends Controller
                 }
                 // ` Checking Colour Value
                 if ($temp_item[$ColourIndex] != null) {
-                    $Material_values = ProductAttribute::where('name','Color')->where('user_id',null)->first()->value;
-                    $chk = explode(",",json_decode($Material_values)[0]);
+                    // $Material_values = ProductAttribute::where('name','Color')->where('user_id',null)->first()->value;
+                
+                    $tmp_chk = ProductAttributeValue::where('parent_id',1)->pluck('attribute_value')->toArray();
+                    $chkm[] = '';
+                    foreach ($tmp_chk as $key => $value) {
+                        // echo $value.newline();
+                        $value = strtolower($value);
+                        $chkm[] = ucwords($value);
+                        
+                    }
                     $colour_arr = explode($Array_saprator,$temp_item[$ColourIndex]);
                     foreach ($colour_arr as $key => $colour) {
-                        if (!in_array($colour,$chk)) {
-                            return back()->with('error',"Colour: $colour, is Not in Array at Row $row");
+                        $colour = strtolower($colour);
+
+                        if (!in_array(ucwords($colour),$chkm)) {
+                            return back()->with('error',"Colour: $colour is Not in Array at Row $row");
                         }
                     }
                 }else{
@@ -274,11 +295,20 @@ class NewBulkController extends Controller
                 // ` Checking Size Value
                 if ($temp_item[$SizeIndex] != null) {
                     $Material_values = ProductAttribute::where('name','Size')->where('user_id',null)->first()->value;
-                    $chk = explode(",",json_decode($Material_values)[0]);
+                    // $chk = explode(",",json_decode($Material_values)[0]);
+                    $tmp_chk = ProductAttributeValue::where('parent_id',2)->pluck('attribute_value')->toArray();
+                    $chkm[] = '';
+                    foreach ($tmp_chk as $key => $value) {
+                        // echo $value.newline();
+                        $value = strtolower($value);
+                        $chkm[] = ucwords($value);
+                        
+                    }
                     $size_arr = explode($Array_saprator,$temp_item[$SizeIndex]);
                     foreach ($size_arr as $key => $sizes) {
-                        if (!in_array($sizes,$chk)) {
-                            return back()->with('error',"Size: $sizes, is Not in Array at Row $row");
+                        $sizes = strtolower($sizes);
+                        if (!in_array(ucwords($sizes),$chkm)) {
+                            return back()->with('error',"Size: $sizes is Not in Array at Row $row");
                         }
                     }
                 }else{
@@ -331,7 +361,7 @@ class NewBulkController extends Controller
                 // ` Checking Theme / COllection Year...
                 if ($temp_item[$CollectionYearIndex] != null) {
                     if ($temp_item[$CollectionYearIndex] >= $SampleMinYear && $temp_item[$CollectionYearIndex] <= $SampleMaxYear) {
-                        echo "Between Theme Collection Range..".newline(5);
+                        // echo "Between Theme Collection Range..".newline(5);
                     }else{
                         return back()->with('error',"Enter valid Theme / Collection Year at Row $row");
                     }
@@ -405,24 +435,29 @@ class NewBulkController extends Controller
                         }
                         // checking Finsh Value
                         $variantion_col_temp = $col_list->{$variation};                        
-                        $attribute_data = ProductAttribute::where('name',$variation)->first();
+                        $attribute_data1 = ProductAttribute::where('name',$variation)->where('user_id',null)->first();
+                        $attribute_data2 = ProductAttribute::where('name',$variation)->where('user_id',$user->id)->first();
+
+                        if ($attribute_data1 != null) {
+                            $attribute_data = $attribute_data1;
+                        }else{
+                            $attribute_data = $attribute_data2;
+                            
+                        }
+
                         $attribute_value_obj = ProductAttributeValue::where('parent_id',$attribute_data->id)->pluck('attribute_value');
                         $attribute_value = [];
                         foreach ($attribute_value_obj as $key => $value) {
-                            array_push($attribute_value,$value);
+                            $value = strtolower($value);
+                            array_push($attribute_value, ucwords($value));
                         }
-                        
+
                         $receive_data = explode($Array_saprator,$temp_item[$variantion_col_temp]);
-
-                        // Validating Conditions for Exploding Array..
-                        if (count($receive_data) <= 1) {
-                            echo $msg = "$variation Invaild. Should have multiple values seprated by ^^";
-                            return back()->with('error',$msg);
-                        }
-
+                        
                         foreach ($receive_data as $key => $value) {
                             if ($value != '') {
-                                if (!in_array($value,$attribute_value)) {
+                            $value = strtolower($value);
+                                if (!in_array(ucwords($value),$attribute_value)) {
                                     return back()->with('error',"$value Variation Value in Column $variation Mismatch at Row $row.");
                                 }
                             }
@@ -443,11 +478,25 @@ class NewBulkController extends Controller
                 if (count($user_custom_col_list) != 0) {
                     foreach ($user_custom_col_list as $key => $attri) {
                         $variantion_col_temp = $col_list->{$attri};
-                        $attribute_data = ProductAttribute::where('name',$attri)->first();
+
+
+                        $attribute_data_default = ProductAttribute::where('name',$attri)->where('user_id',null)->first();
+                        $attribute_data_custom = ProductAttribute::where('name',$attri)->where('user_id',$user->id)->first();
+                        
+                        if ($attribute_data_default != null) {
+                            $attribute_data = $attribute_data_default;
+                        }else{
+                            $attribute_data = $attribute_data_custom;
+                        }
+                        
+                        
+                        // $attribute_data = ProductAttribute::where('name',$attri)->first();
                         $attribute_value_obj = ProductAttributeValue::where('parent_id',$attribute_data->id)->pluck('attribute_value');
                         $attribute_value = [];
                         foreach ($attribute_value_obj as $key => $value) {
-                            array_push($attribute_value,trim(ucwords($value)));
+                            $value = strtolower($value);
+                            $value = ucwords($value);
+                            array_push($attribute_value,trim($value));
                         }
 
 
@@ -455,9 +504,11 @@ class NewBulkController extends Controller
 
                         foreach ($check_arr as $key => $value) {
                             if ($value != '') {
-                                if (!in_array(ucwords($value),$attribute_value)) {
-                                    // return back()->with("error","$value Attribute Value in Column $attri Mismatch at Row $row.");
-                                    echo "NO in array".newline();
+                                $value = strtolower($value);
+                                $value = ucwords($value);
+                                if (!in_array($value,$attribute_value)) {
+                                    return back()->with("error","$value Attribute Value in Column $attri Mismatch at Row $row.");
+                                    // echo "$value Attribute Value in Column $attri Mismatch at Row $row.".newline();
                                 }
                             }
                         }
@@ -479,6 +530,7 @@ class NewBulkController extends Controller
             $variationType_array =[];
             $row = $index + 4;
             debugtext($debuging_mode,"Working in Debug Mode","red");
+            
 
             $myTmp_array = [];    
             $Productids_array = [];
@@ -492,28 +544,38 @@ class NewBulkController extends Controller
                     }
                     // checking Finsh Value
                     $variantion_col_temp = $col_list->{$variation};                        
-                    $attribute_data = ProductAttribute::where('name',$variation)->first();
+                    // $attribute_data = ProductAttribute::where('name',$variation)->first();
+                    $attribute_data1 = ProductAttribute::where('name',$variation)->where('user_id',null)->first();
+                    $attribute_data2 = ProductAttribute::where('name',$variation)->where('user_id',$user->id)->first();
+
+                    if ($attribute_data1 != null) {
+                        $attribute_data = $attribute_data1;
+                    }else{
+                        $attribute_data = $attribute_data2;
+                        
+                    }
+                    
                     $attribute_value_obj = ProductAttributeValue::where('parent_id',$attribute_data->id)->pluck('attribute_value');
                     $attribute_value = [];
+
                     foreach ($attribute_value_obj as $key => $value) {
+                        $value = strtolower($value);
+                        $value = ucwords($value);
                         array_push($attribute_value,$value);
                     }
                     
                     $receive_data = explode($Array_saprator,$item[$variantion_col_temp]);
 
-                    // Validating Conditions for Exploding Array..
-                    if (count($receive_data) <= 1) {
-                        echo $msg = "$variation Invaild. Should have multiple values seprated by ^^";
-                        return back()->with('error',$msg);
-                    }
-
                     foreach ($receive_data as $key => $value) {
                         if ($value != '') {
+                            $value = strtolower($value);
+                            $value = ucwords($value);
                             if (!in_array($value,$attribute_value)) {
                                 return back()->with('error',"$value Variation Value in Column $variation Mismatch at Row $row.");
                             }
                         }
                     }
+
                 }
                 $variation_count = ($variationType_array != null) ? count($variationType_array) : 0;
             }
@@ -559,6 +621,43 @@ class NewBulkController extends Controller
                 $loop3 = [];
                 $variationType_array = [];
             }
+
+
+
+            // ` Checking Category
+            if ($item[$CategoryIndex] == null) {
+                return back()->with('error',"Category Is Blank at Row $row");
+            }else{
+                $chk = Category::where('name',$item[$CategoryIndex])->where('category_type_id',13)->get();
+                if (count($chk) > 0) {
+                    $Category_id = $chk[0]->id;
+                }else{
+                    return back()->with('error',"Category is Not Exist at Row $row");
+                }
+            }
+            // ` Checking Sub Category
+            if ($item[$SubCategoryIndex] == null) {
+                return back()->with('error',"Sub Category Is Blank at Row $row");
+            }else{
+                $chk = Category::where('name',$item[$SubCategoryIndex])->where('parent_id',$Category_id)->get();
+                if (!count($chk) > 0) {
+                    return back()->with('error',"Sub category Is Matched with Category at Row $row");
+                }
+                $sub_category_id = $chk[0]->id;
+            }
+            // ` Checking Currency
+            if ($item[$CurrencyIndex] == null) {
+                $Currency = 'INR';
+            }else{
+                $chk = Country::where('currency',$item[$CurrencyIndex])->get();
+                if (count($chk) > 0) {
+                    // echo "We Have ... $item[$CurrencyIndex] <br>";
+                    $Currency = $item[$CurrencyIndex];
+                }else{
+                    return back()->with('error',"That Currency is not Available at Row $row");
+                }
+            }
+
 
             $Productids_array = [];
             $CREATED_PRODUUCT_ID = [];
@@ -683,13 +782,15 @@ class NewBulkController extends Controller
                             // debugtext($debuging_mode,"Printing Product Object","Red");
                             // magicstring($product_obj);
     
-                            array_push($Productids_array,$product_obj->id);
+                            array_push($Productids_array,$product_obj->id); 
     
                             debugtext($debuging_mode,"Printing Product Ids","Red");
                             // magicstring($Productids_array);
-    
+
                             $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',ucwords($third))->first();
+                            $third = strtolower($third);
+                            $third = ucwords($third);
+                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$third)->first();
                             $vname = $product_att_val->attribute_value;
                         
                             debugtext($debuging_mode,"making Variation for $vname","Red");
@@ -745,11 +846,24 @@ class NewBulkController extends Controller
                                     $tmp_col = $col_list->{$attri};
                                     $col_value = $item[$tmp_col];
 
-                                    $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                                    $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',ucwords($col_value))->first();
-                                        
+                                    $attribute_default = ProductAttribute::where('name',$attri)->where('user_id',null)->pluck('id');
+                                    $attribute_custom = ProductAttribute::where('name',$attri)->where('user_id',$user->id)->pluck('id');
+
+                                    if (count($attribute_default) == 0 ) {
+                                        $attribute = $attribute_custom;
+                                    }else{
+                                        $attribute = $attribute_default;
+                                    }
 
                                     
+                                    $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$col_value)->first();
+
+
+                                    // if ($product_att_val == null) {
+                                    //     return back()->with('error',"$col_value is not in $col_value Exist at Row $row, remove Previous Data for prevent Deblicate.");
+                                    // }
+
+                                        
                                     if ($product_att_val != null) {
                                         $product_extra_info_obj = [
                                             'product_id' => $product_obj->id,
@@ -926,7 +1040,9 @@ class NewBulkController extends Controller
                                 echo $id.newline();
 
                                 $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                                $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',ucwords($second))->first();
+                                $second = strtolower($second);
+                                $second = ucwords($second);
+                                $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$second)->first();
                                 $vname = $product_att_val->attribute_value;
                                 debugtext($debuging_mode,"making Variation for $vname","Red");
                                 $product_extra_info_obj_user = [
@@ -980,8 +1096,12 @@ class NewBulkController extends Controller
                         if (!in_array($id,$CREATED_PRODUUCT_ID_2)) {
                             echo $id.newline();
 
-                            $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',ucwords($first))->first();
+                            $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');                            
+                            $first = strtolower($first);
+                            $first = ucwords($first);
+                            
+                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$first)->first();
+                            
                             $vname = $product_att_val->attribute_value;
                             debugtext($debuging_mode,"making Variation for $vname","Red");
                             $product_extra_info_obj_user = [
@@ -1157,7 +1277,10 @@ class NewBulkController extends Controller
                             // magicstring($Productids_array);
 
                             $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',ucwords($value2))->first();
+                            $value2 = strtolower($value2);
+                            $value2 = ucwords($value2);
+        
+                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$value2)->first();
                             $vname = $product_att_val->attribute_value;
                         
                             debugtext($debuging_mode,"making Variation for $vname","Red");
@@ -1212,8 +1335,20 @@ class NewBulkController extends Controller
                                     $col_value = $item[$tmp_col];
                                     // $product_att_val = ProductAttributeValue::where('attribute_value',$col_value)->first();
                                     
-                                    $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                                    $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',ucwords($col_value))->first();
+                                    $attribute_default = ProductAttribute::where('name',$attri)->where('user_id',null)->pluck('id');
+                                    $attribute_custom = ProductAttribute::where('name',$attri)->where('user_id',$user->id)->pluck('id');
+
+                                    if (count($attribute_default) == 0 ) {
+                                        $attribute = $attribute_custom;
+                                    }else{
+                                        $attribute = $attribute_default;
+                                    }
+    
+                                    $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$col_value)->first();
+
+                                    // if ($product_att_val == null) {
+                                    //     return back()->with('error',"$col_value is not Exist at Row $row, remove Previous Data for prevent Deblicate.");
+                                    // }
                                         
                                     if ($product_att_val != null) {
                                         $product_extra_info_obj = [
@@ -1392,7 +1527,10 @@ class NewBulkController extends Controller
                             echo $value.newline();
 
                             $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',ucwords($value))->first();
+                            $value = strtolower($value);
+                            $value = ucwords($value);
+        
+                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$value)->first();
                             $vname = $product_att_val->attribute_value;
                             debugtext($debuging_mode,"making Variation for $vname","Red");
                             $product_extra_info_obj_user = [
@@ -1554,7 +1692,10 @@ class NewBulkController extends Controller
                     // magicstring($Productids_array);
 
                     $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                    $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',ucwords($value2))->first();
+                    $value2 = strtolower($value2);
+                    $value2 = ucwords($value2);
+
+                    $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$value2)->first();
                     $vname = $product_att_val->attribute_value;
                 
                     debugtext($debuging_mode,"making Variation for $vname","Red");
@@ -1608,8 +1749,20 @@ class NewBulkController extends Controller
                             $tmp_col = $col_list->{$attri};
                             $col_value = $item[$tmp_col];
                             
-                            $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',ucwords($col_value))->first();
+                            $attribute_default = ProductAttribute::where('name',$attri)->where('user_id',null)->pluck('id');
+                            $attribute_custom = ProductAttribute::where('name',$attri)->where('user_id',$user->id)->pluck('id');
+
+                            if (count($attribute_default) == 0 ) {
+                                $attribute = $attribute_custom;
+                            }else{
+                                $attribute = $attribute_default;
+                            }
+
+                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$col_value)->first();
+
+                            // if ($product_att_val == null) {
+                            //     return back()->with('error',"$col_value is not Exist in $col_value at Row $row, remove Previous Data for prevent Deblicate.");
+                            // }
                                 
                             if ($product_att_val != null) {
                                 $product_extra_info_obj = [
@@ -1905,8 +2058,28 @@ class NewBulkController extends Controller
                         if ( $chkwd != '' && $chkwd != null) {
                             if (count(explode($Array_saprator,$chkwd)) == 1) {
                                 // $product_att_val = ProductAttributeValue::where('attribute_value',$chkwd)->first();
-                                $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
+                                // $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
+                                               
+                                $attribute_default = ProductAttribute::where('name',$attri)->where('user_id',null)->pluck('id');
+                                $attribute_custom = ProductAttribute::where('name',$attri)->where('user_id',$user->id)->pluck('id');
+
+                                if (count($attribute_default) == 0 ) {
+                                    $attribute = $attribute_custom;
+                                }else{
+                                    $attribute = $attribute_default;
+                                }
+                               
+                                // return;
+                                $chkwd = strtolower($chkwd);
+                                $chkwd = ucwords($chkwd);
+                                
                                 $product_att_val = ProductAttributeValue::where('attribute_value',$chkwd)->whereIn('parent_id',$attribute)->first();
+                                
+                                if ($product_att_val == null) {
+                                    // return back()->with('error',"$chkwd is not Exist in $attribute at Row $row, remove Previous Data for prevent Deblicate.");
+                                    echo "$chkwd is not Exist in $attribute at Row $row, remove Previous Data for prevent Dublicate.".newline();
+                                }
+                                
                                 $product_extra_info_obj_user = ProductExtraInfo::create([
                                     'product_id' => $product_obj->id,
                                     'user_id' => $user->id,
@@ -2178,6 +2351,7 @@ class NewBulkController extends Controller
         try {
             {
                 
+                // $products = Product::whereUserId($user_id->id)->take('120')->get();
                 $products = Product::whereUserId($user_id->id)->get();
 
                 $products_array [] = array(
@@ -2319,6 +2493,9 @@ class NewBulkController extends Controller
                         }
                     }
 
+
+                    $allowed_array = ['Yes','YES','yes',1,true,'Hn'];
+                    
                     $products_array[] = array(
                         'Id' => $product->id,
                         "Model Code"=> $product->model_code,
@@ -2345,14 +2522,14 @@ class NewBulkController extends Controller
                         "mrp Incl tax"=>$product->mrp,
                         "HSN Tax"=>$product->hsn,
                         "HSN_Percnt"=>$product->hsn_percent,
-                        'allow_resellers' => $extraInfoData->allow_resellers ?? 'No',
-                        'Publish (it will be 0 for unpublish or 1 for publish)' =>$product->is_publish,
-                        'Exclusive' =>$product->exclusive ?? 0,
+                        'allow_resellers' => (in_array(($extraInfoData->allow_resellers ?? 'No'),$allowed_array) ? 'Yes' : 'No') ?? 'No',
+                        'Publish (it will be 0 for unpublish or 1 for publish)' => (in_array($product->is_publish,$allowed_array) ? "Yes" : "No") ?? "No" ,
+                        'Exclusive' => (in_array($product->exclusive,$allowed_array) ? 'Yes' : 'No') ?? 'No',
                         'exclusive_buyer_name' => $extraInfoData->exclusive_buyer_name ?? '',
                         'collection_name' => $extraInfoData->collection_name ?? '',
                         'season_month' => $extraInfoData->season_month ?? '',
                         'season_year' => $extraInfoData->season_year ?? '',
-                        'sample_available' => $extraInfoData->sample_available ?? '',
+                        'sample_available' => (in_array(($extraInfoData->sample_available ?? 'No'),$allowed_array) ? "Yes" : 'No') ?? 'No',
                         'sample_year' => $extraInfoData->sample_year ?? '',
                         'sample_month' => $extraInfoData->sample_month ?? '',
                         'sampling_time' => $extraInfoData->sampling_time ?? '',
@@ -2426,8 +2603,13 @@ class NewBulkController extends Controller
             $rows = array_slice($rows,3);
             $master = $rows;
     
+            $user = auth()->user();
+            $custom_attributes = json_decode($user->custom_attriute_columns);
+
             $allowArray = ['Yes','yes','YES',1,true,"TRUE","True"];
-    
+            $debuging_mode = 0;
+
+            $Array_saprator = "^^";
             
             $ProductidIndex = 0; 
             $Model_CodeIndex = 1;
@@ -2491,9 +2673,103 @@ class NewBulkController extends Controller
             $carton_weight_actualIndex = 59;
             $unitIndex = 60;
             $artwork_urlIndex = 61;
+
+            // * Start: Marging Both Array Custom And Default Attributes
+            $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
+            $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
+            $num = end($delfault_cols) +1;
+            $new_custom_attribute = [];
+            foreach ($user_custom_col_list as $key => $value) {
+                $new_custom_attribute += [$value => $num];
+                $num++;
+            }
+            
+            // ` Col LIst in Form of Object
+            $col_list = (object) array_merge((array)$delfault_cols,$new_custom_attribute);
+            // * End: Marging Both Array Custom And Default Attributes
+            
+            // ! Validating Loop
+            foreach ($master as $key => $temp_item) {
+                $row = $key+4;
+
+                // ! Validate Product Id
+
+                $chk_product = Product::whereId($temp_item[$ProductidIndex])->where('user_id',$user->id)->get();
+
+                if (count($chk_product) == 0) {
+                    return back()->with('error',"Product Doesn't Exist");
+                }
+                
+                // ! Checking Category
+                if ($temp_item[$CategoryIndex] == null) {
+                    return back()->with('error',"category is Blank At Row $row");
+                }else{
+                    $chk = Category::where('name',$temp_item[$CategoryIndex])->get();
+                    if (count($chk) == 0) {
+                        return back()->with('error',"category is not Exist At Row $row");
+                    }
+                    $categoryID = $chk[0]->id;
+                }
     
-            foreach ($master as $key => $value) {                
+                // ! Checking Sub Category
+                if ($temp_item[$Sub_CategoryIndex] == null) {
+                    return back()->with('error',"Sub category is Blank At Row $row");
+                }else{
+                    $chk = Category::where('name',$temp_item[$Sub_CategoryIndex])->where('parent_id',$categoryID)->get();
+    
+                    if (count($chk) == 0) {
+                        return back()->with('error',"Sub category is not Exist At Row $row");
+                    }
+                    $SubCategoryId = $chk[0]->id;
+                }
+
+
+                // ` Getting Custom Attribute 
+
+                // checking Custom Attribute Values In database
+                if ($custom_attributes != null) {
+                    foreach ($custom_attributes as $key => $custom_attribute) {
+                        echo $custom_attribute.newline();
+                        // * Getting Column Number
+                        $tmp_col = $col_list->{$custom_attribute} - 1;
+
+                        // ! Checking Value if Column is Not Blank
+                        if ($temp_item[$tmp_col] != null) {
+                            if (count(explode($Array_saprator,$temp_item[$tmp_col])) > 1 ) {
+                                return back()->with('error',"Product Sapration is Not Allowed in Product Update.");
+                            }
+                            
+                            $attribute_record_default = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
+                            $attribute_record_custom = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user->id)->first();
+                            if ($attribute_record_default != null) {
+                                $attribute_record = $attribute_record_default;
+                            }else{
+                                $attribute_record = $attribute_record_custom;
+                            }
+
+
+                            if ($attribute_record == null) {
+                                return back()->with("error","Oops Something Went wrong.Try again Later!!");
+                            }else{
+                                $search_value = $temp_item[$tmp_col];
+                                $attribute_value_record = ProductAttributeValue::where('parent_id',$attribute_record->id)->where('attribute_value',$search_value)->first();
+                                
+                                if ($attribute_value_record == null) {
+                                    return back()->with('error',"$search_value Does Not Exist in $custom_attribute Column  at Row $row.");
+                                }
+                            }
+
+                        }
+                            
+                    }
+                }
+
+            }           
+
+            // ! Updating Loop
+            foreach ($master as $key => $value) {
                 $row = $key + 4;
+                
                 $categoryID  = '';
                 $SubCategoryId = '';
       
@@ -2516,9 +2792,12 @@ class NewBulkController extends Controller
                      'length_unit' => $value[$Dimensions_unitIndex],
                  ];
           
+                //  magicstring($shipping);
+                //  return;
                  $carton_details = json_encode($carton_details);
                  $shipping = json_encode($shipping);
     
+
     
                 // Checking Category
                 if ($value[$CategoryIndex] == null) {
@@ -2544,15 +2823,8 @@ class NewBulkController extends Controller
                     $SubCategoryId = $chk[0]->id;
                 }
     
-                $carton_details =[];
-                $shipping = [];
-    
-    
-    
                 // Extra Info
-                $obj = ProductExtraInfo::where('product_id',$value[$ProductidIndex])->get();
-
-                ProductExtraInfo::whereId($value[$ProductidIndex])->update([
+                ProductExtraInfo::where('product_id',$value[$ProductidIndex])->update([
                     'allow_resellers' =>  $value[$Allow_ResellersIndex] ?? '0',
                     'exclusive_buyer_name' => $value[$ExclusiveBuyerNameIndex] ?? '',
                     'collection_name' => $value[$ThemeCollectionNameIndex] ?? '',
@@ -2576,33 +2848,85 @@ class NewBulkController extends Controller
                     'brand_name' => $value[$BrandNameIndex] ?? '',
                     'Cust_tag_group' => $value[$GroupIDIndex] ?? '',                    
                 ]);
+
+                // !! Updating Attribute Value !!
+                // checking Custom Attribute Values In database
+                if ($custom_attributes != null) {
+                    foreach ($custom_attributes as $key => $custom_attribute) {
+                        echo $custom_attribute.newline();
+                        // * Getting Column Number
+                        $tmp_col = $col_list->{$custom_attribute} - 1;
+
+                        // ! Checking Value if Column is Not Blank
+                        if ($value[$tmp_col] != null) {
+                            if (count(explode($Array_saprator,$value[$tmp_col])) > 1 ) {
+                                return back()->with('error',"Product Sapration is Not Allowed in Product Update.");
+                            }
+                            
+                            $attribute_record_default = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
+                            $attribute_record_custom = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user->id)->first();
+                            if ($attribute_record_default != null) {
+                                $attribute_record = $attribute_record_default;
+                            }else{
+                                $attribute_record = $attribute_record_custom;
+                            }
+
+
+                            if ($attribute_record == null) {
+                                // return back()->with("error","Oops Something Went wrong.Try again Later!!");                            
+                                
+                            }else{
+                                $search_value = $value[$tmp_col];
+                                $attribute_value_record = ProductAttributeValue::where('parent_id',$attribute_record->id)->where('attribute_value',$search_value)->first();
+                                
+                                if ($attribute_value_record == null) {
+                                    return back()->with('error',"$search_value Does Not Exist in $custom_attribute Column  at Row $row.");
+                                }
+
+                                $chk = ProductExtraInfo::where('product_id',$value[$ProductidIndex])->where('attribute_id',$attribute_record->id)->get();
+                                
+                                
+                                if (count($chk) != 0) {
+                                    ProductExtraInfo::where('product_id',$value[$ProductidIndex])->where('attribute_id',$attribute_record->id)->update([
+                                        'attribute_value_id' => $attribute_value_record->id,
+                                    ]);
+                                }else{
+                                    ProductExtraInfo::create([
+                                        'product_id' => $value[$ProductidIndex],
+                                        'allow_resellers' =>  $value[$Allow_ResellersIndex] ?? 'No',
+                                        'exclusive_buyer_name' => $value[$ExclusiveBuyerNameIndex] ?? '',
+                                        'collection_name' => $value[$ThemeCollectionNameIndex] ?? '',
+                                        'season_month' => $value[$Season_MonthIndex] ?? '',
+                                        'season_year' => $value[$ThemeCollectionYearIndex] ?? '',
+                                        'sample_available' => $value[$SampleStockavailable] ?? '',
+                                        'sample_year' => $value[$SampleYearIndex] ?? '',
+                                        'sample_month' => $value[$SampleMonthIndex] ?? '',
+                                        'sampling_time' => $value[$SamplingtimeIndex] ?? '',
+                                        'sourcing_month' => $value[$SourcingmonthIndex] ?? '',
+                                        'remarks' => $value[$RemarksINdex] ?? '',
+                                        'production_time' => $value[$ProductiontimeIndex] ?? '',
+                                        'CBM' => $value[$CBMIndex] ?? '',
+                                        'MBQ' => $value[$MBQIndex] ?? '',
+                                        'MBQ_unit' => $value[$MBQ_unitsIndex] ?? '',
+                                        'vendor_sourced_from' => $value[$VendorSourcedfromIndex] ?? '',
+                                        'vendor_price' => $value[$VendorpriceIndex] ?? '',
+                                        'product_cost_unit' => $value[$ProductCost_UnitIndex] ?? '',
+                                        'vendor_currency' => $value[$VendorcurrencyIndex] ?? '',
+                                        'sourcing_year' => $value[$SourcingYearIndex] ?? '',
+                                        'brand_name' => $value[$BrandNameIndex] ?? '',
+                                        'Cust_tag_group' => $value[$GroupIDIndex] ?? '',     
+                                        'attribute_value_id' => $attribute_value_record->id,
+                                        'attribute_id' => $attribute_record->id
+                                    ]);   
+                                }   
+                            }
+
+                        }
+                            
+                    }
+                }               
+                
                                             
-                // $obj->allow_resellers = $value[$Allow_ResellersIndex] ?? '0';
-                // $obj->exclusive_buyer_name = $value[$ExclusiveBuyerNameIndex] ?? '';
-                // $obj->collection_name = $value[$ThemeCollectionNameIndex] ?? '';
-                // $obj->season_month = $value[$Season_MonthIndex] ?? '';
-                // $obj->season_year = $value[$ThemeCollectionYearIndex] ?? '';
-                // $obj->sample_available = $value[$SampleStockavailable] ?? '';
-                // $obj->sample_year = $value[$SampleYearIndex] ?? '';
-                // $obj->sample_month = $value[$SampleMonthIndex] ?? '';
-                // $obj->sampling_time = $value[$SamplingtimeIndex] ?? '';
-                // $obj->production_time = $value[$ProductiontimeIndex] ?? '';
-                // $obj->sourcing_month = $value[$SourcingmonthIndex] ?? '';
-                // $obj->remarks = $value[$RemarksINdex] ?? ''; 
-                // $obj->CBM = $value[$CBMIndex] ?? '';
-                // $obj->MBQ = $value[$MBQIndex] ?? '';
-                // $obj->MBQ_unit = $value[$MBQ_unitsIndex] ?? '0';
-                // $obj->vendor_sourced_from = $value[$VendorSourcedfromIndex] ?? '';
-                // $obj->vendor_price = $value[$VendorpriceIndex] ?? '';
-
-                // $obj->product_cost_unit = $value[$ProductCost_UnitIndex] ?? '';
-                // $obj->vendor_currency = $value[$VendorcurrencyIndex] ?? '';
-                // $obj->sourcing_year = $value[$SourcingYearIndex] ?? '';
-                // $obj->brand_name = $value[$BrandNameIndex] ?? '';
-                // $obj->Cust_tag_group = $value[$GroupIDIndex] ?? '';
-                // $obj->save();
-
-
                 if (in_array($value[$SampleStockavailable],$allowArray)) {
                     $chk_inventory_exist = true;
                 }else{
@@ -2613,41 +2937,49 @@ class NewBulkController extends Controller
     
                 // Product Info
                 $product_obj = Product::whereId($value[$ProductidIndex])->first();
-                $product_obj->title = $value[$ProductnameIndex] ?? '';
-                $product_obj->model_code = $value[$Model_CodeIndex] ?? '';
-                $product_obj->category_id = $categoryID ?? '';
-                $product_obj->sub_category = $SubCategoryId ?? '';
-                $product_obj->description = $value[$descriptionIndex] ?? '';
-                $product_obj->carton_details = $carton_details ?? '';
-                $product_obj->shipping = $shipping ?? '';
-                $product_obj->manage_inventory = (in_array($value[$SampleStockavailable],$allowArray) ? 1 : 0 ) ?? 0;
-                $product_obj->is_publish = (in_array($value[$Live_ActiveINdex],$allowArray) ? 1 : 0 ) ?? 0;
-                $product_obj->price = $value[$Customer_Price_without_GSTIndex] ?? '';
-                $product_obj->min_sell_pr_without_gst = $value[$Customer_Price_without_GSTIndex] ?? '';
-                $product_obj->hsn = $value[$HSNTaxIndex] ?? '';
-                $product_obj->hsn_percent = $value[$HSN_PercntIndex] ?? '';
-                $product_obj->mrp = $value[$mrpIncltaxIndex] ?? '';
-                $product_obj->video_url = $value[$VideoURLIndex] ?? '';
-                $product_obj->search_keywords = $value[$SearchkeywordsIndex] ?? '';
-                $product_obj->artwork_url = $value[$artwork_urlIndex] ?? '';
-                $product_obj->exclusive = (in_array($value[$Copyright_Exclusive_itemIndex],$allowArray) ? 1 : 0) ?? '';
-                $product_obj->base_currency = $value[$Base_currencyIndex] ?? '';
-                $product_obj->selling_price_unit = $value[$SellingPrice_UnitIndex] ?? '';
-                $product_obj->save();
-    
+               
+                Product::whereId($value[$ProductidIndex])->update(
+                [
+                    'title' => $value[$ProductnameIndex] ?? '',
+                    'model_code' => $value[$Model_CodeIndex] ?? '',
+                    'category_id' => $categoryID ?? '',
+                    'sub_category' => $SubCategoryId ?? '',
+                    'description' => $value[$descriptionIndex] ?? '',
+                    'carton_details' => $carton_details ?? '',
+                    'shipping' => $shipping ?? '',
+                    'manage_inventory' => (in_array($value[$SampleStockavailable],$allowArray,true) ? 1 : 0 ) ?? 0,
+                    'is_publish' => (in_array($value[$Live_ActiveINdex],$allowArray,true) ? 1 : 0 ) ?? 0,
+                    'price' =>  $value[$Customer_Price_without_GSTIndex] ?? '',
+                    'min_sell_pr_without_gst' => $value[$Customer_Price_without_GSTIndex] ?? '',
+                    'hsn' => $value[$HSNTaxIndex] ?? '',
+                    'hsn_percent' => $value[$HSN_PercntIndex] ?? '',
+                    'mrp' => $value[$mrpIncltaxIndex] ?? '',
+                    'video_url' => $value[$VideoURLIndex] ?? '',
+                    'search_keywords' => $value[$SearchkeywordsIndex] ?? '',
+                    'artwork_url' => $value[$artwork_urlIndex] ?? '',
+                    'exclusive' => (in_array($value[$Copyright_Exclusive_itemIndex],$allowArray,true) ? 1 : 0) ?? 0,
+                    'base_currency' =>  $value[$Base_currencyIndex] ?? '',
+                    'selling_price_unit' => $value[$SellingPrice_UnitIndex] ?? '',
+                ]);
 
                 // User Shop Item Info and Price Group
                 $usi = UserShopItem::whereUserId(auth()->id())->where('product_id',$value[$ProductidIndex])->first();
+
+                // echo $value[$ProductidIndex];
+                
+                // magicstring($usi);
+                // return;
+
                 $reseller_group = Group::whereUserId(auth()->id())->where('name',"Reseller")->first();
                 $vip_group = Group::whereUserId(auth()->id())->where('name',"VIP")->first();
                 $reseller_group_product = GroupProduct::where('group_id',$reseller_group->id ?? 0)->where('product_id',$value[$ProductidIndex])->first();
                 $vip_group_product = GroupProduct::where('group_id',$vip_group->id??0)->where('product_id',$value[$ProductidIndex])->first();
+                $chk_inventroy = Inventory::where('product_id',$value[$ProductidIndex])->where('user_id',auth()->id())->get();
     
 
-                $chk_inventroy = Inventory::where('product_id',$value[$ProductidIndex])->where('user_id',auth()->id())->get();
                 if (in_array($value[$SampleStockavailable],$allowArray)) {
                     if (count($chk_inventroy) == 0) {
-                        magicstring($request->all());
+                        // magicstring($request->all());
                         Inventory::create([
                             'user_shop_item_id' => $usi->id,
                             'product_id' => $value[$ProductidIndex],
@@ -2833,14 +3165,10 @@ class NewBulkController extends Controller
             
                     }
                 }
-                
-
-
                 $count++;
             }
-    
-            return back()->with("success","$count Records are Updated SuccessFully");
 
+            return back()->with("success","$count Records are Updated SuccessFully");
 
         } catch (\Throwable $th) {
             throw $th;

@@ -278,7 +278,7 @@
                                                         @php
                                                             $data = App\Models\survey::where('user_id',$user_shop->user_id)->first();
                                                         @endphp
-                                                        @if ($data->count() != 0)
+                                                        @if ($data != null)
                                                             <div class="h6">Survey Response</div>
                                                             <span><b>{{ json_decode($data->question) }}</b></span>
                                                             <p>
@@ -902,7 +902,7 @@
                                                         <input type="tel" maxlength="4" minlength="4" placeholder="Enter Exclusive Passcode" class="form-control" name="exclsive_pass" id="exclsive_pass" value="{{ $user->exclusive_pass }}" required>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6 col-12 mt-3">
+                                                <div class="col-md-6 col-12 mt-3 d-none">
                                                     <div class="form-group">
                                                         <label for="offers_passcode" class="control-label">{{ __('Default offers passcode')}}<span class="text-danger">*</span></label>
                                                         <input type="tel" maxlength="4" minlength="4" placeholder="Enter Offers Passcode" class="form-control" name="offers_passcode" id="offers_passcode" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->offers_passcode ?? '' }}@endif" required>

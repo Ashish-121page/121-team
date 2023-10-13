@@ -979,7 +979,7 @@
                                         {{-- Passcodes Only --}}
                                         <div class="tab-pane fade" id="pills-settings2" role="tabpanel" aria-labelledby="pills-settings2-tab" tabindex="0">
                                             <div class="card-body">
-                                                <h5 class=""> Passcodes</h5>
+                                                <h5 class=""> Passcodes </h5>
 
                                                 @php
                                                     $extra_pass = json_decode($user->extra_passcode) ?? "";
@@ -996,7 +996,7 @@
                                                                 <input type="text" placeholder="Enter Exclusive Passcode" class="form-control" name="exclsive_pass" id="exclsive_pass" value="{{ $user->exclusive_pass }}" required>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6 col-12 mt-3">
+                                                        <div class="col-md-6 col-12 mt-3 d-none">
                                                             <div class="form-group">
                                                                 <label for="offers_passcode" class="control-label">{{ __('Default offers passcode')}}<span class="text-danger">*</span></label>
                                                                 <input type="text" placeholder="Enter Offers Passcode" class="form-control" name="offers_passcode" id="offers_passcode" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->offers_passcode ?? '' }}@endif" required>
@@ -1564,13 +1564,13 @@
                                                                                     <i class="uil uil-comment-alt-edit h6"></i> Edit ( {{ $product_count }} )
                                                                                 </a>
                                                                             </li>
-                                                                            @if ($proposal->status == 1)
+                                                                            {{-- @if ($proposal->status == 1)
                                                                                 <li>
                                                                                     <a href="{{ route('customer.lock.enquiry',$proposal->id) }}" class="dropdown-item">
-                                                                                        <i class="uil-lock-alt h6"></i>Lock Enquiry
+                                                                                        <i class="uil-lock-alt h6"></i> 
                                                                                     </a>
                                                                                 </li>
-                                                                            @endif
+                                                                            @endif --}}
                                                                             @if ($proposal->status == 1)
                                                                                 <li>
                                                                                     <a href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="dropdown-item text-danger delete-item">

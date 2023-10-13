@@ -47,7 +47,7 @@
     <link href="{{ asset('frontend/assets/css/edit.css') }}" rel="stylesheet">
    <link rel="stylesheet" href="{{ asset('backend/plugins/jquery-toast-plugin/dist/jquery.toast.min.css')}}">
    <link rel="stylesheet" href="{{ asset('backend/plugins/fontawesome-free/css/all.min.css') }}">
-   <link rel="stylesheet" href="http://localhost/project/121.page-Laravel/121.page/backend/plugins/select2/dist/css/select2.min.css">
+   <link rel="stylesheet" href="{{ asset('backend/plugins/select2/dist/css/select2.min.css') }}">
     <style>
             
         

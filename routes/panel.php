@@ -64,15 +64,6 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         });
     // dashboard route
     Route::get('/dashboard', [HomeController::class,'dashboard'])->name('dashboard');
-
-
-    // ` Update Bulk Excel For Users Upload Admin Start
-
-    Route::get('/manage-bulk', [NewBulkController::class,'updateExcelShow'])->name('manage.bulk');
-    Route::post('/update-bulk-excel', [NewBulkController::class,'updateExcel'])->name('update.bulk.excel');
-    // ` Update Bulk Excel For Users Upload Admin End
-
-
     
 
     //only those have manage_user permission will get access
@@ -464,10 +455,8 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     // workstream routes end
 
      // BulkUpload
-    Route::post('/product-upload', [NewBulkController::class,'productUpload'])->name('product-upload');
-    Route::get('/export/product-bulk', [BulkController::class,'exportData'])->name('product.bulk-export');
+    // Route::get('/export/product-bulk', [BulkController::class,'exportData'])->name('product.bulk-export');
 
-    Route::get('/export/product-bulk-sheet/{user_id}', [NewBulkController::class,'ProductSheetExport'])->name('product.bulk-sheet-export');
 
     Route::post('/update/product-bulk', [BulkController::class,'productBulkUpdate'])->name('product.bulk-update');
     Route::get('/export/product-group/bulk', [BulkController::class,'exportProductGroupData'])->name('product.group.bulk-export');
@@ -481,6 +470,30 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::get('/export/deliveryNew', [BulkController::class,'DeliveryExportDownload'])->name('product.deliveryExport');
     Route::post('/update/delivery-group/bulk', [BulkController::class,'DeliveryGroupBulkUpdate'])->name('delivery.group.bulk-update');
     
+
+    // @ Group Route for Bulk Sheet 
+    Route::group(['middleware' => 'auth','namespace' => '/bulk', 'prefix' => '/', 'as' => 'bulk.'], function () {
+        Route::post('/product-upload', [NewBulkController::class,'productUpload'])->name('product-upload');
+        Route::get('/export/product-bulk-sheet/{user_id}', [NewBulkController::class,'ProductSheetExport'])->name('product.bulk-sheet-export');
+        Route::post('/update/product-bulk', [NewBulkController::class,'productBulkUpdate'])->name('product.bulk-update');
+        Route::get('/export/product-bulk/{user_id}', [NewBulkController::class,'exportData'])->name('product.bulk-export');
+
+
+        // ` Update Bulk Excel For Users Upload Admin Start
+        Route::get('/manage-bulk', [NewBulkController::class,'updateExcelShow'])->name('manage.bulk');
+        Route::post('/update-bulk-excel', [NewBulkController::class,'updateExcel'])->name('update.bulk.excel');
+        // ` Update Bulk Excel For Users Upload Admin End
+
+
+        
+    });
+
+
+
+
+
+
+
     
     // For Exporting User Deatils    
     Route::get('/export/user-bulk', [BulkController::class,'exportUserData'])->name('user.bulk-export'); 

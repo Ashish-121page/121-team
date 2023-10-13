@@ -62,12 +62,12 @@ class Microproposals extends Controller
 
         if ($manage_offer_guest == 0) {
             if (auth()->id() == 155) {
-                return back()->with('error',"You Didn't Have Access to Make Offer");
+                return back()->with('error',"You do not have access to make offer");
             }
         }
         if ($manage_offer_verified == 0) {
             if (auth()->id() != 155 && auth()->id() != $user_shop->user_id) {
-                return back()->with('error',"You Didn't Have Access to Make Offer");
+                return back()->with('error',"You do not have access to make offer");
             }
         }
 
@@ -446,18 +446,32 @@ class Microproposals extends Controller
         
         $added_products = ProposalItem::whereProposalId($proposal->id)->orderBy('sequence','ASC')->get();
         $excape_items = $added_products->pluck('product_id')->toArray();
+
+
+        
+        $aval_atrribute = ProductExtraInfo::whereIn('product_id',$excape_items)->groupBy('attribute_id')->pluck('attribute_id')->toArray();
+
+        
+        // magicstring( (array) json_decode($proposal->options)->show_Attrbute);
+        
+        
+        
+        // // magicstring($aval_atrribute);
+        // return;
+        
+        
         
         $user = auth()->user();
         
         $my_resellers = AccessCatalogueRequest::whereNumber(auth()->user()->phone)->whereStatus(1)->get() ?? $user; 
         $offerPasscode = $proposal->password ?? json_decode($user->extra_passcode)->offers_passcode ?? "1111";
 
+       
         
-        return view('frontend.micro-site.proposals.move',compact('added_products','excape_items','proposal','slug','user','my_resellers','offerPasscode'));
+        return view('frontend.micro-site.proposals.move',compact('added_products','excape_items','proposal','slug','user','my_resellers','offerPasscode','aval_atrribute'));
 
 
     }
-
 
     public function updatePrice(Request $request,Proposal $proposal)
     {
@@ -470,17 +484,19 @@ class Microproposals extends Controller
                               
             if($proposal_item){
                           
-                $proposal_item->update([
-                    'user_price' => $request->price
-                ]);
+                $proposal_item->user_price = $request->price;
+                $proposal_item->save();
+
               
-                return back()->with('success','Preview offer and share.');
+                return back()->with('success','Price Updated.');
             }
             return back()->with('error','Proposal not found')->withInput($request->all());
         }catch(\Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
+
+
 
 
     public function update(Request $request,Proposal $proposal)
@@ -491,6 +507,8 @@ class Microproposals extends Controller
             'customer_name'     => 'required',
             'user_shop_id'     => 'required'
         ]);
+
+        
 
         if($request->customer_mob_no != null){
             $this->validate($request, [
@@ -519,21 +537,23 @@ class Microproposals extends Controller
                     $request['client_logo'] = null;
                 }
 
+                $options = $request->optionsforoffer;
                 
                 if ($request->get('optionsforoffer')) {
                     $show_desc = in_array("description",$request->get('optionsforoffer')) ? 1 : 0;
-                    $show_color = in_array("color",$request->get('optionsforoffer')) ? 1 : 0;
                     $show_notes = in_array("notes",$request->get('optionsforoffer')) ? 1 : 0;
-                    $show_size = in_array("size",$request->get('optionsforoffer')) ? 1 : 0;
+                    $show_attrbute = array_filter($options,"is_numeric") ?? [];
+                    
                 }else{
+                    
                     $show_desc =  0;
-                    $show_color = 0;
                     $show_notes = 0;
-                    $show_size =  0;
+                    $show_attrbute =  0;
                 }
 
+                
 
-                $options_arr = ["show_Description" => $show_desc ?? 0,"Show_notes" => $show_notes ?? 0,"show_color" => $show_color ?? 0,"show_size" => $show_size];
+                $options_arr = ["show_Description" => $show_desc ?? 0,"Show_notes" => $show_notes ?? 0,"show_Attrbute" => $show_attrbute ?? 0];
 
                 $request['options'] = json_encode($options_arr);
                 $request['status'] = 1;
@@ -824,6 +844,7 @@ class Microproposals extends Controller
     
     function ashish(Request $request){
         magicstring(session()->all());
+        magicstring(auth()->user());
     }
     
     

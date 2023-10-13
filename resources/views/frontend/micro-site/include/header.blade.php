@@ -106,17 +106,24 @@
           <!-- Navigation Menu-->
           <ul class="navigation-menu">
               <li><a href="{{ inject_subdomain('home', $user_shop->slug)}}" class="sub-menu-item">E-Card</a></li>
-              @if($have_access_code != null)
-                @if(checkShopView($user_shop->slug) && $user->is_supplier == 1)
+
+                @if(checkShopView($user_shop->slug) && $user->is_supplier == 1 && $user_shop->user_id != auth()->id())
                     <li class="has-submenu parent-menu-item">
                         <a href="{{ inject_subdomain('shop', $user_shop->slug)}}">Display</a><span class="menu-arroww"></span>
                     </li>
                 @endif
+
+                @if($user_shop->user_id == auth()->id())
+                    <li class="has-submenu parent-menu-item">
+                        <a href="{{ inject_subdomain('shop', $user_shop->slug)}}">Display</a><span class="menu-arroww"></span>
+                    </li>
+                @endif
+
+
                 {{-- <li><a href="{{ inject_subdomain('about-us', $user_shop->slug)}}" class="sub-menu-item">About</a></li> --}}
                 {{-- <li>
                     <a href="{{ inject_subdomain('contact', $user_shop->slug)}}">Contact</a>
                 </li> --}}
-              @endif
           </ul><!--end navigation menu-->
         </div><!--end navigation-->
     </div>

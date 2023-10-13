@@ -184,34 +184,71 @@ class ProductAttributeController extends Controller
     public function update(Request $request,ProductAttribute $product_attribute)
     {
         
-        $this->validate($request, [
-                // 'name'     => 'required',
-                'type'     => 'sometimes',
-                'value'     => 'required',
-            ]);
+        // $this->validate($request, [
+        //         '*' => 'required|alpha_num:ascii'
+        //     ]);
                 
         try{
-            // - Creating New Record
-            foreach (explode(",",$request->value[0]) as $key => $items) {
-                
-                $chk = ProductAttributeValue::where('attribute_value',$items)->where('parent_id',$product_attribute->id)->get();
-                if (count($chk) == 0) {
-                    echo "New Value";
-                    ProductAttributeValue::create([
-                        'parent_id' => $product_attribute->id,
-                        'user_id' => $request->get('user_id') ?? null,
-                        'attribute_value' => ucwords($items),
-                    ]);
+            $newrecord = 0;
+            $loopcount = 0; 
+            //` Create New Values
+            if (request()->has('newval') && request()->get('newval') != null) {
+                foreach (explode(",",request()->get('newval')) as $key => $items) {    
+                    $chk = ProductAttributeValue::where('attribute_value',$items)->where('parent_id',$product_attribute->id)->get();
+                    if (count($chk) == 0) {
+                        echo "New Value";
+                        ProductAttributeValue::create([
+                            'parent_id' => $product_attribute->id,
+                            'user_id' => $request->get('user_id') ?? null,
+                            'attribute_value' => trim($items),
+                        ]);
+                        $newrecord++;
+                    }
                 }
             }
+       
+            // magicstring($request->except(['_token','user_id','user_shop_id','name','newval']));
+            // magicstring($request->all());
+            // return;
             
-            return back()->with('success',"Product Attribute Values Updated")->withInput($request->all());
+            // Updating Existing Value
+            foreach ($request->except(['_token','user_id','user_shop_id','name','newval']) as $key => $value) {
+                echo $value.newline();
+                ProductAttributeValue::where('id',$key)->update([
+                    'attribute_value' => trim($value),
+                ]);
+                $loopcount++; 
+            }
+            
+            $msg = "$newrecord are Created and $loopcount are Updated !!";
+            // return back()->with('success',"Product Attribute Values Updated")->withInput($request->all());
+            return back()->with('success',$msg)->withInput($request->all());
         }catch(\Throwable $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
             // throw $e;
         }
 
     }
+
+
+
+    public function deletevalue(Request $request,$product_attribute_value) {
+
+        $user = auth()->user();
+        $chk = ProductAttributeValue::where('user_id',$user->id)->whereId($product_attribute_value)->get();
+        $name = '';
+        
+        if (count($chk) == 0) {
+            return back()->with('error',"Value doesn't exist, or isn't linked with your account!!");
+        }else{
+            $name = $chk[0]->attribute_value;
+            ProductAttributeValue::where('user_id',$user->id)->whereId($product_attribute_value)->delete();
+        }
+
+
+        return back()->with('success',"$name Deleted!!");
+    }
+
 
     /**
      * Remove the specified resource from storage.

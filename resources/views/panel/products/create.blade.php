@@ -716,9 +716,9 @@
                             <div class="import pt-0 p-3">
                                 <div class="d-flex justify-content-end">
                                     {{-- <a href="{{ asset('utility/bulk-product.xls') }}" type="button"  class="btn-link mb-3">Download Excel</a> --}}
-                                    <a href="{{ route('panel.product.bulk-sheet-export',auth()->id()) }}" type="button"  class="btn-link mb-3">Download Excel</a>
+                                    <a href="{{ route('panel.bulk.product.bulk-sheet-export',auth()->id()) }}" type="button"  class="btn-link mb-3">Download Excel</a>
                                 </div>
-                                <form action="{{ route('panel.product-upload') }}" method="post" enctype="multipart/form-data" class="">
+                                <form action="{{ route('panel.bulk.product-upload') }}" method="post" enctype="multipart/form-data" class="">
                                     <input type="hidden" name="brand_id" value="{{ request()->get('id') ?? '0' }}">
                                     @csrf
                                     <div class="row">
@@ -736,9 +736,9 @@
                             </div>
                             <div class="export d-none pt-0 p-3">
                                 <div class="d-flex justify-content-end">
-                                    <a href="{{route('panel.product.bulk-export')}}" type="button"  class="btn-link mb-3">Fill & Upload</a>
+                                    <a href="{{route('panel.bulk.product.bulk-export',auth()->id())}}" type="button"  class="btn-link mb-3">Fill & Upload</a>
                                 </div>
-                                    <form action="{{ route('panel.product.bulk-update') }}" method="post" enctype="multipart/form-data" class="">
+                                    <form action="{{ route('panel.bulk.product.bulk-update') }}" method="post" enctype="multipart/form-data" class="">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-12 col-12"> 

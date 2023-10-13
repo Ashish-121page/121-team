@@ -92,11 +92,6 @@ Route::group(['middleware' => 'subdomain'],  function () {
         });
 });
 
-//jaya editable showpage
-// Route::get('/products/{product}', 'MicroSiteController@show')->name('products.show');
-Route::patch('/products/{product}', 'MicroSiteController@update')->name('products.update');
-
-
 
 Route::get('/search',[WebsiteController::class,'searchon121'])->name('home.search');
 Route::post('/searchreq',[WebsiteController::class,'searchreq'])->name('home.searchreq');

@@ -107,7 +107,7 @@
     </div>
 
     {{-- Global Settings and Configuration --}}
-    <div class="nav-item {{ activeClassIfRoutes(['panel.constant_management.category_type.index','panel.constant_management.category_type.create','panel.constant_management.category_type.edit','panel.constant_management.category.index','panel.constant_management.category.create','panel.constant_management.category.edit','panel.product_attributes.index','panel.product_attributes.create','panel.product_attributes.edit','panel.constant_management.location.country','panel.constant_management.location.create','panel.constant_management.location.edit','panel.groups.index','panel.setting.general','panel.setting.mail','panel.constant_management.mail_sms_template.index','panel.constant_management.mail_sms_template.create','panel.constant_management.mail_sms_template.edit','panel.constant_management.mail_sms_template.show','panel.manage.bulk'], 'active open')  }} has-sub">
+    <div class="nav-item {{ activeClassIfRoutes(['panel.constant_management.category_type.index','panel.constant_management.category_type.create','panel.constant_management.category_type.edit','panel.constant_management.category.index','panel.constant_management.category.create','panel.constant_management.category.edit','panel.product_attributes.index','panel.product_attributes.create','panel.product_attributes.edit','panel.constant_management.location.country','panel.constant_management.location.create','panel.constant_management.location.edit','panel.groups.index','panel.setting.general','panel.setting.mail','panel.constant_management.mail_sms_template.index','panel.constant_management.mail_sms_template.create','panel.constant_management.mail_sms_template.edit','panel.constant_management.mail_sms_template.show','panel.bulk.manage.bulk'], 'active open')  }} has-sub">
         <a href="#"><i class="ik ik-settings"></i><span>{{ __('Global Setup')}}</span></a>
         <div class="submenu-content">
             
@@ -117,7 +117,7 @@
 
             <a href="{{ route('panel.product_attributes.index')}}" class="menu-item {{ activeClassIfRoutes(['panel.product_attributes.index','panel.product_attributes.create','panel.product_attributes.edit',], 'active')  }}">{{ __('Product Attribute')}}</a>
 
-            <a href="{{ route('panel.manage.bulk')}}" class="menu-item {{ activeClassIfRoutes(['panel.manage.bulk'], 'active')  }}">{{ __('Manage Bulk Sheet')}}</a>
+            <a href="{{ route('panel.bulk.manage.bulk')}}" class="menu-item {{ activeClassIfRoutes(['panel.bulk.manage.bulk'], 'active')  }}">{{ __('Manage Bulk Sheet')}}</a>
 
             <a href="{{ route('panel.constant_management.location.country')}}" class="menu-item {{ activeClassIfRoutes(['panel.constant_management.location.country','panel.constant_management.location.create','panel.constant_management.location.edit',], 'active')  }}">{{ __('Location')}}</a>
 

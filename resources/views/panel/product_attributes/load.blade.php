@@ -12,11 +12,18 @@
                 </label>
             </div>
             <div>
-                {{-- <button type="button" id="export_button" class="btn btn-success btn-sm">Excel</button>
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Column Visibility</button> --}}
+                <button type="button" id="export_button" class="btn btn-success btn-sm">Excel</button>
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Column Visibility</button>
+
                 <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
                     
-                    <li class="dropdown-item p-0 col-btn" data-val="col_1"><a href="javascript:void(0);"  class="btn btn-sm">Name</a></li>                    
+                    <li class="dropdown-item p-0 col-btn" data-val="col_1"><a href="javascript:void(0);"  class="btn btn-sm">Sno.</a></li>                    
+                    <li class="dropdown-item p-0 col-btn" data-val="col_2"><a href="javascript:void(0);"  class="btn btn-sm">Name</a></li>                    
+                    <li class="dropdown-item p-0 col-btn" data-val="col_3"><a href="javascript:void(0);"  class="btn btn-sm">Value</a></li>
+
+                    @if (AuthRole() == 'Admin')
+                        <li class="dropdown-item p-0 col-btn" data-val="col_4"><a href="javascript:void(0);"  class="btn btn-sm">Type</a></li>
+                    @endif
                                   
                 </ul>
                 <a href="javascript:void(0);" id="print" data-url="{{ route('panel.product_attributes.print') }}"  data-rows="{{json_encode($product_attributes) }}" class="btn btn-primary btn-sm">Print</a>
@@ -28,11 +35,14 @@
                 <thead>
                     <tr>
                         <th class="no-export">Actions</th> 
-                        <th  class="text-center no-export"># <div class="table-div"><i class="ik ik-arrow-up  asc" data-val="id"></i><i class="ik ik ik-arrow-down desc" data-val="id"></i></div></th>             
+                        <th  class="text-center col_1"># <div class="table-div"><i class="ik ik-arrow-up  asc" data-val="id"></i><i class="ik ik ik-arrow-down desc" data-val="id"></i></div></th>             
                                                
-                        <th class="col_1">Name <div class="table-div"><i class="ik ik-arrow-up  asc" data-val="name"></i><i class="ik ik ik-arrow-down desc" data-val="name"></i></div></th>
+                        <th class="col_2">Name <div class="table-div"><i class="ik ik-arrow-up  asc" data-val="name"></i><i class="ik ik ik-arrow-down desc" data-val="name"></i></div></th>
+
+                        <th class="col_3">Values <div class="table-div"><i class="ik ik-arrow-up  asc" data-val="values"></i><i class="ik ik ik-arrow-down desc" data-val="values"></i></div></th>
+
                         @if (AuthRole() == 'Admin')
-                            <th class="col_1">Type <div class="table-div"><i class="ik ik-arrow-up  asc" data-val="type"></i><i class="ik ik ik-arrow-down desc" data-val="type"></i></div></th>
+                            <th class="col_4">Type <div class="table-div"><i class="ik ik-arrow-up  asc" data-val="type"></i><i class="ik ik ik-arrow-down desc" data-val="type"></i></div></th>
                         @endif
                     </tr>
                 </thead>
@@ -45,9 +55,9 @@
                                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action<i class="ik ik-chevron-right"></i></button>
                                         <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
                                             <a href="{{ route('panel.product_attributes.edit', $product_attribute->id) }}" title="Edit Product Attribute" class="dropdown-item "><li class="p-0">Edit</li></a>
-                                            @if ($product_attribute->user_id == auth()->id())
+                                            {{-- @if ($product_attribute->user_id == auth()->id())
                                                 <a href="{{ route('panel.product_attributes.destroy', $product_attribute->id) }}" title="Delete Product Attribute" class="dropdown-item  delete-item"><li class=" p-0">Delete</li></a>
-                                            @endif
+                                            @endif --}}
 
                                             {{-- For Admin Only --}}
                                             @if (AuthRole() == 'Admin')
@@ -58,10 +68,20 @@
                                         </ul>
                                     </div> 
                                 </td>
-                                <td  class="text-center no-export"> {{  $loop->iteration }}</td>
-                                <td class="col_1">{{$product_attribute->name }}</td>
+                                <td  class="text-center col_1"> {{  $loop->iteration }}</td>
+                                <td class="col_2">{{$product_attribute->name }}</td>
+                                @php
+                                    $get_value = App\Models\ProductAttributeValue::where('parent_id',$product_attribute->id)->orderBy('attribute_value','ASC')->pluck('attribute_value')->toArray();
+                                @endphp
+                
+
+                                <td class="col_3">
+                                    {{ implode('^^',$get_value) }}
+                                </td>
+
+
                                 @if (AuthRole() == 'Admin')
-                                    <td class="col_2">{{($product_attribute->type == 1) ? "User Define" : ""}}</td>
+                                    <td class="col_4">{{($product_attribute->type == 1) ? "User Define" : ""}}</td>
                                 @endif
                                   
                             </tr>

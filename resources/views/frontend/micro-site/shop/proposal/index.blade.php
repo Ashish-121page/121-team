@@ -116,14 +116,35 @@
         }
     }
 
+    .shop-list {
+        height: 420px;
+        overflow: hidden;
+        overflow-y: auto;
+    }
+
 </style>
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+/>
 @section('content')
 
-<section class="section mt-5 mt-md-0 mt-sm-0 d-none" id="ndfjkvnrs">
+<section class="section mt-5 mt-md-0 mt-sm-0" id="ndfjkvnrs">
     
     {{-- <div class="headbx">
         <div class="h6">Do Not Share This Link with Client. Changes not saved. Export as pdf to save. Refresh to undo. </div>
     </div> --}}
+
+
+    <div class="fixedbtn position-fixed noprint animate__animated animate__bounceInRight urehdug d-none" style="bottom: 25px; right: 25px; z-index: 999;">
+        <a href="{{ request()->url() }}" class="btn d-flex gap-2 align-item-center justify-content-center" style="background-color: #283353; color: white;">
+            <i class="fas fa-redo my-1"></i>
+            <span class="d-none d-sm-block d-md-block">Undo Changes</span>
+        </a>
+    </div>
+
+    
+    
 
     <div class="d-none">
         {{-- <a href="https://api.whatsapp.com/send?text=Hey%2C%20{{ getShopDataByUserId($proposal->user_id)->name }}%20Share%20an%20Offer%20with%20You%2C%20you%20can%20access%20%0APasscode%3A%20{{ $proposal->password }}%0Aoffer%20LInk%3A%20
@@ -147,34 +168,29 @@
         
     </div>
     
-    <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 mt-3" style="margin-left: 100px">
-        <div class=""> 
-            <button onclick="getPPT()" type="button" class="btn btn-outline-warning sdfgesd" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PPT</button>
-            {{-- <button onclick="getPDF();" class="btn btn-outline-primary d-none d-md-inline d-sm-none" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PDF</button> --}}
-            <button onclick="getPDF();" class="btn btn-outline-primary " style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PDF</button>
-            @if ($proposal->type == 1)
-                <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}&linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" target="_blank" class="btn btn-outline-primary" style="position: relative; right: 5rem;"> {{ _("Make Offer") }} </a>
-            @endif
+    <div class="d-flex justify-content-center justify-content-sm-between w-100 justify-content-md-between align-items-center flex-wrap gap-3 mx-2 mt-3" style="position: sticky;top: 0%;left: 0;background-color: #fff !important;width: 100% !important;z-index: 99;padding-top: 10px !important;" >
+        <div class="">
+            <div class="h6">Offer To: {{ $cust_details['customer_name'] }} </div>
         </div>
-        <div class="border">
-            <div class="d-flex gap-1 noprint">    
-                <input type="number" placeholder="Enter Margin %" placeholder="&age" min="1" max="100" class="form-control hdfhj" id="magrintochnage">
-                <button type="button" id="changemarguin" class="btn btn-outline-primary">Change</button>    
+        <div class="">
+            <div class="d-flex gap-1 align-item-center noprint">
+                {{-- <input type="number" placeholder="Enter Margin %" placeholder="&age" min="1" max="100" class="form-control hdfhj" id="magrintochnage"> --}}
+                <div class="d-flex gap-3">
+                    <label for="magrintochnage" class="form-label">Margin: <span id="range_bar"> 0 </span>%</label>
+                    <input type="range" min="0" max="100" step="10"  class="form-range hdfhj" style="width: 150px" value="0" id="magrintochnage">
+                </div>
+                <div class="mx-2">
+                    <button type="button" id="changemarguin" class="btn btn-outline-primary">Add</button>   
+                </div>
             </div>
         </div>
         <div class="">
-            <button class="btn btn-outline-primary" style="position: relative; right: 5rem;" form="checkourform"><i class="fa fa-ddownload"></i> Request Sample</button>
-        </div>
-
+            @if ($proposal->valid_upto != '')
+                <div class="h6">Valid Upto: {{ $proposal->valid_upto ?? '--' }} </div>
+            @endif
+        </div>  
     </div>
     
-    
-    
-
-            <div class="text-right">
-                {{-- <button class="btn btn-outline-danger">Request Sample</button> --}}
-                <button class="btn btn-success" style="position: relative; right: 5rem; top: 2rem;" id="export_button" type="button"><i class="fa fa-download"></i> Save as Excel</button>
-            </div>
             <div class="container mt-5 canvas_div_pdf">  
                 @if($cust_details['customer_name'] != '' || $proposal->proposal_note != null)
                     <div class="row justify-content-between">
@@ -200,7 +216,7 @@
                                 <label for="clienticon" style="position: absolute;right: 2%" class="noprint chicon" >
                                     <i class="fas fa-pencil-alt text-primary fs-5" ></i>
                                 </label>
-                                <img src="https://placehold.co/250x150?text=Own%20Logo&font=playfair%20display" alt="Client Logo" id="clientLogo" style="height: 150px;width: 250px;object-fit: contain;">
+                                <img src="{{ asset('frontend/assets/img/Client_logo_placeholder.svg') }}" alt="Client Logo" id="clientLogo" style="height: 150px;width: 250px;object-fit: contain;">
                             </div>
                        </div>
                     </div>
@@ -217,7 +233,7 @@
                                     // $usi = productExistInUserShop($product->id,auth()->id(),$user_shop->id);
                                     $productId= \Crypt::encrypt($product->id);
                                 @endphp
-                                    <div class="col-lg-3 col-md-4 col-12 mt-4 pt-2 d-print-none" style="position: relative;" id="contain-{{ $product->id }}">
+                                    <div class="col-lg-3 col-md-4 col-12 mt-4 pt-2 d-print-none contain-{{ $product->id }}" style="position: relative;">
                    
 
                                         <div class="sampleenquiry" style="position: absolute1; top: 10px;left: 10px;">
@@ -254,19 +270,20 @@
                                                     <p class="mb-0" contenteditable="true"><b>Brand:</b><span>{{ $product->brand->name ?? '--' }}</span></p>
                                                 @endif
 
-                                                <div style="wdith:100%">
-                                                    <small contenteditable="true" >
-                                                        
-                                                            @if ($proposal_options->show_color)
-                                                                {{ $product->color ?? '' }} 
-                                                            @endif
-
-                                                            @if ($proposal_options->show_size)
-                                                                @if($product->size) , @endif 
-                                                                {{ $product->size ?? ''}}
-                                                            @endif                                                        
-                                                    </small>
-                                                </div>
+                                          
+                                                @foreach (json_decode($proposal->options)->show_Attrbute as $item)
+                                                    @php
+                                                        $value = (App\Models\ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$item)->first() != null) ? getAttruibuteValueById(App\Models\ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$item)->first()->attribute_value_id)->attribute_value : '';
+                                                    @endphp
+                                                    @if ($value != '')
+                                                        <div style="wdith:100%">
+                                                            <small contenteditable="true" >
+                                                                {{ getAttruibuteById($item)->name }} - {{ $value }} , <br>
+                                                            </small>
+                                                        </div>
+                                                    @endif
+                                                    
+                                                @endforeach                                                       
 
                                                 {{-- @if($product->user_id == auth()->id()) --}}
                                                     <span contenteditable="true">Model Code :# <span>{{ $product->model_code }}</span></span>
@@ -309,9 +326,8 @@
                                         
                                     </div>
 
-                                    @if(++$key%16==0)
+                                    @if(++$key%12==0)
                                         <div class="col-12 pdf-margin d-none" style="margin-bottom: 250px">
-
                                         </div>
                                     @endif
                                 @endforeach
@@ -357,6 +373,25 @@
                     <b>Note 3 :</b>  Edits are NOT saved. Refresh to undo.
                 </p>
             </div>
+
+
+            {{-- ` Addtional Options ` --}}
+            <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">
+                <div class=""> 
+                    <button onclick="getPPT()" type="button" class="btn btn-outline-warning sdfgesd" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PPT</button>
+                    <button onclick="getPDF();" class="btn btn-outline-primary " style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PDF</button>
+
+                    <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i> Save as Excel</button>
+
+
+                    {{-- @if ($proposal->type == 1)
+                        <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}&linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" target="_blank" class="btn btn-outline-primary" style="position: relative; right: 5rem;"> {{ _("Make Offer") }} </a>
+                    @endif --}}
+                </div>
+                <div class="">
+                    <button class="btn btn-outline-primary" style="position: relative; right: 5rem;" form="checkourform"><i class="fa fa-ddownload"></i> Request Sample</button>
+                </div>
+            </div>
             
         </section>
 @endsection
@@ -371,32 +406,45 @@
     let attempt = 1;
 
     $(document).ready(function () {
-        chkpass()
-    });
-    
-    $(document).ready(function () {
         setTimeout(function() {
             $('#socialShareModal').modal('show');
         }, 3000); // 3 Second TimeOut
+
+
+        setTimeout(function() {
+            $(".urehdug").toggleClass('d-none');    
+            $(".urehdug").addClass("animate__delay-7s");
+        }, 6000); // 3 Second TimeOut
+
+
+        
+        
+        
+        $("#magrintochnage").change(function (e) { 
+            e.preventDefault();
+            $("#range_bar").html($(this).val());
+        });
+
+
     });
 
-    function chkpass() {
-        var pass = prompt("Enter Passcode !!",{{ $proposal->password }});
-        if (attempt < 3) {
-            if (pass == "{{ $proposal->password }}") {
-                $("#ndfjkvnrs").toggleClass('d-none');
-                status = true;
-            } else {
-                attempt = attempt+1;
-                alert("Wrong Password,re-enter");
-                console.log(attempt);
-                chkpass();
-            }
-        }else{
-            // DO Something if 3 Attempts are Over
-            history.back();
-        }
-    };
+    // function chkpass() {
+    //     var pass = prompt("Enter Passcode !!",{{ $proposal->password }});
+    //     if (attempt < 3) {
+    //         if (pass == "{{ $proposal->password }}") {
+    //             $("#ndfjkvnrs").toggleClass('d-none');
+    //             status = true;
+    //         } else {
+    //             attempt = attempt+1;
+    //             alert("Wrong Password,re-enter");
+    //             console.log(attempt);
+    //             chkpass();
+    //         }
+    //     }else{
+    //         // DO Something if 3 Attempts are Over
+    //         history.back();
+    //     }
+    // };
 
 
     $(document).ready(function () {
@@ -435,7 +483,7 @@
             let val = $(this).data('contain');
 
             console.log(val);
-            $("#"+val).remove(); 
+            $("."+val).remove(); 
         });
 
         $("#changemarguin").click(function (e) { 
@@ -534,7 +582,6 @@
             var imgData = canvas.toDataURL("image/jpeg", 1.0);
             var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
             pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
-            
             
             for (var i = 1; i <= totalPDFPages; i++) { 
                 pdf.addPage(PDF_Width, PDF_Height);

@@ -44,7 +44,7 @@
                     <div class="ashu">
                         <div class="row">
                             <div class="col-12 col-md-4 col-sm-6 justify-content-center align-items-center">
-                                <img src="/project/121.page-Laravel/121.page/frontend/assets/img/survey.svg" style="height: 31vh"
+                                <img src="{{ asset('frontend/assets/img/survey.svg') }}" style="height: 31vh"
                                     alt="" aria-hidden="true" class="illustration" />
                             </div>
                             <div class="col-12 col-md-8 col-sm-6 justify-content-center align-items-center">

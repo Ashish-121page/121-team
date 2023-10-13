@@ -305,9 +305,9 @@
                                 @elseif(request()->get('type') == 'markup')
                                     <h6>Choose & Markup Products</h6>
                                 @elseif(request()->get('type') == 'picked')
-                                    <h6>Picked Productsss</h6>
+                                    <h6>Picked Products</h6>
                                 @else   
-                                <h6>Send Productsss</h6>
+                                <h6>Send Products</h6>
                                 @endif 
                                 
                                 <div class="ml-2 badge badge-{{ getProposalStatus($proposal->status)['color'] }}">{{ getProposalStatus($proposal->status)['name'] }}</div>

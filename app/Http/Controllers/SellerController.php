@@ -132,20 +132,9 @@ class SellerController extends Controller
         // $user = auth()->user();
         // magicstring(session()->all());
 
-        $draft_offers = Proposal::where('status',0)->pluck('id');
-        $blank_offers = [];
-        foreach ($draft_offers as $key => $value) {
-            if (count(ProposalItem::where('proposal_id',$value)->get()) == 0) {
-                array_push($blank_offers,$value);
-            }
-        }
-
-        magicstring($blank_offers);
-        magicstring($draft_offers);
-
-        echo encrypt('Ashis');
-
-
+        $msg = "Hello Ashish";
+        $code = "<h1>Hello Ji</h1>";
+        return view('devloper.ashish.index',compact('msg','code'));
 
 
     }
@@ -424,7 +413,13 @@ class SellerController extends Controller
                 $data->user_id=auth()->id();
                 
                 if ($auto_acr == 1) {
-                    $group_id = Group::where('user_id',$user->id)->where('name','=','customer')->first();
+                    $group_id_1 = Group::where('user_id',$user->id)->where('name','=','customer')->first();
+                    $group_id_2 = Group::where('user_id',$user->id)->first();
+                    if ($group_id_1 == null) {
+                        $group_id = $group_id_2;
+                    }else{
+                        $group_id = $group_id_1;
+                    }
                     $data->price_group_id = $group_id->id;
                     $data->status=1;
                 }else{

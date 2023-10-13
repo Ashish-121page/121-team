@@ -31,19 +31,11 @@ class DevRouteController extends Controller
          // member
         $usershop = getShopDataByUserId(auth()->id());
         $teams = Team::where('user_shop_id',$usershop->id)->get();
-
-    //    magicstring($teams[0]->name);
-    //    magicstring($teams[0]->designation);
-    //    magicstring($teams[0]->city);
-       
-
         
         return view('devloper.Jaya.index',compact('enquiry_amt','Numbverofoffer','productcount','teams'));
     }
     
     public function jayaform(){
-     
         return view('devloper.jaya.form-check');
-    }
-    
+    }    
 }

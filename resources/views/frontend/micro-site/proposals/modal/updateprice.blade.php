@@ -3,8 +3,9 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="pickedProductEditLabel">Picked Products Edit</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="pickedProductEditLabel">Offer Price</h5>
+                <button type="button" class="btn close" data-bs-dismiss="modal" aria-label="Close"
+                    style="padding:20px;font-size: 30px;">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -14,7 +15,7 @@
                     <div class="col-md-12 col-12">
                         <div class="form-group {{ $errors->has('price') ? 'has-error' : '' }}">
                             <input type="hidden" name="product_id" value="" class="productId">
-                            <label for="price" class="control-label">Price</label>
+                            <label for="price" class="control-label">Offer Price</label>
                             <input class="form-control" name="price" min="0" type="number" id="price"
                                 placeholder="Enter price">
                         </div>

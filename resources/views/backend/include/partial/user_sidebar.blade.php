@@ -1,23 +1,23 @@
 
 @can('access_by_user')
-{{-- <div class="nav-item {{ activeClassIfRoutes(['panel.seller.my_supplier.index','panel.seller.explore.index','panel.seller.request.index','panel.seller.ignore.index'] ,'active open' ) }}  has-sub">
+<div class="nav-item {{ activeClassIfRoutes(['panel.seller.my_supplier.index','panel.seller.explore.index','panel.seller.request.index','panel.seller.ignore.index'] ,'active open' ) }}  has-sub">
     <a href="#"><i class="ik ik-layers"></i><span>{{ 'My Collections' }}</span></a>
-    <div class="submenu-content" style=""> --}}
-        {{-- <a href="{{ route('panel.seller.explore.index') }}" class="menu-item a-item">{{ __('Explore')}}</a> --}}
+    <div class="submenu-content" style="">
+        <a href="{{ route('panel.seller.explore.index') }}" class="menu-item a-item">{{ __('Explore')}}</a>
 
-        {{-- @php
+        @php
             $pending_requests = getAccessCataloguePendingCount(auth()->id(),0);
         @endphp
-        <a href="{{ route('panel.seller.my_supplier.index') }}" class="menu-item a-item">{{ __('My Suppliers')}}  --}}
-            {{-- @if($pending_requests > 0)
+        <a href="{{ route('panel.seller.my_supplier.index') }}" class="menu-item a-item">{{ __('My Suppliers')}} 
+            @if($pending_requests > 0)
                 <span class="badge badge-warning">{{ $pending_requests }}</span>
-            @endif --}}
-        {{-- </a>  --}}
-        {{-- <a href="{{ route('panel.seller.supplier.index') }}" class="menu-item a-item">{{ __('From Suppliers')}}</a> --}}
-        {{-- <a href="{{ route('panel.seller.request.index') }}" class="menu-item a-item">{{ __('Request Under Approval')}}</a>
-        <a href="{{ route('panel.seller.ignore.index') }}" class="menu-item a-item">{{ __('Ignore')}}</a> --}}
-    {{-- </div>
-</div> --}}
+            @endif
+        </a> 
+        <a href="{{ route('panel.seller.supplier.index') }}" class="menu-item a-item">{{ __('From Suppliers')}}</a>
+        <a href="{{ route('panel.seller.request.index') }}" class="menu-item a-item">{{ __('Request Under Approval')}}</a>
+        <a href="{{ route('panel.seller.ignore.index') }}" class="menu-item a-item">{{ __('Ignore')}}</a>
+    </div>
+</div>
 
 
 
@@ -183,7 +183,7 @@
 
 
 <div class="nav-item {{ activeClassIfRoutes(['panel.users.show','panel.user_shops.edit'] ,'active open' ) }}">
-    <a href="{{ route('panel.user_shops.edit',[$user_shop->id ?? 0,'active'=>'shop-details']) }}" class="a-item" ><i class="ik ik-user"></i><span>{{ 'Profile' }}</span></a>
+    {{-- <a href="{{ route('panel.user_shops.edit',[$user_shop->id ?? 0,'active'=>'shop-details']) }}" class="a-item" ><i class="ik ik-user"></i><span>{{ 'Profile' }}</span></a> --}}
 </div>
 
 {{-- <div class="nav-item {{ ($segment2 == 'contact') ? 'active' : '' }}">

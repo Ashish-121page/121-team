@@ -21,17 +21,21 @@
         $meta_reply_to = '' ?? getSetting('frontend_footer_email');
         $meta_img = asset(getMediaByIds($image_ids)->path ?? asset('frontend/assets/img/placeholder.png'));
         $microsite = 1;
+        $is_linked = 0;
+        
     @endphp
     {{-- modal --}}
 
      <link rel="stylesheet" href="{{ asset('frontend/assets/css/normalize.min.css') }}">
      <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}">
 
-
 @endsection
 <style>
     .table>:not(caption)>*>* {
         padding: 3px !important;
+    }
+    table th{
+        text-transform: capitalize;
     }
     .slider-img{
         min-width:95px !important;
@@ -65,53 +69,50 @@
 
 
 
-
 </style>
 
 {{-- @dd($user_shop_item) --}}
 @section('content')
 
-    <section class="section" >
-        <ul class="nav justify-content-between">
-            <div class="col-12 col-md-6 col-lg-6 col-sm-4">
-                <div class="nav-item">
-                    <a class="nav-link" href="#">
-                      <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-0 me-2 mx-2"><i class="fas fa-arrow-circle-left"></i></i>Back</a>
-                    </a>
+    <section class="section">
+            <ul class="nav justify-content-between">
+                <div class="col-12 col-md-6 col-lg-6 col-sm-4">
+                    <div class="nav-item">
+                        <a class="nav-link" href="#">
+                        <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-0 me-2 mx-2"><i class="fas fa-chevron-left"></i> Back</a>
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="col-12 col-md-6 col-lg-6 col-sm-8 d-flex justify-content-end">
-                <li class="nav-item ">
-                    <a class="nav-link active" aria-current="page" href="#">
-                    <button id="editProductContent" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i>Edit
-                    </button>
-                    <button id="saveProductContent" style="display: none;">Save</button>
-                    </a>
-                  </li>
-                  <li class="nav-item ">
-                    <a class="nav-link" href="#">
-                      <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-plus-square"></i></i>Create Label</button><br>
-                    </a>
-                  </li>
-            </div>
-        </ul>
-        <p id="pageContent">
-        {{-- <p id="productContent"> --}}
+                @if ($user_shop->user_id == auth()->id())
+                    <div class="col-12 col-md-6 col-lg-6 col-sm-8 d-flex justify-content-end">
+                        <li class="nav-item ">
+                            <a class="nav-link active" aria-current="page" href="{{ route('panel.products.edit',$product->id) }}">
+                            <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i> Edit</button></a>
+
+                        </li>
+                        <li class="nav-item d-none">
+                            <a class="nav-link" href="#">
+                            <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i> Create Label</button><br>
+                            </a>
+                        </li>
+                    </div>
+                @endif
+                
+            </ul>
 
         <ul class="nav position-absolute end-0 px-5">
             <li><br>
                 <div class="row">
                 <div class="container ">
                     <div>
-                        Last update: <span>{{  now()->diffInDays(Carbon\Carbon::parse($product->updated_at)) }} Days ago</span>
+                        Last update: <span>{{  now()->diffInDays(Carbon\Carbon::parse($product->updated_at)) }} Day's ago</span>
                     </div>
                 </div>
                 </div>
             </li>
         </ul>
-        <script src="script.js"></script>
 
-        <div id="productContent" contenteditable="false" class="container my-5">
+        <div class="container my-5">
             <div class="row pt-lg-0 pt-md-3 pt-3">
                 <div class="col-lg-5 col-md-5 col-sm-5 col-xs-12">
                     <div class="single-pro-tab-content">
@@ -119,19 +120,40 @@
                             {{-- <button class="zoomBtn">
                                 <img src="{{ asset('backend/img/move.png') }}" alt="" style="height: 30px;object-fit: contain;">
                             </button> --}}
-                            @if(getBrandRecordByBrandId($product->brand_id))
-                                    <h5 class="text-muted">Brand: <span class="text-dark">{{ getBrandRecordByBrandId($product->brand_id)->name }}</span>  </h5>
+                                <a href="{{ @asset(getMediaByIds($image_ids)->path ??'frontend/assets/img/placeholder.png') }}"  download="{{ $product->model_code }}" class="zoomBtn" style="background-color: transparent">
+                                    <i class="fas fa-download text-dark fs-3"></i>
+                                </a>
+                                
+                                @php
+                                    $ProductExinfo = App\Models\ProductExtraInfo::where('product_id',$product->id)->first();
+                                @endphp
+                            
+                                @if ($product->user_id == auth()->id())
+                                    {{-- * Own product --}}
+                                    @if($ProductExinfo->brand_name != '')   
+                                        <h5 class="text-muted">Brand: <span class="text-dark">{{ $ProductExinfo->brand_name }}</span>  </h5>
+                                    @endif
+                                @else
+                                    {{-- * Linked product --}}
+                                    @php
+                                        $is_linked = 1;
+                                    @endphp
+                                    @if($user_shop_item->brand_name_user != '')   
+                                        <h5 class="text-muted">Brand: <span class="text-dark">{{ $user_shop_item->brand_name_user }}</span>  </h5>
+                                    @endif        
                                 @endif
 
-                                @if($product->material &&  $product->material != null || $user_product->materials && $user_product->materials != null)
+
+                                {{-- @if($product->material &&  $product->material != null || $user_product->materials && $user_product->materials != null)
                                     <h6 class="text-muted">Material : {{ $user_product->materials ?? $product->material }}</h6>
-                                @endif
+                                @endif --}}
 
                                 <h6 class="text-info">
-                                    <a class="m-0 p-0 btn-link text-muted" href="">{{ fetchFirst('App\Models\Category',$user_product->category_id,'name' ,'') }}</a>
+                                    <a class="m-0 p-0 btn-link text-muted" href="{{  inject_subdomain('shop', $user_shop->slug) }}?sort=&category_id={{ $user_product->category_id }}&from=&to=">{{ fetchFirst('App\Models\Category',$user_product->category_id,'name' ,'') }}</a>
                                     /
-                                    <a class="m-0 p-0 btn-link text-muted" href="">{{ fetchFirst('App\Models\Category',$user_product->sub_category_id,'name','') }}</a>
+                                    <a class="m-0 p-0 btn-link text-muted" href="{{  inject_subdomain('shop', $user_shop->slug) }}?sort=&category_id={{ $user_product->category_id }}&sub_category_id={{ $user_product->sub_category_id }}&from=&to=">{{ fetchFirst('App\Models\Category',$user_product->sub_category_id,'name','') }}</a>
                                 </h6>
+                                
                             <img class="slider-zoom zoom zoomImg" src="{{ @asset(getMediaByIds($image_ids)->path ??'frontend/assets/img/placeholder.png') }}" style="cursor: pointer;" alt="product-image">
                         </div>
                         <!-- Nav tabs -->
@@ -140,6 +162,7 @@
                                 <div class="tiny-slide btn btn-link slider-zoom-selector" data-img="{{ asset($media->path) }}">
                                     <img src="{{ asset($media->path ? $media->path:'frontend/assets/img/placeholder.png') }}" class="img-fluid slider-img rounded" alt="product-image">
                                 </div>
+                                
                             @endforeach
                         </div>
                     </div>
@@ -153,31 +176,50 @@
                         <div class="row">
                             <div class="section-title col-12 col-md-12 col-sm-12 my-2">
                                 <h4 class="title mb-0">
-
+                                   
                                     @if ($user_product->title_user != null)
                                         {{ $user_product->title_user }}
                                     @else
                                         {{ $product->title }}
                                     @endif
                                 </h4>
+                                
                                 <span class="text-muted">{{ getProductRefIdByRole($product,$user_shop_item, 2)}}</span>
-
+                                
                                 <div class="containe-fluid">
                                     <div class="row">
                                         <div class="col-12 col-sm-6 col-md-6 justify-content-between">
-                                            
                                             @if($product->stock_qty > 0)
                                                 <span>,</span>
                                                 <span class="text-success" style="font-weight: 600;"><small>In Stock</small></span>
                                             @endif
-                                            <h5 class="text-muted my-2">{{ format_price($price) }}</h5>
+
+                                            @php
+                                                if ($is_linked) {
+                                                    $mrp = $user_shop_item->mrp_user;
+                                                }else{
+                                                    $mrp = $product->mrp;
+                                                }
+                                            @endphp
+
+
+                                            <h5 class="text-muted my-2">
+                                                {{ format_price($price) }} &nbsp;&nbsp;&nbsp;
+                                                MRP : <strike> {{ format_price($mrp) }} </strike>
+                                            </h5>
+                                            
                                         </div>
 
-                                        <div class="col-12 col-sm-6 col-md-6 d-flex w-50 justify-content-end">
-                                            <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Internal Details</a>
+                                        <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-end gap-3">
+                                            <a class="btn btn-outline-primary" id="sharebtn" href="#sharemodal" role="button"> 
+                                                <i class="fas fa-share"></i> Share
+                                            </a>
+                                            @if ($user_shop->user_id == auth()->id())
+                                                <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Internal Details</a>
+                                            @endif
                                         </div>
 
-
+                                        
                                     </div>
                                     <div class="d-flex flex-wrap align-items-center gap-3">
                                         {{-- dropdown for currency start --}}
@@ -186,7 +228,7 @@
                                         @endphp
                                         <div class="d-none">
                                             <select class="form-select" id="currency" name="currency" style="width: max-content !important; height: 100%;">
-                                                <option value="",readonly> Select currency
+                                                <option> Select currency
                                                 </option>
                                                 @foreach ($currencies as $item)
                                                     <option width="25px" value="{{ $item->currency }}">{{ $item->currency." - ".$item->name }}</option>
@@ -203,37 +245,44 @@
                                 </div>
                             </div>
                         </div>
-                            @php
-                                $features = $product->features;
-                                $attributes = App\Models\ProductAttribute::where('user_id',null)->orwhere('user_id',$user_shop->user_id)->get();
 
-                                $colors = App\Models\ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',1)->groupBy('attribute_value_id')->get();
-                                $sizes = App\Models\ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',2)->groupBy('attribute_value_id')->get();
-                                $materials = App\Models\ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',3)->groupBy('attribute_value_id')->get();
-
-                            @endphp
+                        <form method="GET" id="searchForm">
 
                             {{-- color, size, material dropdowns --}}
                             <div class="d-flex gap-2 flex-wrap">
+                                {{-- <div class="">
+                                    <select name="selected_default[]" class="form-control form-select" id="selected_3">
+                                        <option value="" @if ($result_attri != null) disabled @endif>Select Group id</option>
+                                        @foreach ($groupIds as $material)
+                                            <option value="{{ $material }}"  
+                                            >{{ $material }}</option>
+                                        @endforeach
+                                    </select>
+                                </div> --}}
+                                
                                 @if (count($colors) > 0)
                                     <div class="">
-                                        <select name="selected_color[]" class="form-control form-select" id="selected_color">
-                                            <option value="" readonly>Select Color</option>
-
+                                        <select name="selected_default[]" class="form-control form-select" id="selected_1">
+                                            <option value="" @if ($result_attri != null) disabled @endif>Select Color</option>
                                             @foreach ($colors as $color)
-                                            <option value="{{ $color->product_id }}" {{($show_product == $color->product_id) ? 'Selected' : ''}}     >{{ getAttruibuteValueById($color->attribute_value_id)->attribute_value }}</option>
+                                                <option value="{{ $color->attribute_value_id }}" 
+                                                @if ($result_attri != null) 
+                                                    {{( in_array($color->attribute_value_id,request()->get('search_keywords'))) ? 'Selected' : '' }} 
+                                                        {{(in_array($color->attribute_value_id,$result_attri)) ? "" : 'disabled'}}
+                                                    @endif
+                                                    >{{ getAttruibuteValueById($color->attribute_value_id)->attribute_value }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 @endif
                                 @if (count($sizes) > 0)
                                     <div class="">
-                                        <select name="selected_size[]" class="form-control form-select" id="selected_size">
-                                            <option value="" readonly>Select  Size</option>
+                                        <select name="selected_default[]" class="form-control form-select" id="selected_2">
+                                            <option value="" @if ($result_attri != null) disabled @endif>Select Size</option>
                                             @foreach ($sizes as $size)
                                                 <option value="{{ $size->attribute_value_id }}"
                                                 @if ($result_attri != null) 
-                                                {{( in_array($size->attribute_value_id,request()->get('search_keywords'))) ? 'Selected' : '' }} 
+                                                    {{( in_array($size->attribute_value_id,request()->get('search_keywords'))) ? 'Selected' : '' }} 
                                                     {{(in_array($size->attribute_value_id,$result_attri)) ? "" : 'disabled'}}
                                                 @endif
                                                 >{{ getAttruibuteValueById($size->attribute_value_id)->attribute_value }}</option>
@@ -243,20 +292,32 @@
                                 @endif
                                 @if (count($materials) > 0)
                                     <div class="">
-                                        <select name="selected_material[]" class="form-control form-select" id="selected_size">
-                                            <option value="" readonly>Select Material</option>
+                                        <select name="selected_default[]" class="form-control form-select" id="selected_3">
+                                            <option value="" @if ($result_attri != null) disabled @endif>Select Material</option>
                                             @foreach ($materials as $material)
-                                                <option value="{{ $material->product_id }}"  {{($show_product == $material->product_id) ? 'Selected' : ''}} >{{ getAttruibuteValueById($material->attribute_value_id)->attribute_value }}</option>
+                                                <option value="{{ $material->attribute_value_id }}"
+                                                @if ($result_attri != null) 
+                                                {{( in_array($material->attribute_value_id,$result_attri) ) ? "" : 'disabled'}}
+                                                    {{( in_array($material->attribute_value_id,request()->get('search_keywords'))) ? 'Selected' : '' }} 
+                                                @endif    
+                                                >{{ getAttruibuteValueById($material->attribute_value_id)->attribute_value }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 @endif
 
+                       
+
                                 <div class="">
-                                    <button class="collapsed btn btn-outline-primary p-2 rounded-circle" type="button" data-bs-toggle="collapse" data-bs-target="#attributeval-1" aria-expanded="false" aria-controls="attributeval-1" title="Load More">
+                                    <button class="collapsed btn btn-icon btn-outline-primary p-2 rounded-circle d-none" type="button" data-bs-toggle="collapse" data-bs-target="#attributeval-1" aria-expanded="false" aria-controls="attributeval-1" title="Load More">
                                         {{-- <i class="fas fa-plus"></i>  --}}
                                         <i class="fas fa-angle-down"></i>
                                     </button>
+                                    @if ($result_attri != null) 
+                                        <a href="{{ request()->url() }}" class="btn btn-outline-danger btn-icon rounded-circle" title="Reset">
+                                            <i class="fas fa-undo"></i>
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
 
@@ -264,29 +325,34 @@
                             <div class="accordion accordion-flush mt-3 w-lg-50" id="moreattributes">
                                 {{-- Item Start --}}
                                 <div class="accordion-item">
-                                  <div id="attributeval-1" class="accordion-collapse collapse" data-bs-parent="#moreattributes">
+                                  <div id="attributeval-1" class="accordion-collapse collapse show " data-bs-parent="#moreattributes">
                                     <div class="accordion-body">
                                         <div class="d-flex flex-wrap gap-3">
                                             @foreach ($attributes as $key => $attribute)
                                                 @php
-                                                    $attribute_values = App\Models\ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',$attribute->id)->groupBy('attribute_value_id')->get();
+                                                    $attribute_values = App\Models\ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',$attribute->id)->groupBy('attribute_value_id')->get();      
                                                 @endphp
                                                 @if ($key < 3)
                                                     @continue
                                                 @endif
                                                 @if (count($attribute_values) != 0)
-                                                    <select class="form-control form-select" style="width: max-content" name="select_{{$attribute->name}}">
-                                                        <option value="" readonly>Select {{ $attribute->name }}</option>
+                                                    <select class="form-control form-select" style="width: max-content"
+                                                     name="selected_Cust[]">
+                                                        <option value="" @if ($result_attri != null) disabled @endif>Select {{ $attribute->name }}</option>
                                                         @foreach ($attribute_values as $attribute_value)
                                                             @if ($attribute_value != '')
-                                                                <option value="{{ $attribute_value->product_id ?? ''}}"  {{($show_product == $attribute_value->product_id) ? 'Selected' : ''}} >{{ getAttruibuteValueById($attribute_value->attribute_value_id)->attribute_value ?? ''}}</option>
+                                                                <option value="{{ $attribute_value->attribute_value_id ?? ''}}"
+                                                                @if ($result_attri != null) 
+                                                                    {{( in_array($attribute_value->attribute_value_id,request()->get('search_keywords'))) ? 'Selected' : '' }} 
+                                                                    {{(in_array($attribute_value->attribute_value_id,$result_attri)) ? "" : 'disabled'}}
+                                                                @endif  >
+                                                                    {{ getAttruibuteValueById($attribute_value->attribute_value_id)->attribute_value ?? ''}}
+                                                                </option>
                                                             @endif
                                                         @endforeach
                                                     </select>
                                                 @endif
                                             @endforeach
-
-
                                         </div>
                                     </div>
 
@@ -294,9 +360,12 @@
                                 </div>
                                 {{-- Item End --}}
                               </div>
-
+                            
                             {{-- ` End of first accordion for extra attributes  --}}
 
+                        </form>
+                            
+                            
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 d-flex justify-content-between">
                                     <div class="mt-2 pt-2">
@@ -308,11 +377,7 @@
                                 </div>
 
                                 <div class="col-12 mt-1">
-                                    @if ($user_shop_item->description != null)
-                                        <h6 class="mb-3">Description:</h6>
-                                        <p class="">{!!  html_entity_decode(preg_replace('/_x([0-9a-fA-F]{4})_/', '&#x$1;', $user_shop_item->description)) ?? '' !!}</p>
-                                    @elseif($product->description != null)
-
+                                    @if ($user_shop_item->description != null && $is_linked == 1)
                                         <div class="accordion" id="accordionDescription">
                                             <div class="accordion-item">
                                             <h2 class="accordion-header">
@@ -321,9 +386,23 @@
                                                 </button>
                                             </h2>
                                             <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="">
-                                                <div class="accordion-body ">
-                                                    <i class="fas fa-pencil-alt edit-icon"></i>
-                                                    {!!  html_entity_decode(preg_replace('/_x([0-9a-fA-F]{4})_/', '&#x$1;', $product->description)) ?? '' !!}
+                                                <div class="accordion-body">
+                                                {!!  html_entity_decode(preg_replace('/_x([0-9a-fA-F]{4})_/', '&#x$1;', $user_shop_item->description)) ?? '' !!}
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    @elseif($product->description != null)
+                                        <div class="accordion" id="accordionDescription">
+                                            <div class="accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                                    Description
+                                                </button>
+                                            </h2>
+                                            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="">
+                                                <div class="accordion-body">
+                                                {!!  html_entity_decode(preg_replace('/_x([0-9a-fA-F]{4})_/', '&#x$1;', $product->description)) ?? '' !!}
                                                 </div>
                                             </div>
                                             </div>
@@ -343,116 +422,84 @@
                                                 </h2>
                                                 <div id="collapseAdditional" class="accordion-collapse collapse">
                                                     <div class="accordion-body">
-                                                        <code>
-                                                            <div class="row">
-                                                                    <div class="col-lg-6 col-md-6 col-12">
-                                                                        <table class="table table-striped mt-3 border" style="width: 90%;">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <img style="height: 230px;" src="{{ asset('frontend/assets/img/product/item.jpg') }}" alt="">
-                                                                                </tr>
-                                                                                    <th>Length</th>
-                                                                                    <td>{{ $shipping_details['length'] ?? '' }}</td>
-                                                                                    <td></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Width</th>
-                                                                                    <td>{{ $shipping_details['width'] ?? '' }}</td>
-                                                                                    <td></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Height</th>
-                                                                                    <td>{{ $shipping_details['height'] ?? '' }} </td>
-                                                                                    <td></td>
-                                                                                </tr>
-                                                                                @if(isset($shipping_details) && @$shipping_details['length_unit'])
-                                                                                <tr>
-                                                                                    <th>Length unit</th>
-                                                                                    <td>{{ $shipping_details['length_unit'] ?? '' }}</td>
-                                                                                    <td></td>
-                                                                                </tr>
-                                                                                @endif
-                                                                                <tr>
-                                                                                    <th>Weight</th>
-                                                                                    <td>{{ $shipping_details['weight'] ?? '' }}</td>
-                                                                                    <td></td>
-                                                                                </tr>
-                                                                                @if(isset($shipping_details) && @$shipping_details['unit'])
-                                                                                <tr>
-                                                                                    <th>Unit</th>
-                                                                                    <td>{{ $shipping_details['unit'] ?? '' }}</td>
-                                                                                    <td></td>
-                                                                                </tr>
-                                                                                @endif
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
-
-                                                                {{-- carton table --}}
-
-                                                                @if ($carton_details['standard_carton'] == '' && $carton_details['carton_unit'] == '' && $carton_details['carton_weight'] == '')
-                                                                    {{-- Nothing To Show Here     --}}
-                                                                @else
-
-                                                                    <div class="col-lg-6 col-md-6 col-12">
-                                                                        <table class="table table-striped mt-3 border" style="width: 90%;">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <img style="height: 230px;" src="{{ asset('frontend/assets/img/product/carton.jpg') }}" alt="">
-                                                                                </tr>
-                                                                                    <tr>
-                                                                                    <th>Length</th>
-                                                                                    <td>{{ $carton_details['length'] ?? '' }}</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Width</th>
-                                                                                    <td>{{ $carton_details['width'] ?? '' }}</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Height</th>
-                                                                                    <td>{{ $carton_details['height'] ?? '' }} </td>
-                                                                                </tr>
-                                                                                @if(isset($carton_details) && @$carton_details['length_unit'])
-                                                                                <tr>
-                                                                                    <th>Length unit</th>
-                                                                                    <td>{{ $carton_details['length_unit'] ?? '' }}</td>
-                                                                                </tr>
-                                                                                @endif
-                                                                                <tr>
-                                                                                    <th>Weight</th>
-                                                                                    <td>{{ $carton_details['weight'] ?? '' }}</td>
-                                                                                </tr>
-                                                                                @if(isset($carton_details) && @$carton_details['unit'])
-                                                                                <tr>
-                                                                                    <th>Unit</th>
-                                                                                    <td>{{ $carton_details['unit'] ?? '' }}</td>
-                                                                                </tr>
-                                                                                @endif
-                                                                                <tr>
-                                                                                    <th>Standard Carton</th>
-                                                                                    <td>{{ $carton_details['standard_carton'] ?? '' }}</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>UMO</th>
-                                                                                    <td>{{ $carton_details['carton_unit'] ?? '' }}</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Carton Actual Weight</th>
-                                                                                    <td>{{ $carton_details['carton_weight'] ?? '' }}</td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
-                                                                @endif
-
-                                                            </div>
-                                                        </code>
+                                                        <div class="row">
+                                                                <div class="col-lg-6 col-md-6 col-12">
+                                                                    <table class="table table-striped mt-3 border" style="width: 90%;">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <img style="height: 230px;" src="{{ asset('frontend/assets/img/product/item.jpg') }}" alt="">
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Product Length</th>
+                                                                                <td>{{ ($shipping_details['length'] ?? '')." ".($shipping_details['length_unit'] ?? '') ?? '--' }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Product Width</th>
+                                                                                <td>{{ ($shipping_details['width'] ?? '')." ".($shipping_details['length_unit'] ?? '') ?? '--' }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Product Height</th>
+                                                                                <td>{{ ($shipping_details['height'] ?? '')." ".($shipping_details['length_unit'] ?? '') ?? '--' }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Gross Weight</th>
+                                                                                <td>{{ ($shipping_details['weight'] ?? '')." ".($shipping_details['unit'] ?? '') ?? '--' }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Net Weight</th>
+                                                                                <td>{{ ($shipping_details['gross_weight'] ?? '')." ".($shipping_details['unit'] ?? '') ?? '--' }}</td>
+                                                                            </tr>
+                                                                        
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+        
+                                                            {{-- carton table --}}
+        
+                                                            @if (($carton_details['standard_carton'] ?? '') == '' && ($carton_details['carton_unit'] ?? '') == '' && ($carton_details['carton_weight'] ?? '') == '')
+                                                                {{-- Nothing To Show Here     --}}
+                                                            @else
+        
+                                                                <div class="col-lg-6 col-md-6 col-12">
+                                                                    <table class="table table-striped mt-3 border" style="width: 90%;">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <img style="height: 230px;" src="{{ asset('frontend/assets/img/product/carton.jpg') }}" alt="">
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Carton Length</th>
+                                                                                <td>{{ ($carton_details['Carton_length'] ?? '')." ".($carton_details['Carton_Dimensions_unit'] ?? '') ?? '--' }}</td>
+                                                                            </tr>
+                        
+                                                                            <tr>
+                                                                                <th>Carton width</th>
+                                                                                <td>{{ ($carton_details['Carton_width'] ?? '' )." ".($carton_details['Carton_Dimensions_unit'] ?? '') ?? '--' }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Carton Height</th>
+                                                                                <td>{{ ($carton_details['Carton_height'] ?? '')." ".($carton_details['Carton_Dimensions_unit'] ?? '') ?? '--' }}</td>
+                                                                            </tr>
+                        
+                                                                            <tr>
+                                                                                <th>standard carton</th>
+                                                                                <td>{{ ($carton_details['standard_carton'] ?? '')." pcs" ?? '--' }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>carton weight actual</th>
+                                                                                <td>{{ ($carton_details['carton_weight'] ?? '')." ".($carton_details['carton_unit'] ?? '' ) ?? '--' }}</td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            @endif
+        
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             {{-- accordion end --}}
                                         </div>
-
+                                        
                                         @if ( $product['hsn_percent'] != '' || $product['hsn'] != '')
                                             <div class="col-12">
                                                 <div class="accordion-item mt-3">
@@ -462,7 +509,7 @@
                                                         </button>
                                                     </h2>
                                                     <div id="collapseTax" class="accordion-collapse collapse text-bg-primary" data-bs-parent="">
-                                                        <div class="accordion-body justify-content-center">
+                                                        <div class="accordion-body justify-content-center">                
                                                             <div class="col-12">
                                                                 <table class="table table-striped border justify-content-between" style="width: 100% !important;">
                                                                     <tbody>
@@ -487,18 +534,27 @@
                                             </div>
                                         @endif
                                     </div>
-
-
-
+                              
+                                    
+                                    
                                 </div>
 
 
-                                <div class="col-12 mt-3">
-                                    @if ($product->artwork_url != null ||  $user_shop_item->artwork_url != null )
-                                        <h6 class="mb-1 mt-2">Artwork outline:</h6>
-                                        <a href="{!! $product->artwork_url ?? $user_shop_item->artwork_url !!}" title="Artwork Reference of {!! $product->title ?? $user_shop_item->title !!}" class="btn btn-outline-primary my-2" target="_blank">Download</a>
-                                    @endif
+                                <div class="col-12 d-flex flex-wrap mt-3">
+                                    <div class="col-6">
+                                        @if ($product->artwork_url != null ||  $user_shop_item->artwork_url != null )
+                                            <h6 class="mb-1 mt-2">Artwork outline:</h6>
+                                            <a href="{!! $product->artwork_url ?? $user_shop_item->artwork_url !!}" title="Artwork Reference of {!! $product->title ?? $user_shop_item->title !!}" class="btn btn-outline-primary my-2" target="_blank">Download</a>
+                                        @endif
+                                    </div>
+                                    <div class="col-6">
+                                        @if ($product->video_url != null ||  $user_shop_item->video_url != null )
+                                            <h6 class="mb-1 mt-2">Video Url</h6>
+                                            <a href="{!! $product->video_url ?? $user_shop_item->video_url !!}" title="Artwork Reference of {!! $product->title ?? $user_shop_item->title !!}" class="btn btn-outline-primary my-2" target="_blank">Watch</a>
+                                        @endif
+                                    </div>
                                 </div>
+
 
 
 
@@ -527,7 +583,7 @@
 
                 <div class="col-12 d-none">
 
-                    @if  ($carton_details['standard_carton'] == '' && $carton_details['carton_unit'] == '' && $carton_details['carton_weight'] == '' && $shipping_details['length'] == '' && $shipping_details['width'] == '' && $shipping_details['height'] == '' && $shipping_details['weight'] == '')
+                    @if  (($carton_details['standard_carton'] ?? '') == '' && ($carton_details['carton_unit'] ?? '') == '' && ($carton_details['carton_weight'] ?? '') == '' && ($shipping_details['length'] ?? '') == '' && ($shipping_details['width'] ?? '') == '' && ($shipping_details['height'] ?? '') == '' && ($shipping_details['weight'] ?? '') == '')
                         {{-- <span>No Details Are Avaiable of This Product Right Now</span> --}}
                     @else
                         {{-- original content --}}
@@ -577,7 +633,7 @@
                                     </button> --}}
 
                             </div>
-                                {{-- acoordion for add info start --}}
+                            {{-- ` acoordion for add info start --}}
                             <div class="col-10">
                                 <div class="accordion-item mt-3" style="margin-right: 50px;">
                                     <h2 class="accordion-header">
@@ -609,10 +665,10 @@
                                                                         <td>{{ $shipping_details['height'] ?? '' }} </td>
                                                                         <td></td>
                                                                     </tr>
-                                                                    @if(isset($shipping_details) && @$shipping_details['length_unit'])
+                                                                    @if(isset($shipping_details) && @($shipping_details['length_unit'] ?? ''))
                                                                     <tr>
                                                                         <th>Length unit</th>
-                                                                        <td>{{ $shipping_details['length_unit'] ?? '' }}</td>
+                                                                        <td>{{ ($shipping_details['length_unit'] ?? '') ?? '' }}</td>
                                                                         <td></td>
                                                                     </tr>
                                                                     @endif
@@ -697,106 +753,14 @@
                                 </div>
                                 {{-- accordion end --}}
                             </div>
+                            {{-- ` acoordion for add info End --}}
                         </div>
                     @endif
 
 
-                    {{-- additional information original content --}}
-
-
-                    {{-- <div class="row">
-
-                        @if ($shipping_details['length'] == '' && $shipping_details['width'] == '' && $shipping_details['height'] == '' && $shipping_details['weight'] == '')
-                            {{-- if Everything is Blank Then Show NOthing --}}
-                        {{-- @else
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <img style="height: 230px;" src="{{ asset('frontend/assets/img/product/item.jpg') }}" alt="">
-                                <table class="table table-striped" style="width: 35%;">
-                                    <tbody>
-                                        <tr>
-                                            <th>Length</th>
-                                            <td>{{ $shipping_details['length'] ?? '' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Width</th>
-                                            <td>{{ $shipping_details['width'] ?? '' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Height</th>
-                                            <td>{{ $shipping_details['height'] ?? '' }} </td>
-                                        </tr>
-                                        @if(isset($shipping_details) && @$shipping_details['length_unit'])
-                                        <tr>
-                                            <th>Length unit</th>
-                                            <td>{{ $shipping_details['length_unit'] ?? '' }}</td>
-                                        </tr>
-                                        @endif
-                                        <tr>
-                                            <th>Weight</th>
-                                            <td>{{ $shipping_details['weight'] ?? '' }}</td>
-                                        </tr>
-                                        @if(isset($shipping_details) && @$shipping_details['unit'])
-                                        <tr>
-                                            <th>Unit</th>
-                                            <td>{{ $shipping_details['unit'] ?? '' }}</td>
-                                        </tr>
-                                        @endif
-                                        @if($product['hsn_percent'])
-                                        <tr>
-                                            <th>HSN Percent</th>
-                                            <td>{{ $product['hsn_percent'] ?? '' }} %</td>
-                                        </tr>
-                                        @endif
-                                        @if($product['hsn'])
-                                        <tr>
-                                            <th>HSN</th>
-                                            <td>{{ $product['hsn'] ?? '' }}</td>
-                                        </tr>
-                                        @endif
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        @endif
-
-
-
-
-                        @if ($carton_details['standard_carton'] == '' && $carton_details['carton_unit'] == '' && $carton_details['carton_weight'] == '')
-                            {{-- Nothing To Show Here     --}}
-                        {{-- @else
-
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <img style="height: 230px;" src="{{ asset('frontend/assets/img/product/carton.jpg') }}" alt="">
-                                <table class="table table-striped mt-3" style="width: 35%;">
-                                    <tbody>
-                                        <tr>
-                                            <th>Standard Carton</th>
-                                            <td>{{ $carton_details['standard_carton'] ?? '' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>UMO</th>
-                                            <td>{{ $carton_details['carton_unit'] ?? '' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Carton Actual Weight</th>
-                                            <td>{{ $carton_details['carton_weight'] ?? '' }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        @endif
-
-
-
-
-                    </div> --}}
-                    {{-- additional information original content end --}}
                 </div>
             </div><!--end row-->
         </div><!--end container-->
-        </p>
 
         @if($related_products->count() > 0)
             <div class="container mt-100 mt-60">
@@ -955,29 +919,36 @@
         @endif
         @include('frontend.micro-site.shop.include.enquiry-modal')
         @include('frontend.micro-site.shop.include.zoom-image')
-        {{-- Model Include of Addional Detail of Product --}}
-        @include('frontend.micro-site.shop.include.Additional_details')
-        {{-- Model Include of Addional Detail of Product --}}
+        @include('frontend.micro-site.shop.include.social-share')
+
+        @if ($user_shop->user_id == auth()->id())
+            {{-- Model Include of Addional Detail of Product --}}
+            @include('frontend.micro-site.shop.include.Additional_details')
+            {{-- Model Include of Addional Detail of Product --}}
+        @endif
+
+
     </section><!--end section-->
         @include('frontend.micro-site.shop.include.bulk',['product_id' => $product->id])
 @endsection
 @section('InlineScript')
 
     <script>
-
-
         $(document).ready(function () {
-            $(".form-select").change(function (e) {
+            // $("#demo01").click(); // ! Remove This After Done
+            $("select").change(function (e) { 
                 e.preventDefault();
-
-                let val = $(this).val();
-                var url = "http://ashish.localhost/project/121.page-Laravel/121.page/shop/"+val+"?giveme";
-                window.location.replace(url);
-
+                $("#searchForm").submit();
             });
+
+            
+            $("#sharebtn").click(function (e) { 
+                e.preventDefault();
+                $("#socialShareModal").modal('show');
+                
+            });
+
         });
-
-
     </script>
 
 
@@ -1027,40 +998,4 @@
             });
 
          </script>
-         {{-- jaya editable showpage--}}
-        
-         <script>
-            // resources/js/product.js
-
-    $(document).ready(function() {
-        $('#editProductContent').click(function() {
-            $('#productContent').attr('contenteditable', 'true');
-            $('#editProductContent').hide();
-            $('#saveProductContent').show();
-        });
-
-        $('#saveProductContent').click(function() {
-            var newContent = $('#productContent').html();
-
-            $.ajax({
-                type: 'PATCH',
-                url: "{{ route('products.update', $product) }}",
-                data: { content: newContent, _token: '{{ csrf_token() }}' },
-                success: function(data) {
-                    $('#productContent').attr('contenteditable', 'false');
-                    $('#editProductContent').show();
-                    $('#saveProductContent').hide();
-                    // Optionally, update the product content on the page
-                },
-                error: function(xhr) {
-                    // Handle errors
-                }
-            });
-        });
-    });
-
-          
-
-
-</script>
 @endsection

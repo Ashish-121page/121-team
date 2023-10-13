@@ -40,1062 +40,6 @@ use PHPUnit\Framework\Constraint\Count;
 
 class BulkController extends Controller
 {
-    public function productUpload(Request $request)
-    {
-        // chk user have active package or not!
-        if(AuthRole() == "User"){
-            if(!haveActivePackageByUserId(auth()->id())){
-                return back()->with('error','You do not have any active package!');
-            } 
-        }    
-        
-        $count = 0;
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file);
-        $worksheet = $spreadsheet->getActiveSheet();
-        $rows = [];
-        foreach ($worksheet->getRowIterator() as $row) {
-            $cellIterator = $row->getCellIterator();
-            $cellIterator->setIterateOnlyExistingCells(false); // This loops through all cells,
-            $cells = [];
-            foreach ($cellIterator as $cell) {
-                $cells[] = $cell->getValue();
-            }
-            $rows[] = $cells;
-        }
-
-        $rows = array_slice($rows,4);
-        $master = $rows;
-
-        // $head = array_shift($rows);
-        // $master = $rows;
-
-        // Index Start
-        $CategoryIndex = 0;
-        $SubCategoryIndex = 1;
-        $TitleIndex = 2;
-        $ModelCodeIndex = 3;
-        $ImageMainIndex = 4;
-        $ImageFrontIndex = 5;
-        $ImageBackIndex = 6;
-        $ImageSide1Index = 7;
-        $ImageSide2Index = 8;
-        $ImagePosterIndex = 9;
-        $VideoURLIndex = 10;
-        $Tag1Index = 11;
-        $Tag2Index = 12;
-        $Tag3Index = 13;
-        $DescriptionIndex = 14;
-        $materialIndex = 15;
-        $WeightIndex = 16;
-        $WeightUnitIndex = 17;
-        $LengthIndex = 18;
-        $WidthIndex = 19;
-        $HeightIndex = 20;
-        $LengthUnitIndex = 21;
-        $StandardCartonIndex = 22;
-        $CartonWeightIndex = 23;
-        $CartonUnitIndex = 24;
-        $ColorIndex = 25;
-        $SizeIndex = 26;
-        $RateTypeIndex = 27;
-        $RateIndex = 28;
-        // $MinimumSellingPriceWithoutGST = 26;        //minimum selling price Removed from Bulk Sheet
-        $ShopPriceIndex = 28;               // Same work as Rate
-        $VipPriceIndex = 29;
-        $ResellerPriceIndex = 30;
-        $MRPIndex = 31;
-        $HSNTaxIndex = 32;
-        $HsnPercentIndex = 33;
-        $MetaDescriptionIndex = 34;
-        $MetaKeywordsIndex = 35;
-        $artwork_urlIndex = 36;
-        $exclusiveIndex = 37;
-        $variantTypeIndex = 38;
-
-        // Index End
-        // Index
-        $MinimumSellingPriceWithoutGST = 0; // For No Error
-        $productObj = null;
-
-        $master_obj = collect($master);
-        if(AuthRole() == "User"){
-            $scoped_category = getProductCategoryByUserIndrustry(auth()->user()->industry_id);
-        }else{
-            $scoped_category = getProductCategory();
-        }
-        $packageValidationCount = 0;
-        $package = getUserPackageInfo(auth()->id());
-        $chk_user = AuthRole();
-
-        if (AuthRole() != 'Brand') {
-            if(!$package){
-                return back()->with('error',"You don't have an active package!");
-            }else{
-                $limit = json_decode($package->limit);
-                $product_uploads = $limit->product_uploads;
-            }
-        }else{
-            $product_uploads = 99999; // Give Unlimited Limit To Brand
-        }
-        
-
-        // VALIDATION LOOP
-        foreach ($master as $index_temp => $item_temp) {
-            $row_number = $index_temp + 5;
-            if ($item_temp[$TitleIndex] != null) {
-                // Explode data Start
-                $colors_arr = $item_temp[$ColorIndex] != null ? array_unique(explode("^^",$item_temp[$ColorIndex])) : [];
-                $sizes_arr = $item_temp[$SizeIndex] != null ? array_unique(explode("^^",$item_temp[$SizeIndex])) : [];
-                // $rates = $item_temp[$RateIndex] != null ? array_unique(explode("^^",$item_temp[$RateIndex])) : [];
-                                
-                $rates = $item_temp[$RateIndex] != null ? (explode("^^",$item_temp[$RateIndex])) : [];
-                $mrp = $item_temp[$MRPIndex] != null ? (explode("^^",$item_temp[$MRPIndex])) : [];
-
-                $length_arr = $item_temp[$LengthIndex] != null ? (explode("^^",$item_temp[$LengthIndex])) : null;
-                $height_arr = $item_temp[$HeightIndex] != null ? (explode("^^",$item_temp[$HeightIndex])) : null;
-                $width_arr = $item_temp[$WidthIndex] != null ? (explode("^^",$item_temp[$WidthIndex])) : null;
-
-                $rate_type = $item_temp[$RateTypeIndex] != null ? $item_temp[$RateTypeIndex] : null;
-
-                if(count($colors_arr) > 0 && count($sizes_arr) > 0){
-                    foreach ($colors_arr as $color_index => $color) { //color
-                        foreach ($sizes_arr as $size_index => $size) { // size
-                            $packageValidationCount++;
-                        }
-                    }
-                }elseif(count($colors_arr) > 0){
-                    foreach ($colors_arr as $color_index => $color) { // color
-                        $packageValidationCount++;
-                    }
-                }elseif(count($sizes_arr) > 0){
-                    foreach ($sizes_arr as $size_index => $size) { // size
-                        $packageValidationCount++;
-                     }
-                }else{
-                    $packageValidationCount++;
-                }
-              
-                if($item_temp[$CategoryIndex] != null){
-                    // Check Subcategory
-                   
-                    // $chk = Category::whereIn('id', $scoped_category->pluck('id'))->where('name',$item_temp[$CategoryIndex])->first();
-                    $chk = Category::where('name',$item_temp[$CategoryIndex])->first();
-                    if(!$chk){
-                        return back()->with('error',$item_temp[$CategoryIndex]." is neither found in your category nor industry categories please check spelling and try again at Row:".$row_number);
-                    }else{
-                        $subCategory = Category::where('parent_id', $chk->id)->where('name',$item_temp[$SubCategoryIndex])->first();
-                        if(!$subCategory){
-                             return back()->with('error',$item_temp[$SubCategoryIndex]." is not exists under ".$chk->name." category please check spelling and try again at Row:".$row_number);
-                        }
-                    }
-                }else{
-                     return back()->with('error',"Category field is required at Row:".$row_number);
-                }
-
-                if ($item_temp[$ModelCodeIndex] != null && $item_temp[$ModelCodeIndex] != "") {
-                    // Checking Group Id..
-                    $checkSKU = Product::where('model_code',$item_temp[$ModelCodeIndex])->where('user_id',auth()->id())->first();
-                    if (empty($checkSKU)) {
-                        // Group Id not Match with User  
-                        // Todo: Do Nothing
-
-                    }elseif($checkSKU->user_id != auth()->id()){
-                        // No Record found In product Need to Created New.!!
-                        return back()->with('error',"Group Id Didn't Match!!");
-                    }
-                    elseif ($checkSKU->user_id == auth()->id()) {
-                        // Get Product and User id is Matched
-                        $GroupId = $checkSKU->sku;
-                    }else{
-                        echo "Sometyhing Went Wrong!!";
-                        return;
-
-                    }
-                }
-                                
-                // Check Input Material is exists or not Start
-                $material = ProductAttribute::whereName('Material')->first();
-                if(!$material || $material->value == null){
-                    return back()->with('error', 'Material attributes not exists. Please ask admin to add');
-                }
-                $material_collection = json_decode($material->value);
-                $material_collection = explode(',',$material_collection[0]) ?? '';
-                $material_temp = $item_temp[$materialIndex];
-
-                 if ($material_temp != "") {
-                    if (!in_array(trim($material_temp),$material_collection)) {
-                        return back()->with('error',trim($material_temp).' Material is not exists at Row:'.$row_number);
-                    }
-                 }
-
-
-
-                 // Check Input color is exists or not Start
-                    $colors = ProductAttribute::whereName('Color')->first();
-                    if(!$colors || $colors->value == null){
-                        return back()->with('error', 'Color attributes not exists. Please ask admin to add');
-                    }
-                    $color_collection = json_decode($colors->value);
-                    $color_collection = explode(',',$color_collection[0]) ?? '';
-                    foreach($colors_arr as $color_temp){
-                        if (!in_array(trim($color_temp),$color_collection)) {
-                             return back()->with('error',trim($color_temp).' Color is not exists at Row:'.$row_number);
-                        }
-                    }
-                // Check Input color is exists or not End
-
-                // Check Input size is exists or not Start
-                    $sizes = ProductAttribute::whereName('Size')->first();
-                    if(!$sizes || $sizes->value == null){
-                         return back()->with('error','Size attributes not exists. Please ask admin to add');
-                    }
-                    $size_collection = json_decode($sizes->value);
-                    $size_collection = explode(',',$size_collection[0]) ?? '';
-                    $sizes_arr;
-                    foreach($sizes_arr as $size_temp){
-                        if (!in_array(trim($size_temp),$size_collection)) {
-                             return back()->with('error',trim($size_temp).' Size is not exists at Row:'.$row_number);
-                        }
-                    }
-
-                    // return dd($sizes_arr);
-                if($rate_type){
-                   
-                    if(($rate_type == "color" || $rate_type == "Color" || $rate_type == "Colour" || $rate_type == "colour") ){
-                        if(count($colors_arr) != count($rates)){
-                          
-                            return back()->with('error', 'Color & Rates Ratios is different at Row:'.$row_number);
-                        }elseif(count($rates) == 0 || count($colors_arr) == 0){
-                   
-                             return back()->with('error', 'You can not select rate type if no color variant added error in Row:'.$row_number);
-                        }
-                    }elseif($rate_type == "size" || $rate_type == "Size"){
-                        if(count($sizes_arr) != count($rates)){
-                             return back()->with('error', 'Size & Rates Ratios is different at Row:'.$row_number);
-                        }elseif(count($rates) == 0 || count($sizes_arr) == 0){
-                             return back()->with('error', 'You cann\'t select rate type if no size varient added error in Row:'.$row_number);                            
-                        }
-                    }else{
-                        return back()->with('error', 'Rate Type is wrong spell at Row:'.$row_number);
-                    }
-                }
-        
-                // Hsn Percent
-                if (isset($item_temp[$HsnPercentIndex]) && is_numeric($item_temp[$HsnPercentIndex]) != 1) {
-                     return back()->with('error', 'Please use only numeric value in Hsn Percent column'.$item_temp[$HsnPercentIndex]);
-                }
-            }elseif($item_temp[$TitleIndex] == null && $item_temp[$CategoryIndex] != null && $item_temp[$SubCategoryIndex] != null){
-                return back()->with('error',"Title can not be empty at Row:".$row_number);
-            }
-            
-        }
-
-        // $productCount = UserShopItem::where('user_id',auth()->id())->get()->count();
-        $productCount = Product::where('user_id',auth()->id())->get()->count();
-        $packageValidationCount;
-        if(($productCount +  $packageValidationCount) > $product_uploads){
-            if($product_uploads > $productCount){
-                $limit = $product_uploads - $productCount;
-            }else{
-                $limit = $productCount - $product_uploads;
-            }
-            return back()->with('error','Your product limit is expired!');
-        }
-
-        $modalArray = [];
-        $SKUArray = [];
-        foreach ($master as $index => $item) {
-
-            // SKU Generation
-            if ($item[$ModelCodeIndex] == null || $item[$ModelCodeIndex] == "") {
-                $sku_code = 'SKU'.generateRandomStringNative(6);
-                $item[$ModelCodeIndex] = $sku_code;
-            }elseif (isset($GroupId)) {
-                $sku_code = $GroupId;
-            }
-            else{
-                $sku_code = 'SKU'.generateRandomStringNative(6);
-            }
-            
-            if (in_array($item[$ModelCodeIndex],$modalArray)) {
-                // echo "Yes Bro!";
-                $sku_code = $SKUArray[array_search($item[$ModelCodeIndex],$modalArray)];
-            }else{
-                array_push($modalArray,$item[$ModelCodeIndex]);
-                array_push($SKUArray,$sku_code);
-            }
-
-
-            // magicstring($modalArray);
-            // magicstring($SKUArray);
-            // // return;
-
-            if ($item[$TitleIndex] != null) {
-           
-                // $category = Category::whereIn('id', $scoped_category->pluck('id'))->where('name',$item[$CategoryIndex])->first();
-                $category = Category::where('name',$item[$CategoryIndex])->first();
-                $subcategory = Category::where('parent_id', $category->id)->where('name',$item[$SubCategoryIndex])->first();
-
-                $colors_arr = $item[$ColorIndex] != null ? array_unique(explode("^^",$item[$ColorIndex])) : [];
-                $sizes_arr = $item[$SizeIndex] != null ? array_unique(explode("^^",$item[$SizeIndex])) : [];
-                $mrp_arr = $item[$MRPIndex] != null ? array_unique(explode("^^",$item[$MRPIndex])) : [];
-                $rates = $item[$RateIndex] != null ? (explode("^^",$item[$RateIndex])) : [];
-                $rate_type = $item[$RateTypeIndex] != null ? $item[$RateTypeIndex] : null;
-
-                
-                $length_arr = $item_temp[$LengthIndex] != null ? (explode("^^",$item_temp[$LengthIndex])) : null;
-                $height_arr = $item_temp[$HeightIndex] != null ? (explode("^^",$item_temp[$HeightIndex])) : null;
-                $width_arr = $item_temp[$WidthIndex] != null ? (explode("^^",$item_temp[$WidthIndex])) : null;
-    
-                // Price Group
-                $shop_price_arr = $item_temp[$ShopPriceIndex] != null ? (explode("^^",$item_temp[$ShopPriceIndex])) : null;
-                $reseller_price_arr = $item_temp[$ResellerPriceIndex] != null ? (explode("^^",$item_temp[$ResellerPriceIndex])) : null;
-                $vip_price_arr = $item_temp[$VipPriceIndex] != null ? (explode("^^",$item_temp[$VipPriceIndex])) : null;
-
-                $reseller_group = Group::whereUserId(auth()->id())->where('name',"Reseller")->first();
-                if(!$reseller_group){
-                   $reseller_group = Group::create([
-                        'user_id' => auth()->id(),
-                        'name' => "Reseller",
-                        'type' => 0,
-                    ]);
-                }
-
-
-                if ($item[$exclusiveIndex]== "Yes" || $item[$exclusiveIndex]== "No" || $item[$exclusiveIndex]== "yes"  || $item[$exclusiveIndex]== "no" || $item[$exclusiveIndex] == "" ) {
-                    if ($item[$exclusiveIndex]== "Yes" || $item[$exclusiveIndex]== "yes" ) {
-                        $exlusive = 1;
-                    }else{
-                        $exlusive = 0;
-                    }
-                }else{
-                    return back()->with("error","Exclusive INdex should Has Yes or No Value, At row ".$row_number );
-                }
-
-
-
-                $vip_group = Group::whereUserId(auth()->id())->where('name',"VIP")->first();
-                 if(!$vip_group){
-                  $vip_group =  Group::create([
-                        'user_id' => auth()->id(),
-                        'name' => "VIP",
-                        'type' => 0,
-                    ]);
-                }
-                
-
-                $carton_details = [
-                   'standard_carton' => $item[$StandardCartonIndex],
-                   'carton_weight' => $item[$CartonWeightIndex],
-                   'carton_unit' => $item[$CartonUnitIndex],
-                ];
-
-                $shipping = [
-                    'height' => $item[$HeightIndex],
-                    'weight' => $item[$WeightIndex],
-                    'width' => $item[$WidthIndex],
-                    'length' => $item[$LengthIndex],
-                    'unit' => $item[$WeightUnitIndex],
-                    'length_unit' => $item[$LengthUnitIndex],
-                ];
-         
-                $carton_details = json_encode($carton_details);
-                $shipping = json_encode($shipping);
-
-                // color size condition on create
-                if(count($colors_arr) > 0 && count($sizes_arr) > 0){
-                    // return dd('a');
-                    foreach ($colors_arr as $color_index => $color) {
-                        foreach ($sizes_arr as $size_index => $size) {
-                                $price = $item[$ShopPriceIndex] ?? 0;
-                                $mrp = $item[$MRPIndex] ?? $price;
-                                $length = $item[$LengthIndex]  ?? null;
-                                $width = $item[$WidthIndex]  ?? null;
-                                $height = $item[$HeightIndex]  ?? null;
-                                $shopprice = $item[$ShopPriceIndex]  ?? $price;
-                                $resellerp = $item[$ResellerPriceIndex]  ?? $price;
-                                $vipp = $item[$VipPriceIndex]  ?? $price;
-
-
-
-                                $shopprice = $item[$ShopPriceIndex] ?? $price;
-                                if(count($rates) > 0 && $rate_type == "color" || $rate_type == "Color" || $rate_type == "size" || $rate_type == "Size" || $rate_type == "Colour"){
-                                    // For Color Wise
-                                    if($rate_type == "color" || $rate_type == "Color" || $rate_type == "Colour"){
-                                        $price = $rates[$color_index] ?? $price;
-                                        $mrp = $mrp_arr[$color_index] ?? $price;
-                                        $length = $length_arr[$color_index] ?? $price;
-                                        $width = $width_arr[$color_index] ?? $price;
-                                        $height = $height_arr[$color_index] ?? $price;
-                                        $shopprice = $shop_price_arr[$color_index] ?? $price;
-                                        $resellerp = $reseller_price_arr[$color_index] ?? $price;
-                                        $vipp = $vip_price_arr0[$color_index] ?? $price;
-                                    } 
-                                    // For Size Wise
-                                    if($rate_type == "size" || $rate_type == "Size"){
-                                        $price = $rates[$size_index] ?? $price;
-                                        $mrp = $mrp_arr[$size_index] ?? $price;
-                                        $length = $length_arr[$size_index] ?? $price;
-                                        $width = $width_arr[$size_index] ?? $price;
-                                        $height = $height_arr[$size_index] ?? $price;
-                                        $shopprice = $shop_price_arr[$size_index] ?? $price;
-                                        $resellerp = $reseller_price_arr[$size_index] ?? $price;
-                                        $vipp = $vip_price_arr0[$size_index] ?? $price;
-                                    }
-                                }
-                                // Create Product code
-                                $unique_slug  = getUniqueProductSlug($item[$TitleIndex]);
-
-
-                                $shipping = [
-                                    'height' => $height ?? null,
-                                    'weight' => $item[$WeightIndex],
-                                    'width' => $width ?? null,
-                                    'length' => $length ?? null,
-                                    'unit' => $item[$WeightUnitIndex],
-                                    'length_unit' => $item[$LengthUnitIndex],
-                                ];
-
-                                $shipping = json_encode($shipping);
-
-    
-
-                                $productObj = Product::create([
-                                    'title' => $item[$TitleIndex],
-                                    'model_code' => $item[$ModelCodeIndex],
-                                    'category_id' => $category->id,
-                                    'brand_id' => $request->brand_id ?? 0,
-                                    'user_id' => auth()->id(),
-                                    'sub_category' => $subcategory->id,
-                                    'sku' => $sku_code,
-                                    'slug' => $unique_slug,
-                                    'color' => trim($color),
-                                    'size' => trim($size),
-                                    'description' => $item[$DescriptionIndex],
-                                    'carton_details' => $carton_details,
-                                    'shipping' => $shipping,
-                                    'manage_inventory' => null,
-                                    'stock_qty' => 0,
-                                    'status' => 0,
-                                    'is_publish' => 1,
-                                    'price' => trim($shopprice) ?? $price,
-                                    'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null, 
-                                    'hsn' => $item[$HSNTaxIndex] ?? null,
-                                    'hsn_percent' => $item[$HsnPercentIndex] ?? null,
-                                    'mrp' => trim($mrp),                     
-                                    'video_url' => $item[$VideoURLIndex],                         
-                                    'tag1' => $item[$Tag1Index],                         
-                                    'tag2' => $item[$Tag2Index],                         
-                                    'tag3' => $item[$Tag3Index],                         
-                                    'meta_description' => $item[$MetaDescriptionIndex],                         
-                                    'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,  
-                                    'artwork_url' => $item[$artwork_urlIndex] ?? null,
-                                    'material' => $material_temp ?? null,
-                                    'exclusive' => $exlusive ?? 0,
-                                    // 'variant_type' => $item[$variantTypeIndex],
-                                ]);
-
-                                // Create USI Rec
-                                $usi = UserShopItem::create([
-                                    'user_id'=>auth()->id(),
-                                    'category_id'=>$category->id,
-                                    'sub_category_id'=>$subcategory->id,
-                                    'product_id'=>$productObj->id,
-                                    'user_shop_id'=>UserShopIdByUserId(auth()->id()),
-                                    'parent_shop_id'=>0,
-                                    'is_published'=>1,
-                                    'price'=> $price,
-                                ]);
-    
-                                // if($rate_type == ''){
-                                    $price = $item[$ResellerPriceIndex] ?? $price;
-                                // }
-    
-                                if($reseller_group){
-    
-                                    // create Reseller Group record
-                                  $g_p =  GroupProduct::create([
-                                        'group_id'=>$reseller_group->id,
-                                        'product_id'=>$productObj->id,
-                                        'price'=> $resellerp,
-                                    ]);
-                                }
-                          
-                                // if($rate_type == ''){
-                                    $price = $item[$VipPriceIndex] ?? 0;
-                                // }
-                                if($vip_group){
-                                    // create Vip Group record
-                                    GroupProduct::create([
-                                        'group_id'=>$vip_group->id,
-                                        'product_id'=>$productObj->id,
-                                        'price'=>  $vipp,
-                                    ]);
-                                }
-                                $arr_images = [];
-                                // New Create Media
-                                
-                                if(isset($item[$ImageMainIndex]) && $item[$ImageMainIndex] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $productObj->id;
-                                    $media->file_name = $item[$ImageMainIndex];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[$ImageMainIndex];
-                                    $media->extension = explode('.',$item[$ImageMainIndex])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                                if(isset($item[$ImageFrontIndex]) && $item[$ImageFrontIndex] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $productObj->id;
-                                    $media->file_name = $item[$ImageFrontIndex];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[$ImageFrontIndex];
-                                    $media->extension = explode('.',$item[$ImageFrontIndex])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                                if(isset($item[$ImageBackIndex]) && $item[$ImageBackIndex] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $productObj->id;
-                                    $media->file_name = $item[$ImageBackIndex];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[$ImageBackIndex];
-                                    $media->extension = explode('.',$item[$ImageBackIndex])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                                if(isset($item[$ImageSide1Index]) && $item[$ImageSide1Index] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $productObj->id;
-                                    $media->file_name = $item[$ImageSide1Index];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[$ImageSide1Index];
-                                    $media->extension = explode('.',$item[$ImageSide1Index])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                                if(isset($item[$ImageSide2Index]) && $item[$ImageSide2Index] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $productObj->id;
-                                    $media->file_name = $item[$ImageSide2Index];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[$ImageSide2Index];
-                                    $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }   
-                                if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $productObj->id;
-                                    $media->file_name = $item[$ImagePosterIndex];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[$ImagePosterIndex];
-                                    $media->extension = explode('.',$item[$ImagePosterIndex])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                                // Add images to UserShopItem
-                                if(count($arr_images) > 0) {
-                                    $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
-                                    $usi->save();
-                                }
-                                if($productObj){
-                                    ++$count;
-                                }
-
-
-                                
-                        }   
-                    } 
-                }elseif(count($colors_arr) > 0){
-                    // return dd('b');
-                    foreach ($colors_arr as $color_index => $color) {
-                        $price = $item[$ShopPriceIndex] ?? 0;
-
-                        if(count($rates) > 0 && $rate_type == "color" || $rate_type = "Color"){
-                            // For Color Wise
-                            if($rate_type == "color" || $rate_type = "Color"){
-                                $price = $rates[$color_index] ?? $price;
-                            }
-                        }
-                        // Create Product code
-                        $unique_slug  = getUniqueProductSlug($item[$TitleIndex]);
-                        $productObj = Product::create([
-                            'title' => $item[$TitleIndex],
-                            'model_code' => $item[$ModelCodeIndex],
-                            'category_id' => $category->id,
-                            'brand_id' => $request->brand_id??0,
-                            'user_id' => auth()->id(),
-                            'sub_category' => $subcategory->id,
-                            'sku' => $sku_code,
-                            'slug' => $unique_slug,
-                            'color' => trim($color),
-                            'size' => null,
-                            'description' => $item[$DescriptionIndex],
-                            'carton_details' => $carton_details,
-                            'shipping' => $shipping,
-                            'manage_inventory' => null,
-                            'stock_qty' => 0,
-                            'status' => 0,
-                            'is_publish' => 1,
-                            'price' => $price,
-                            'hsn' => $item[$HSNTaxIndex],
-                            'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null, 
-                            'hsn_percent' => $item[$HsnPercentIndex],
-                            'mrp' => $item[$MRPIndex]??null,                     
-                            'video_url' => $item[$VideoURLIndex],                         
-                            'tag1' => $item[$Tag1Index],                         
-                            'tag2' => $item[$Tag2Index],                         
-                            'tag3' => $item[$Tag3Index],                         
-                            'meta_description' => $item[$MetaDescriptionIndex],                         
-                            'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,  
-                            'artwork_url' => $item[$artwork_urlIndex] ?? null,
-                            'material' => $material_temp ?? null,
-                            'exclusive' => $exlusive ?? 0,
-                            // 'variant_type' => $item[$variantTypeIndex],
-
-                        ]);
-
-
-                        // Create USI Rec
-                        $usi = UserShopItem::create([
-                            'user_id'=>auth()->id(),
-                            'category_id'=>$category->id,
-                            'sub_category_id'=>$subcategory->id,
-                            'product_id'=>$productObj->id,
-                            'user_shop_id'=>UserShopIdByUserId(auth()->id()),
-                            'parent_shop_id'=>0,
-                            'is_published'=>1,
-                            'price'=>$item[$ShopPriceIndex]??$price,
-                        ]);
-                        if($reseller_group){
-                            // create Reseller Group record
-                            GroupProduct::create([
-                                'group_id'=>$reseller_group->id,
-                                'product_id'=>$productObj->id,
-                                'price'=>$item[$ResellerPriceIndex] ?? $price,
-                            ]);
-                        }
-                        if($vip_group){
-                            // create Vip Group record
-                            GroupProduct::create([
-                                'group_id'=>$vip_group->id,
-                                'product_id'=>$productObj->id,
-                                'price'=>$item[$VipPriceIndex]??$price,
-                            ]);
-                        }
-                        $arr_images = [];
-                        // New Create Media
-                        if(isset($item[$ImageMainIndex]) && $item[$ImageMainIndex] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImageMainIndex];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImageMainIndex];
-                            $media->extension = explode('.',$item[$ImageMainIndex])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                        if(isset($item[$ImageFrontIndex]) && $item[$ImageFrontIndex] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImageFrontIndex];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImageFrontIndex];
-                            $media->extension = explode('.',$item[$ImageFrontIndex])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                        if(isset($item[$ImageBackIndex]) && $item[$ImageBackIndex] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImageBackIndex];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImageBackIndex];
-                            $media->extension = explode('.',$item[$ImageBackIndex])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                        if(isset($item[$ImageSide1Index]) && $item[$ImageSide1Index] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImageSide1Index];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImageSide1Index];
-                            $media->extension = explode('.',$item[$ImageSide1Index])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                        if(isset($item[$ImageSide2Index]) && $item[$ImageSide2Index] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImageSide2Index];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImageSide2Index];
-                            $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }   
-                        if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImagePosterIndex];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImagePosterIndex];
-                            $media->extension = explode('.',$item[$ImagePosterIndex])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                        // Add images to UserShopItem
-                        if(count($arr_images) > 0) {
-                        $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
-                        $usi->save();
-                        }
-                        if($productObj){
-                            ++$count;
-                        }
-                    }
-                }elseif(count($sizes_arr) > 0){
-                    foreach ($sizes_arr as $size_index => $size) {
-                        $price = $item[$ShopPriceIndex] ?? 0;
-                        if(count($rates) > 0 && $rate_type == "size" || $rate_type == "Size"){
-                            // For Size Wise
-                            if($rate_type == "size" || $rate_type == "Size"){
-                                $price = $rates[$size_index] ?? $price;
-                            }
-                        }
-                        // Create Product code
-                        $unique_slug  = getUniqueProductSlug($item[$TitleIndex]);
-                        $productObj = Product::create([
-                            'title' => $item[$TitleIndex],
-                            'model_code' => $item[$ModelCodeIndex],
-                            'category_id' => $category->id,
-                            'brand_id' => $request->brand_id??0,
-                            'user_id' => auth()->id(),
-                            'sub_category' => $subcategory->id,
-                            'sku' => $sku_code,
-                            'slug' => $unique_slug,
-                            'color' => null,
-                            'size' => trim($size),
-                            'description' => $item[$DescriptionIndex],
-                            'carton_details' => $carton_details,
-                            'shipping' => $shipping,
-                            'manage_inventory' => null,
-                            'stock_qty' => 0,
-                            'status' => 0,
-                            'is_publish' => 1,
-                            'price' => $price,
-                            'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null, 
-                            'hsn' => $item[$HSNTaxIndex],
-                            'hsn_percent' => $item[$HsnPercentIndex],
-                            'mrp' => $item[$MRPIndex]??null,                     
-                            'video_url' => $item[$VideoURLIndex],                         
-                            'tag1' => $item[$Tag1Index],                         
-                            'tag2' => $item[$Tag2Index],                         
-                            'tag3' => $item[$Tag3Index],                         
-                            'meta_description' => $item[$MetaDescriptionIndex],                         
-                            'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,  
-                            'artwork_url' => $item[$artwork_urlIndex] ?? null,
-                            'material' => $material_temp ?? null,
-                            'exclusive' => $exlusive ?? 0,
-                            // 'variant_type' => $item[$variantTypeIndex],
-
-                        ]);
-
-                        // Create USI Rec
-                        $usi = UserShopItem::create([
-                            'user_id'=>auth()->id(),
-                            'category_id'=>$category->id,
-                            'sub_category_id'=>$subcategory->id,
-                            'product_id'=>$productObj->id,
-                            'user_shop_id'=>UserShopIdByUserId(auth()->id()),
-                            'parent_shop_id'=>0,
-                            'is_published'=>1,
-                            'price'=>$item[$ShopPriceIndex]??$price,
-                        ]);
-                        if($reseller_group){
-                            // create Reseller Group record
-                            GroupProduct::create([
-                                'group_id'=>$reseller_group->id,
-                                'product_id'=>$productObj->id,
-                                'price'=>$item[$ResellerPriceIndex]??$price,
-                            ]);
-                        }
-                        if($vip_group){
-                            // create Vip Group record
-                            GroupProduct::create([
-                                'group_id'=>$vip_group->id,
-                                'product_id'=>$productObj->id,
-                                'price'=>$item[$VipPriceIndex]??$price,
-                            ]);
-                        }
-                        $arr_images = [];
-                        // New Create Media
-                        if(isset($item[$ImageMainIndex]) && $item[$ImageMainIndex] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImageMainIndex];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImageMainIndex];
-                            $media->extension = explode('.',$item[$ImageMainIndex])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                        if(isset($item[$ImageFrontIndex]) && $item[$ImageFrontIndex] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImageFrontIndex];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImageFrontIndex];
-                            $media->extension = explode('.',$item[$ImageFrontIndex])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                        if(isset($item[$ImageBackIndex]) && $item[$ImageBackIndex] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImageBackIndex];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImageBackIndex];
-                            $media->extension = explode('.',$item[$ImageBackIndex])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                        if(isset($item[$ImageSide1Index]) && $item[$ImageSide1Index] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImageSide1Index];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImageSide1Index];
-                            $media->extension = explode('.',$item[$ImageSide1Index])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                        if(isset($item[$ImageSide2Index]) && $item[$ImageSide2Index] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImageSide2Index];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImageSide2Index];
-                            $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }   
-                        if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $productObj->id;
-                            $media->file_name = $item[$ImagePosterIndex];
-                            $media->path = "storage/files/".auth()->id()."/".$item[$ImagePosterIndex];
-                            $media->extension = explode('.',$item[$ImagePosterIndex])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                        // Add images to UserShopItem
-                        if(count($arr_images) > 0) {
-                        $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
-                        $usi->save();
-                        }
-                        if($productObj){
-                            ++$count;
-                        }
-
-
-
-                    }
-                }else{
-                    // return dd('d');
-                    // Use Product Price
-                    $unique_slug  = getUniqueProductSlug($item[$TitleIndex]);
-                    $productObj = Product::create([
-                        'title' => $item[$TitleIndex],
-                        'model_code' => $item[$ModelCodeIndex],
-                        'category_id' => $category->id,
-                        'brand_id' => $request->brand_id??0,
-                        'user_id' => auth()->id(),
-                        'sub_category' => $subcategory->id,
-                        'sku' => $sku_code,
-                        'slug' => $unique_slug,
-                        'color' => null,
-                        'size' => null,
-                        'description' => $item[$DescriptionIndex],
-                        'carton_details' => $carton_details,
-                        'shipping' => $shipping,
-                        'manage_inventory' => null,
-                        'stock_qty' => 0,
-                        'status' => 0,
-                        'is_publish' => 1,
-                        'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? 0, 
-                        'hsn' => $item[$HSNTaxIndex],
-                        'hsn_percent' => $item[$HsnPercentIndex],
-                        'mrp' => $item[$MRPIndex]??null,                     
-                        'video_url' => $item[$VideoURLIndex],                         
-                        'tag1' => $item[$Tag1Index],                         
-                        'tag2' => $item[$Tag2Index],                         
-                        'tag3' => $item[$Tag3Index],                         
-                        'meta_description' => $item[$MetaDescriptionIndex],                         
-                        'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,  
-                        'artwork_url' => $item[$artwork_urlIndex] ?? null,
-                        'material' => $material_temp ?? null,
-                        'exclusive' => $exlusive ?? 0,
-                        // 'variant_type' => $item[$variantTypeIndex],
-
-                    ]);
-
-                    // Create USI Rec
-                    $usi = UserShopItem::create([
-                        'user_id'=>auth()->id(),
-                        'category_id'=>$category->id,
-                        'sub_category_id'=>$subcategory->id,
-                        'product_id'=>$productObj->id,
-                        'user_shop_id'=>UserShopIdByUserId(auth()->id()),
-                        'parent_shop_id'=>0,
-                        'is_published'=>1,
-                        'price'=>$item[$ShopPriceIndex]??$productObj->price,
-                    ]);
-                    if($reseller_group){
-                        // create Reseller Group record
-                        GroupProduct::create([
-                            'group_id'=>$reseller_group->id,
-                            'product_id'=>$productObj->id,
-                            'price'=>$item[$ResellerPriceIndex]??$productObj->price,
-                        ]);
-                    }
-                    if($vip_group){
-                        // create Vip Group record
-                        GroupProduct::create([
-                            'group_id'=>$vip_group->id,
-                            'product_id'=>$productObj->id,
-                            'price'=>$item[$VipPriceIndex]??$productObj->price,
-                        ]);
-                    }
-                    $arr_images = [];
-                    // New Create Media
-                    if(isset($item[$ImageMainIndex]) && $item[$ImageMainIndex] != null){
-                        $media = new Media();
-                        $media->tag = "Product_Image";
-                        $media->file_type = "Image";
-                        $media->type = "Product";
-                        $media->type_id = $productObj->id;
-                        $media->file_name = $item[$ImageMainIndex];
-                        $media->path = "storage/files/".auth()->id()."/".$item[$ImageMainIndex];
-                        $media->extension = explode('.',$item[$ImageMainIndex])[1] ?? '';
-                        $media->save();
-                        $arr_images[] = $media->id;
-                    }
-                    if(isset($item[$ImageFrontIndex]) && $item[$ImageFrontIndex] != null){
-                        $media = new Media();
-                        $media->tag = "Product_Image";
-                        $media->file_type = "Image";
-                        $media->type = "Product";
-                        $media->type_id = $productObj->id;
-                        $media->file_name = $item[$ImageFrontIndex];
-                        $media->path = "storage/files/".auth()->id()."/".$item[$ImageFrontIndex];
-                        $media->extension = explode('.',$item[$ImageFrontIndex])[1] ?? '';
-                        $media->save();
-                        $arr_images[] = $media->id;
-                    }
-                    if(isset($item[$ImageBackIndex]) && $item[$ImageBackIndex] != null){
-                        $media = new Media();
-                        $media->tag = "Product_Image";
-                        $media->file_type = "Image";
-                        $media->type = "Product";
-                        $media->type_id = $productObj->id;
-                        $media->file_name = $item[$ImageBackIndex];
-                        $media->path = "storage/files/".auth()->id()."/".$item[$ImageBackIndex];
-                        $media->extension = explode('.',$item[$ImageBackIndex])[1] ?? '';
-                        $media->save();
-                        $arr_images[] = $media->id;
-                    }
-                    if(isset($item[$ImageSide1Index]) && $item[$ImageSide1Index] != null){
-                        $media = new Media();
-                        $media->tag = "Product_Image";
-                        $media->file_type = "Image";
-                        $media->type = "Product";
-                        $media->type_id = $productObj->id;
-                        $media->file_name = $item[$ImageSide1Index];
-                        $media->path = "storage/files/".auth()->id()."/".$item[$ImageSide1Index];
-                        $media->extension = explode('.',$item[$ImageSide1Index])[1] ?? '';
-                        $media->save();
-                        $arr_images[] = $media->id;
-                    }
-                    if(isset($item[$ImageSide2Index]) && $item[$ImageSide2Index] != null){
-                        $media = new Media();
-                        $media->tag = "Product_Image";
-                        $media->file_type = "Image";
-                        $media->type = "Product";
-                        $media->type_id = $productObj->id;
-                        $media->file_name = $item[$ImageSide2Index];
-                        $media->path = "storage/files/".auth()->id()."/".$item[$ImageSide2Index];
-                        $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
-                        $media->save();
-                        $arr_images[] = $media->id;
-                    }   
-                    if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
-                        $media = new Media();
-                        $media->tag = "Product_Image";
-                        $media->file_type = "Image";
-                        $media->type = "Product";
-                        $media->type_id = $productObj->id;
-                        $media->file_name = $item[$ImagePosterIndex];
-                        $media->path = "storage/files/".auth()->id()."/".$item[$ImagePosterIndex];
-                        $media->extension = explode('.',$item[$ImagePosterIndex])[1] ?? '';
-                        $media->save();
-                        $arr_images[] = $media->id;
-                    }
-                    // Add images to UserShopItem
-                    if(count($arr_images) > 0) {
-                      $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
-                      $usi->save();
-                    }
-                    if($productObj){
-                        ++$count;
-                    }
-
-
-
-                }
-            }
-        }
-        return redirect(route('panel.filemanager.index'))->with('success', 'Good News! '.$count.' records created successfully!');
-    }
 
     public function categoryUpload(Request $request)
     {   
@@ -1184,14 +128,17 @@ class BulkController extends Controller
             }
             $rows[] = $cells;
         }
-        $head = array_shift($rows);
+        // $head = array_shift($rows);
         $master = $rows;
+
+        
+        
         // Index
         $IdIndex = 0;
-        $CategoryIndex = 1;
-        $SubCategoryIndex = 2;
-        $TitleIndex = 3;
-        $ModelCodeIndex = 4;
+        $ModelCodeIndex = 1;
+        $CategoryIndex = 2;
+        $SubCategoryIndex = 3;
+        $TitleIndex = 4;
         $ImageMainIndex = 5;
         $ImageFrontIndex = 6;
         $ImageBackIndex = 7;
@@ -1199,19 +146,19 @@ class BulkController extends Controller
         $ImageSide2Index = 9;
         $ImagePosterIndex = 10;
         $VideoURLIndex = 11;
-        $Tag1Index = 12;
-        $Tag2Index = 13;
-        $Tag3Index = 14;
-        $DescriptionIndex = 15;
-        $materialIndex = 16;
-        $WeightIndex = 17;
-        $WeightUnitIndex = 18;
-        $LengthIndex = 19;
-        $WidthIndex = 20;
-        $HeightIndex = 21;
-        $LengthUnitIndex = 22;
-        $StandardCartonIndex = 23;
-        $CartonWeightIndex = 24;
+        // $Tag1Index = 12;
+        // $Tag2Index = 13;
+        // $Tag3Index = 14;
+        $DescriptionIndex = 12;
+        // $materialIndex = 16;
+        $WeightIndex = 13;
+        $WeightUnitIndex = 14;
+        $LengthIndex = 15;
+        $WidthIndex = 16;
+        $HeightIndex = 17;
+        $LengthUnitIndex = 18;
+        $StandardCartonIndex = 19;
+        $CartonWeightIndex = 20;
         $CartonUnitIndex = 25;
         $ColorIndex = 26;
         $SizeIndex = 27;
@@ -1864,6 +811,7 @@ class BulkController extends Controller
         }
  
     }
+
     function exportProductGroupData(){
         
         $group_ids = Group::where('user_id',auth()->id())->pluck('id');
@@ -2874,10 +1822,128 @@ class BulkController extends Controller
         }
     }
     
-    function inventoryExportDownload(Request $request){
+    // function inventoryExportDownload(Request $request){
+    //     try {
+    //         $products = Inventory::where('user_id',auth()->id())->get();
+    //         $products_array_start = array('Id','Product Name','Model Code');
+    //         $custom_attribute = json_decode(auth()->user()->custom_attriute_columns);
+    //         $products_array_end = array('Backup stock' , 'Own Stock' );
+    //         $final_array[] = array_merge($products_array_start,$custom_attribute,$products_array_end);
+    //         $used_extrainfo_ids = [];
+    //         $tmp_val = [];
+
+
+    //         // ! UnCommon Attribute other than colour size material....
+    //         $uncommonAttribute = $custom_attribute;
+    //         unset($uncommonAttribute[0],$uncommonAttribute[1],$uncommonAttribute[2]);
+
+
+    //             foreach($products as $main_key => $product){
+    //                 $tmpArray = [];
+    //                 $tmpArray_uncommon = [];
+    //                 $tmpArray_common = [];
+    //                 $tmpValue_array_Attrbute = [];
+    //                 $start_array = [];
+    //                 $end_array = [];
+
+    //                 $product_info = Product::whereId($product->product_id)->first();
+
+    //                 // $productExtra_info = ProductExtraInfo::where('product_id',$product->product_id)->groupBy('attribute_id')->pluck('attribute_value_id');
+
+    //                 // ! For Uncommon
+    //                 foreach ($uncommonAttribute as $key => $value) {
+    //                     $tmpArray_uncommon["$value"] = getAttributeIdByName($value,auth()->id());
+    //                 }
+
+    //                 $color_array = ProductExtraInfo::where('product_id',$product->product_id)->where('attribute_id',1)->groupBy('attribute_value_id')->pluck('attribute_value_id');
+
+    //                 $color_Val = [];
+    //                 if ($color_array != null) {
+    //                     foreach ($color_array as $key => $value) {
+    //                         $color_Val[$key] = getAttruibuteValueById($value)->attribute_value;
+    //                     }                
+    //                 }else{
+    //                     $color_Val = '';
+    //                 }
+
+    //                 $size_array = ProductExtraInfo::where('product_id',$product->product_id)->where('attribute_id',2)->groupBy('attribute_value_id')->pluck('attribute_value_id');
+
+    //                 $size_Val = [];
+    //                 if ($size_array != null) {
+    //                     foreach ($size_array as $key => $value) {
+    //                         $size_Val[$key] = getAttruibuteValueById($value)->attribute_value;
+    //                     }                
+    //                 }else{
+    //                     $size_Val = '';
+    //                 }
+
+
+    //                 $material_array = ProductExtraInfo::where('product_id',$product->product_id)->where('attribute_id',3)->groupBy('attribute_value_id')->pluck('attribute_value_id');
+
+    //                 $material_Val = [];
+    //                 if ($material_array != null) {
+    //                     foreach ($material_array as $key => $value) {
+    //                         $material_Val[$key] = getAttruibuteValueById($value)->attribute_value;
+    //                     }                
+    //                 }else{
+    //                     $material_Val = '';
+    //                 }
+
+
+    //                 $PRODUCT_ATTRIBUTE_ARRAY = [];
+    //                 if ($uncommonAttribute != null) {
+    //                     foreach ($uncommonAttribute as $attributes) {
+    //                         $id = getAttributeIdByName($attributes,auth()->id());
+                            
+    //                         $attribute_array = ProductExtraInfo::where('product_id',$product->product_id)->where('attribute_id',$id)->groupBy('attribute_value_id')->pluck('attribute_value_id');
+            
+    //                         $ashu = [];
+    //                         if ($attribute_array != null) {
+    //                             foreach ($attribute_array as $key => $value) {
+    //                                 $ashu[$key] = getAttruibuteValueById($value)->attribute_value;
+    //                             }
+    //                         }else{
+    //                             $ashu = '';
+    //                         }
+
+    //                         $PRODUCT_ATTRIBUTE_ARRAY[$attributes] = implode("^^",$ashu);
+    //                     }
+    //                 }
+
+    //                 $start_array[] = array(
+    //                     'Id' => $product->id,
+    //                     'Product Name' => $product_info->title ?? "",
+    //                     'Model Code' => $product_info->model_code ?? "" ,
+    //                     'Colour' => implode("^^",$color_Val) ?? '',
+    //                     'Size' => implode("^^",$size_Val) ?? '',
+    //                     'Material' => implode("^^",$material_Val) ?? '',
+    //                 );
+
+    //                 $end_array[] = array(
+    //                     'Backup stock' => $product->prent_stock,
+    //                     'stock' => $product->stock,
+    //                 );
+
+    //                 // ` Settign Up FInal Array to Export
+    //                 $final_array[] = array_merge($start_array[0],$PRODUCT_ATTRIBUTE_ARRAY,$end_array[0]);
+
+    //             }
+                
+    //             $this->inventoryExportDownloadBulkExport($final_array);
+    //             return back()->with('success',' Export Excel File Successfully');
+                
+    //     } catch (\Throwable $th) {
+    //         throw $th;
+    //         // echo $th;
+    //     }
+    // }
+
+
+
+        function inventoryExportDownload(Request $request){
         try {
             $products = Inventory::where('user_id',auth()->id())->get();
-            $products_array_start = array('Id','Product Name','Model Code');
+            $products_array_start = array('Id','Product Id','Product Name','Model Code');
             $custom_attribute = json_decode(auth()->user()->custom_attriute_columns);
             $products_array_end = array('Backup stock' , 'Own Stock' );
             $final_array[] = array_merge($products_array_start,$custom_attribute,$products_array_end);
@@ -2899,7 +1965,8 @@ class BulkController extends Controller
                     $end_array = [];
 
                     $product_info = Product::whereId($product->product_id)->first();
-                    $productExtra_info = ProductExtraInfo::where('product_id',$product->product_id)->groupBy('attribute_id')->pluck('attribute_value_id');
+
+                    // $productExtra_info = ProductExtraInfo::where('product_id',$product->product_id)->groupBy('attribute_id')->pluck('attribute_value_id');
 
                     // ! For Uncommon
                     foreach ($uncommonAttribute as $key => $value) {
@@ -2907,6 +1974,7 @@ class BulkController extends Controller
                     }
 
                     $color_array = ProductExtraInfo::where('product_id',$product->product_id)->where('attribute_id',1)->groupBy('attribute_value_id')->pluck('attribute_value_id');
+
 
                     $color_Val = [];
                     if ($color_array != null) {
@@ -2930,6 +1998,7 @@ class BulkController extends Controller
 
 
                     $material_array = ProductExtraInfo::where('product_id',$product->product_id)->where('attribute_id',3)->groupBy('attribute_value_id')->pluck('attribute_value_id');
+
 
                     $material_Val = [];
                     if ($material_array != null) {
@@ -2956,19 +2025,18 @@ class BulkController extends Controller
                             }else{
                                 $ashu = '';
                             }
-
                             $PRODUCT_ATTRIBUTE_ARRAY[$attributes] = implode("^^",$ashu);
                         }
                     }
 
                     $start_array[] = array(
                         'Id' => $product->id,
+                        'Product Id' => $product_info->id ?? "",
                         'Product Name' => $product_info->title ?? "",
                         'Model Code' => $product_info->model_code ?? "" ,
                         'Colour' => implode("^^",$color_Val) ?? '',
                         'Size' => implode("^^",$size_Val) ?? '',
                         'Material' => implode("^^",$material_Val) ?? '',
-
                     );
 
                     $end_array[] = array(
@@ -3014,8 +2082,10 @@ class BulkController extends Controller
         $master = $rows;
         // Index
         $idIndex = 0;
-        $BackupstockIndex = 5;
-        $stockIndex = 6;
+        $custom_attribute = json_decode(auth()->user()->custom_attriute_columns);
+
+        $BackupstockIndex = count($custom_attribute)+4;
+        $stockIndex = count($custom_attribute)+5;
         
         foreach ($master as $key => $item) {
             $TandA = [];

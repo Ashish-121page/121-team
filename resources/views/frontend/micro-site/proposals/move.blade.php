@@ -10,6 +10,13 @@
     // $proposal_options->show_Description = $proposal_options->show_Description ?? 0;
     $slug_guest = getShopDataByUserId(155)->slug;
     $offer_url = inject_subdomain("shop/proposal/$proposal->slug",$slug_guest);
+
+    $make_offer_link = inject_subdomain('proposal/create', $slug_guest, false, false)."?linked_offer=".$proposal->id."&offer_type=2&shop=".$proposal->user_shop_id;
+
+    if ($proposal->type == 1) {
+        $offer_url = $make_offer_link;
+    }
+
     @endphp
     <!-- push external head elements to head -->
     @push('head')
@@ -127,6 +134,16 @@
 
                 @media (max-width: 767px) {
                     .cust-display {
+                        display: block;
+                    }
+                }
+
+                .hdsjfibdsjk{
+                    display: none;
+                }
+
+                @media (max-width: 575px){
+                    .hdsjfibdsjk{
                         display: block;
                     }
                 }
@@ -322,19 +339,27 @@
                                 <div class="tab-content" id="pills-tabContent">
                                     <div class="tab-pane fade @if(request()->get('type') == "picked") show active @endif" id="product-tab" role="tabpanel" aria-labelledby="pills-products-tab">
 
-                                        <div class="row my-2">
-                                            <div class="col-12 col-md-8 col-sm-4">
+                                        <div class="row my-2 justify-content-between">
+                                            <div class="col-12 col-md-4 d-none d-sm-block d-md-block">
+                                                <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">Back</a>
+                                            </div>
+                                            <div class="col-12 col-md-4">
                                                 @if (auth()->id() != 155)
                                                     <div class="mx-2 d-flex justify-content-center align-item-center gap-2 flex-wrap">
-                                                        <input style="" type="text" name="margin" value="{{ $proposal->margin ?? "" }}" class="form-control w-70" placeholder="Enter Margin % on sale price" id="hike" min="0" max="100">
-                                                        <button id="hikebtn" class="btn btn-outline-primary mx-2 my-2 my-md-0 my-sm-0 ">Update</button>
+                                                        <div class="d-flex gap-3">
+                                                            <label for="magrintochnage" class="form-label">Margin: <span id="range_bar"> {{ $proposal->margin ?? 0 }} </span>%</label>
+                                                            <input type="range" min="0" max="100" step="10" name="margin" class="form-range hdfhj" style="width: 150px" value="{{ $proposal->margin ?? 0 }}" id="magrintochnage">
+                                                        </div>
+                                                        <div class="mx-2">
+                                                            <button id="hikebtn" class="btn btn-outline-primary mx-2 my-2 my-md-0 my-sm-0 ">Update</button>
+                                                        </div>
                                                     </div>    
                                                 @endif
                                             </div>                                       
                                             <div class="col-12 col-md-4">
                                                 @if($added_products->count() > 0 )
-                                                    <div class="d-flex justify-content-between">
-                                                        <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">Back</a>
+                                                    <div class="d-flex justify-content-between justify-content-md-end justify-content-sm-end">
+                                                        <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary hdsjfibdsjk">Back</a>
                                                         <a href="{{ request()->url()  }}{{ '?type=send' }}" class="btn btn-sm btn-outline-primary">Next</a>
                                                     </div>
                                                 @endif
@@ -367,11 +392,17 @@
                                                                 margin-left: 15px;">
                                                             </div>
                                                             <img src="{{ (isset($product) && (getShopProductImage($product->id,'single') != null)  ? asset(getShopProductImage($product->id,'single')->path) : asset('frontend/assets/img/placeholder.png')) }}" alt="" class="custom-img" style="height:185px;object-fit: contain;">
-                                                           
+
+                                                            <div style="position: absolute;right: -2%; top: 2%;z-index: 1;">
+                                                                <a href="{{ route('pages.proposals.destroy',$proposal_item->id) }}" class="btn remove-item mr-2">
+                                                                    <i class="fas fa-trash" style="color: #ff0c0c;font-size: 3vh"></i>
+                                                                </a>
+                                                                
+                                                            </div>
                                                             <div class="card-body text-center">
                                                                 <div class="profile-pic">
                                                                     <div class="row">
-                                                                        <div class="col-md-9 pt-2 text-center p-0" style="margin-top: -15px;">
+                                                                        <div class="col-md-12 pt-2 text-center p-0" style="margin-top: -15px;">
                                                                             <h6 class="mb-0 ">{{$product->title??"--"}}</h6>
                                                                             {{-- @if(isset($product->category_id) || isset($product->sub_category))
                                                                             <span>{{fetchFirst('App\Models\Category',$product->sub_category,'name','--')}}</span> <br>
@@ -381,9 +412,9 @@
                                                                             @endif
                                                                             
                                                                             
-                                                                            <div>
+                                                                            {{-- <div>
                                                                                 <span> {{ $product->color ?? '' }}</span> <span> , </span><span> {{ $product->size ?? '' }}</span>
-                                                                            </div>
+                                                                            </div> --}}
                                                                            
                                                                             {{-- @php
                                                                                 $own_shop = App\Models\UserShop::whereUserId(auth()->id())->first();
@@ -404,12 +435,13 @@
                                                                                     $price =  getPriceByGroupIdProductId($group_id,$product->id,$price);
                                                                                 }
                                                                             @endphp
-                                                                            Product Price:<span> {{ isset($price) ? format_price($price) : '' }}</span>
-                                                                            {{-- <br> --}}
+                                                                                Product Price:
+                                                                                <span>
+                                                                                    {{ isset($price) ? format_price($price) : '' }}
+                                                                                </span> 
+                                                                                <br>
                                                                             {{-- Shop Price:<span> {{ (isset($product_record) && $product_record->price > 0) ?  format_price($product_record->price) : 'Ask for Price' }}</span> --}}
-                                                                            <br>
-                                                                            
-
+                                                                            {{-- <br> --}}
                                                                             @php
                                                                                 $proposal_item->margin = $proposal_item->margin ?? 0;
                                                                                 if ($proposal_item->user_price == null) {
@@ -426,23 +458,14 @@
                                                                                     $margin = "Custom Price";
                                                                                 }
                                                                             @endphp
-
-                                                                            {{-- <span>Offer Price: {{ format_price($price) }}</span> --}}
-                                                                            <span>Offer Price: {{ format_price($price) }}</span>
-
-                                                                            {{-- <br> --}}
-                                                                            <br>
-                                                                            {{-- <span> {{ $margin }}</span> --}}
-
-                                                                        </div>
-                                                                        <div class="col-3">
-                                                                       
-                                                                            <button style="background: transparent;margin-left: -10px;" class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="ik ik-more-vertical pl-1"></i></button>
-                                                                            <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
-                                                                                <a href="{{ route('pages.proposals.destroy',$proposal_item->id) }}" class="btn remove-item mr-2">Remove</a>
-                                                                                <a href="javascript:void(0)" data-product="{{ $proposal_item->product_id }}" class="btn mr-2 edit-price"  > Edit Price</a>
+                                                                            @if ($proposal->relate_to == $proposal->user_shop_id)
+                                                                                {{-- <span>Offer Price: {{ format_price($price) }}</span> --}}
+                                                                                <span>Offer Price: {{ format_price($price) }}</span> 
+                                                                                <a href="javascript:void(0)" data-product="{{ $proposal_item->product_id }}" class="edit-price" > 
+                                                                                    <i class="fas fa-pencil-alt text-primary"></i>
                                                                                 </a>
-                                                                            </ul>
+                                                                            @endif
+
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -467,11 +490,11 @@
 
 
                                     @if(request()->get('type') == 'send')
-                                        @if($customer_name == '' && $customer_mob_no == '')
+                                        {{-- @if($customer_name == '' && $customer_mob_no == '')
                                             <div class="alert alert-info">
                                                 <p class="mb-0">Please fill the prospect information. </p>
                                             </div>
-                                        @endif
+                                        @endif --}}
                                         <form action="{{ route('pages.proposal.update', $proposal->id) }}" method="post" enctype="multipart/form-data" id="ProposalForm" class="row">
                                             @csrf
                                             <input type="hidden" name="user_id" value="{{ auth()->id() }}">
@@ -486,33 +509,59 @@
                                                                 <div class="form-group">
                                                                     <button type="submit" class="btn btn-outline-primary">Save</button>
                                                                 </div>
-                                                            @if ($proposal->status == 1)
+                                                            @if ($proposal->status == 1 && $proposal->type == 0)
                                                                 <div class="">                                               
                                                                     @if ($customer_mob_no != null)
-                                                                        <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%0A%20%0APasscode%20to%20access%20%3A%20{{ $proposal->password }}%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                        <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
                                                                         </a>    
                                                                     @else
-                                                                        <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%0A%20%0APasscode%20to%20access%20%3A%20{{ $proposal->password }}%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                        <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
                                                                         </a>
                                                                     @endif
                                                                     
-                                                                    <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%0A%20%0APasscode%20to%20access%20%3A%20{{ $proposal->password }}%20%20%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
+                                                                    <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
                                                                         <i class="far fa-envelope"></i>
                                                                     </a>
                                                                 </div>
                                                             @endif
+
+                                                            {{--` Share Offer for Makeing Offer --}}
+
+                                                            @if ($proposal->status == 1 && $proposal->type == 1)
+                                                                <div class="">                                               
+                                                                    @if ($customer_mob_no != null)
+                                                                        <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                            <i class="fab fa-whatsapp" class=""></i>
+                                                                        </a>    
+                                                                    @else
+                                                                        <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                            <i class="fab fa-whatsapp" class=""></i>
+                                                                        </a>
+                                                                    @endif
+                                                                    
+                                                                    <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
+                                                                        <i class="far fa-envelope"></i>
+                                                                    </a>
+                                                                </div>
+                                                            @endif
+
                                                         </div>
-                                                    @if ($proposal->status == 1)
-                                                        <div class="">
-                                                            <div class="form-group mx-2">
-                                                                @if(proposalCustomerDetailsExists($proposal->id))
-                                                                    <a href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}" class="ml-auto btn-link" >Preview</a>
-                                                                @endif
+
+                                                        @if ($proposal->type == 1)
+                                                            <button class="btn btn-outline-primary btn-sm copyLInk" type="button" data-link="{{ inject_subdomain('proposal/create', $slug_guest, false, false)}}?linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" >Copy LInk <i class="far fa-copy"></i> </button>
+                                                        @endif  
+
+                                                        @if ($proposal->status == 1 && $proposal->type == 0)
+                                                            <div class="">
+                                                                <div class="form-group mx-2">
+                                                                    @if(proposalCustomerDetailsExists($proposal->id))
+                                                                        <a href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}" class="ml-auto btn-link" target="_balnk" >Preview</a>
+                                                                    @endif
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    @endif
+                                                        @endif
                                                 </div>
                                             </div>
 
@@ -595,7 +644,7 @@
                                                     </div>
 
 
-                                                    {{-- @if (auth()->id() != 155) --}}
+                                                    @if ($proposal->relate_to == $proposal->user_shop_id)
                                                         <div class="col-md-12 col-12">
                                                             <div class="form-group">
                                                                 <label for="proposal_note" class="control-label">Offer Notes</label>
@@ -607,7 +656,7 @@
                                                                 <label for="enable_price_range d-none">Enable Price Range</label>
                                                             </div> --}}
                                                         </div>
-                                                    {{-- @endif --}}
+                                                    @endif
                                                     
 
                                                 </div> {{-- End Of ROw --}}
@@ -616,19 +665,27 @@
                                               
                                             
                                             <div class="col-md-6 float-start">
-                                                <div class="form-group">
-                                                    <label for="passcode" class="form-label">Enter Passcode <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </label>
-                                                    <input type="text" class="form-control" placeholder="0 0 0 0" name="password" id="passcode" maxlength="4" oninvalid="alert('Enter minimum 4 digit passcode')" value="{{ $offerPasscode ?? ""}}" required>
-
-                                                </div>
+                                                    {{-- <div class="form-group">
+                                                        <label for="passcode" class="form-label">Enter Passcode <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </label>
+                                                        <input type="text" class="form-control" placeholder="0 0 0 0" name="password" id="passcode" maxlength="4" oninvalid="alert('Enter minimum 4 digit passcode')" value="{{ $offerPasscode ?? ""}}" required>
+                                                    </div> --}}
+                                                
                                                     <div class="h6">Fields to include <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </div>
                                                     <select name="optionsforoffer[]" class="select2" multiple>
-                                                        @if (auth()->id() != 155)
-                                                            <option value="description" @if (json_decode($proposal->options)->show_Description ?? 0) selected @endif>Description</option>
+                                                        <option value="description" @if (json_decode($proposal->options)->show_Description ?? 0) selected @endif>Description</option>
+                                                        @if ($proposal->relate_to == $proposal->user_shop_id)
+                                                            <option value="notes" @if (json_decode($proposal->options)->Show_notes ?? 0) selected @endif>Notes</option>
                                                         @endif
-                                                        <option value="notes" @if (json_decode($proposal->options)->Show_notes ?? 0) selected @endif>Notes</option>
-                                                        <option value="color" @if (json_decode($proposal->options)->show_color ?? 0) selected @endif>Color</option>
-                                                        <option value="size" @if (json_decode($proposal->options)->show_size ?? 0) selected @endif>Size</option>
+
+                                                        @foreach ($aval_atrribute as $item)
+                                                            <option value="{{ $item }}" 
+                                                            @if (in_array($item,(array) json_decode($proposal->options)->show_Attrbute))
+                                                                selected 
+                                                            @endif>{{ getAttruibuteById($item)->name ?? '' }}</option>
+
+
+                                                        @endforeach
+
                                                     </select>
 
                                               
@@ -660,12 +717,12 @@
                                                 
 
 
-                                                    {{-- @if (auth()->id() != 155) --}}
+                                                    @if ($proposal->relate_to == $proposal->user_shop_id)
                                                         <div class="form-group my-3">
                                                             <label class="form-label" for="valid_upto"> Offer Valid Upto </label>
                                                             <input class="form-control" type="date" id="valid_upto" name="valid_upto" value="{{ $proposal->valid_upto }}">
                                                         </div>
-                                                    {{-- @endif --}}
+                                                    @endif
 
                                                     
                                                     @if ($proposal->relate_to == $proposal->user_shop_id)
@@ -674,11 +731,14 @@
                                                             <input class="form-control" type="number" min="0" max="100" id="sample_charge" name="sample_charge" value="{{ $sample_charge }}" placeholder="% Increase">
                                                         </div>
                                                         <div class="form-group my-3">
-                                                            <label class="form-label" for="sample_charge"> Make Weekly Record </label>
-                                                            <select name="offer_type" class="form-select form-control" id="offer_type">
-                                                                <option value="0" @if ($proposal->type == 0) selected @endif>NO</option>
-                                                                <option value="1" @if ($proposal->type == 1) selected @endif>YES</option>
-                                                            </select>
+                                                            <label class="form-label" for="sample_charge"> Weekly Update </label>
+                                                            {{-- <select name="offer_type" class="form-select form-control" id="offer_type">
+                                                                <option value="0" @if ($proposal->type == 0) selected @endif>No</option>
+                                                                <option value="1" @if ($proposal->type == 1) selected @endif>Yes</option>
+                                                            </select> --}}
+                                                            <br>
+                                                            <input type="checkbox" name="offer_type"  value="1" @if ($proposal->type == 1) checked @endif id="weekupdate">
+
                                                         </div>
                                                     @endif
                                             </div>
@@ -723,6 +783,8 @@
                                                     </div>
                                                 </div>
                                             @endif
+
+
                                             <div class="col-md-12 ">
                                                 <div class="d-flex justify-content-between">
                                                     <div class="">
@@ -732,29 +794,53 @@
                                                                 <div class="form-group">
                                                                     <button type="submit" class="btn btn-outline-primary">Save</button>
                                                                 </div>
-                                                            @if ($proposal->status == 1)
+                                                            @if ($proposal->status == 1 && $proposal->type == 0)
                                                                 <div class="">                                               
                                                                     @if ($customer_mob_no != null)
-                                                                        <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%0A%20%0APasscode%20to%20access%20%3A%20{{ $proposal->password }}%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                        <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
                                                                         </a>    
                                                                     @else
-                                                                        <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%0A%20%0APasscode%20to%20access%20%3A%20{{ $proposal->password }}%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                        <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
                                                                         </a>
                                                                     @endif
                                                                     
-                                                                    <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%0A%20%0APasscode%20to%20access%20%3A%20{{ $proposal->password }}%20%20%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
+                                                                    <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
                                                                         <i class="far fa-envelope"></i>
                                                                     </a>
                                                                 </div>
-                                                            @endif
+                                                                @endif         
+                                                                @if ($proposal->status == 1 && $proposal->type == 1)
+                                                                    <div class="">                                               
+                                                                        @if ($customer_mob_no != null)
+                                                                            <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                                <i class="fab fa-whatsapp" class=""></i>
+                                                                            </a>    
+                                                                        @else
+                                                                            <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                                <i class="fab fa-whatsapp" class=""></i>
+                                                                            </a>
+                                                                        @endif
+                                                                        
+                                                                        <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
+                                                                            <i class="far fa-envelope"></i>
+                                                                        </a>
+                                                                    </div>
+                                                                @endif
                                                         </div>
-                                                    @if ($proposal->status == 1)
+
+
+                                                        @if ($proposal->type == 1)
+                                                            <button class="btn btn-outline-primary btn-sm copyLInk" type="button" data-link="{{ inject_subdomain('proposal/create', $slug_guest, false, false)}}?linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" >Copy LInk <i class="far fa-copy"></i> </button>
+                                                        @endif  
+                                                        
+                                                        
+                                                    @if ($proposal->status == 1 && $proposal->type == 0)
                                                         <div class="">
                                                             <div class="form-group mx-2">
                                                                 @if(proposalCustomerDetailsExists($proposal->id))
-                                                                    <a href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}" class="ml-auto btn-link" >Preview</a>
+                                                                    <a href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}" class="ml-auto btn-link" target="_balnk" >Preview</a>
                                                                 @endif
                                                             </div>
                                                         </div>
@@ -784,9 +870,52 @@
         <script src="{{ asset('backend/js/form-advanced.js') }}"></script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
         <script>
-            
-            
+            $(document).ready(function () {
+                        
+                $("#magrintochnage").change(function (e) { 
+                    e.preventDefault();
+                    $("#range_bar").html($(this).val());
+                });
 
+                    // Single swithces
+                    var acr_btn = document.querySelector('#weekupdate');
+                    var switchery = new Switchery(acr_btn, {
+                        color: '#6666CC',
+                        jackColor: '#fff'
+                    });
+                
+                
+
+                    // Copy Text To Clipboard
+                    function copyTextToClipboard(text) {
+                            if (!navigator.clipboard) {
+                                fallbackCopyTextToClipboard(text);
+                                return;
+                            }
+                            navigator.clipboard.writeText(text).then(function() {
+                            }, function(err) {
+                            });
+                            $.toast({
+                                heading: 'SUCCESS',
+                                text: "Offer link copied.",
+                                showHideTransition: 'slide',
+                                icon: 'success',
+                                loaderBg: '#f96868',
+                                position: 'top-right'
+                            });
+                    }
+
+                    $(".copyLInk").click(function (e) { 
+                        e.preventDefault();
+                        var link = $(this).data('link');
+                        copyTextToClipboard(link);
+                    });
+                        
+            });
+        </script>
+        
+        <script>
+            
         var hike = $('#hike').val();
 
         function updateURLParam(key,val){
@@ -831,8 +960,11 @@
             }
             return false;
         };
+
+
+        
         $('#hikebtn').click(function() {
-            hike = $("#hike").val();
+            hike = $("#magrintochnage").val();
             var route = "{{ route('pages.proposals.updatemargin') }}";
                 $.ajax({
                     url: route,
@@ -1024,7 +1156,7 @@
                 buttons: {
                     tryAgain: {
                         text: 'Yes',
-                        btnClass: 'btn-green',
+                        btnClass: 'btn-red',
                         action: function(){
                                 window.location.href = url;
                         }

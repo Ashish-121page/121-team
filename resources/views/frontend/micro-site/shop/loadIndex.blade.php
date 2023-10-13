@@ -8,27 +8,38 @@
                 $price =  getPriceByGroupIdProductId($group_id,$product->id,$price);
             }
             $productId= \Crypt::encrypt($product->id);
+            $search_val = '';
+            if ($is_search = 1) {
+                foreach ($additional_attribute as $key => $item){
+                    if (request()->has("searchVal_$key") && !empty(request()->get("searchVal_$key"))){
+
+                        foreach (request()->get("searchVal_$key") as $key => $value) {
+                            $search_val .= "&selected_Cust%5B%5D=$value";
+                        }
+                    }
+                }
+            }
+            
         @endphp
 
-        @if ($product->exclusive == 1 && request()->get('exclusive') != 'off' || $product->exclusive == 1 && request()->get('exclusive') == '')
+        @if ($product->exclusive == 1 && request()->get('exclusive') == 'off' || $product->exclusive == 1 && request()->get('exclusive') == '')
             @continue
         @endif
         
         {{-- @dd($product); --}}
                 <div class="col-3">
-                    <a href="{{ route('pages.shop-show',$productId)."?pg=".request()->get('pg') }}">
+                    <a href="{{ route('pages.shop-show',$productId)."?pg=".request()->get('pg').$search_val }}">
                         <img src="{{ asset(getMediaByIds($image_ids)->path ?? asset('frontend/assets/img/placeholder.png')) }}" class="img-fluid " style="height: 150px;width: 100%;object-fit: contain;" alt="">
                     </a>
                     <div class="ashu mb-3 d-none">
-                    <div class="h6">{{ \Str::limit($product->title,30) }}</div>
-                    <p>Model Code: {{ \Str::limit($product->model_code,30) }}</p>
+                    <div class="">{{ \Str::limit($product->title,30) }}</div>
+                    <div>Model Code: {{ \Str::limit($product->model_code,30) }}</div>
                         <div class="">
                             @if($price == 0)
                                     <span>{{ __("Ask For Price") }}</span>
                             @elseif($price)
                                 {{ format_price($price) }}
                             @else
-                                {{-- <span>{{ format_price(0) }}</span> --}}
                                 <span>{{ __("Ask For Price") }}</span>
                             @endif
                         </div>

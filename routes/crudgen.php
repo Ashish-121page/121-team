@@ -307,6 +307,7 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('edit/{product_attribute}', ['uses' => 'ProductAttributeController@edit', 'as' => 'edit']);
         Route::post('update/{product_attribute}', ['uses' => 'ProductAttributeController@update', 'as' => 'update']);
         Route::get('delete/{product_attribute}', ['uses' => 'ProductAttributeController@destroy', 'as' => 'destroy']);
+        Route::get('delete_val/{product_attribute_value}', ['uses' => 'ProductAttributeController@deletevalue', 'as' => 'destroy.value']);
     }); 
     
     

@@ -16,8 +16,10 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Inventory;
 use App\Models\ProductAttribute;
+use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
 use App\Models\UserShopItem;
+use phpseclib3\File\ASN1\Maps\AttributeValue;
 
 class ProductController extends Controller
 {
@@ -140,6 +142,7 @@ class ProductController extends Controller
 
     public function inventoryEdit(Product $product_id) {
         $product = Product::whereId($product_id->id)->first();
+
         return view('panel.inventory.edit',compact('product'));
     }
 
@@ -900,9 +903,13 @@ class ProductController extends Controller
 
 
             $custom_attribute = ProductAttribute::where('user_id',null)->orwhere('user_id',$product->user_id)->get();
-            
 
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute'));
+            $groupIds = ProductExtraInfo::where('product_id',$product->id)->groupBy('Cust_tag_group')->orderBy('id','ASC')->pluck('Cust_tag_group','product_id')->toArray();
+
+            $groupIds_all = ProductExtraInfo::where('group_id',$product->sku)->groupBy('Cust_tag_group')->orderBy('id','ASC')->pluck('Cust_tag_group','product_id');
+
+            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all'));
+
         }catch(Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
@@ -1008,10 +1015,24 @@ class ProductController extends Controller
             'stock_qty'     => 'sometimes',
         ]); 
            
+
+        $allow_array = ['Yes','YES','yes','Hn','true',true,1,'on'];
+
         try{            
             if(!$request->has('is_publish')){
                 $request['is_publish'] = 0;
             }
+
+
+            if(in_array($request->has('is_publish'),$allow_array)){
+                $request['is_publish'] = 1;
+            }else{
+                $request['is_publish'] = 0;
+            }
+
+            
+
+
 
             $usi = UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->first();
             $chk_inventroy = Inventory::where('product_id',$product->id)->where('user_id',auth()->id())->get();
@@ -1037,6 +1058,8 @@ class ProductController extends Controller
                 }
             }
             
+
+
             if($product){
                 // To Fullfillment of Client MRP Need
                 $request['price'] =  $request->mrp;
@@ -1073,18 +1096,27 @@ class ProductController extends Controller
                     'carton_unit' => $request->carton_unit,
                 ];
 
+                $carton_details = [
+                    'standard_carton' => $request->standard_carton,
+                    'carton_weight' => $request->carton_weight,
+                    'carton_unit' => $request->carton_unit,
+                    'carton_length' => $request->carton_length,
+                    'carton_width' => $request->carton_width,
+                    'carton_height' => $request->carton_height,
+                    'Carton_Dimensions_unit' => $request->Carton_Dimensions_unit,
+                ];
+                
+
                 $request['shipping'] = json_encode($shipping);  
                 $request['carton_details'] = json_encode($carton_details);  
                 
-                // dd($request->all());
-
 
                 $chk = $product->update($request->all());
                 
                 
 
                 ProductExtraInfo::where('product_id',$product->id)->update([
-                    'allow_resellers' => $request->get('allow_resellers') ?? 'No',
+                    'allow_resellers' => (in_array($request->allow_resellers,$allow_array) ? 'yes' : 'no') ?? 'no',
                     'exclusive_buyer_name' => $request->get('exclusive_buyer_name') ?? '',
                     'collection_name' => $request->get('collection_name') ?? '',
                     'season_month' => $request->get('season_month') ?? '',
@@ -1111,11 +1143,88 @@ class ProductController extends Controller
                 ]);
 
 
-                echo "hello ji";
-                
-                
-                
+                $custom_attribute = ProductAttribute::where('user_id',null)->orwhere('user_id',$product->user_id)->get();
 
+                // foreach ($custom_attribute as $key => $value) {
+                //     $count = $key+1;
+                //     echo "You are Working on $value->name Attribute".newline();
+
+                //     $result = $request->get("custom_attri_$count");
+
+                //     if ($request->get("custom_attri_$count") != null) {
+                        
+                //         echo "The value of custom_attri_$count".newline();
+                //         magicstring($result);
+                        
+                //         $received_values = explode(",",$result);
+
+                //         magicstring($received_values);
+
+                //         foreach ($received_values as $receiveKey => $receive_value) {                            
+                //             $productattriid = ProductAttributeValue::where('parent_id',$value->id)->where('attribute_value',$receive_value)->first();
+
+                //             $chk = ProductExtraInfo::where('attribute_id',$value->id)->where('attribute_value_id',$productattriid->id)->where('group_id',$product->sku)->first();
+
+                //             if ($chk == null) {
+                //                 echo "$receive_value is not Exist in Record".newline();
+
+                //                 $newitem = [
+                //                     'allow_resellers' =>(in_array($request->allow_resellers,$allow_array) ? 'yes' : 'no') ?? 'no',
+                //                     'exclusive_buyer_name' => $request->get('exclusive_buyer_name') ?? '',
+                //                     'collection_name' => $request->get('collection_name') ?? '',
+                //                     'season_month' => $request->get('season_month') ?? '',
+                //                     'season_year' => $request->get('season_year') ?? '',
+                //                     'sample_available' => $request->get('sample_available') ?? '',
+                //                     'sample_year' => $request->get('sample_year') ?? '',
+                //                     'sample_month' => $request->get('sample_month') ?? '',
+                //                     'sampling_time' => $request->get('sampling_time') ?? '',
+                //                     'CBM'=> $request->get('CBM') ?? '',
+                //                     'production_time'=> $request->get('production_time') ?? '',
+                //                     'MBQ' => $request->get('MBQ') ?? '',
+                //                     'MBQ_unit' => $request->get('MBQ_unit') ?? '',
+                //                     'remarks' => $request->get('remarks') ?? '',
+                //                     'vendor_sourced_from' => $request->get('vendor_sourced_from') ?? '',
+                //                     'vendor_price' => $request->get('vendor_price') ?? '',
+                //                     'product_cost_unit' => $request->get('product_cost_unit') ?? '',
+                //                     'vendor_currency' => $request->get('vendor_currency') ?? '',
+                //                     'sourcing_year' => $request->get('sourcing_year') ?? '',
+                //                     'sourcing_month' => $request->get('sourcing_month') ?? '',
+                //                     'production_type' => $request->get('production_type') ?? '',
+                //                     'group_id' => $request->get('group_id') ?? '',
+                //                     'Cust_tag_group'=> $request->get('Cust_tag_group') ?? '',
+                //                     'brand_name' => $request->get('brand_name') ?? '',
+                //                     'attribute_id' => $value->id,
+                //                     'attribute_value_id' => $productattriid->id
+                //                 ];
+
+                //                 magicstring($newitem);
+
+
+                //             }
+                //         }
+
+
+                //     }
+                // }
+
+
+
+                $vip_group = getPriceGroupByGroupName(auth()->id(),"VIP");
+                $reseller_group = getPriceGroupByGroupName(auth()->id(),"Reseller");
+
+                // Update VIP Price Group
+                GroupProduct::whereGroupId($vip_group->id)->whereProductId($product->id)->update([
+                    'price' => $request->vip_group
+                ]);
+
+                // Update Reseller Price Group
+                GroupProduct::whereGroupId($reseller_group->id)->whereProductId($product->id)->update([
+                    'price' => $request->reseller_group
+                ]);
+
+
+
+                                
                 if($request->is_publish == 0){
                     UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>0]);
                 }else{
@@ -1145,20 +1254,16 @@ class ProductController extends Controller
                     }
                     $onsite_notification['user_id'] =  $other->user_id;
                     $onsite_notification['title'] = NameById($product->user_id)." has made changes to their product
-                     $product->title (Model-#$product->model_code) , resulting in auto unpublished from your account. To continue selling, review changes and publish." ;
+                    $product->title (Model-#$product->model_code) , resulting in auto unpublished from your account. To continue selling, review changes and publish." ;
                     $onsite_notification['link'] = route('panel.user_shop_items.create')."?type=direct&type_id=".$product->user_id;
                     pushOnSiteNotification($onsite_notification);
                 }
                    
-
                 //   $product = UserShopItem::where('product_id',$product->id)->first();
                 // $product->update([
                 //     'price' => $request->price
                 // ]);
 
-                magicstring($request->all());   
-                
-                return;  
                 return back()->with('success','Product Updated!');
             }
             return back()->with('error','Product not found')->withInput($request->all());

@@ -218,7 +218,7 @@ $group = @App\Models\AccessCatalogueRequest::whereNumber($catelogue_author->phon
                                                     <option @if(request()->get('length') == 100) selected @endif value="100">100</option>
                                                     {{-- <option @if(request()->get('length') == 500) selected @endif value="500">500</option> --}}
                                                 </select>
-                                                {{-- <input type="number"  name="length" value="{{request()->get('length')}}" class="form-control" placeholder="Enter Length"> --}}
+                                                <input type="number"  name="length" value="{{request()->get('length')}}" class="form-control" placeholder="Enter Length">
                                                 <div class="ml-2">
                                                     <button type="button" class="btn btn-icon btn-outline-primary lengthSearch d-none"><i class="fa fa-filter"></i></button>
                                                 </div>
@@ -262,6 +262,10 @@ $group = @App\Models\AccessCatalogueRequest::whereNumber($catelogue_author->phon
                                         }else{
                                         }
                                         @endphp
+                                        @if (!$product_exists && !request()->has('acr'))
+                                            {{-- <div class="text-center w-100">No Record Found</div> --}}
+                                            @continue
+                                        @endif
                                         <div class="col-lg-3 col-md-4 filterable-items cid-{{$scoped_product->category_id}} mb-4">
                                             @php
                                                 $proUsiExists = productExistInUserShop($scoped_product->id,$user_id,$user_shop->id)
@@ -398,9 +402,25 @@ $group = @App\Models\AccessCatalogueRequest::whereNumber($catelogue_author->phon
                                                             <a href="{{ route('panel.user_shop_items.remove',[$scoped_product->id,$user_id]) }}" class="btn-block text-center btn-danger mt-2 btn-md p-2 confirm-btn" data-pid="{{$scoped_product->id }}" >Remove from Shop</a>
                                                         @endif
                                                     @else
-                                                        <a href="javascript:void(0)" 
-                                                        data-category_id="{{ $scoped_product->category_id  }}" 
-                                                        data-sub_category_id="{{$scoped_product->sub_category  }}"  data-pid="{{$scoped_product->id }}" @if(request()->get('type') == 'direct') data-price="{{ $user_shop_product->price ?? 0 }}" @else data-price="{{ $scoped_product->price ?? 0 }}"  @endif class="btn-block text-center btn-primary mt-2 btn-md p-2 addProductBtn">Add to Shop</a>
+                                                        <a href="javascript:void(0)"
+                                                            data-category_id="{{ $scoped_product->category_id  }}"
+                                                            data-sub_category_id="{{$scoped_product->sub_category  }}"
+                                                            data-pid="{{$scoped_product->id }}"
+                                                            @if(request()->get('type') == 'direct')
+                                                                data-price="{{ $user_shop_product->price ?? 0 }}"
+                                                            @else
+                                                                data-price="{{ $scoped_product->price ?? 0 }}"
+                                                            @endif
+
+                                                            data-title="{{ $scoped_product->title ?? 'title' }}"
+                                                            data-video="{{ $scoped_product->video_url ?? '' }}"
+                                                            data-artwork="{{ $scoped_product->artwork_url ?? '' }}"
+                                                            data-modelcode="{{ $scoped_product->model_code ?? '' }}"
+                                                            data-MRP="{{ $scoped_product->mrp ?? '' }}"
+
+                                                            data-brandName="{{ getProductExtrainfoRecord($scoped_product->id)->brand_name ?? '' }}"
+                                                            data-sellingPriceUnit="{{ $scoped_product->selling_price_unit ?? '' }}"
+                                                            class="btn-block text-center btn-primary mt-2 btn-md p-2 addProductBtn">Add to Shop</a>
                                                     @endif    
                                                 </div>
                                             </div>
@@ -496,7 +516,7 @@ $group = @App\Models\AccessCatalogueRequest::whereNumber($catelogue_author->phon
                             @foreach ($qr_products as $qr_product)
                                 <option value="{{ $qr_product->id }}">
                                     {{-- {{ getReferenceCodeByUser(auth()->id(),$qr_product->id).' : '.$qr_product->title.' , '.$qr_product->color.' , '.$qr_product->size  }} --}}
-                                    {{ "Model Code: ".$qr_product->id.' : '.$qr_product->title.' , '.$qr_product->color.' , '.$qr_product->size  }}
+                                    {{ "Model Code: ".$qr_product->model_code.' : '.$qr_product->title.' , '.$qr_product->color.' , '.$qr_product->size  }}
                                 </option>
                             @endforeach
                         </select>
@@ -572,15 +592,36 @@ $group = @App\Models\AccessCatalogueRequest::whereNumber($catelogue_author->phon
         $('.bulkHike').val($('#hike').val());
         $(document).ready(function(){
             $('.addProductBtn').on('click',function(){
+
                 var pid = $(this).data('pid');
                 var category_id = $(this).data('category_id');
                 var sub_category_id = $(this).data('sub_category_id');
                 var price = $(this).data('price');
                 var hike = $('#hike').val();
+                var title = $(this).data('title');
+                var video_url = $(this).data('video');
+                var artwork_url = $(this).data('artwork');
+                var model_code = $(this).data('modelcode');
+                var mrp_user = $(this).data('mrp');
+                var brand_name = $(this).data('brandname');
+                var sellingPriceUnit = $(this).data('sellingpriceunit');
+
+
                 $('.priceInput').val(price);
                 $('.productID').val(pid);
+                $("#ptitle").val(title)
+                $("#video_url").val(video_url)
+                $("#artwork_url").val(artwork_url)
+                $("#model_code").val(model_code)
+                $("#brand_name_user").val(brand_name)
+                $("#selling_price_unit").val(sellingPriceUnit)
+                $("#mrp_user").val(mrp_user)
+
+
                 $("#category_id").attr('disabled', 'disabled');
                 $("#category_id").val(category_id).change();
+
+
                 $("#category_id").removeAttr('disabled', 'disabled');
                 $("#sub_category_id").attr('disabled', 'disabled');
                 $("#sub_cate_loader").show();
@@ -593,6 +634,7 @@ $group = @App\Models\AccessCatalogueRequest::whereNumber($catelogue_author->phon
             });
             $('#allProducts').on('click',function(){
                 $('#productsDropdown').toggle('');
+
             });
         })
         $('#UserShopItemForm').validate();
