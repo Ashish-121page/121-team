@@ -676,16 +676,9 @@
                                                         @if ($proposal->relate_to == $proposal->user_shop_id)
                                                             <option value="notes" @if (json_decode($proposal->options)->Show_notes ?? 0) selected @endif>Notes</option>
                                                         @endif
-
-                                                        @foreach ($aval_atrribute as $item)
-                                                            <option value="{{ $item }}" 
-                                                            @if (in_array($item,(array) json_decode($proposal->options)->show_Attrbute))
-                                                                selected 
-                                                            @endif>{{ getAttruibuteById($item)->name ?? '' }}</option>
-
-
-                                                        @endforeach
-
+                                                        
+                                                        <option value="color" @if (json_decode($proposal->options)->show_color ?? 0) selected @endif>Color</option>
+                                                        <option value="size" @if (json_decode($proposal->options)->show_size ?? 0) selected @endif>Size</option>
                                                     </select>
 
                                               

@@ -22,7 +22,7 @@
             
         @endphp
 
-        @if ($product->exclusive == 1 && request()->get('exclusive') == 'off' || $product->exclusive == 1 && request()->get('exclusive') == '')
+        @if ($product->exclusive == 1 && request()->get('exclusive') != 'off' || $product->exclusive == 1 && request()->get('exclusive') == '')
             @continue
         @endif
         

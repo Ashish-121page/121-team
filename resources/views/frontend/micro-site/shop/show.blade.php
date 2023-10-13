@@ -21,8 +21,6 @@
         $meta_reply_to = '' ?? getSetting('frontend_footer_email');
         $meta_img = asset(getMediaByIds($image_ids)->path ?? asset('frontend/assets/img/placeholder.png'));
         $microsite = 1;
-        $is_linked = 0;
-        
     @endphp
     {{-- modal --}}
 
@@ -87,12 +85,12 @@
                     <div class="col-12 col-md-6 col-lg-6 col-sm-8 d-flex justify-content-end">
                         <li class="nav-item ">
                             <a class="nav-link active" aria-current="page" href="{{ route('panel.products.edit',$product->id) }}">
-                            <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i> Edit</button></a>
+                            <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i>Edit</button></a>
 
                         </li>
                         <li class="nav-item d-none">
                             <a class="nav-link" href="#">
-                            <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i> Create Label</button><br>
+                            <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i>Create Label</button><br>
                             </a>
                         </li>
                     </div>
@@ -128,21 +126,9 @@
                                     $ProductExinfo = App\Models\ProductExtraInfo::where('product_id',$product->id)->first();
                                 @endphp
                             
-                                @if ($product->user_id == auth()->id())
-                                    {{-- * Own product --}}
-                                    @if($ProductExinfo->brand_name != '')   
-                                        <h5 class="text-muted">Brand: <span class="text-dark">{{ $ProductExinfo->brand_name }}</span>  </h5>
-                                    @endif
-                                @else
-                                    {{-- * Linked product --}}
-                                    @php
-                                        $is_linked = 1;
-                                    @endphp
-                                    @if($user_shop_item->brand_name_user != '')   
-                                        <h5 class="text-muted">Brand: <span class="text-dark">{{ $user_shop_item->brand_name_user }}</span>  </h5>
-                                    @endif        
+                                @if($ProductExinfo->brand_name != '')   
+                                    <h5 class="text-muted">Brand: <span class="text-dark">{{ $ProductExinfo->brand_name }}</span>  </h5>
                                 @endif
-
 
                                 {{-- @if($product->material &&  $product->material != null || $user_product->materials && $user_product->materials != null)
                                     <h6 class="text-muted">Material : {{ $user_product->materials ?? $product->material }}</h6>
@@ -183,7 +169,6 @@
                                         {{ $product->title }}
                                     @endif
                                 </h4>
-                                
                                 <span class="text-muted">{{ getProductRefIdByRole($product,$user_shop_item, 2)}}</span>
                                 
                                 <div class="containe-fluid">
@@ -193,26 +178,16 @@
                                                 <span>,</span>
                                                 <span class="text-success" style="font-weight: 600;"><small>In Stock</small></span>
                                             @endif
-
-                                            @php
-                                                if ($is_linked) {
-                                                    $mrp = $user_shop_item->mrp_user;
-                                                }else{
-                                                    $mrp = $product->mrp;
-                                                }
-                                            @endphp
-
-
                                             <h5 class="text-muted my-2">
                                                 {{ format_price($price) }} &nbsp;&nbsp;&nbsp;
-                                                MRP : <strike> {{ format_price($mrp) }} </strike>
+                                                MRP : <strike> {{ format_price($product->mrp) }} </strike>
                                             </h5>
                                             
                                         </div>
 
                                         <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-end gap-3">
                                             <a class="btn btn-outline-primary" id="sharebtn" href="#sharemodal" role="button"> 
-                                                <i class="fas fa-share"></i> Share
+                                                Share <i class="fas fa-share"></i>
                                             </a>
                                             @if ($user_shop->user_id == auth()->id())
                                                 <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Internal Details</a>
@@ -309,7 +284,7 @@
                        
 
                                 <div class="">
-                                    <button class="collapsed btn btn-icon btn-outline-primary p-2 rounded-circle d-none" type="button" data-bs-toggle="collapse" data-bs-target="#attributeval-1" aria-expanded="false" aria-controls="attributeval-1" title="Load More">
+                                    <button class="collapsed btn btn-icon btn-outline-primary p-2 rounded-circle" type="button" data-bs-toggle="collapse" data-bs-target="#attributeval-1" aria-expanded="false" aria-controls="attributeval-1" title="Load More">
                                         {{-- <i class="fas fa-plus"></i>  --}}
                                         <i class="fas fa-angle-down"></i>
                                     </button>
@@ -325,7 +300,7 @@
                             <div class="accordion accordion-flush mt-3 w-lg-50" id="moreattributes">
                                 {{-- Item Start --}}
                                 <div class="accordion-item">
-                                  <div id="attributeval-1" class="accordion-collapse collapse show " data-bs-parent="#moreattributes">
+                                  <div id="attributeval-1" class="accordion-collapse collapse @if ($result_attri != null) show @endif" data-bs-parent="#moreattributes">
                                     <div class="accordion-body">
                                         <div class="d-flex flex-wrap gap-3">
                                             @foreach ($attributes as $key => $attribute)
@@ -377,22 +352,11 @@
                                 </div>
 
                                 <div class="col-12 mt-1">
-                                    @if ($user_shop_item->description != null && $is_linked == 1)
-                                        <div class="accordion" id="accordionDescription">
-                                            <div class="accordion-item">
-                                            <h2 class="accordion-header">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                                    Description
-                                                </button>
-                                            </h2>
-                                            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="">
-                                                <div class="accordion-body">
-                                                {!!  html_entity_decode(preg_replace('/_x([0-9a-fA-F]{4})_/', '&#x$1;', $user_shop_item->description)) ?? '' !!}
-                                                </div>
-                                            </div>
-                                            </div>
-                                        </div>
+                                    @if ($user_shop_item->description != null)
+                                        <h6 class="mb-3">Description:</h6>
+                                        <p class="">{!!  html_entity_decode(preg_replace('/_x([0-9a-fA-F]{4})_/', '&#x$1;', $user_shop_item->description)) ?? '' !!}</p>
                                     @elseif($product->description != null)
+
                                         <div class="accordion" id="accordionDescription">
                                             <div class="accordion-item">
                                             <h2 class="accordion-header">

@@ -838,7 +838,7 @@ if(!function_exists('getProductCategoryByShop')){
                 $my_indrustry = json_decode($user->industry_id, true);
             }
             $self_category = App\Models\Category::whereUserId($user->id)->where('level',2)->where('category_type_id',13)->whereType(0)->get();
-            $category = App\Models\Category::whereType(1)->where('level',2)->where('category_type_id',13)->whereIn('parent_id',$my_indrustry)->orderBy('name','ASC')->get();
+            $category = App\Models\Category::whereType(1)->where('level',2)->where('category_type_id',13)->whereIn('parent_id',$my_indrustry)->get();
 
             // $category = $self_category->merge($category);
 
@@ -855,7 +855,7 @@ if(!function_exists('getProductCategoryByShop')){
         }else{
             $my_product_category_ids = App\Models\UserShopItem::whereUserId($user->id)->whereIsPublished(1)->whereUserShopId($user_shop->id)->pluck('category_id');
 
-            $category = App\Models\Category::whereIn('id',$my_product_category_ids)->orderBy('name','ASC')->get();
+            $category = App\Models\Category::whereIn('id',$my_product_category_ids)->get();
 
             if($category->count()>0){
                return $category;
@@ -892,13 +892,13 @@ if(!function_exists('getProductSubCategoryByShop')){
 
             $self_category = App\Models\Category::whereParentId($parent_id)->whereUserId($user->id)->where('level',3)->where('category_type_id',13)->whereType(0)->get();
 
-            $category = App\Models\Category::whereParentId($parent_id)->whereType(1)->where('level',3)->where('category_type_id',13)->orderBy('name','ASC')->get();
+            $category = App\Models\Category::whereParentId($parent_id)->whereType(1)->where('level',3)->where('category_type_id',13)->get();
 
             $category = $self_category->merge($category);
         }else{
             $my_product_category_ids = App\Models\UserShopItem::whereUserId($user->id)->whereUserShopId($user_shop->id)->whereCategoryId($parent_id)->pluck('sub_category_id');
 
-            $category = App\Models\Category::whereIn('id',$my_product_category_ids)->orderBy('name','ASC')->get();
+            $category = App\Models\Category::whereIn('id',$my_product_category_ids)->get();
         }
 
         return $category;
@@ -1202,7 +1202,7 @@ if(!function_exists('getNewProductCount')){
     }
 }
 if(!function_exists('getProductCountViaCategoryId')){
-    function getProductCountViaCategoryId($categoryId,$userId,$exclusive = 0){
+    function getProductCountViaCategoryId($categoryId,$userId){
         if($userId == auth()->id()){
 
             $shop_items_ids = App\Models\UserShopItem::where('category_id',$categoryId)->
@@ -1215,12 +1215,12 @@ if(!function_exists('getProductCountViaCategoryId')){
         }
         
 
-        return App\Models\Product::whereIn('id', $shop_items_ids)->where('exclusive',$exclusive)->where('is_publish',1)->groupBy('sku')->get()->count();
+        return App\Models\Product::whereIn('id', $shop_items_ids)->where('exclusive',0)->where('is_publish',1)->groupBy('sku')->get()->count();
     }
 }
 
 if(!function_exists('getProductCountViaSubCategoryId')){
-    function getProductCountViaSubCategoryId($sub_categoryId,$userId,$exclusive = 0){
+    function getProductCountViaSubCategoryId($sub_categoryId,$userId){
         if($userId == auth()->id()){
             $shop_items_ids = App\Models\UserShopItem::where('sub_category_id',$sub_categoryId)->where('user_id',$userId)->pluck('product_id');
         }else{
@@ -1764,38 +1764,34 @@ if (!function_exists('getClosestTandADay')) {
               $closestKey = $key;
            }
         }
-        return ['Key'=>"Rest $search In $closestKey  Days (approx)",'Value' => $closest];
+        return ['Key'=>$closestKey,'Value' => $closest];
     }
 }
 
 if (!function_exists('getTandA')) {
     function getTandA($sku = [],$avalable_stock, $search_quantity){
         $result = [];
-        
         $get_db = TimeandActionModal::whereIn('product_sku',$sku)->pluck('delivery_stock','delivery_period');
-        
         if ($search_quantity > $avalable_stock) {
-
             $rest_stock = abs($search_quantity - $avalable_stock);
-
             if (!empty($get_db) && count($get_db) != 0) {
                 $max_rec = max($get_db->toArray());
                 if ($search_quantity > $max_rec) {
                     // If Tand A Is Not Exist in Existing Condition
                     if ($avalable_stock > 0) {
-                        $result = ["Key" => "$rest_stock On Request","Value" => "On Request."];
+                        $result = ["Key" => "$avalable_stock Now, & $rest_stock On Request","Value" => "On Request."];
                     }else{
                         $result = ["Key" => "On Request","Value" => "On Request."];
                     }
                 }else{
-                    // $close_rec = getClosestTandADay($search_quantity,$get_db);
-                    $close_rec = getClosestTandADay($rest_stock,$get_db);
+                    $close_rec = getClosestTandADay($search_quantity,$get_db);
                     $result = $close_rec;
                 }
             }else{
                 // If Tand A Is Not Created Ever
+                // $result = ["Key" => "On Request","Value" => "On Request."];
                 if ($avalable_stock > 0) {
-                    $result = ["Key" => "$rest_stock On Request","Value" => "On Request."];
+                    $result = ["Key" => "$avalable_stock Now, & $rest_stock On Request","Value" => "On Request."];
                 }else{
                     $result = ["Key" => "On Request","Value" => "On Request."];
                 }
@@ -1932,8 +1928,7 @@ function getProductRefIdByRole($product,$user_shop_item, $case){
         if($product->user_id == $user_shop_item->user_id){
             return $product->model_code;
         }else{
-            // return getMicrositeItemSKU($user_shop_item->id);
-            return $user_shop_item->model_code_user;
+            return getMicrositeItemSKU($user_shop_item->id);
         }
     }
 }
@@ -1960,16 +1955,6 @@ if (!function_exists('getParentAttruibuteValuesByIds')) {
         return ProductExtraInfo::where('attribute_id',$attri_id)->whereIn('product_id',$product_ids)->groupBy('attribute_value_id')->pluck('attribute_value_id');
     }
 }
-
-
-// Gettign Product Attribute value Name
-if (!function_exists('getProductExtrainfoRecord')) {
-    function getProductExtrainfoRecord($product_id) {
-        // magicstring(ProductExtraInfo::where('attribute_id',$attri_id)->whereIn('product_id',$product_ids)->groupBy('attribute_value_id')->pluck('attribute_value_id'));
-        return ProductExtraInfo::where('product_id',$product_id)->first();
-    }
-}
-
 
 
 // Gettign Product Attribute Name

@@ -116,12 +116,6 @@
         }
     }
 
-    .shop-list {
-        height: 420px;
-        overflow: hidden;
-        overflow-y: auto;
-    }
-
 </style>
 <link
 rel="stylesheet"
@@ -233,7 +227,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
                                     // $usi = productExistInUserShop($product->id,auth()->id(),$user_shop->id);
                                     $productId= \Crypt::encrypt($product->id);
                                 @endphp
-                                    <div class="col-lg-3 col-md-4 col-12 mt-4 pt-2 d-print-none contain-{{ $product->id }}" style="position: relative;">
+                                    <div class="col-lg-3 col-md-4 col-12 mt-4 pt-2 d-print-none" style="position: relative;" id="contain-{{ $product->id }}">
                    
 
                                         <div class="sampleenquiry" style="position: absolute1; top: 10px;left: 10px;">
@@ -270,20 +264,19 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
                                                     <p class="mb-0" contenteditable="true"><b>Brand:</b><span>{{ $product->brand->name ?? '--' }}</span></p>
                                                 @endif
 
-                                          
-                                                @foreach (json_decode($proposal->options)->show_Attrbute as $item)
-                                                    @php
-                                                        $value = (App\Models\ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$item)->first() != null) ? getAttruibuteValueById(App\Models\ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$item)->first()->attribute_value_id)->attribute_value : '';
-                                                    @endphp
-                                                    @if ($value != '')
-                                                        <div style="wdith:100%">
-                                                            <small contenteditable="true" >
-                                                                {{ getAttruibuteById($item)->name }} - {{ $value }} , <br>
-                                                            </small>
-                                                        </div>
-                                                    @endif
-                                                    
-                                                @endforeach                                                       
+                                                <div style="wdith:100%">
+                                                    <small contenteditable="true" >
+                                                        
+                                                            @if ($proposal_options->show_color)
+                                                                {{ $product->color ?? '' }} 
+                                                            @endif
+
+                                                            @if ($proposal_options->show_size)
+                                                                @if($product->size) , @endif 
+                                                                {{ $product->size ?? ''}}
+                                                            @endif                                                        
+                                                    </small>
+                                                </div>
 
                                                 {{-- @if($product->user_id == auth()->id()) --}}
                                                     <span contenteditable="true">Model Code :# <span>{{ $product->model_code }}</span></span>
@@ -328,6 +321,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
 
                                     @if(++$key%12==0)
                                         <div class="col-12 pdf-margin d-none" style="margin-bottom: 250px">
+
                                         </div>
                                     @endif
                                 @endforeach
@@ -483,7 +477,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
             let val = $(this).data('contain');
 
             console.log(val);
-            $("."+val).remove(); 
+            $("#"+val).remove(); 
         });
 
         $("#changemarguin").click(function (e) { 
@@ -582,6 +576,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
             var imgData = canvas.toDataURL("image/jpeg", 1.0);
             var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
             pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
+            
             
             for (var i = 1; i <= totalPDFPages; i++) { 
                 pdf.addPage(PDF_Width, PDF_Height);

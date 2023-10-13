@@ -279,6 +279,7 @@ class UserShopItemController extends Controller
             'price_groups'     => 'sometimes',
             'is_published'     => 'sometimes',
         ]);
+        
         try{
             if(!$request->has('is_published')){
                 $request['is_published'] = 0;
@@ -288,9 +289,6 @@ class UserShopItemController extends Controller
                 if($chk){
                     return back()->with('error', 'You already have this item in your micro-site');
                 }
-
-
-
             $sku_codes = Product::whereId($request->product_id)->pluck('sku');
             $products = Product::whereIn('sku',$sku_codes)->get();
 
@@ -318,6 +316,15 @@ class UserShopItemController extends Controller
                             return back()->with('error',"Total products including variants:".$products->count()." You can add only ".$rem.' products ');
                         }
                     }
+                    // else{
+                    //     if(+$limits['add_to_site'] <= $my_site_pro_count){
+                    //         return back()->with('error','Your Add to my Site Limit exceed!');
+                    //     }elseif(+$limits['add_to_site']-$my_site_pro_count < $products->count()){
+                    //         $rem = +$limits['add_to_site']-$my_site_pro_count;
+                    //         return back()->with('error',"Total products including variants:".$products->count()." You can add only ".$rem.' products ');
+                    //     }
+                    // }
+
                 }
             }
 
@@ -344,9 +351,6 @@ class UserShopItemController extends Controller
                     $user_shop_item = UserShopItem::create($request->all());
                 }
                
-
-
-                
             if (AuthRole() != 'Admin') {
                  return back()->with('success','User Shop Item Created Successfully!');
             }elseif ($request->user_id) {
@@ -355,7 +359,7 @@ class UserShopItemController extends Controller
                 return redirect()->route('panel.user_shop_items.index')->with('success','Item added to shop  Successfully!');
             }
             
-        }catch(\Exception $e){            
+        }catch(Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -397,7 +401,9 @@ class UserShopItemController extends Controller
                     
                     // $my_site_pro_data = UserShopItem::whereUserId($request->type_id)->whereNotIn('product_id',$my_pro_ids)->groupBy('user_shop_id')->get(); 
                     $my_site_pro_data = UserShopItem::whereUserId(auth()->id())->whereNotIn('product_id',$my_pro_ids)->groupBy('user_shop_id')->get();
+                    
                     $my_site_pro_count = $my_site_pro_data->count();
+                    
                     $added_products = Product::whereIn('id', $proIds)->groupBy('sku')->get();
                 }
                 
@@ -709,6 +715,7 @@ class UserShopItemController extends Controller
                 return back()->with('error',"Couldn't Publish Because Supplier Unpublished the Product!")->withInput($request->all());
             }
 
+
             if($user_shop_item){
                 if($request->has('medias') && count($request->get('medias')) > 0){
                         $request['images'] = implode(',',$request->get('medias'));
@@ -716,6 +723,7 @@ class UserShopItemController extends Controller
                     $request['images'] = null;
                 }
                 // return  $request->all();
+
                $chk = $user_shop_item->update($request->all());
             }
 
