@@ -19,11 +19,11 @@
             }
             $productId= \Crypt::encrypt($products->id);
         @endphp
-    
+
             <div class="col-3">
                 <div class="shop-image position-relative overflow-hidden rounded">
                     {{-- <a href="{{ route('pages.shop-show',$productId)."?pg=".request()->get('pg') }}"> --}}
-                        <img src="{{ ( (getShopProductImage($products->id,'single') != null)  ? asset(getShopProductImage($products->id,'single')->path) : asset('frontend/assets/img/placeholder.png')) }}" class="img-fluid " style="height: 150px;width: 100%;object-fit: fill   ;" alt="">
+                        <img src="{{ ( (getShopProductImage($products->id,'single') != null)  ? asset(getShopProductImage($products->id,'single')->path) : asset('frontend/assets/img/placeholder.png')) }}" class="img-fluid " style="height: 250px;width: 100%;object-fit: contain;" alt="">
                     {{-- </a> --}}
                     <ul class="list-unstyled shop-icons filterable-items ashu d-none">
                         <li class="mt-1">
@@ -46,41 +46,27 @@
                             <b>In Stock </b>
                             <span> 
                                @if (getinventoryByproductId($products->id) != null)
-                                    @if (getinventoryByproductId($products->id)->total_stock != null && getinventoryByproductId($products->id)->total_stock != 0)
-                                        <i class="fa fa-check-circle fa-sm text-success"></i>    
-                                    @else
-                                        <i class="fa fa-times-circle fa-sm text-danger"></i>
-                                    @endif
+                                    @if (getinventoryByproductId($products->id)->total_stock != null && getinventoryByproductId($products->id)->total_stock != 0 )
+                                            <i class="fa fa-check-circle fa-sm text-success"></i>    
+                                        @else
+                                            <i class="fa fa-times-circle fa-sm text-danger"></i>
+                                        @endif
                                @endif
                             </span>
-                            {{-- <br> --}}
+                            {{-- <br> --}}, 
                             @php
                                 $sku = [$products->sku];
                                 $avalable_stock = (getinventoryByproductId($products->id) != null) ? getinventoryByproductId($products->id)->total_stock : 0 ?? 0;
                                 $search_quantity = $request->get('quantity');
-                                $diffrence = abs(getinventoryByproductId($products->id)->total_stock - $search_quantity);
-
                             @endphp
                             @if ($avalable_stock < $search_quantity)
-                                <b>Available : </b>
+                                {{-- <b>Available : </b> --}}
                                 <span>
-                                    {{ $search_quantity - $diffrence }}
-                                </span>
-                                <br>
-                                <span>
-                                    @if (getTandA($sku,$avalable_stock,$search_quantity)['Key'] ===  "On Request")
+                                    @if (getTandA($sku,$avalable_stock,$search_quantity)['Key'] ==  "On Request")
                                         On Request
                                     @else
-                                        @php
-                                            $res = getTandA($sku,$avalable_stock,$search_quantity);
-                                        @endphp
-                                         {{ $res['Key'] }}
+                                        {{ getTandA($sku,$avalable_stock,$search_quantity)['Key']}} Days (approx)
                                     @endif
-                                </span>
-                                <br>
-                            @else
-                                <span>
-                                    {{ getTandA($sku,$avalable_stock,$search_quantity)['Key'] }}
                                 </span>
                                 <br>
                             @endif

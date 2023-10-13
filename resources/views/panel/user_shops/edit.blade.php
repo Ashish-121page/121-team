@@ -149,8 +149,6 @@
                                                             value="{{ $user->name }}" placeholder="Enter Name">
                                                     </div>
                                                 </div>
-
-
                                                 <div class="col-md-6 col-12 ">
                                                     <div class="form-group">
                                                         <div class="d-flex justify-content-between">
@@ -175,6 +173,15 @@
                                                         </div>
                                                         <input @if($user->phone_no_verified_at != null) readonly @endif type="phone_no" placeholder="test@test.com" class="form-control" name="phone" id="phone_no" value="{{ $user->phone }}">
                                                     </div>  
+                                                </div>
+                                                <div class="col-md-12 ">
+                                                    <div class="form-group mb-3">
+                                                        <label class="form-label">vCards</label>
+                                                        <input type="file" class="form-control" name="vcard">
+                                                        @if(isset($vcard) && $vcard != null)
+                                                            <img src="{{ asset($vcard->path) }}" class="mt-3 rounded" alt="vcard" style="height: 100px;">
+                                                        @endif
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-0 d-flex justify-content-center">
@@ -333,15 +340,7 @@
                                                         <div class="help-block with-errors"></div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12 d-none">
-                                                    <div class="form-group mb-3">
-                                                        <label class="form-label">vCards</label>
-                                                        <input type="file" class="form-control" name="vcard">
-                                                        @if(isset($vcard) && $vcard != null)
-                                                            <img src="{{ asset($vcard->path) }}" class="mt-3 rounded" alt="vcard" style="height: 100px;">
-                                                        @endif
-                                                    </div>
-                                                </div>
+                                                
                                                 
                                             
                                                 <div class="col-md-12 d-none">
@@ -790,7 +789,7 @@
                                                             </span>
                                                             <input type="text" class="form-control" type="url" name="whatsapp" value="{{ $contact_info->whatsapp ?? ' ' }}" placeholder="Enter Whatsapp Url">
                                                         </div>
-                                                        <span class="text-dark">Number should'nt contain + or country code
+                                                        <span class="text-dark">Number shouldn't contain '+' or country code
                                                         </span>
                                                     </div>
                                                 </div>
@@ -852,9 +851,9 @@
                                                     </div>
                                                     <div class="input-group">
                                                         <span class="input-group-prepend">
-                                                            <label class="input-group-text"><i class="ik ik-youtube"></i></label>
+                                                            <label class="input-group-text"><i class="ik ik-instagram"></i></label>
                                                         </span>
-                                                        <input type="url" name="social_link[yt_link]" class="form-control" value="{{ @$social->yt_link }}" >
+                                                        <input type="url" name="social_link[insta_link]" class="form-control" value="{{ @$social->insta_link }}" >
                                                     </div>
                                                     <div class="input-group">
                                                         <span class="input-group-prepend">

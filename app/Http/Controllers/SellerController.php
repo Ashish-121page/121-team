@@ -413,13 +413,7 @@ class SellerController extends Controller
                 $data->user_id=auth()->id();
                 
                 if ($auto_acr == 1) {
-                    $group_id_1 = Group::where('user_id',$user->id)->where('name','=','customer')->first();
-                    $group_id_2 = Group::where('user_id',$user->id)->first();
-                    if ($group_id_1 == null) {
-                        $group_id = $group_id_2;
-                    }else{
-                        $group_id = $group_id_1;
-                    }
+                    $group_id = Group::where('user_id',$user->id)->where('name','=','customer')->first();
                     $data->price_group_id = $group_id->id;
                     $data->status=1;
                 }else{

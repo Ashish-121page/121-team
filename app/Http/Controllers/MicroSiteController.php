@@ -204,7 +204,7 @@ class MicroSiteController extends Controller
 
         if (request()->has('exclusive') && request()->get('exclusive') != null) {
             if (request()->get('exclusive') == 'on') {
-  
+                $user_shop_items->where('products.exclusive','1');
             }elseif (request()->get('exclusive') == 'off') {
                 $user_shop_items->where('products.exclusive','0');
             }
@@ -249,13 +249,15 @@ class MicroSiteController extends Controller
         $maxID = Product::whereNotNull('price')->where('user_id',$user_shop->user_id)->max("price");
             // dd($minID);
             // dd($maxID);
+            // magicstring($countattri);
+            // return;
             
             
         if ($request->ajax()) {
-            return view('frontend.micro-site.shop.loadIndex',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds'));
+            return view('frontend.micro-site.shop.loadIndex',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','user_shop'));
         }
 
-        return view('frontend.micro-site.shop.index',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','minID','maxID' ));
+        return view('frontend.micro-site.shop.index',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','minID','maxID','user_shop' ));
 
     }
 

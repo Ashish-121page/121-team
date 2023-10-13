@@ -446,29 +446,14 @@ class Microproposals extends Controller
         
         $added_products = ProposalItem::whereProposalId($proposal->id)->orderBy('sequence','ASC')->get();
         $excape_items = $added_products->pluck('product_id')->toArray();
-
-
-        
-        $aval_atrribute = ProductExtraInfo::whereIn('product_id',$excape_items)->groupBy('attribute_id')->pluck('attribute_id')->toArray();
-
-        
-        // magicstring( (array) json_decode($proposal->options)->show_Attrbute);
-        
-        
-        
-        // // magicstring($aval_atrribute);
-        // return;
-        
-        
         
         $user = auth()->user();
         
         $my_resellers = AccessCatalogueRequest::whereNumber(auth()->user()->phone)->whereStatus(1)->get() ?? $user; 
         $offerPasscode = $proposal->password ?? json_decode($user->extra_passcode)->offers_passcode ?? "1111";
 
-       
         
-        return view('frontend.micro-site.proposals.move',compact('added_products','excape_items','proposal','slug','user','my_resellers','offerPasscode','aval_atrribute'));
+        return view('frontend.micro-site.proposals.move',compact('added_products','excape_items','proposal','slug','user','my_resellers','offerPasscode'));
 
 
     }
@@ -508,8 +493,6 @@ class Microproposals extends Controller
             'user_shop_id'     => 'required'
         ]);
 
-        
-
         if($request->customer_mob_no != null){
             $this->validate($request, [
                 'customer_mob_no'     => 'sometimes|min:10|max:10',
@@ -537,23 +520,21 @@ class Microproposals extends Controller
                     $request['client_logo'] = null;
                 }
 
-                $options = $request->optionsforoffer;
                 
                 if ($request->get('optionsforoffer')) {
                     $show_desc = in_array("description",$request->get('optionsforoffer')) ? 1 : 0;
+                    $show_color = in_array("color",$request->get('optionsforoffer')) ? 1 : 0;
                     $show_notes = in_array("notes",$request->get('optionsforoffer')) ? 1 : 0;
-                    $show_attrbute = array_filter($options,"is_numeric") ?? [];
-                    
+                    $show_size = in_array("size",$request->get('optionsforoffer')) ? 1 : 0;
                 }else{
-                    
                     $show_desc =  0;
+                    $show_color = 0;
                     $show_notes = 0;
-                    $show_attrbute =  0;
+                    $show_size =  0;
                 }
 
-                
 
-                $options_arr = ["show_Description" => $show_desc ?? 0,"Show_notes" => $show_notes ?? 0,"show_Attrbute" => $show_attrbute ?? 0];
+                $options_arr = ["show_Description" => $show_desc ?? 0,"Show_notes" => $show_notes ?? 0,"show_color" => $show_color ?? 0,"show_size" => $show_size];
 
                 $request['options'] = json_encode($options_arr);
                 $request['status'] = 1;
@@ -845,6 +826,17 @@ class Microproposals extends Controller
     function ashish(Request $request){
         magicstring(session()->all());
         magicstring(auth()->user());
+        // $slug = $request->subdomain;
+        // $user_shop = UserShop::whereSlug($slug)->first();
+        
+        // echo auth()->id();
+        // echo$user_shop->user_id;
+        
+        // if($user_shop->user_id == auth()->id()){
+        //     echo "Ashish";
+        // }
+        
+
     }
     
     

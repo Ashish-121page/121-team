@@ -145,8 +145,9 @@
                                                 <span class="remove-tag" data-color="{{ $Color }}" title="click to Remove {{$name}}">x</span>
                                             </span>
                                         @endforeach
-                                    @endif
+                                    @endif                                     
                                 @endforeach
+                                
                             </div>
                             {{-- Scooboo Tags filter End --}}
 
@@ -307,6 +308,7 @@
                                                     <!-- Collapsible Button -->
                                                     <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#AttributeList_{{$key}}" aria-expanded="false" aria-controls="AttributeList_{{$key}}">
                                                         {{ getAttruibuteById($item)->name }}
+                                                        
                                                     <i class="fas fa-chevron-down fa-xs"></i>
                                                     </h6>
                                                     @php
@@ -326,6 +328,9 @@
                                                                     @endif >
                                                                     <label for="searchId{{ $mater }}" class="form-check-label fltr-lbl ">
                                                                         {{ getAttruibuteValueById($mater)->attribute_value ?? ''}}
+                                                                        <span style="font-size: 11px">
+                                                                            {{ count( App\Models\ProductExtraInfo::where('attribute_value_id',$mater)->where('user_id',$user_shop->user_id)->groupBy('attribute_value_id')->get()); }}
+                                                                        </span>
                                                                     </label>
                                                                 </h5>
                                                             </li>
@@ -342,7 +347,8 @@
 
                                   {{-- Exclusive Products --}}
 
-                                    <div class="mx-2 d-flex">
+                                {{-- <h6 class="widget px-2">Exclusive Products</h6> --}}
+                                {{-- <div class="mx-2 d-flex">
                                     <input type="checkbox" class="form-check-input visually-hidden" name="exclusive" id="exclusive" @if (request()->get('exclusive')) checked @endif>
                                     <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
                                     @if (request()->get('exclusive') == 'on')
@@ -353,7 +359,7 @@
                                         <div class="text-danger" style="font-weight: bolder"> OFF </div>
                                     @endif
                                     
-                                </div>
+                                </div> --}}
                                 
                                 {{-- Exclusive Products --}}
                                
@@ -657,7 +663,6 @@
                 data: {
                     'page':pages,
                     'title': urlParams.get('title'),
-                    'exclusive': urlParams.get('exclusive') ?? 'off',
                     // ! Uncomment this to Enable search by Curren Filters/
                     // 'model_code': urlParams.get('model_code'),
                     // 'category_id': urlParams.get('category_id'),
@@ -665,6 +670,7 @@
                     // 'brand': urlParams.get('brand'),
                     // 'from': urlParams.get('from'),
                     // 'to': urlParams.get('to'),
+                    // 'exclusive': urlParams.get('exclusive') ?? 'off',
                     @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
                         @foreach ($additional_attribute as $key => $item)
                             'searchVal_{{$key}}' : urlParams.getAll("searchVal_{{$key}}[]"),
@@ -703,7 +709,6 @@
                 data: {
                     'title':this.value,
                     'model_code':this.value,
-                    'exclusive': urlParams.get('exclusive') ?? 'off',
                     // 'exclusive': urlParams.get('exclusive') ?? 'off',
                     // 'category_id': urlParams.get('category_id'),
                     // 'sub_category_id': urlParams.get('sub_category_id'),

@@ -47,66 +47,9 @@
                 <div class="col-md-6 col-12"> 
                     <div class="form-group {{ $errors->has('price') ? 'has-error' : ''}}">
                         <label for="price" class="control-label">Shop Price</label>
-                        <input  class="form-control floatvalues priceInput" name="price" type="text" id="price" value="{{old('price')}}" placeholder="Enter Price" >
+                        <input  class="form-control" name="price" type="number" id="price" value="{{old('price')}}" placeholder="Enter Price" >
                     </div>
                 </div>
-
-                {{-- - New Fields --}}
-                
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('title') ? 'has-error' : ''}}">
-                        <label for="title" class="control-label">Title</label>
-                        <input  class="form-control" name="title_user" type="text" id="ptitle" value="{{old('title')}}" placeholder="Enter Title" >
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('video_url') ? 'has-error' : ''}}">
-                        <label for="video_url" class="control-label">video URL</label>
-                        <input  class="form-control" name="video_url" type="url" id="video_url" value="{{old('video_url')}}" placeholder="Enter Video URL" >
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('artwork_url') ? 'has-error' : ''}}">
-                        <label for="artwork_url" class="control-label">Artwork URL</label>
-                        <input  class="form-control" name="artwork_url" type="url" id="artwork_url" value="{{old('artwork_url')}}" placeholder="Enter Artwork URL" >
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('model_code') ? 'has-error' : ''}}">
-                        <label for="model_code" class="control-label">Model Code</label>
-                        <input  class="form-control" name="model_code_user" type="text" id="model_code" value="{{old('model_code')}}" placeholder="Enter Model Code" >
-                    </div>
-                </div>
-
-                
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('brand_name') ? 'has-error' : ''}}">
-                        <label for="brand_name" class="control-label">Brand Name</label>
-                        <input  class="form-control" name="brand_name_user" type="text" id="brand_name_user" value="{{old('brand_name')}}" placeholder="Enter Brand Name" >
-                    </div>
-                </div>
-
-                      
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('selling_price_unit') ? 'has-error' : ''}}">
-                        <label for="selling_price_unit" class="control-label">Selling Price Unit</label>
-                        <input  class="form-control floatvalues" name="selling_price_unit_user" type="text" id="selling_price_unit" value="{{old('selling_price_unit')}}" placeholder="Enter Selling Price Unit" >
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('mrp_user') ? 'has-error' : ''}}">
-                        <label for="mrp_user" class="control-label">MRP</label>
-                        <input  class="form-control floatvalues" name="mrp_user" type="text" id="mrp_user" value="{{old('mrp_user')}}" placeholder="Enter MRP" >
-                    </div>
-                </div>
-
-
-                {{-- - New Fields End --}}
-
 
                 <div class="col-md-6 col-12"> 
                     <div class="form-group {{ $errors->has('is_published') ? 'has-error' : ''}}"><br>
