@@ -131,23 +131,37 @@
                     <div class="card border-0 sidebar sticky-bar">
                             {{-- Scooboo Tags filter --}}
                             <div class="selected-tags my-3">
+                                @if ($alll_searches != null)
+                                    @foreach ($alll_searches[0] as $key =>  $Color)
+                                        @if ($Color != '')
+                                            <span class="badge bg-primary searchabletag">
+                                                {{-- {{ getAttruibuteValueById($Color)->attribute_value }} --}}
+                                                <span class="badge bg-primary">
+                                                {{ $key }}: {{ App\Models\Category::where('id',$Color)->first()->name ?? $Color  }}
+                                                </span>
+                                                <span class="remove-tag" data-color="{{ $Color }}" title="click to Remove ">x</span>
+                                            </span>
+                                        @endif
+                                    @endforeach
+                                @endif
+
                                 @foreach ($additional_attribute as $key => $item)
                                     @if (request()->has("searchVal_$key") && !empty(request()->get("searchVal_$key")))
                                         @foreach (request()->get("searchVal_$key") as $Color)
                                         @php
-                                            $name =  getAttruibuteValueById($Color)->attribute_value
+                                            $name =  getAttruibuteValueById($Color)->attribute_value;
+                                            // $parent =  getAttruibuteById(getAttruibuteValueById($Color)->parent_id)->name;
                                         @endphp
                                             <span class="badge bg-primary searchabletag">
                                                 {{-- {{ getAttruibuteValueById($Color)->attribute_value }} --}}
                                                 <span class="badge bg-primary">
-                                                    {{ $name }}
+                                                     {{ $name }}
                                                 </span>
                                                 <span class="remove-tag" data-color="{{ $Color }}" title="click to Remove {{$name}}">x</span>
                                             </span>
                                         @endforeach
                                     @endif                                     
                                 @endforeach
-                                
                             </div>
                             {{-- Scooboo Tags filter End --}}
 
@@ -348,7 +362,7 @@
                                   {{-- Exclusive Products --}}
 
                                 {{-- <h6 class="widget px-2">Exclusive Products</h6> --}}
-                                {{-- <div class="mx-2 d-flex">
+                                <div class="mx-2 d-flex">
                                     <input type="checkbox" class="form-check-input visually-hidden" name="exclusive" id="exclusive" @if (request()->get('exclusive')) checked @endif>
                                     <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
                                     @if (request()->get('exclusive') == 'on')
@@ -359,7 +373,7 @@
                                         <div class="text-danger" style="font-weight: bolder"> OFF </div>
                                     @endif
                                     
-                                </div> --}}
+                                </div>
                                 
                                 {{-- Exclusive Products --}}
                                
@@ -590,6 +604,10 @@
                 // Get the color value associated with the tag
                 var color = $(this).data("color");
                 var filterdata = $(`input[value=${color}]`)
+
+                if (filterdata.attr('type') == 'text' || filterdata.attr('type') == 'number') {
+                    filterdata.val('');
+                }
                 $(this).parent().remove();
                 filterdata.click()
                 $("#searchform").submit()
