@@ -133,6 +133,8 @@ class MicroSiteController extends Controller
             return back();
         }
 
+
+
         $user_shop_items = Product::join('user_shop_items', 'products.id', '=', 'user_shop_items.product_id')
         ->selectRaw('products.id as products_id, products.title, products.sku ,products.model_code, products.price as product_price, user_shop_items.*');
 
@@ -169,8 +171,28 @@ class MicroSiteController extends Controller
                 $user_shop_items->whereIn('products.id', $GetProduct);
                 $is_search = 1;
             }
-
         }
+
+
+
+        $alll_searches = [];
+        array_push($alll_searches,[
+            "Category" =>$request->get('category_id'),
+            "Sub Category" => $request->get('sub_category_id'),
+            "From" => $request->get('from'),
+            "To" => $request->get('to')
+        ]);
+        
+        // magicstring($alll_searches);
+
+        // magicstring($request->all());
+        // return;
+
+
+
+
+
+
         if(request()->has('title') && request()->get('title') != null){
             $user_shop_items->where('user_shop_id',$user_shop->id)->where('products.title','like','%'.request()->get('title').'%')->orwhere('products.model_code','like','%'.request()->get('model_code').'%');
         }
@@ -237,7 +259,7 @@ class MicroSiteController extends Controller
         // Check Author Access Code
         $chk_access_code = AccessCode::whereRedeemedUserId($user_id)->first();
         if(!$chk_access_code){
-            return redirect(inject_subdomain('home', $slug))->with('error', 'This micro side does not offer selling at this moment. If you are a shop owner contact 121 Team for assisting you with Access Code.');
+            return redirect(inject_subdomain('home', $slug))->with('error', 'This micro site does not offer selling at this moment. If you are a shop owner contact 121 Team for assisting you with Access Code.');
         }
         $categories = getProductCategoryByShop($slug,0);
         $brands_ids = $items->pluck('brand_id') ?? null;
@@ -254,10 +276,10 @@ class MicroSiteController extends Controller
             
             
         if ($request->ajax()) {
-            return view('frontend.micro-site.shop.loadIndex',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','user_shop'));
+            return view('frontend.micro-site.shop.loadIndex',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','user_shop','alll_searches'));
         }
 
-        return view('frontend.micro-site.shop.index',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','minID','maxID','user_shop' ));
+        return view('frontend.micro-site.shop.index',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','minID','maxID','user_shop','alll_searches' ));
 
     }
 
