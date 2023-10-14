@@ -679,7 +679,7 @@
                                                         @if ($proposal->relate_to == $proposal->user_shop_id)
                                                             <option value="notes" @if (json_decode($proposal->options)->Show_notes ?? 0) selected @endif>Notes</option>
                                                         @endif
-
+                                                        
                                                         @foreach ($aval_atrribute as $item)
                                                             <option value="{{ $item }}" 
                                                             @if ($proposal->options != null)
@@ -689,9 +689,7 @@
                                                             @endif
                                                             >{{ getAttruibuteById($item)->name ?? '' }}</option>
                                                         @endforeach
-                                                        
-                                                        
-                                                     
+
                                                     </select>
 
                                               

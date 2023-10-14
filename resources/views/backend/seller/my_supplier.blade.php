@@ -81,8 +81,8 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3>{{ __('My Supplier')}}</h3> 
                             <div class="mobile-align-right">
-                                {{-- <a href="#" data-title="Sent Catalogue" data-status="1" class="btn btn-success access-request mt-lg-0 mt-md-0 mt-3">Sent Catalogue</a>
-                                <a href="#" data-title="Request For Catalogue" data-status="0" class="btn btn-primary access-request mt-lg-0 mt-md-0 mt-3">Request Catalogue</a> --}}
+                                {{-- <a href="#" data-title="Sent Catalogue" data-status="1" class="btn btn-success access-request mt-lg-0 mt-md-0 mt-3">Sent Catalogue</a> --}}
+                                {{-- <a href="#" data-title="Request For Catalogue" data-status="0" class="btn btn-primary access-request mt-lg-0 mt-md-0 mt-3">Request Catalogue</a> --}}
                             </div>
                         </div>
 
@@ -213,7 +213,7 @@
                             {{-- <h3>{{ __('My Supplier')}}</h3>  --}}
                             <div class="mobile-align-right">
                                 <!--<a href="#"  data-btnlabel="Send" data-title="Sent Catalogue" data-status="1" class="btn btn-success access-request mt-lg-0 mt-md-0 mt-3">Sent Catalogue</a>-->
-                                <a href="#" data-btnlabel="Request" data-title="Request For Catalogue" data-status="0" class="btn btn-primary access-request mt-lg-0 mt-md-0 mt-3">Request Catalogue</a>
+                                {{-- <a href="#" data-btnlabel="Request" data-title="Request For Catalogue" data-status="0" class="btn btn-primary access-request mt-lg-0 mt-md-0 mt-3">Request Catalogue</a> --}}
                             </div>
                         </div>
                         <div class="card-body bg-white">
@@ -284,7 +284,7 @@
                                                                 <a target="_blank" href="{{ isset($user_shop) ? inject_subdomain('home', $user_shop->slug, true, true) : '#'}}" class="btn btn-sm p-1 btn-primary mr-1 pr-1 w-50 d-block">Display</a>
                                                                 <a target="_blank" href="{{isset($user_shop) ?  inject_subdomain('shop', $user_shop->slug, true, true) : '#'}}" class="btn btn-sm p-1 btn-primary mr-1 pr-1 w-50 d-block">View Display</a>
                                                                 @if(isset($user_shop) && $user_shop != null && isset($user))
-                                                                <a href="{{ isset($user_shop)  ? route('panel.user_shop_items.create')."?type=direct&type_id=$user->id&acr" : '#' }}" class="btn btn-primary">Access Catalogue</a> 
+                                                                <a href="{{ isset($user_shop)  ? route('panel.user_shop_items.create')."?type=direct&type_id=$user->id" : '#' }}" class="btn btn-primary">Access Catalogue</a> 
                                                                @endif
                                                             </div>
                                                         </div>

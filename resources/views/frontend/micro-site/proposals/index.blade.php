@@ -335,12 +335,6 @@
             margin: 10px 0;
         }
 
-        
-    .remove-tag{
-        cursor: pointer;
-        padding: 5px;
-    }
-
 </style>
 
 <section class="section">
@@ -354,27 +348,6 @@
                     <i class="uil uil-times down_arrow close_mobile_filter" style="font-size: 23px;"></i>
                 </div>
 
-
-                {{-- Scooboo Tags filter --}}
-                    <div class="selected-tags my-3">
-                        @foreach ($additional_attribute as $key => $item)
-                            @if (request()->has("searchVal_$key") && !empty(request()->get("searchVal_$key")))
-                                @foreach (request()->get("searchVal_$key") as $Color)
-                                @php
-                                    $name =  getAttruibuteValueById($Color)->attribute_value
-                                @endphp
-                                    <span class="badge bg-primary searchabletag">
-                                        {{-- {{ getAttruibuteValueById($Color)->attribute_value }} --}}
-                                        <span class="badge bg-primary">
-                                            {{ $name }}
-                                        </span>
-                                        <span class="remove-tag" data-color="{{ $Color }}" title="click to Remove {{$name}}">x</span>
-                                    </span>
-                                @endforeach
-                            @endif
-                        @endforeach
-                    </div>
-                {{-- Scooboo Tags filter End --}}
                 @php
                     $proposal_deatail = json_decode($proposal->customer_details);
                 @endphp
@@ -390,7 +363,7 @@
                 </div>
 
                 <div class="card border-0 sidebar sticky-bar custom-scrollbar">
-                    <form form role="search" method="GET" id="searchform" class="card-body filter-body p-0 applyFilter d-none d-md-block mobile_filter">
+                    <form form role="search" method="GET" id="" class="card-body filter-body p-0 applyFilter d-none d-md-block mobile_filter">
                         <input type="hidden" name="sort" value="" class="sortValue">
                         <h5 class="widget-title pt-3 pl-15" style="display: inline-block;">Filters
                         </h5>
@@ -423,70 +396,170 @@
                             @endif   --}}
 
 
-                                {{-- categories Ashish --}}
+                                {{-- <h6 class="widget-title mt-2">Margin</h6>
+                                <div class="mx-2 d-flex">
+                                    <input  style="width: 75px;height: 35px;" @if(request()->has('margin') && request()->get('margin') != null) value="{{ request()->get('margin') ?? 10}}" @endif type="text" name="margin" class="form-control" placeholder="Enter Margin %" Id="hike">
+                                </div> --}}
+
+                                {{-- Product Price Colllapsible --}}
+                                    {{-- <div class="container mt-3">
+                                        <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#ProductPriceList" aria-expanded="false" aria-controls="ProductPriceList">
+                                            Product Price
+                                        <i class="fas fa-chevron-down fa-xs"></i>
+                                        </h6>
+                                        <div class="collapse" id="ProductPriceList">
+                                        <div class="mx-3 d-flex">
+                                            <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="number" min="0" name="from" class="form-control" placeholder=" ₹ Min">
+                                            <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="number" min="0" name="to" class="form-control ms-2" placeholder="₹ Max">
+                                        </div>
+                                    </div>
+                                </div> --}}
+
+                                <h6 class="widget-title mt-2">Price</h6>
+                                    <div class="mx-2 d-flex">
+                                        <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" ₹ Min">
+                                        <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder="₹ Max">
+                                        <button class="price_go_btn ms-2" type="submit">GO</button>
+                                    </div>
+                                
+                                
+                                {{-- Product Price Colllapsible End --}}
+
+
+                                {{-- Product price Ashish --}}
+                                {{-- <div class="widget">
+                                    <h6 class="widget-title m-3">Product Price</h6>
+                                    <div class="mx-3 d-flex">
+                                        <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="number" min="0" name="from" class="form-control" placeholder=" ₹ Min">
+                                        <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="number" min="0" name="to" class="form-control ms-2" placeholder="₹ Max">
+                                        {{-- <button class="price_go_btn ms-2" type="submit">GO</button> --}}
+                                    {{-- </div>
+                                </div>  --}}
+
+                                {{-- <div class="widget"> --}}
+                                    {{-- <h6 class="widget-title m-3">Quantity to Search</h6> --}}
+                                    {{-- <div class="m-3 d-flex">
+                                        <input  style="height: 35px; width: 75px" @if(request()->has('quantity') && request()->get('quantity') != null) value="{{ request()->get('quantity') }}" @endif type="text" name="quantity" class="form-control" placeholder="Qty">
+                                    </div>
+                                </div> --}}
+
+                                {{-- categories Collapsible--}}
+
+                                {{-- <div class="Container mt-3">
                                     <!-- Categories -->
-                                    <div class="widget bt-1 pt-3 mx-2">
-                                        <h6 class="widget-title mt-2">Categories</h6>
-                                        <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
-                                            <li>
-                                                <h5 class="form-check">
-                                                    <input class="form-check-input" type="radio" @if(!request()->has('category_id') ||request()->get('category_id') == null ) checked @endif  value="" id="categoryAll" name="category_id">
-                                                    <label for="categoryAll" class="form-check-label fltr-lbl">
-                                                        All</label>
-                                                </h5>
-                                            </li>
-                                            @if(!empty($categories))
-                                                @foreach ($categories as $item)
-                                                    @php
-                                                    $sub_category = App\Models\Category::whereId(request()->get('sub_category_id'))->first();
-                                                    // $sub_categoryCount = ($sub_category != null) ? count($sub_category) : 0;
-                                                    @endphp
+
+
+                                            <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#categoryList" aria-expanded="false" aria-controls="categoryList">
+                                                Categories
+                                              <i class="fas fa-chevron-down fa-xs"></i>
+                                              </h6>
+                                            <div class="collapse" id="categoryList">
+                                                <ul class="list-unstyled mt-2 mb-0">
                                                     <li>
                                                         <h5 class="form-check">
-                                                            <input class="form-check-input filterCategory" type="radio" value="{{ $item->id }}" id="category{{ $item->id }}" name="category_id" @if((request()->has('category_id') && request()->get('category_id') ==  $item->id )) checked @endif>
-                                                            <label for="category{{ $item->id }}" class="form-check-label fltr-lbl   ">
-                                                                {{$item->name}}
-                                                                <span style="font-size: 11px">({{ getProductCountViaCategoryId($item->id,$user_shop->user_id) }})</span>
-                                                            </label>
+                                                            <input class="form-check-input" type="radio" @if(!request()->has('category_id') ||request()->get('category_id') == null ) checked @endif  value="" id="categoryAll" name="category_id">
+                                                            <label for="categoryAll" class="form-check-label fltr-lbl">
+                                                                All</label>
                                                         </h5>
                                                     </li>
-                                                    @if(request()->has('category_id') && request()->get('category_id') ==  $item->id )
-                                                        @php
-                                                            $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
-                                                        @endphp
-                                                        <div style="padding-left: 25px">
-                                                            <ul class="list-unstyled custom-scrollbar">
-                                                                @foreach ($subcategories as $subcategorie)
-                                                                <li>
-                                                                    <h6 class="form-check">
-                                                                        <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
-                                                                        <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
-                                                                            {{$subcategorie->name}}
-                                                                              {{-- Sub Category Count --}}
-                                                                            <span style="font-size: 11px">
-                                                                                ({{ getProductCountViaSubCategoryId($subcategorie->id,$user_shop->user_id) }})
-                                                                            </span>
-                                                                        </label>
-                                                                    </h6>
-                                                                </li>
-                                                                @endforeach
-                                                            </ul>
-                                                        </div>
+                                                    @if(!empty($categories))
+                                                        @foreach ($categories as $item)
+                                                            @php
+                                                            $sub_category = App\Models\Category::whereId(request()->get('sub_category_id'))->first();
+                                                            @endphp
+                                                            <li>
+                                                                <h5 class="form-check">
+                                                                    <input class="form-check-input filterCategory" type="radio" value="{{ $item->id }}" id="category{{ $item->id }}" name="category_id" @if((request()->has('category_id') && request()->get('category_id') ==  $item->id )) checked @endif>
+                                                                    <label for="category{{ $item->id }}" class="form-check-label fltr-lbl   ">
+                                                                        {{$item->name}}</label>
+                                                                </h5>
+                                                            </li>
+                                                            @if(request()->has('category_id') && request()->get('category_id') ==  $item->id )
+                                                                @php
+                                                                    $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
+                                                                @endphp
+                                                                <div style="padding-left: 25px">
+                                                                    <ul class="list-unstyled custom-scrollbar">
+                                                                        @foreach ($subcategories as $subcategorie)
+                                                                        <li>
+                                                                            <h6 class="form-check">
+                                                                                <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
+                                                                                <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
+                                                                                    {{$subcategorie->name}}</label>
+                                                                            </h6>
+                                                                        </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
                                                     @endif
-                                                @endforeach
-                                            @endif
-                                        </ul>
-                                    </div>
+                                                </ul>
+                                            </div>
+
+
+                                </div> --}}
+                                {{-- categories Collapsible End--}}
+
                                 {{-- categories Ashish --}}
-
-
-                                
-                                <h6 class="widget-title mt-2">Price</h6>
-                                <div class="mx-2 d-flex">
-                                    <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" ₹ Min">
-                                    <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder="₹ Max">
-                                    <button class="price_go_btn ms-2" type="submit">GO</button>
+                                <div class="widget">
+                                    <!-- Categories -->
+                                    <div class="widget bt-1 pt-3">
+                                        <div class="accordion-item my-2">
+                                            <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapscatrgory" aria-expanded="true" aria-controls="collapscatrgory" style="height: 25px !important;">
+                                                <h6 class="widget-title mt-2">Categories</h6>
+                                            </button>
+                                            </h2>
+                                            <div id="collapscatrgory" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body">
+                                                <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
+                                                    <li>
+                                                        <h5 class="form-check">
+                                                            <input class="form-check-input" type="radio" @if(!request()->has('category_id') ||request()->get('category_id') == null ) checked @endif  value="" id="categoryAll" name="category_id">
+                                                            <label for="categoryAll" class="form-check-label fltr-lbl">
+                                                                All</label>
+                                                        </h5>
+                                                    </li>
+                                                    @if(!empty($categories))
+                                                        @foreach ($categories as $item)
+                                                            @php
+                                                            $sub_category = App\Models\Category::whereId(request()->get('sub_category_id'))->first();
+                                                            // $sub_categoryCount = ($sub_category != null) ? count($sub_category) : 0;
+                                                            @endphp
+                                                            <li>
+                                                                <h5 class="form-check">
+                                                                    <input class="form-check-input filterCategory" type="radio" value="{{ $item->id }}" id="category{{ $item->id }}" name="category_id" @if((request()->has('category_id') && request()->get('category_id') ==  $item->id )) checked @endif>
+                                                                    <label for="category{{ $item->id }}" class="form-check-label fltr-lbl   ">
+                                                                        {{$item->name}}</label>
+                                                                </h5>
+                                                            </li>
+                                                            @if(request()->has('category_id') && request()->get('category_id') ==  $item->id )
+                                                                @php
+                                                                    $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
+                                                                @endphp
+                                                                <div style="padding-left: 25px">
+                                                                    <ul class="list-unstyled custom-scrollbar">
+                                                                        @foreach ($subcategories as $subcategorie)
+                                                                        <li>
+                                                                            <h6 class="form-check">
+                                                                                <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
+                                                                                <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
+                                                                                    {{$subcategorie->name}}</label>
+                                                                            </h6>
+                                                                        </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                {{-- categories Ashish --}}
 
                                 <div class="accordion-item my-2 d-none">
                                     <h2 class="accordion-header">
@@ -534,41 +607,44 @@
                             <br> --}}
 
                         @if(isset($TandADeliveryPeriod) && $TandADeliveryPeriod->count() > 0)
-                            <div class="container mt-3">
-                                <!-- Collapsible Button -->
-                                <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#tandAbox" aria-expanded="false" aria-controls="tandAbox">
-                                   T&A
-                                <i class="fas fa-chevron-down fa-xs"></i>
-                                </h6>
-                                <div class="collapse" id="tandAbox">
-                                    <div class="widget my-2">
-                                        <input  style="height: 35px; width: 75px" @if(request()->has('quantity') && request()->get('quantity') != null) value="{{ request()->get('quantity') }}" @endif type="text" name="quantity" class="form-control" placeholder="Qty">
-                                    </div>
-                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
+                            <div class="accordion-item my-2">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDelivery" aria-expanded="true" aria-controls="collapseDelivery"  style="height: 25px !important;">
+                                    <h6 class="widget-title mt-2">T&A</h6>
+                                    </button>
+                                </h2>
+                                <div id="collapseDelivery" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 120px;">
+                                            <div class="widget my-2">
+                                                <input  style="height: 35px; width: 75px" @if(request()->has('quantity') && request()->get('quantity') != null) value="{{ request()->get('quantity') }}" @endif type="text" name="quantity" class="form-control" placeholder="Qty">
+                                            </div>
                                         @foreach ($TandADeliveryPeriod as $color)
-                                        @if($color != '' || $color != null)
-                                        <li>
-                                            <h5 class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="{{ $color }}" id="deliveryID{{ $color }}"  name="delivery[]"
-                                                @if(request()->has('delivery'))
-                                                    @if(isset($color) && in_array($color,request()->get('delivery')))
-                                                        checked
-                                                    @endif
-                                                @endif >
-                                                <label for="deliveryID{{ $color }}" class="form-check-label fltr-lbl ">
-                                                    {{ $color." Days" }}
-                                                </label>
-                                            </h5>
-                                        </li>
-                                        @endif
-                                    @endforeach
+                                            @if($color != '' || $color != null)
+                                            <li>
+                                                <h5 class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="{{ $color }}" id="deliveryID{{ $color }}"  name="delivery[]"
+                                                    @if(request()->has('delivery'))
+                                                        @if(isset($color) && in_array($color,request()->get('delivery')))
+                                                            checked
+                                                        @endif
+                                                    @endif >
+                                                    <label for="deliveryID{{ $color }}" class="form-check-label fltr-lbl ">
+                                                        {{ $color." Days" }}
+                                                    </label>
+                                                </h5>
+                                            </li>
+                                            @endif
+                                        @endforeach
                                     </ul>
+                                    </div>
                                 </div>
                             </div>
                         @endif
 
-                        @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
-                            @foreach ($additional_attribute as $key => $item)
+                            {{-- Applying scoobooo layout in color and other attri --}}
+                                @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
+                                    @foreach ($additional_attribute as $key => $item)
                                 <div class="container mt-3">
                                     <!-- Collapsible Button -->
                                     <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#AttributeList_{{$key}}" aria-expanded="false" aria-controls="AttributeList_{{$key}}">
@@ -581,27 +657,28 @@
                                     <div class="collapse" id="AttributeList_{{$key}}">
                                         <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
                                             @foreach ($atrriBute_valueGet as $mater)
-                                                @if($mater != '' || $mater != null)
-                                                    <li>
-                                                        <h5 class="form-check">
-                                                            <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal_{{ $key }}[]"
-                                                            @if(request()->has("searchVal_$key"))
-                                                                @if(isset($mater) && in_array($mater,request()->get("searchVal_$key")))
-                                                                    checked
-                                                                @endif
-                                                            @endif >
-                                                            <label for="searchId{{ $mater }}" class="form-check-label fltr-lbl ">
-                                                                {{ getAttruibuteValueById($mater)->attribute_value ?? ''}}
-                                                            </label>
-                                                        </h5>
-                                                    </li>
-                                                @endif
+                                            @if($mater != '' || $mater != null)
+                                            <li>
+                                                <h5 class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal_{{ $key }}[]"
+                                                    @if(request()->has("searchVal_$key"))
+                                                        @if(isset($mater) && in_array($mater,request()->get("searchVal_$key")))
+                                                            checked
+                                                        @endif
+                                                    @endif >
+                                                    <label for="searchId{{ $mater }}" class="form-check-label fltr-lbl ">
+                                                        {{ getAttruibuteValueById($mater)->attribute_value ?? ''}}
+                                                    </label>
+                                                </h5>
+                                            </li>
+                                            @endif
                                             @endforeach
                                         </ul>
                                     </div>
                                 </div>
-                            @endforeach
-                        @endif
+                                    @endforeach
+                                @endif
+                            {{-- Applying scoobooo layout in color and other attri End --}}
 
                         {{--` Make Filter As per SB  --}}
                         {{-- @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
@@ -632,7 +709,14 @@
                            @endforeach
                        @endif --}}
 
+
+
+
+
+
                         {{-- Exclusive Products --}}
+
+                        {{-- <h6 class="widget px-2">Exclusive Products</h6> --}}
                         <div class="mx-2 d-flex">
                             <input type="checkbox" class="form-check-input visually-hidden" name="exclusive" id="exclusive" @if ($request->get('exclusive')) checked @endif>
                             <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
@@ -643,13 +727,20 @@
                             @else
                                 {{-- <div class="text-danger" style="font-weight: bolder"> OFF </div> --}}
                             @endif
+
                         </div>
+
                         {{-- Exclusive Products --}}
+
+
+
+                        </div>
                         <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn">Filter</button>
                         <a class="btn mt-2 d-block btn-primary w-100" href="{{ route('pages.proposal.edit',['proposal' => $proposalid,'user_key' => $user_key]) }}?margin=0" id="resetButton">Reset</a>
                     </form>
                 </div>
             </div><!--end col-->
+
 
             {{-- main Content Box --}}
             <div class="col-lg-9 col-md-8 col-12 pt-2 mt-sm-0 pt-sm-0">
@@ -770,18 +861,6 @@
 
         $(document).ready(function () {
             $("#gridview").click();
-
-            //  Add a click event handler to all the remove-tag elements
-            $(".remove-tag").click(function () {
-                // Get the color value associated with the tag
-                var color = $(this).data("color");
-                var filterdata = $(`input[value=${color}]`)
-                $(this).parent().remove();
-                filterdata.click()
-                $("#searchform").submit()
-            });
-
-
         });
 
         // LISt View

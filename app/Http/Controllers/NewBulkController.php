@@ -558,8 +558,6 @@ class NewBulkController extends Controller
                     $attribute_value = [];
 
                     foreach ($attribute_value_obj as $key => $value) {
-                        $value = strtolower($value);
-                        $value = ucwords($value);
                         array_push($attribute_value,$value);
                     }
                     
@@ -567,8 +565,6 @@ class NewBulkController extends Controller
 
                     foreach ($receive_data as $key => $value) {
                         if ($value != '') {
-                            $value = strtolower($value);
-                            $value = ucwords($value);
                             if (!in_array($value,$attribute_value)) {
                                 return back()->with('error',"$value Variation Value in Column $variation Mismatch at Row $row.");
                             }

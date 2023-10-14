@@ -70,19 +70,19 @@
                             <div class="md-stepper-horizontal orange">
                                 <div class="md-step active done custom_active_add-0">
                                     <div class="md-step-circle"><span>1</span></div>
-                                    <div class="md-step-title">1</div>
+                                    <div class="md-step-title">Essentials</div>
                                     <div class="md-step-bar-left"></div>
                                     <div class="md-step-bar-right"></div>
                                 </div>
                                 <div class="md-step editable custom_active_add-1">
                                     <div class="md-step-circle"><span>3</span></div>
-                                    <div class="md-step-title">2</div>
+                                    <div class="md-step-title">Sale Pricing</div>
                                     <div class="md-step-bar-left"></div>
                                     <div class="md-step-bar-right"></div>
                                 </div>
                                 <div class="md-step editable custom_active_add-2">
                                     <div class="md-step-circle"><span>4</span></div>
-                                    <div class="md-step-title">3</div>
+                                    <div class="md-step-title">Basic Info</div>
                                     <div class="md-step-bar-left"></div>
                                     <div class="md-step-bar-right"></div>
                                 </div>

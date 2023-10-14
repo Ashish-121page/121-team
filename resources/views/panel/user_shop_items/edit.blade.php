@@ -188,65 +188,6 @@
                                     </div>
                                 </div>
 
-
-                                
-                {{-- - New Fields --}}
-                
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('title') ? 'has-error' : ''}}">
-                        <label for="title" class="control-label">Title</label>
-                        <input  class="form-control" name="title_user" type="text" id="ptitle" value="{{ $user_shop_item->title_user }}" placeholder="Enter Title" >
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('video_url') ? 'has-error' : ''}}">
-                        <label for="video_url" class="control-label">video URL</label>
-                        <input  class="form-control" name="video_url" type="url" id="video_url" value="{{ $user_shop_item->video_url }}"  placeholder="Enter Video URL" >
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('artwork_url') ? 'has-error' : ''}}">
-                        <label for="artwork_url" class="control-label">Artwork URL</label>
-                        <input  class="form-control" name="artwork_url" type="url" id="artwork_url" value="{{ $user_shop_item->artwork_url }}"  placeholder="Enter Artwork URL" >
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('model_code') ? 'has-error' : ''}}">
-                        <label for="model_code" class="control-label">Model Code</label>
-                        <input  class="form-control" name="model_code_user" type="text" id="model_code" value="{{ $user_shop_item->model_code_user }}"  placeholder="Enter Model Code" >
-                    </div>
-                </div>
-
-                
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('brand_name') ? 'has-error' : ''}}">
-                        <label for="brand_name" class="control-label">Brand Name</label>
-                        <input  class="form-control" name="brand_name_user" type="text" id="brand_name_user" value="{{ $user_shop_item->brand_name_user }}"  placeholder="Enter Brand Name" >
-                    </div>
-                </div>
-
-                      
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('selling_price_unit') ? 'has-error' : ''}}">
-                        <label for="selling_price_unit" class="control-label">Selling Price Unit</label>
-                        <input  class="form-control floatvalues" name="selling_price_unit_user" type="text" id="selling_price_unit" value="{{ $user_shop_item->selling_price_unit_user }}"  placeholder="Enter Selling Price Unit" >
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-12"> 
-                    <div class="form-group {{ $errors->has('mrp_user') ? 'has-error' : ''}}">
-                        <label for="mrp_user" class="control-label">MRP</label>
-                        <input  class="form-control floatvalues" name="mrp_user" type="text" id="mrp_user" value="{{ $user_shop_item->mrp_user }}"  placeholder="Enter MRP" >
-                    </div>
-                </div>
-
-
-                {{-- - New Fields End --}}
-
-
                                 
 
 
