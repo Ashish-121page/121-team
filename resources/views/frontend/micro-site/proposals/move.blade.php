@@ -6,7 +6,9 @@
     $breadcrumb_arr = [['name' => 'Edit Proposal', 'url' => 'javascript:void(0);', 'class' => '']];
     $user = auth()->user();
     $proposal_options = json_decode($proposal->options);
-    // $proposal_options->Show_notes = $proposal_options->Show_notes ?? 0;
+
+    // $proposal_options->show_Attrbute = $proposal_options->show_Attrbute ?? 0;
+
     // $proposal_options->show_Description = $proposal_options->show_Description ?? 0;
     $slug_guest = getShopDataByUserId(155)->slug;
     $offer_url = inject_subdomain("shop/proposal/$proposal->slug",$slug_guest);
@@ -673,19 +675,23 @@
                                                     <div class="h6">Fields to include <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </div>
                                                     <select name="optionsforoffer[]" class="select2" multiple>
                                                         <option value="description" @if (json_decode($proposal->options)->show_Description ?? 0) selected @endif>Description</option>
+
                                                         @if ($proposal->relate_to == $proposal->user_shop_id)
                                                             <option value="notes" @if (json_decode($proposal->options)->Show_notes ?? 0) selected @endif>Notes</option>
                                                         @endif
 
                                                         @foreach ($aval_atrribute as $item)
                                                             <option value="{{ $item }}" 
-                                                            @if (in_array($item,(array) json_decode($proposal->options)->show_Attrbute))
-                                                                selected 
-                                                            @endif>{{ getAttruibuteById($item)->name ?? '' }}</option>
-
-
+                                                            @if ($proposal->options != null)
+                                                                @if (in_array($item,(array) json_decode($proposal->options)->show_Attrbute))
+                                                                    selected 
+                                                                @endif
+                                                            @endif
+                                                            >{{ getAttruibuteById($item)->name ?? '' }}</option>
                                                         @endforeach
-
+                                                        
+                                                        
+                                                     
                                                     </select>
 
                                               

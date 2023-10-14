@@ -139,9 +139,9 @@
 
                         <div class="import pt-0 p-3">
                             <div class="d-flex justify-content-end">
-                                <a href="{{ route('panel.product.bulk-sheet-export',auth()->id()) }}" type="button"  class="btn-link mb-3">Download Existing Excel</a>
+                                <a href="{{ route('panel.bulk.product.bulk-sheet-export',auth()->id()) }}" type="button"  class="btn-link mb-3">Download Existing Excel</a>
                             </div>
-                            <form action="{{ route('panel.update.bulk.excel') }}" method="post" enctype="multipart/form-data" id="upadteform">
+                            <form action="{{ route('panel.bulk.update.bulk.excel') }}" method="post" enctype="multipart/form-data" id="upadteform">
                                 <input type="hidden" name="brand_id" value="{{ request()->get('id') ?? '0' }}">
                                 @csrf
                                 <div class="row">
