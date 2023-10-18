@@ -36,7 +36,7 @@ trait CanManageFiles
      * @param string|null $fileNamePrefix
      * @return $this
      */
-    public function uploadFile($file, $dir = null, $fileNamePrefix = null)
+    public function uploadFile($file, $dir = null, $fileNamePrefix = null,$SetfileName = null)
     {
         $this->file = $file;
         $this->dir = $dir;
@@ -45,7 +45,13 @@ trait CanManageFiles
         $fileExtension = $this->file->getClientOriginalExtension();
         $uploadsHome = "uploads/";
 
-        $this->saveFileName = $fileNamePrefix . $fileName . "." . strtolower($fileExtension);
+        
+        if ($SetfileName != null) {
+            $this->saveFileName = $SetfileName. "." . strtolower($fileExtension);
+        }else{
+            $this->saveFileName = $fileNamePrefix . $fileName . "." . strtolower($fileExtension);
+        }
+
         $this->dir = $this->dir ? $uploadsHome . $this->dir . "/" : $uploadsHome . "/";
         $this->destination = storage_path() . '/app/public/' . $this->dir;
         $this->uploadedFileName = $this->saveFileName;

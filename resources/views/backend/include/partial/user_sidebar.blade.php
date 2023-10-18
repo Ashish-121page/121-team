@@ -126,7 +126,7 @@
         <a href="{{ route('panel.admin.enquiry.index') }}" class="menu-item a-item">{{ __('Product Request')}}</a>
     </div>
 </div> --}}
-<div class="nav-item {{ activeClassIfRoutes(['panel.user_shop_items.create','panel.user_shop_items.index','panel.seller.category.index','panel.products.create','panel.filemanager.index','panel.products.index','panel.products.inventory.index','panel.groups.index','panel.product_attributes.index','panel.product_attributes.edit','panel.product_attributes.create','panel.product_attributes.show'] ,'active open' ) }} has-sub">
+<div class="nav-item {{ activeClassIfRoutes(['panel.user_shop_items.create','panel.user_shop_items.index','panel.seller.category.index','panel.products.create','panel.filemanager.index','panel.products.index','panel.products.inventory.index','panel.groups.index','panel.product_attributes.index','panel.product_attributes.edit','panel.product_attributes.create','panel.product_attributes.show','panel.manage.Currency'] ,'active open' ) }} has-sub">
     <a href="#"><i class="ik ik-shopping-bag"></i><span>{{ 'Display' }}</span></a>
     <div class="submenu-content" style="">
 
@@ -148,7 +148,7 @@
         <a href="{{ route('panel.products.inventory.index') }}?action=nonbranded" class="menu-item a-item">{{ __('Inventory')}}</a>
         {{-- <a href="{{ route('panel.user_shop_items.create') }}" class="menu-item a-item">{{ __('Add Items')}}</a> --}}
 
-        <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_id=".auth()->id() }}" class="menu-item a-item">{{ __('On site products')}}</a>
+        <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_id=".auth()->id() }}" class="menu-item a-item {{ activeClassIfRoutes(['panel.user_shop_items.create'] ,'active open' ) }}">{{ __('On site products')}}</a>
 
 
         @if($acc_permissions->managegroup == "yes")
@@ -159,6 +159,9 @@
 
         <a href="{{ route('panel.product_attributes.index') }}" class="menu-item a-item {{ activeClassIfRoutes(['panel.product_attributes.index','panel.product_attributes.edit','panel.product_attributes.create','panel.product_attributes.show'] ,'active open' ) }}">{{ __('Product Attributes')}}</a>
 
+
+        <a href="{{ route('panel.manage.Currency')."?user=". auth()->id()}}" class="menu-item a-item" >Currencies</a>
+        
 
         @if($acc_permissions->pricegroup == "yes")
             @if ($Team_pricegroup)
