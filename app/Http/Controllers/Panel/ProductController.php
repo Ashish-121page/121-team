@@ -1315,4 +1315,18 @@ class ProductController extends Controller
         return back()->with('success','Image Deleted Successfully!');
     }
 }
-    
+
+if (!function_exists('yearDropdown'))
+{
+    function yearDropdown($startYear, $endYear, $id = 'year')
+    {
+        echo "<select id='$id' name='$id'>";
+
+        for ($i = $startYear; $i <= $endYear; $i++) {
+            echo "<option value='$i'>$i</option>";
+        }
+
+        echo "</select>";
+    }
+}
+

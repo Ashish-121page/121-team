@@ -342,7 +342,7 @@
         <div class="row">
 
             {{-- Side Bar --}}
-            <div class="col-lg-3 col-md-4 col-12 sticky-bar adwas">
+            <div class="col-lg-3 col-md-4 col-12 adwas">
                 <div class="text-right pl-3 filterMobile" style="margin-top: 10%;">
                     <i title="filter" class="uil uil-bars up_arrow show_mobile_filter" style="font-size: 23px;"></i>
                     <i class="uil uil-times down_arrow close_mobile_filter" style="font-size: 23px;"></i>
@@ -351,14 +351,15 @@
                 @php
                     $proposal_deatail = json_decode($proposal->customer_details);
                 @endphp
-                <div class="d-flex align-items-center justify-content-center justify-content-md-end justify-content-sm-end flex-column">
-                    <span class="text-primary my-1">Offer for {{ $proposal_deatail->customer_name }} : <br> <span id="itcont">{{ count($excape_items) }}</span> Items </span>
-                    <button class="btn btn-outline-secondary" id="openqr" type="button">Scan QR Codes</button>
-                </div>
-
-                <div class="d-flex gap-2 align-items-center justify-content-center my-2">
-                    <button class="btn btn-outline-primary" type="button" style="font-size: 0.8rem !important" id="select-all">Select All</button>
-                    <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-outline-primary" target="">Next</a>
+                <div class="d-flex align-items-center  flex-column">
+                    <span class="text-primary my-1">Offer for {{ $proposal_deatail->customer_name }} : 
+                        <span id="itcont">{{ count($excape_items) }}</span> Items 
+                    </span>
+                    <div class="">
+                        <button class="btn btn-sm btn-outline-secondary" id="openqr" type="button">Scan QR Codes</button>
+                        <button class="btn btn-sm btn-outline-primary" type="button" id="select-all">Select All</button>
+                        <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-sm btn-outline-primary" target="">Next</a>
+                    </div>
                 </div>
 
                 <div class="card border-0 sidebar sticky-bar custom-scrollbar">
@@ -774,9 +775,9 @@
                             <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit"><i class="uil uil-search"></i></button>
                         </div>
 
-                        <div class="">
+                        {{-- <div class="">
                             <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-outline-primary" target="">Next</a>
-                        </div>
+                        </div> --}}
                     </div>
 
                         @include('frontend.micro-site.proposals.load')
@@ -784,16 +785,16 @@
                             {{ $items->appends(request()->query())->links() }}
                         </div> --}}
                         <div class="row my-3">
-                            <div class="col-8">
+                            <div class="col-12">
                                 <div class="d-flex justify-content-end">
                                     <button class="btn btn-outline-primary nextpage">Show More...</button>
                                 </div>
                             </div>
-                            <div class="col-4">
+                            {{-- <div class="col-4">
                                 <div class="d-flex justify-content-end">
                                     <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-outline-primary" target="">Next</a>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
 

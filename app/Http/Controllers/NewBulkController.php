@@ -92,13 +92,13 @@ class NewBulkController extends Controller
         $SubCategoryIndex = $col_list->{'Sub_Category'};
         $CurrencyIndex = $col_list->{'Base_currency'};
         $AllowResellerIndex = $col_list->{'Allow_Resellers'};
-        $PublishIndex = $col_list->{'Live / Active'};
+        // $PublishIndex = $col_list->{'Live / Active'};
         $ExlusiveIndex = $col_list->{'Copyright/ Exclusive item'};
         // $ArchiveIndex = $col_list->{'archive'};
         $MaterialIndex = $col_list->{'Material'};
         $ColourIndex = $col_list->{'Colour'};
         $SizeIndex = $col_list->{'Size'};
-        $SamepleAvailableIndex = $col_list->{'Sample / Stock available'};
+        // $SamepleAvailableIndex = $col_list->{'Sample / Stock available'};
         $SKUTypeIndex = $col_list->{'SKU Type'};
         $TitleIndex = $col_list->{'Product name'};
         $VideoURLIndex = $col_list->{'Video URL'};
@@ -227,10 +227,10 @@ class NewBulkController extends Controller
                 if (!in_array($temp_item[$AllowResellerIndex],$check_permision_array)) {
                     return back()->with('error',"The Value is not MAtched in Allow Reseller at Row $row");
                 }
-                // ` Checking Allow Live and Publish
-                if (!in_array($temp_item[$PublishIndex],$check_permision_array)) {
-                    return back()->with('error',"you Didn't Select Live / Active at Row $row");
-                }
+                // // ` Checking Allow Live and Publish
+                // if (!in_array($temp_item[$PublishIndex],$check_permision_array)) {
+                //     return back()->with('error',"you Didn't Select Live / Active at Row $row");
+                // }
                 // ` Checking Exclusive Product
                 if (!in_array($temp_item[$ExlusiveIndex],$check_permision_array)) {
                     return back()->with('error',"you Didn't Fill Exclusive Product Option at Row $row");
@@ -240,9 +240,9 @@ class NewBulkController extends Controller
                 //     return back()->with('error',"Invaild Entry In Archive Product Option at Row $row");
                 // }
                 // ` Checking Sample Stock Available
-                if (!in_array($temp_item[$SamepleAvailableIndex],$check_permision_array)) {
-                    return back()->with('error',"you Didn't Fill Sample Availabel Option at Row $row");
-                }
+                // if (!in_array($temp_item[$SamepleAvailableIndex],$check_permision_array)) {
+                //     return back()->with('error',"you Didn't Fill Sample Availabel Option at Row $row");
+                // }
 
                 // - Conditions that are Complusaory to Match...
                 // ` Checking Material Value
@@ -552,7 +552,6 @@ class NewBulkController extends Controller
                         $attribute_data = $attribute_data1;
                     }else{
                         $attribute_data = $attribute_data2;
-                        
                     }
                     
                     $attribute_value_obj = ProductAttributeValue::where('parent_id',$attribute_data->id)->pluck('attribute_value');
@@ -755,10 +754,11 @@ class NewBulkController extends Controller
                                 'description' => ($product_exist != null && $item[$DescriptionIndex] == '') ? $product_exist->description : $item[$DescriptionIndex],
                                 'carton_details' =>  ($product_exist != null && $carton_details == null) ? $product_exist->carton_details : $carton_details,
                                 'shipping' =>  ($product_exist != null && $shipping == null) ? $product_exist->shipping : $shipping,
-                                'manage_inventory' => (in_array($item[$SamepleAvailableIndex],$allowed_array)) ? 1 : 0,
+                                'manage_inventory' =>  0,
                                 'stock_qty' => 0,
                                 'status' => 0,
-                                'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                                // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                                'is_publish' => 1,
                                 'price' => $price ?? 0,
                                 'min_sell_pr_without_gst' => ($product_exist != null && $item[$CustomerPriceIndex] == '') ? $product_exist->min_sell_pr_without_gst : $item[$CustomerPriceIndex], 
                                 'hsn' => ($product_exist != null && $item[$HSNTaxIndex] == '') ? $product_exist->hsn : $item[$HSNTaxIndex] ?? null,
@@ -802,7 +802,7 @@ class NewBulkController extends Controller
                                     'season_month' => $item[$SeasonMonthIndex],
                                     'season_year' => $item[$CollectionYearIndex],
                                     'season_year' => $item[$CollectionYearIndex],
-                                    'sample_available' => $item[$SamepleAvailableIndex],
+                                    'sample_available' => 0,
                                     'sample_year' => $item[$SampleYearIndex],
                                     'sample_month' => $item[$SampleMonthIndex],
                                     'sampling_time' => $item[$SampleTimeIndex],
@@ -869,7 +869,7 @@ class NewBulkController extends Controller
                                             'exclusive_buyer_name' => $item[$ExclusiveBuyerNameIndex],
                                             'collection_name' => $item[$Collection_NameIndex],
                                             'season_month' => $item[$SeasonMonthIndex],
-                                            'sample_available' => $item[$SamepleAvailableIndex],
+                                            'sample_available' => 0,
                                             'sample_year' => $item[$SampleYearIndex],
                                             'sample_month' => $item[$SampleMonthIndex],
                                             'sampling_time' => $item[$SampleTimeIndex],
@@ -1051,7 +1051,7 @@ class NewBulkController extends Controller
                                     'season_month' => $item[$SeasonMonthIndex],
                                     'season_year' => $item[$CollectionYearIndex],
                                     'season_year' => $item[$CollectionYearIndex],
-                                    'sample_available' => $item[$SamepleAvailableIndex],
+                                    'sample_available' => 0,
                                     'sample_year' => $item[$SampleYearIndex],
                                     'sample_month' => $item[$SampleMonthIndex],
                                     'sampling_time' => $item[$SampleTimeIndex],
@@ -1110,7 +1110,7 @@ class NewBulkController extends Controller
                                 'season_month' => $item[$SeasonMonthIndex],
                                 'season_year' => $item[$CollectionYearIndex],
                                 'season_year' => $item[$CollectionYearIndex],
-                                'sample_available' => $item[$SamepleAvailableIndex],
+                                'sample_available' => 0,
                                 'sample_year' => $item[$SampleYearIndex],
                                 'sample_month' => $item[$SampleMonthIndex],
                                 'sampling_time' => $item[$SampleTimeIndex],
@@ -1244,10 +1244,11 @@ class NewBulkController extends Controller
                                 'description' => ($product_exist != null && $item[$DescriptionIndex] == '') ? $product_exist->description : $item[$DescriptionIndex],
                                 'carton_details' =>  ($product_exist != null && $carton_details == null) ? $product_exist->carton_details : $carton_details,
                                 'shipping' =>  ($product_exist != null && $shipping == null) ? $product_exist->shipping : $shipping,
-                                'manage_inventory' => (in_array($item[$SamepleAvailableIndex],$allowed_array)) ? 1 : 0,
+                                'manage_inventory' => 0,
                                 'stock_qty' => 0,
                                 'status' => 0,
-                                'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                                // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                                'is_publish' => 1,
                                 'price' => $price ?? 0,
                                 'min_sell_pr_without_gst' => ($product_exist != null && $item[$CustomerPriceIndex] == '') ? $product_exist->min_sell_pr_without_gst : $item[$CustomerPriceIndex], 
                                 'hsn' => ($product_exist != null && $item[$HSNTaxIndex] == '') ? $product_exist->hsn : $item[$HSNTaxIndex] ?? null,
@@ -1291,7 +1292,7 @@ class NewBulkController extends Controller
                                 'season_month' => $item[$SeasonMonthIndex],
                                 'season_year' => $item[$CollectionYearIndex],
                                 'season_year' => $item[$CollectionYearIndex],
-                                'sample_available' => $item[$SamepleAvailableIndex],
+                                'sample_available' => 0,
                                 'sample_year' => $item[$SampleYearIndex],
                                 'sample_month' => $item[$SampleMonthIndex],
                                 'sampling_time' => $item[$SampleTimeIndex],
@@ -1355,7 +1356,7 @@ class NewBulkController extends Controller
                                             'exclusive_buyer_name' => $item[$ExclusiveBuyerNameIndex],
                                             'collection_name' => $item[$Collection_NameIndex],
                                             'season_month' => $item[$SeasonMonthIndex],
-                                            'sample_available' => $item[$SamepleAvailableIndex],
+                                            'sample_available' => 0,
                                             'sample_year' => $item[$SampleYearIndex],
                                             'sample_month' => $item[$SampleMonthIndex],
                                             'sampling_time' => $item[$SampleTimeIndex],
@@ -1539,7 +1540,7 @@ class NewBulkController extends Controller
                                 'season_month' => $item[$SeasonMonthIndex],
                                 'season_year' => $item[$CollectionYearIndex],
                                 'season_year' => $item[$CollectionYearIndex],
-                                'sample_available' => $item[$SamepleAvailableIndex],
+                                'sample_available' => 0,
                                 'sample_year' => $item[$SampleYearIndex],
                                 'sample_month' => $item[$SampleMonthIndex],
                                 'sampling_time' => $item[$SampleTimeIndex],
@@ -1659,10 +1660,11 @@ class NewBulkController extends Controller
                         'description' => ($product_exist != null && $item[$DescriptionIndex] == '') ? $product_exist->description : $item[$DescriptionIndex],
                         'carton_details' =>  ($product_exist != null && $carton_details == null) ? $product_exist->carton_details : $carton_details,
                         'shipping' =>  ($product_exist != null && $shipping == null) ? $product_exist->shipping : $shipping,
-                        'manage_inventory' => (in_array($item[$SamepleAvailableIndex],$allowed_array)) ? 1 : 0,
+                        'manage_inventory' => 0,
                         'stock_qty' => 0,
                         'status' => 0,
-                        'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                        // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                        'is_publish' => 1,
                         'price' => $price ?? 0,
                         'min_sell_pr_without_gst' => ($product_exist != null && $item[$CustomerPriceIndex] == '') ? $product_exist->min_sell_pr_without_gst : $item[$CustomerPriceIndex], 
                         'hsn' => ($product_exist != null && $item[$HSNTaxIndex] == '') ? $product_exist->hsn : $item[$HSNTaxIndex] ?? null,
@@ -1706,7 +1708,7 @@ class NewBulkController extends Controller
                         'season_month' => $item[$SeasonMonthIndex],
                         'season_year' => $item[$CollectionYearIndex],
                         'season_year' => $item[$CollectionYearIndex],
-                        'sample_available' => $item[$SamepleAvailableIndex],
+                        'sample_available' => 0,
                         'sample_year' => $item[$SampleYearIndex],
                         'sample_month' => $item[$SampleMonthIndex],
                         'sampling_time' => $item[$SampleTimeIndex],
@@ -1769,7 +1771,7 @@ class NewBulkController extends Controller
                                     'exclusive_buyer_name' => $item[$ExclusiveBuyerNameIndex],
                                     'collection_name' => $item[$Collection_NameIndex],
                                     'season_month' => $item[$SeasonMonthIndex],
-                                    'sample_available' => $item[$SamepleAvailableIndex],
+                                    'sample_available' => 0,
                                     'sample_year' => $item[$SampleYearIndex],
                                     'sample_month' => $item[$SampleMonthIndex],
                                     'sampling_time' => $item[$SampleTimeIndex],
@@ -2026,10 +2028,11 @@ class NewBulkController extends Controller
                     'description' => ($product_exist != null && $item[$DescriptionIndex] == '') ? $product_exist->description : $item[$DescriptionIndex],
                     'carton_details' =>  ($product_exist != null && $carton_details == null) ? $product_exist->carton_details : $carton_details,
                     'shipping' =>  ($product_exist != null && $shipping == null) ? $product_exist->shipping : $shipping,
-                    'manage_inventory' => (in_array($item[$SamepleAvailableIndex],$allowed_array)) ? 1 : 0,
+                    'manage_inventory' => 0,
                     'stock_qty' => 0,
                     'status' => 0,
-                    'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                    // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                    'is_publish' => 1,
                     'price' => $price ?? 0,
                     'min_sell_pr_without_gst' => ($product_exist != null && $item[$CustomerPriceIndex] == '') ? $product_exist->min_sell_pr_without_gst : $item[$CustomerPriceIndex], 
                     'hsn' => ($product_exist != null && $item[$HSNTaxIndex] == '') ? $product_exist->hsn : $item[$HSNTaxIndex] ?? null,
@@ -2084,7 +2087,7 @@ class NewBulkController extends Controller
                                     'exclusive_buyer_name' => $item[$ExclusiveBuyerNameIndex],
                                     'collection_name' => $item[$Collection_NameIndex],
                                     'season_month' => $item[$SeasonMonthIndex],
-                                    'sample_available' => $item[$SamepleAvailableIndex],
+                                    'sample_available' => 0,
                                     'sample_year' => $item[$SampleYearIndex],
                                     'sample_month' => $item[$SampleMonthIndex],
                                     'sampling_time' => $item[$SampleTimeIndex],
