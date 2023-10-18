@@ -471,12 +471,11 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::get('/export/deliveryNew', [BulkController::class,'DeliveryExportDownload'])->name('product.deliveryExport');
     Route::post('/update/delivery-group/bulk', [BulkController::class,'DeliveryGroupBulkUpdate'])->name('delivery.group.bulk-update');
     
-    Route::get('/export/deliveryNew', [CurrencyController::class,'index'])->name('manage.Currency');
+    Route::get('/manage/Currency', [CurrencyController::class,'index'])->name('manage.Currency');
 
 
     // @ Group Route for Bulk Sheet 
     Route::group(['middleware' => 'auth','namespace' => '/bulk', 'prefix' => '/', 'as' => 'bulk.'], function () {
-        Route::post('/product-upload', [NewBulkController::class,'productUpload'])->name('product-upload');
         Route::post('/product-upload', [NewBulkController::class,'productUpload'])->name('product-upload');
         Route::get('/export/product-bulk-sheet/{user_id}', [NewBulkController::class,'ProductSheetExport'])->name('product.bulk-sheet-export');
 
