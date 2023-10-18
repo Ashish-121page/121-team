@@ -937,14 +937,15 @@
                                                                 <a href="javascript:void(0)" id="download-qr" class="btn btn-outline-primary">Download QR</a>
                                                             </div>
                                                         @endif
-
                                                     </div>
+                                                    
                                                     @php
                                                         $teamdata = json_decode($user_shop->team);
                                                         $teamdata->team_visiblity = $teamdata->team_visiblity ?? 0;
                                                         $teamdata->manage_offer_guest = $teamdata->manage_offer_guest ?? 0;
                                                         $teamdata->manage_offer_verified = $teamdata->manage_offer_verified ?? 0;
                                                     @endphp
+                                                    
                                                     <div class="row mb-2">
                                                         <div class="col-12 col-md-6 col-sm-12 mt-2">
                                                             <label for="">Public Display</label> <br>
@@ -2692,6 +2693,8 @@
 @include('backend.seller.modal.catalogue-request')
 @include('panel.user_shops.include.add-numbers')
 
+
+
 @endsection
 @section('InlineScript')
 <script src="{{ asset('backend/js/qrcode.js') }}"></script>
@@ -2717,11 +2720,6 @@
         $(document).ready(function () {
             $('#surverymodal').modal('show');
         });
-
-
-
-
-
     </script>
 @endif
 
@@ -2739,6 +2737,13 @@
 
 
 
+        // $(".openmicrsotesettingmodal").click(function (e) { 
+        //     e.preventDefault();
+        //     $("#micrsotesettingmodal").modal('show')
+        // });
+
+
+        // $("#micrsotesettingmodal").modal('show')
 
     });
 

@@ -33,6 +33,7 @@ use App\Http\Controllers\Backend\CaseWorkstreamParticipantController;
 use App\Http\Controllers\Backend\CaseWorkstreamMessageController;
 use App\Http\Controllers\Backend\CaseWorkstreamAttachmentController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\NewBulkController;
 
 /*
@@ -470,11 +471,17 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::get('/export/deliveryNew', [BulkController::class,'DeliveryExportDownload'])->name('product.deliveryExport');
     Route::post('/update/delivery-group/bulk', [BulkController::class,'DeliveryGroupBulkUpdate'])->name('delivery.group.bulk-update');
     
+    Route::get('/manage/Currency', [CurrencyController::class,'index'])->name('manage.Currency');
+
 
     // @ Group Route for Bulk Sheet 
     Route::group(['middleware' => 'auth','namespace' => '/bulk', 'prefix' => '/', 'as' => 'bulk.'], function () {
         Route::post('/product-upload', [NewBulkController::class,'productUpload'])->name('product-upload');
         Route::get('/export/product-bulk-sheet/{user_id}', [NewBulkController::class,'ProductSheetExport'])->name('product.bulk-sheet-export');
+
+        Route::post('/export/product-bulk-sheet/custom/{user_id}', [NewBulkController::class,'exportDataCustom'])->name('product.custom.bulk-sheet-export');
+        Route::post('/product-upload/{user_id}', [NewBulkController::class,'UploadDataCustom'])->name('custom.product-upload');
+
         Route::post('/update/product-bulk', [NewBulkController::class,'productBulkUpdate'])->name('product.bulk-update');
         Route::get('/export/product-bulk/{user_id}', [NewBulkController::class,'exportData'])->name('product.bulk-export');
 
