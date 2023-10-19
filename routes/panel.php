@@ -471,7 +471,16 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::get('/export/deliveryNew', [BulkController::class,'DeliveryExportDownload'])->name('product.deliveryExport');
     Route::post('/update/delivery-group/bulk', [BulkController::class,'DeliveryGroupBulkUpdate'])->name('delivery.group.bulk-update');
     
-    Route::get('/manage/Currency', [CurrencyController::class,'index'])->name('manage.Currency');
+    
+    Route::group(['middleware' => 'auth','namespace' => '/currency', 'prefix' => '/', 'as' => 'currency.'], function () {
+        Route::get('/manage/Currency', [CurrencyController::class,'index'])->name('manage.index');
+        Route::get('/make/default/{record}', [CurrencyController::class,'makedefault'])->name('make.default');
+        Route::get('/export/bulkcurrency/{user}', [NewBulkController::class,'exportrecordCurrecy'])->name('export.bulk');
+        Route::get('/download/bulkcurrency/', [NewBulkController::class,'exportfileCurrency'])->name('exportfileCurrency.bulk');
+        Route::post('/upload/bulkcurrency/{user}', [NewBulkController::class,'uploadCurrency'])->name('upload.bulk');
+        Route::post('/update/bulkcurrency/{user}', [NewBulkController::class,'updateCurrency'])->name('update.bulk');
+    });
+
 
 
     // @ Group Route for Bulk Sheet 

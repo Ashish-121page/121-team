@@ -11,11 +11,12 @@
                 </div>
                 
                 <div class="icons">
-                    <button class="btn btn-icon btn-outline-primary" title="Download and Upload Current Data">
+                    <a href="#" class="btn btn-icon btn-outline-primary"  title="Download and Upload Current Data" id="importfile">
                         <i class="fas fa-download"></i>
-                    </button>
+                    </a>
 
-                    <button class="btn btn-icon btn-outline-success" title="Upload New Data with Excel">
+
+                    <button class="btn btn-icon btn-outline-success" title="Upload New Data with Excel" id="exportfile">
                         <i class="fas fa-upload"></i>
                     </button>
                 </div>
@@ -40,15 +41,27 @@
                             <th scope="col">Default</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr class="">
-                            <td scope="row">1</td>
-                            <td>INR</td>
-                            <td>1</td>
-                            <td>
-                                <button class="btn btn-outline-primary btn-sm border-rounded" type="button" >Default</button>
-                            </td>
-                        </tr>
+                    <tbody>                        
+                        @foreach ($record as $item)
+                            <tr class="">
+                                <td scope="row">{{ $loop->iteration }}</td>
+                                <td>{{ $item->currency }}</td>
+                                <td>{{ $item->exchange }}</td>
+                                <td>
+                                    @if ($item->default_currency == 1)
+                                        <button class="btn btn-outline-primary btn-sm border-rounded" type="button" disabled>
+                                            Default  
+                                        </button>
+                                    @else
+                                        <a href="{{ route('panel.currency.make.default',$item->id) }}" class="btn btn-sm btn-outline-primary">
+                                            Make Default
+                                        </a>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                        
+                        
                         
                     </tbody>
                 </table>

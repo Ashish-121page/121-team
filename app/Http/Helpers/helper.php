@@ -1986,6 +1986,18 @@ if (!function_exists('searchArray')) {
 }
 
 
+// ` Exchange Currency
+if (!function_exists('exchangerate')) {
+    function exchangerate($Cost_Price,$exhange_currency_rate,$Home_currency_rate = 1) {
+
+        $difference = $Home_currency_rate/$exhange_currency_rate;
+        $result = $Cost_Price*$difference;  
+
+        return $result;
+    }
+}
+
+
 
 if (!function_exists('getAttributeIdByName')) {
     function getAttributeIdByName($name,$user_id = null){

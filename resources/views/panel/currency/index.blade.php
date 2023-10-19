@@ -51,12 +51,31 @@
                 @include('panel.currency.load')
             </div>
         </div>
-        
-
+    
+        @include("panel.currency.modal.updatefile")
    
     </div>
     <!-- push external js -->
     @push('script')
+
+    <script>
+        $(document).ready(function () {
+            $("#exportfile").click(function (e) { 
+                e.preventDefault();
+                $("#uploadfilemodal").modal('show')
+            });
+
+            $("#importfile").click(function (e) { 
+                e.preventDefault();
+                $("#updatefilemodal").modal('show')
+            });            
+            
+        });
+
+
+
+        
+    </script>
 
     @endpush
 @endsection

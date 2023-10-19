@@ -3,20 +3,487 @@
 @section('meta_data')
     @php
         $categoryName = fetchFirst('App\Models\Category',request()->get('category_id'),'name') ?? 'All';
-		$meta_title = ' | '.getSetting('app_name');		
+		$meta_title = ' | '.getSetting('app_name');
 		$meta_description = getSetting('seo_meta_description');
 		$meta_keywords = '' ?? getSetting('seo_meta_keywords');
-		$meta_motto = '' ?? getSetting('site_motto');		
-		$meta_abstract = '' ?? getSetting('site_motto');		
-		$meta_author_name = '' ?? 'GRPL';		
-		$meta_author_email = '' ?? 'Hello@121.page';		
-		$meta_reply_to = '' ?? getSetting('frontend_footer_email');		
-		$meta_img = ' ';		
-		$microsite = 1;		
+		$meta_motto = '' ?? getSetting('site_motto');
+		$meta_abstract = '' ?? getSetting('site_motto');
+		$meta_author_name = '' ?? 'GRPL';
+		$meta_author_email = '' ?? 'Hello@121.page';
+		$meta_reply_to = '' ?? getSetting('frontend_footer_email');
+		$meta_img = ' ';
+		$microsite = 1;
 	@endphp
 @endsection
 @section('content')
+{{-- Side Bar --}}
+            <div class="col-lg-3 col-md-4 col-12 adwas">
+                <div class="text-right pl-3 filterMobile" style="margin-top: 10%;">
+                    <i title="filter" class="uil uil-bars up_arrow show_mobile_filter" style="font-size: 23px;"></i>
+                    <i class="uil uil-times down_arrow close_mobile_filter" style="font-size: 23px;"></i>
+                </div>
 
+                @php
+                    $proposal_deatail = json_decode($proposal->customer_details);
+                @endphp
+                <div class="d-flex align-items-center  flex-column">
+                    <span class="text-primary my-1">Offer for {{ $proposal_deatail->customer_name }} : 
+                        <span id="itcont">{{ count($excape_items) }}</span> Items 
+                    </span>
+                    <div class="">
+                        <button class="btn btn-sm btn-outline-secondary" id="openqr" type="button">Scan QR Codes</button>
+                        <button class="btn btn-sm btn-outline-primary" type="button" id="select-all">Select All</button>
+                        <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-sm btn-outline-primary" target="">Next</a>
+                    </div>
+                </div>
+
+                <div class="card border-0 sidebar sticky-bar custom-scrollbar">
+                    <form form role="search" method="GET" id="" class="card-body filter-body p-0 applyFilter d-none d-md-block mobile_filter">
+                        <input type="hidden" name="sort" value="" class="sortValue">
+                        <h5 class="widget-title pt-3 pl-15" style="display: inline-block;">Filters
+                        </h5>
+
+                            <h6 class="widget-title mt-2">Price</h6>
+                                <div class="mx-2 d-flex">
+                                    <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" ₹ Min">
+                                    <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder="₹ Max">
+                                    <button class="price_go_btn ms-2" type="submit">GO</button>
+                                </div>
+                            
+                            {{-- categories Ashish --}}
+                            <div class="widget">
+                                <!-- Categories -->
+                                <div class="widget bt-1 pt-3">
+                                    <div class="accordion-item my-2">
+                                        <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapscatrgory" aria-expanded="true" aria-controls="collapscatrgory" style="height: 25px !important;">
+                                            <h6 class="widget-title mt-2">Categories</h6>
+                                        </button>
+                                        </h2>
+                                        <div id="collapscatrgory" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
+                                                <li>
+                                                    <h5 class="form-check">
+                                                        <input class="form-check-input" type="radio" @if(!request()->has('category_id') ||request()->get('category_id') == null ) checked @endif  value="" id="categoryAll" name="category_id">
+                                                        <label for="categoryAll" class="form-check-label fltr-lbl">
+                                                            All</label>
+                                                    </h5>
+                                                </li>
+                                                @if(!empty($categories))
+                                                    @foreach ($categories as $item)
+                                                        @php
+                                                        $sub_category = App\Models\Category::whereId(request()->get('sub_category_id'))->first();
+                                                        // $sub_categoryCount = ($sub_category != null) ? count($sub_category) : 0;
+                                                        @endphp
+                                                        <li>
+                                                            <h5 class="form-check">
+                                                                <input class="form-check-input filterCategory" type="radio" value="{{ $item->id }}" id="category{{ $item->id }}" name="category_id" @if((request()->has('category_id') && request()->get('category_id') ==  $item->id )) checked @endif>
+                                                                <label for="category{{ $item->id }}" class="form-check-label fltr-lbl   ">
+                                                                    {{$item->name}}</label>
+                                                            </h5>
+                                                        </li>
+                                                        @if(request()->has('category_id') && request()->get('category_id') ==  $item->id )
+                                                            @php
+                                                                $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
+                                                            @endphp
+                                                            <div style="padding-left: 25px">
+                                                                <ul class="list-unstyled custom-scrollbar">
+                                                                    @foreach ($subcategories as $subcategorie)
+                                                                    <li>
+                                                                        <h6 class="form-check">
+                                                                            <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
+                                                                            <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
+                                                                                {{$subcategorie->name}}</label>
+                                                                        </h6>
+                                                                    </li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- categories Ashish --}}
+
+                            <div class="accordion-item my-2 d-none">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsesupplier" aria-expanded="true" aria-controls="collapsesupplier" style="height: 25px !important;">
+                                    <h6 class="widget-title mt-2">Supplier</h6>
+                                    </button>
+                                </h2>
+                                <div id="collapsesupplier" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                    @if(isset($suppliers) && $suppliers->count() >= 0)
+
+                                            <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 60px;">
+                                                <li>
+                                                    <input class="form-check-input" type="checkbox" value="yes" id="ownproduct"  name="ownproduct" @if ($request->has('ownproduct') == 'yes') checked @endif>
+                                                    <label for="ownproduct" class="form-check-label fltr-lbl ">Own Product</label>
+                                                </li>
+                                                @foreach ($suppliers as $supplier)
+                                                    @if($supplier != '' || $supplier != null)
+                                                    <li>
+                                                        <h5 class="form-check">
+
+                                                            <input class="form-check-input" type="checkbox" value="{{ $supplier->id }}" id="supplierid{{ $supplier->id }}"  name="supplier[]"
+                                                            @if(request()->has('supplier'))
+                                                                @if(isset($supplier) && in_array($supplier->id,request()->get('supplier')))
+                                                                    checked
+                                                                @endif
+                                                            @endif >
+                                                            <label for="supplierid{{ $supplier->id }}" class="form-check-label fltr-lbl ">
+                                                                {{ $supplier->name }}
+                                                            </label>
+                                                        </h5>
+                                                    </li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                        @if(isset($TandADeliveryPeriod) && $TandADeliveryPeriod->count() > 0)
+                            <div class="accordion-item my-2">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDelivery" aria-expanded="true" aria-controls="collapseDelivery"  style="height: 25px !important;">
+                                    <h6 class="widget-title mt-2">T&A</h6>
+                                    </button>
+                                </h2>
+                                <div id="collapseDelivery" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 120px;">
+                                            <div class="widget my-2">
+                                                <input  style="height: 35px; width: 75px" @if(request()->has('quantity') && request()->get('quantity') != null) value="{{ request()->get('quantity') }}" @endif type="text" name="quantity" class="form-control" placeholder="Qty">
+                                            </div>
+                                        @foreach ($TandADeliveryPeriod as $color)
+                                            @if($color != '' || $color != null)
+                                            <li>
+                                                <h5 class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="{{ $color }}" id="deliveryID{{ $color }}"  name="delivery[]"
+                                                    @if(request()->has('delivery'))
+                                                        @if(isset($color) && in_array($color,request()->get('delivery')))
+                                                            checked
+                                                        @endif
+                                                    @endif >
+                                                    <label for="deliveryID{{ $color }}" class="form-check-label fltr-lbl ">
+                                                        {{ $color." Days" }}
+                                                    </label>
+                                                </h5>
+                                            </li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                            {{-- Applying scoobooo layout in color and other attri --}}
+                                @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
+                                    @foreach ($additional_attribute as $key => $item)
+                                        @if (getAttruibuteById($item)->visibility == 1)
+                                            <div class="container mt-3">
+                                                <!-- Collapsible Button -->
+                                                <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#AttributeList_{{$key}}" aria-expanded="false" aria-controls="AttributeList_{{$key}}">
+                                                    {{ getAttruibuteById($item)->name }}
+                                                <i class="fas fa-chevron-down fa-xs"></i>
+                                                </h6>
+                                                @php
+                                                    $atrriBute_valueGet = getParentAttruibuteValuesByIds($item,$proIds);
+                                                @endphp
+                                                <div class="collapse" id="AttributeList_{{$key}}">
+                                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
+                                                        @foreach ($atrriBute_valueGet as $mater)
+                                                        @if($mater != '' || $mater != null)
+                                                        <li>
+                                                            <h5 class="form-check">
+                                                                <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal_{{ $key }}[]"
+                                                                @if(request()->has("searchVal_$key"))
+                                                                    @if(isset($mater) && in_array($mater,request()->get("searchVal_$key")))
+                                                                        checked
+                                                                    @endif
+                                                                @endif >
+                                                                <label for="searchId{{ $mater }}" class="form-check-label fltr-lbl ">
+                                                                    {{ getAttruibuteValueById($mater)->attribute_value ?? ''}}
+                                                                </label>
+                                                            </h5>
+                                                        </li>
+                                                        @endif
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                @endif
+                            {{-- Applying scoobooo layout in color and other attri End --}}
+                        {{-- Exclusive Products --}}
+
+                        {{-- <h6 class="widget px-2">Exclusive Products</h6> --}}
+                        <div class="mx-2 d-flex">
+                            <input type="checkbox" class="form-check-input visually-hidden" name="exclusive" id="exclusive" @if ($request->get('exclusive')) checked @endif>
+                            <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
+                            @if ($request->get('exclusive') == 'on')
+                                <div class="text-success" style="font-weight: bolder">
+                                    <i class="uil-check-circle" style="font-size: 20px"></i>
+                                </div>
+                            @else
+                                {{-- <div class="text-danger" style="font-weight: bolder"> OFF </div> --}}
+                            @endif
+
+                        </div>
+
+                        {{-- Exclusive Products --}}
+
+
+
+                        </div>
+                        <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn">Filter</button>
+                        <a class="btn mt-2 d-block btn-primary w-100" href="{{ route('pages.proposal.edit',['proposal' => $proposalid,'user_key' => $user_key]) }}?margin=0" id="resetButton">Reset</a>
+                    </form>
+                </div>
+            </div><!--end col-->
+            {{-- Side Bar --}}
+            <div class="col-lg-3 col-md-4 col-12 adwas">
+                <div class="text-right pl-3 filterMobile" style="margin-top: 10%;">
+                    <i title="filter" class="uil uil-bars up_arrow show_mobile_filter" style="font-size: 23px;"></i>
+                    <i class="uil uil-times down_arrow close_mobile_filter" style="font-size: 23px;"></i>
+                </div>
+
+                @php
+                    $proposal_deatail = json_decode($proposal->customer_details);
+                @endphp
+                <div class="d-flex align-items-center  flex-column">
+                    <span class="text-primary my-1">Offer for {{ $proposal_deatail->customer_name }} : 
+                        <span id="itcont">{{ count($excape_items) }}</span> Items 
+                    </span>
+                    <div class="">
+                        <button class="btn btn-sm btn-outline-secondary" id="openqr" type="button">Scan QR Codes</button>
+                        <button class="btn btn-sm btn-outline-primary" type="button" id="select-all">Select All</button>
+                        <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-sm btn-outline-primary" target="">Next</a>
+                    </div>
+                </div>
+
+                <div class="card border-0 sidebar sticky-bar custom-scrollbar">
+                    <form form role="search" method="GET" id="" class="card-body filter-body p-0 applyFilter d-none d-md-block mobile_filter">
+                        <input type="hidden" name="sort" value="" class="sortValue">
+                        <h5 class="widget-title pt-3 pl-15" style="display: inline-block;">Filters
+                        </h5>
+
+                            <h6 class="widget-title mt-2">Price</h6>
+                                <div class="mx-2 d-flex">
+                                    <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" ₹ Min">
+                                    <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder="₹ Max">
+                                    <button class="price_go_btn ms-2" type="submit">GO</button>
+                                </div>
+                            
+                            {{-- categories Ashish --}}
+                            <div class="widget">
+                                <!-- Categories -->
+                                <div class="widget bt-1 pt-3">
+                                    <div class="accordion-item my-2">
+                                        <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapscatrgory" aria-expanded="true" aria-controls="collapscatrgory" style="height: 25px !important;">
+                                            <h6 class="widget-title mt-2">Categories</h6>
+                                        </button>
+                                        </h2>
+                                        <div id="collapscatrgory" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
+                                                <li>
+                                                    <h5 class="form-check">
+                                                        <input class="form-check-input" type="radio" @if(!request()->has('category_id') ||request()->get('category_id') == null ) checked @endif  value="" id="categoryAll" name="category_id">
+                                                        <label for="categoryAll" class="form-check-label fltr-lbl">
+                                                            All</label>
+                                                    </h5>
+                                                </li>
+                                                @if(!empty($categories))
+                                                    @foreach ($categories as $item)
+                                                        @php
+                                                        $sub_category = App\Models\Category::whereId(request()->get('sub_category_id'))->first();
+                                                        // $sub_categoryCount = ($sub_category != null) ? count($sub_category) : 0;
+                                                        @endphp
+                                                        <li>
+                                                            <h5 class="form-check">
+                                                                <input class="form-check-input filterCategory" type="radio" value="{{ $item->id }}" id="category{{ $item->id }}" name="category_id" @if((request()->has('category_id') && request()->get('category_id') ==  $item->id )) checked @endif>
+                                                                <label for="category{{ $item->id }}" class="form-check-label fltr-lbl   ">
+                                                                    {{$item->name}}</label>
+                                                            </h5>
+                                                        </li>
+                                                        @if(request()->has('category_id') && request()->get('category_id') ==  $item->id )
+                                                            @php
+                                                                $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
+                                                            @endphp
+                                                            <div style="padding-left: 25px">
+                                                                <ul class="list-unstyled custom-scrollbar">
+                                                                    @foreach ($subcategories as $subcategorie)
+                                                                    <li>
+                                                                        <h6 class="form-check">
+                                                                            <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
+                                                                            <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
+                                                                                {{$subcategorie->name}}</label>
+                                                                        </h6>
+                                                                    </li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- categories Ashish --}}
+
+                            <div class="accordion-item my-2 d-none">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsesupplier" aria-expanded="true" aria-controls="collapsesupplier" style="height: 25px !important;">
+                                    <h6 class="widget-title mt-2">Supplier</h6>
+                                    </button>
+                                </h2>
+                                <div id="collapsesupplier" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                    @if(isset($suppliers) && $suppliers->count() >= 0)
+
+                                            <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 60px;">
+                                                <li>
+                                                    <input class="form-check-input" type="checkbox" value="yes" id="ownproduct"  name="ownproduct" @if ($request->has('ownproduct') == 'yes') checked @endif>
+                                                    <label for="ownproduct" class="form-check-label fltr-lbl ">Own Product</label>
+                                                </li>
+                                                @foreach ($suppliers as $supplier)
+                                                    @if($supplier != '' || $supplier != null)
+                                                    <li>
+                                                        <h5 class="form-check">
+
+                                                            <input class="form-check-input" type="checkbox" value="{{ $supplier->id }}" id="supplierid{{ $supplier->id }}"  name="supplier[]"
+                                                            @if(request()->has('supplier'))
+                                                                @if(isset($supplier) && in_array($supplier->id,request()->get('supplier')))
+                                                                    checked
+                                                                @endif
+                                                            @endif >
+                                                            <label for="supplierid{{ $supplier->id }}" class="form-check-label fltr-lbl ">
+                                                                {{ $supplier->name }}
+                                                            </label>
+                                                        </h5>
+                                                    </li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                        @if(isset($TandADeliveryPeriod) && $TandADeliveryPeriod->count() > 0)
+                            <div class="accordion-item my-2">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDelivery" aria-expanded="true" aria-controls="collapseDelivery"  style="height: 25px !important;">
+                                    <h6 class="widget-title mt-2">T&A</h6>
+                                    </button>
+                                </h2>
+                                <div id="collapseDelivery" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 120px;">
+                                            <div class="widget my-2">
+                                                <input  style="height: 35px; width: 75px" @if(request()->has('quantity') && request()->get('quantity') != null) value="{{ request()->get('quantity') }}" @endif type="text" name="quantity" class="form-control" placeholder="Qty">
+                                            </div>
+                                        @foreach ($TandADeliveryPeriod as $color)
+                                            @if($color != '' || $color != null)
+                                            <li>
+                                                <h5 class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="{{ $color }}" id="deliveryID{{ $color }}"  name="delivery[]"
+                                                    @if(request()->has('delivery'))
+                                                        @if(isset($color) && in_array($color,request()->get('delivery')))
+                                                            checked
+                                                        @endif
+                                                    @endif >
+                                                    <label for="deliveryID{{ $color }}" class="form-check-label fltr-lbl ">
+                                                        {{ $color." Days" }}
+                                                    </label>
+                                                </h5>
+                                            </li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                            {{-- Applying scoobooo layout in color and other attri --}}
+                                @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
+                                    @foreach ($additional_attribute as $key => $item)
+                                        @if (getAttruibuteById($item)->visibility == 1)
+                                            <div class="container mt-3">
+                                                <!-- Collapsible Button -->
+                                                <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#AttributeList_{{$key}}" aria-expanded="false" aria-controls="AttributeList_{{$key}}">
+                                                    {{ getAttruibuteById($item)->name }}
+                                                <i class="fas fa-chevron-down fa-xs"></i>
+                                                </h6>
+                                                @php
+                                                    $atrriBute_valueGet = getParentAttruibuteValuesByIds($item,$proIds);
+                                                @endphp
+                                                <div class="collapse" id="AttributeList_{{$key}}">
+                                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
+                                                        @foreach ($atrriBute_valueGet as $mater)
+                                                        @if($mater != '' || $mater != null)
+                                                        <li>
+                                                            <h5 class="form-check">
+                                                                <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal_{{ $key }}[]"
+                                                                @if(request()->has("searchVal_$key"))
+                                                                    @if(isset($mater) && in_array($mater,request()->get("searchVal_$key")))
+                                                                        checked
+                                                                    @endif
+                                                                @endif >
+                                                                <label for="searchId{{ $mater }}" class="form-check-label fltr-lbl ">
+                                                                    {{ getAttruibuteValueById($mater)->attribute_value ?? ''}}
+                                                                </label>
+                                                            </h5>
+                                                        </li>
+                                                        @endif
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                @endif
+                            {{-- Applying scoobooo layout in color and other attri End --}}
+                        {{-- Exclusive Products --}}
+
+                        {{-- <h6 class="widget px-2">Exclusive Products</h6> --}}
+                        <div class="mx-2 d-flex">
+                            <input type="checkbox" class="form-check-input visually-hidden" name="exclusive" id="exclusive" @if ($request->get('exclusive')) checked @endif>
+                            <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
+                            @if ($request->get('exclusive') == 'on')
+                                <div class="text-success" style="font-weight: bolder">
+                                    <i class="uil-check-circle" style="font-size: 20px"></i>
+                                </div>
+                            @else
+                                {{-- <div class="text-danger" style="font-weight: bolder"> OFF </div> --}}
+                            @endif
+
+                        </div>
+
+                        {{-- Exclusive Products --}}
+
+
+
+                        </div>
+                        <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn">Filter</button>
+                        <a class="btn mt-2 d-block btn-primary w-100" href="{{ route('pages.proposal.edit',['proposal' => $proposalid,'user_key' => $user_key]) }}?margin=0" id="resetButton">Reset</a>
+                    </form>
+                </div>
+            </div><!--end col-->
 <style>
     @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css");
 
@@ -83,7 +550,7 @@
     }
 
     .custom-scrollbar {
-        max-height: 120px;
+        max-height: 500px;
         overflow-y: auto;
     }
 
@@ -300,7 +767,7 @@
         }
         .eird{
             background-color: #6666cc;
-            color: white;   
+            color: white;
         }
         .eird h2{
             text-align: left;
@@ -342,7 +809,7 @@
         <div class="row">
 
             {{-- Side Bar --}}
-            <div class="col-lg-3 col-md-4 col-12 sticky-bar adwas">
+            <div class="col-lg-3 col-md-4 col-12 adwas">
                 <div class="text-right pl-3 filterMobile" style="margin-top: 10%;">
                     <i title="filter" class="uil uil-bars up_arrow show_mobile_filter" style="font-size: 23px;"></i>
                     <i class="uil uil-times down_arrow close_mobile_filter" style="font-size: 23px;"></i>
@@ -351,17 +818,18 @@
                 @php
                     $proposal_deatail = json_decode($proposal->customer_details);
                 @endphp
-                <div class="d-flex align-items-center justify-content-center justify-content-md-end justify-content-sm-end flex-column">
-                    <span class="text-primary my-1">Offer for {{ $proposal_deatail->customer_name }} : <br> <span id="itcont">{{ count($excape_items) }}</span> Items </span>
-                    <button class="btn btn-outline-secondary" id="openqr" type="button">Scan QR Codes</button>
+                <div class="d-flex align-items-center  flex-column">
+                    <span class="text-primary my-1">Offer for {{ $proposal_deatail->customer_name }} : 
+                        <span id="itcont">{{ count($excape_items) }}</span> Items 
+                    </span>
+                    <div class="">
+                        <button class="btn btn-sm btn-outline-secondary" id="openqr" type="button">Scan QR Codes</button>
+                        <button class="btn btn-sm btn-outline-primary" type="button" id="select-all">Select All</button>
+                        <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-sm btn-outline-primary" target="">Next</a>
+                    </div>
                 </div>
 
-                <div class="d-flex gap-2 align-items-center justify-content-center my-2">
-                    <button class="btn btn-outline-primary" type="button" style="font-size: 0.8rem !important" id="select-all">Select All</button>
-                    <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-outline-primary" target="">Next</a>
-                </div>
-                
-                <div class="card border-0 sidebar sticky-bar">
+                <div class="card border-0 sidebar sticky-bar custom-scrollbar">
                     <form form role="search" method="GET" id="" class="card-body filter-body p-0 applyFilter d-none d-md-block mobile_filter">
                         <input type="hidden" name="sort" value="" class="sortValue">
                         <h5 class="widget-title pt-3 pl-15" style="display: inline-block;">Filters
@@ -376,7 +844,7 @@
                         </div>    --}}
                         <!-- SEARCH -->
 
-              
+
                             {{-- Hidden Brand --}}
                             {{-- @if(isset($brands) && $brands->count() >= 1)
                                 <h6 class="widget-title mt-2">Brands</h6>
@@ -400,14 +868,40 @@
                                     <input  style="width: 75px;height: 35px;" @if(request()->has('margin') && request()->get('margin') != null) value="{{ request()->get('margin') ?? 10}}" @endif type="text" name="margin" class="form-control" placeholder="Enter Margin %" Id="hike">
                                 </div> --}}
 
-                                <div class="widget">
+                                {{-- Product Price Colllapsible --}}
+                                    {{-- <div class="container mt-3">
+                                        <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#ProductPriceList" aria-expanded="false" aria-controls="ProductPriceList">
+                                            Product Price
+                                        <i class="fas fa-chevron-down fa-xs"></i>
+                                        </h6>
+                                        <div class="collapse" id="ProductPriceList">
+                                        <div class="mx-3 d-flex">
+                                            <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="number" min="0" name="from" class="form-control" placeholder=" ₹ Min">
+                                            <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="number" min="0" name="to" class="form-control ms-2" placeholder="₹ Max">
+                                        </div>
+                                    </div>
+                                </div> --}}
+
+                                <h6 class="widget-title mt-2">Price</h6>
+                                    <div class="mx-2 d-flex">
+                                        <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" ₹ Min">
+                                        <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder="₹ Max">
+                                        <button class="price_go_btn ms-2" type="submit">GO</button>
+                                    </div>
+                                
+                                
+                                {{-- Product Price Colllapsible End --}}
+
+
+                                {{-- Product price Ashish --}}
+                                {{-- <div class="widget">
                                     <h6 class="widget-title m-3">Product Price</h6>
                                     <div class="mx-3 d-flex">
                                         <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="number" min="0" name="from" class="form-control" placeholder=" ₹ Min">
                                         <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="number" min="0" name="to" class="form-control ms-2" placeholder="₹ Max">
                                         {{-- <button class="price_go_btn ms-2" type="submit">GO</button> --}}
-                                    </div>
-                                </div>
+                                    {{-- </div>
+                                </div>  --}}
 
                                 {{-- <div class="widget"> --}}
                                     {{-- <h6 class="widget-title m-3">Quantity to Search</h6> --}}
@@ -416,7 +910,65 @@
                                     </div>
                                 </div> --}}
 
-                                
+                                {{-- categories Collapsible--}}
+
+                                {{-- <div class="Container mt-3">
+                                    <!-- Categories -->
+
+
+                                            <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#categoryList" aria-expanded="false" aria-controls="categoryList">
+                                                Categories
+                                              <i class="fas fa-chevron-down fa-xs"></i>
+                                              </h6>
+                                            <div class="collapse" id="categoryList">
+                                                <ul class="list-unstyled mt-2 mb-0">
+                                                    <li>
+                                                        <h5 class="form-check">
+                                                            <input class="form-check-input" type="radio" @if(!request()->has('category_id') ||request()->get('category_id') == null ) checked @endif  value="" id="categoryAll" name="category_id">
+                                                            <label for="categoryAll" class="form-check-label fltr-lbl">
+                                                                All</label>
+                                                        </h5>
+                                                    </li>
+                                                    @if(!empty($categories))
+                                                        @foreach ($categories as $item)
+                                                            @php
+                                                            $sub_category = App\Models\Category::whereId(request()->get('sub_category_id'))->first();
+                                                            @endphp
+                                                            <li>
+                                                                <h5 class="form-check">
+                                                                    <input class="form-check-input filterCategory" type="radio" value="{{ $item->id }}" id="category{{ $item->id }}" name="category_id" @if((request()->has('category_id') && request()->get('category_id') ==  $item->id )) checked @endif>
+                                                                    <label for="category{{ $item->id }}" class="form-check-label fltr-lbl   ">
+                                                                        {{$item->name}}</label>
+                                                                </h5>
+                                                            </li>
+                                                            @if(request()->has('category_id') && request()->get('category_id') ==  $item->id )
+                                                                @php
+                                                                    $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
+                                                                @endphp
+                                                                <div style="padding-left: 25px">
+                                                                    <ul class="list-unstyled custom-scrollbar">
+                                                                        @foreach ($subcategories as $subcategorie)
+                                                                        <li>
+                                                                            <h6 class="form-check">
+                                                                                <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
+                                                                                <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
+                                                                                    {{$subcategorie->name}}</label>
+                                                                            </h6>
+                                                                        </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </ul>
+                                            </div>
+
+
+                                </div> --}}
+                                {{-- categories Collapsible End--}}
+
+                                {{-- categories Ashish --}}
                                 <div class="widget">
                                     <!-- Categories -->
                                     <div class="widget bt-1 pt-3">
@@ -440,6 +992,7 @@
                                                         @foreach ($categories as $item)
                                                             @php
                                                             $sub_category = App\Models\Category::whereId(request()->get('sub_category_id'))->first();
+                                                            // $sub_categoryCount = ($sub_category != null) ? count($sub_category) : 0;
                                                             @endphp
                                                             <li>
                                                                 <h5 class="form-check">
@@ -451,7 +1004,7 @@
                                                             @if(request()->has('category_id') && request()->get('category_id') ==  $item->id )
                                                                 @php
                                                                     $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
-                                                                @endphp 
+                                                                @endphp
                                                                 <div style="padding-left: 25px">
                                                                     <ul class="list-unstyled custom-scrollbar">
                                                                         @foreach ($subcategories as $subcategorie)
@@ -465,14 +1018,15 @@
                                                                         @endforeach
                                                                     </ul>
                                                                 </div>
-                                                            @endif    
+                                                            @endif
                                                         @endforeach
                                                     @endif
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
-                                </div>                                
+                                </div>
+                                {{-- categories Ashish --}}
 
                                 <div class="accordion-item my-2 d-none">
                                     <h2 class="accordion-header">
@@ -483,7 +1037,7 @@
                                     <div id="collapsesupplier" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                                       <div class="accordion-body">
                                         @if(isset($suppliers) && $suppliers->count() >= 0)
-                                                
+
                                                 <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 60px;">
                                                     <li>
                                                         <input class="form-check-input" type="checkbox" value="yes" id="ownproduct"  name="ownproduct" @if ($request->has('ownproduct') == 'yes') checked @endif>
@@ -493,9 +1047,9 @@
                                                         @if($supplier != '' || $supplier != null)
                                                         <li>
                                                             <h5 class="form-check">
-            
+
                                                                 <input class="form-check-input" type="checkbox" value="{{ $supplier->id }}" id="supplierid{{ $supplier->id }}"  name="supplier[]"
-                                                                @if(request()->has('supplier'))  
+                                                                @if(request()->has('supplier'))
                                                                     @if(isset($supplier) && in_array($supplier->id,request()->get('supplier')))
                                                                         checked
                                                                     @endif
@@ -513,104 +1067,37 @@
                                     </div>
                                 </div>
 
-                                
-                                {{-- <h6 class="widget-title mt-2">Own Product</h6>
-                                <input class="form-check-input" type="checkbox" value="yes" id="ownproduct"  name="ownproduct">
-                                <label for="ownproduct" class="form-check-label fltr-lbl ">Own Product</label> --}}
-                            <br>
-                            @if(isset($TandADeliveryPeriod) && $TandADeliveryPeriod->count() > 0)
-                                <div class="accordion-item my-2">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDelivery" aria-expanded="true" aria-controls="collapseDelivery"  style="height: 25px !important;">
-                                        <h6 class="widget-title mt-2">T&A</h6>
-                                        </button>
-                                    </h2>
-                                    <div id="collapseDelivery" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body">
-                                        <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 120px;">
-                                               <div class="widget my-2">
-                                                    <input  style="height: 35px; width: 75px" @if(request()->has('quantity') && request()->get('quantity') != null) value="{{ request()->get('quantity') }}" @endif type="text" name="quantity" class="form-control" placeholder="Qty">
-                                                </div>
-                                            @foreach ($TandADeliveryPeriod as $color)
-                                                @if($color != '' || $color != null)
-                                                <li>
-                                                    <h5 class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="{{ $color }}" id="deliveryID{{ $color }}"  name="delivery[]"
-                                                        @if(request()->has('delivery'))  
-                                                            @if(isset($color) && in_array($color,request()->get('delivery')))
-                                                                checked
-                                                            @endif
-                                                        @endif >
-                                                        <label for="deliveryID{{ $color }}" class="form-check-label fltr-lbl ">
-                                                            {{ $color." Days" }} 
-                                                        </label>
-                                                    </h5>
-                                                </li>
-                                                @endif
-                                            @endforeach
-                                        </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                            {{-- <br>
-                            @if(isset($TandAStock) && $TandAStock->count() > 0)
-                                <div class="accordion-item my-2">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStock" aria-expanded="true" aria-controls="collapseStock"  style="height: 25px !important;">
-                                        <h6 class="widget-title mt-2">T&A Stock</h6>
-                                        </button>
-                                    </h2>
-                                    <div id="collapseStock" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body">
-                                        <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 60px;">
-                                            @foreach ($TandAStock as $stockdel)
-                                                @if($stockdel != '' || $stockdel != null)
-                                                <li>
-                                                    <h5 class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="{{ $stockdel }}" id="stockId{{ $stockdel }}"  name="wantstock[]"
-                                                        @if(request()->has('wantstock'))  
-                                                            @if(isset($stockdel) && in_array($stockdel,request()->get('wantstock')))
-                                                                checked
-                                                            @endif
-                                                        @endif >
-                                                        <label for="stockId{{ $stockdel }}" class="form-check-label fltr-lbl ">
-                                                            {{ $stockdel." Pcs" }} 
-                                                        </label>
-                                                    </h5>
-                                                </li>
-                                                @endif
-                                            @endforeach
-                                        </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
+
+                            {{-- <h6 class="widget-title mt-2">Own Product</h6>
+                            <input class="form-check-input" type="checkbox" value="yes" id="ownproduct"  name="ownproduct">
+                            <label for="ownproduct" class="form-check-label fltr-lbl ">Own Product</label>
                             <br> --}}
 
-                        <br>
-                        @if(isset($colors) && $colors->count() >= 0)
+                        @if(isset($TandADeliveryPeriod) && $TandADeliveryPeriod->count() > 0)
                             <div class="accordion-item my-2">
                                 <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecolor" aria-expanded="true" aria-controls="collapsecolor"  style="height: 25px !important;">
-                                    <h6 class="widget-title mt-2">Color</h6>
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDelivery" aria-expanded="true" aria-controls="collapseDelivery"  style="height: 25px !important;">
+                                    <h6 class="widget-title mt-2">T&A</h6>
                                     </button>
                                 </h2>
-                                <div id="collapsecolor" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                <div id="collapseDelivery" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
-                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 60px;">
-                                        @foreach ($colors as $color)
+                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 120px;">
+                                            <div class="widget my-2">
+                                                <input  style="height: 35px; width: 75px" @if(request()->has('quantity') && request()->get('quantity') != null) value="{{ request()->get('quantity') }}" @endif type="text" name="quantity" class="form-control" placeholder="Qty">
+                                            </div>
+                                        @foreach ($TandADeliveryPeriod as $color)
                                             @if($color != '' || $color != null)
                                             <li>
                                                 <h5 class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="{{ $color }}" id="colorID{{ $color }}"  name="color[]"
-                                                    @if(request()->has('color'))  
-                                                        @if(isset($color) && in_array($color,request()->get('color')))
+                                                    <input class="form-check-input" type="checkbox" value="{{ $color }}" id="deliveryID{{ $color }}"  name="delivery[]"
+                                                    @if(request()->has('delivery'))
+                                                        @if(isset($color) && in_array($color,request()->get('delivery')))
                                                             checked
                                                         @endif
                                                     @endif >
-                                                    <label for="colorID{{ $color }}" class="form-check-label fltr-lbl ">
-                                                        {{ $color }}
+                                                    <label for="deliveryID{{ $color }}" class="form-check-label fltr-lbl ">
+                                                        {{ $color." Days" }}
                                                     </label>
                                                 </h5>
                                             </li>
@@ -621,75 +1108,79 @@
                                 </div>
                             </div>
                         @endif
-                        <br>                         
-                            
-                        @if(isset($sizes) && $sizes->count() >= 0)
-                            <div class="accordion-item my-2 mb-3">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sizecollapse" aria-expanded="true" aria-controls="sizecollapse" style="height: 25px !important;">
-                                <h6 class="widget-title mt-2">Size</h6>
-                                </button>
-                            </h2>
-                            <div id="sizecollapse" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                        <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 100px;">
-                                            @foreach ($sizes as $size)
-                                                @if($size != '' || $size != null)
-                                                <li>
-                                                    <h5 class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="{{ $size }}" id="sizeID{{ $size }}" name="size[]"  
-                                                        @if(request()->has('size'))  
-                                                            @if(isset($size) && in_array($size,request()->get('size')))
-                                                                checked
-                                                            @endif
-                                                        @endif >
-                                                        <label for="sizeID{{ $size }}" class="form-check-label fltr-lbl ">
-                                                            {{ $size}}
-                                                        </label>
-                                                    </h5>
-                                                </li>
-                                                @endif
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <br>
-                        @endif
-                        <div class="accordion-item my-2">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMaterial" aria-expanded="true" aria-controls="collapseMaterial" style="height: 25px !important;">
-                                <h6 class="widget-title mt-2">Material</h6>
-                                </button>
-                            </h2>
-                            <div id="collapseMaterial" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                @if(isset($material) && $material->count() >= 0)
-                                    {{-- <h6 class="widget-title mt-2"> Material </h6> --}}
-                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar" style="height: 60px;">
-                                        @foreach ($material as $mater)
-                                            @if($mater != '' || $mater != null)
-                                            <li>
-                                                <h5 class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="materID{{ $mater }}"  name="mater[]"
-                                                    @if(request()->has('mater'))  
-                                                        @if(isset($mater) && in_array($mater,request()->get('mater')))
-                                                            checked
+
+                            {{-- Applying scoobooo layout in color and other attri --}}
+                                @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
+                                    @foreach ($additional_attribute as $key => $item)
+                                        @if (getAttruibuteById($item)->visibility == 1)
+                                            <div class="container mt-3">
+                                                <!-- Collapsible Button -->
+                                                <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#AttributeList_{{$key}}" aria-expanded="false" aria-controls="AttributeList_{{$key}}">
+                                                    {{ getAttruibuteById($item)->name }}
+                                                <i class="fas fa-chevron-down fa-xs"></i>
+                                                </h6>
+                                                @php
+                                                    $atrriBute_valueGet = getParentAttruibuteValuesByIds($item,$proIds);
+                                                @endphp
+                                                <div class="collapse" id="AttributeList_{{$key}}">
+                                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
+                                                        @foreach ($atrriBute_valueGet as $mater)
+                                                        @if($mater != '' || $mater != null)
+                                                        <li>
+                                                            <h5 class="form-check">
+                                                                <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal_{{ $key }}[]"
+                                                                @if(request()->has("searchVal_$key"))
+                                                                    @if(isset($mater) && in_array($mater,request()->get("searchVal_$key")))
+                                                                        checked
+                                                                    @endif
+                                                                @endif >
+                                                                <label for="searchId{{ $mater }}" class="form-check-label fltr-lbl ">
+                                                                    {{ getAttruibuteValueById($mater)->attribute_value ?? ''}}
+                                                                </label>
+                                                            </h5>
+                                                        </li>
                                                         @endif
-                                                    @endif >
-                                                    <label for="materID{{ $mater }}" class="form-check-label fltr-lbl ">
-                                                        {{ $mater }}
-                                                    </label>
-                                                </h5>
-                                            </li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
                                 @endif
-                        
-                                </div>
-                            </div>
-                        </div>
+                            {{-- Applying scoobooo layout in color and other attri End --}}
+
+                        {{--` Make Filter As per SB  --}}
+                        {{-- @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
+                           @foreach ($additional_attribute as $key => $item)
+                            <h6 class="widget-title mt-2 mx-2"> {{ getAttruibuteById($item)->name }} </h6>
+                            @php
+                                $atrriBute_valueGet = getParentAttruibuteValuesByIds($item,$proIds);
+                            @endphp
+                            <ul class="list-unstyled mt-2 mb-0 custom-scrollbar mx-2" style="height: 60px;">
+                                @foreach ($atrriBute_valueGet as $mater)
+                                    @if($mater != '' || $mater != null)
+                                    <li>
+                                        <h5 class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal_{{ $key }}[]"
+                                            @if(request()->has("searchVal_$key"))
+                                                @if(isset($mater) && in_array($mater,request()->get("searchVal_$key")))
+                                                    checked
+                                                @endif
+                                            @endif >
+                                            <label for="searchId{{ $mater }}" class="form-check-label fltr-lbl ">
+                                                {{ getAttruibuteValueById($mater)->attribute_value ?? '' }}
+                                            </label>
+                                        </h5>
+                                    </li>
+                                    @endif
+                                @endforeach
+                            </ul>
+                           @endforeach
+                       @endif --}}
+
+
+
+
 
 
                         {{-- Exclusive Products --}}
@@ -699,18 +1190,18 @@
                             <input type="checkbox" class="form-check-input visually-hidden" name="exclusive" id="exclusive" @if ($request->get('exclusive')) checked @endif>
                             <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
                             @if ($request->get('exclusive') == 'on')
-                                <div class="text-success" style="font-weight: bolder"> 
+                                <div class="text-success" style="font-weight: bolder">
                                     <i class="uil-check-circle" style="font-size: 20px"></i>
                                 </div>
                             @else
                                 {{-- <div class="text-danger" style="font-weight: bolder"> OFF </div> --}}
                             @endif
-                            
+
                         </div>
-                        
+
                         {{-- Exclusive Products --}}
-                               
-                            
+
+
 
                         </div>
                         <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn">Filter</button>
@@ -719,12 +1210,12 @@
                 </div>
             </div><!--end col-->
 
-            
+
             {{-- main Content Box --}}
             <div class="col-lg-9 col-md-8 col-12 pt-2 mt-sm-0 pt-sm-0">
-           
+
                     <div class="row align-items-center">
-                        <div class="col-lg-8 col-md-7">
+                        <div class="col-lg-4 col-md-3">
                             {{-- <div class="section-title">
                                 <h5 class="mb-0">Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} Result</h5>
                             </div> --}}
@@ -739,10 +1230,25 @@
                                 </select>
                                 <i class="fa fa-chevron-down"></i>
                             </div>
-                        </div>                      
-                        
+                        </div>
+                        @if (count($currency_record) != 0)
+                            <div class="col-lg-4 col-md-5 mt-sm-0 pt-2 pt-sm-0 mb-3">
+                                <div class="container" id="selector" style="width: max-content !important;">
+                                    <select class="form-control select_box w-auto" id="changeCurrency" name="Currency">
+                                        <option aria-readonly="true" disabled>Change Currency</option>
+                                        @foreach ($currency_record as $item)
+                                        <option value="{{ $item->id }}" @if ($item->id == (Session::get('Currency_id') ?? 'INR')) selected @endif > {{ $item->currency }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
+
+
+
+
                     </div>
-                    
+
                     <div class="d-flex justify-content-between gap-2 flex-wrap">
                         <div class="m-2 d-flex gap-2">
                             <button id="gridview" class="btn btn-outline-primary"><i class="fas fa-th-large"></i></button>
@@ -753,37 +1259,37 @@
                             <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit"><i class="uil uil-search"></i></button>
                         </div>
 
-                        <div class="">
+                        {{-- <div class="">
                             <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-outline-primary" target="">Next</a>
-                        </div>
+                        </div> --}}
                     </div>
 
                         @include('frontend.micro-site.proposals.load')
                         {{-- <div class="d-flex justify-content-center">
-                            {{ $items->appends(request()->query())->links() }} 
+                            {{ $items->appends(request()->query())->links() }}
                         </div> --}}
                         <div class="row my-3">
-                            <div class="col-8">
+                            <div class="col-12">
                                 <div class="d-flex justify-content-end">
                                     <button class="btn btn-outline-primary nextpage">Show More...</button>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <div class="d-flex justify-content-end"> 
+                            {{-- <div class="col-4">
+                                <div class="d-flex justify-content-end">
                                     <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-outline-primary" target="">Next</a>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
 
-            
+
             <!--end col-->
         </div><!--end row-->
     </div><!--end container-->
 </section>
 
 {{-- Custom Loader --}}
-                                    
+
 <div class="lds-roller cloader">
     <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
 </div>
@@ -799,7 +1305,7 @@
 @include('frontend.micro-site.proposals.modal.openoffer')
 
 <script src="{{ asset('backend/js/qrcode.js') }}"></script>
-@section('InlineScript')    
+@section('InlineScript')
 
     <script>
         let viewarea = "List";
@@ -811,7 +1317,7 @@
                 $("#barCodeModal").modal('show');
             });
         });
-        
+
         var resultContainer = document.getElementById('qr-reader-results');
         var lastResult, countResults = 0;
 
@@ -840,7 +1346,7 @@
         $(document).ready(function () {
             $("#gridview").click();
         });
-        
+
         // LISt View
         $("#gridview").click(function (e) {
             e.preventDefault();
@@ -882,7 +1388,7 @@
         var active_category = "{{request()->get('category_id') }}";
         var active_sub_category = "{{request()->get('sub_category_id') }}";
             $('.down_arrow').addClass('d-none');
-        
+
             $('.filterCategory').on('click', function(){
                 if(active_category == $(this).val()){
                     $(this).val(null);
@@ -891,9 +1397,9 @@
                     $(document).find('.filterSubCategory').val(null);
                 }
                 $('.applyFilter').submit();
-        });     
+        });
 
-            $('.filterSubCategory').on('click', function(){ 
+            $('.filterSubCategory').on('click', function(){
                 if(active_sub_category == $(this).val()){
                     $(this).val(null);
                 }
@@ -959,12 +1465,12 @@
                                         $("#filterBtn").click();
                                     }else{
                                         $("#exclusive").attr('checked',false);
-                                        $.alert("Wrong Password");    
+                                        $.alert("Wrong Password");
                                         $("#resetButton").click();
                                     }
                                     // console.log(response['status']);
                                 },
-                                // error: function (e) { 
+                                // error: function (e) {
                                 //     console.log(e);
                                 // }
                             });
@@ -983,16 +1489,15 @@
                         jc.$$formSubmit.trigger('click'); // reference the button and click it
                     });
                 }
-            });                             
+            });
         });
-    
+
     </script>
 
      {{-- Api Group --}}
-    
+
      <script>
         $('.input-check').click(function(){
-            console.log("You Cliked Me!");
             if($(this).prop('checked')){
                 var route = "{{ route('pages.api.store') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposalid }}"+"&hike=0";
                 console.log(route);
@@ -1003,7 +1508,7 @@
                         $("#itcont").html(res['count']);
                         console.table(res);
                         console.log(url);
-                    },error: function (res) { 
+                    },error: function (res) {
                         console.log(res);
                     }
                 });
@@ -1020,10 +1525,10 @@
                 });
             }
         });
-        
+
 
         $('.input-check1').click(function () {
-            console.log("You Cliked Me! 1")
+            // console.log("You Cliked Me! 1")
             if ($(this).prop('checked')) {
                 var route = "{{ route('pages.api.store') }}" + "?product_id=" + $(this).val() + '&proposal_id=' + "{{ $proposalid }}" + "&hike=0";
                 console.log(route);
@@ -1048,68 +1553,27 @@
                     }
                 });
             }
-            
+
 
         });
 
         $('#select-all').click(function(){
 
-            if (viewarea == "List") {
-                console.log("Ite is IN List View");
-                $(document).find('#ajax-loading').show();
-                var interval = 10;
-                if($('.input-check').is(':checked')){
-                    $('.input-check').click();
-
+            $(document).find('#ajax-loading').show();
+            var interval = 10;
+            $('.filterable-items').each(function(){
+                if(!$(this).hasClass('d-none')){
                     setTimeout(() => {
-                            $(document).find('#ajax-loading').hide();
-                    }, 5000);
-                    
-                }else{
-                    $('.filterable-items').each(function(){
-                        if(!$(this).hasClass('d-none')){
-                            setTimeout(() => {
-                                $(this).find('.input-check').trigger('click');
-                            }, interval);
-                            interval += 150;
-                        }
-                        
-                        setTimeout(() => {
-                            $(document).find('#ajax-loading').hide();
-                        }, 5000);
-                    });
-                }             
-
-            }else{
-                console.log("Ite is IN Grid View");
-                $(document).find('#ajax-loading').show();
-                var interval = 10;
-                if($('.input-check1').is(':checked')){
-                    $('.input-check1').click();
-
-                    setTimeout(() => {
-                            $(document).find('#ajax-loading').hide();
-                    }, 5000);
-                    
-                }else{
-                    $('.filterable-items').each(function(){
-                        if(!$(this).hasClass('d-none')){
-                            setTimeout(() => {
-                                $(this).find('.input-check1').trigger('click');
-                            }, interval);
-                            interval += 150;
-                        }
-                        
-                        setTimeout(() => {
-                            $(document).find('#ajax-loading').hide();
-                        }, 5000);
-                    });
-                } 
-            }
-
-        
+                        $(this).find('.input-check').trigger('click');
+                    }, interval);
+                    interval += 150;
+                }
+                setTimeout(() => {
+                    $(document).find('#ajax-loading').hide();
+                }, 5000);
+            });
         });
-                
+
 
 
         $('.unSelectAll').click(function(){
@@ -1125,15 +1589,15 @@
                         }, interval);
                         interval += 150;
                     }
-                    
+
                     setTimeout(() => {
                         $(document).find('#ajax-loading').hide();
                     }, 9000);
                 });
-            } 
-        }); 
+            }
+        });
 
-                        
+
         // custom Loder
 
         window.addEventListener('load', () =>{
@@ -1146,11 +1610,11 @@
             cloader.addClass('loader-hidden');
         });
 
-            
+
     </script>
 
 
-    
+
 
     {{-- Ajax Scroll Load --}}
     <script>
@@ -1160,7 +1624,7 @@
         var contianer = $("#dfjrgd");
         var qsearch = false;
 
-        $(".nextpage").click(function (e) { 
+        $(".nextpage").click(function (e) {
             e.preventDefault();
             if (qsearch === false) {
                 if (total_page >= crr_page+1) {
@@ -1172,7 +1636,7 @@
         });
 
 
-        function getData(pages) { 
+        function getData(pages) {
             $.ajax({
                 type: "get",
                 url: URL,
@@ -1192,7 +1656,7 @@
                     // Code Start
 
                     $('.input-check').click(function(){
-                        console.log("You Cliked Me!");
+                        //
                         if($(this).prop('checked')){
                             var route = "{{ route('pages.api.store') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposalid }}"+"&hike=0";
                             console.log(route);
@@ -1201,10 +1665,10 @@
                                 method: "get",
                                 success: function(res){
                                     $("#itcont").html(res['count']);
-                                    console.table(res);
-                                    console.log(url);
-                                },error: function (res) { 
-                                    console.log(res);
+                                    // console.table(res);
+                                    // console.log(url);
+                                },error: function (res) {
+                                    // console.log(res);
                                 }
                             });
                         }else{
@@ -1214,47 +1678,36 @@
                                 method: "get",
                                 success: function(res){
                                     $("#itcont").html(res['count']);
-                                    console.table(res);
-                                    console.log(url);
+                                    // console.table(res);
+                                    // console.log(url);
                                 }
                             });
                         }
                     });
 
-
-                    {{-- Select All --}}
                     $('#select-all').click(function(){
                         $(document).find('#ajax-loading').show();
                         var interval = 10;
-                        if($('.input-check').is(':checked')){
-                            $('.input-check').click();
-
-                            setTimeout(() => {
-                                    $(document).find('#ajax-loading').hide();
-                            }, 5000);
-                            
-                        }else{
-                            $('.filterable-items').each(function(){
-                                if(!$(this).hasClass('d-none')){
-                                    setTimeout(() => {
-                                        $(this).find('.input-check').trigger('click');
-                                    }, interval);
-                                    interval += 150;
-                                }
+                        $('.filterable-items').each(function(){
+                            if(!$(this).hasClass('d-none')){
                                 setTimeout(() => {
-                                    $(document).find('#ajax-loading').hide();
-                                }, 5000);
-                            });
-                        }                        
+                                    $(this).find('.input-check').trigger('click');
+                                }, interval);
+                                interval += 150;
+                            }
+                            setTimeout(() => {
+                                $(document).find('#ajax-loading').hide();
+                            }, 5000);
+                        });
                     });
                     // Code End
                 }
-            });        
+            });
         }
 
 
         // ! OnKey Up Load Ajax...
-        $("#quicktitle").keyup(function (e) { 
+        $("#quicktitle").keyup(function (e) {
             let thisval = this.value;
 
             if (thisval == '') {
@@ -1284,7 +1737,7 @@
 
                      // Code Start
                      $('.input-check').click(function(){
-                        console.log("You Cliked Me!");
+
                         if($(this).prop('checked')){
                             var route = "{{ route('pages.api.store') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposalid }}"+"&hike=0";
                             console.log(route);
@@ -1293,10 +1746,10 @@
                                 method: "get",
                                 success: function(res){
                                     $("#itcont").html(res['count']);
-                                    console.table(res);
-                                    console.log(url);
-                                },error: function (res) { 
-                                    console.log(res);
+                                    // console.table(res);
+                                    // console.log(url);
+                                },error: function (res) {
+                                    // console.log(res);
                                 }
                             });
                         }else{
@@ -1306,8 +1759,8 @@
                                 method: "get",
                                 success: function(res){
                                     $("#itcont").html(res['count']);
-                                    console.table(res);
-                                    console.log(url);
+                                    // console.table(res);
+                                    // console.log(url);
                                 }
                             });
                         }
@@ -1317,36 +1770,27 @@
                     $('#select-all').click(function(){
                         $(document).find('#ajax-loading').show();
                         var interval = 10;
-                        if($('.input-check').is(':checked')){
-                            $('.input-check').click();
-
-                            setTimeout(() => {
-                                    $(document).find('#ajax-loading').hide();
-                            }, 5000);
-                            
-                        }else{
-                            $('.filterable-items').each(function(){
-                                if(!$(this).hasClass('d-none')){
-                                    setTimeout(() => {
-                                        $(this).find('.input-check').trigger('click');
-                                    }, interval);
-                                    interval += 150;
-                                }
+                        $('.filterable-items').each(function(){
+                            if(!$(this).hasClass('d-none')){
                                 setTimeout(() => {
-                                    $(document).find('#ajax-loading').hide();
-                                }, 5000);
-                            });
-                        }                        
+                                    $(this).find('.input-check').trigger('click');
+                                }, interval);
+                                interval += 150;
+                            }
+                            setTimeout(() => {
+                                $(document).find('#ajax-loading').hide();
+                            }, 5000);
+                        });
                     });
                     // Code End
 
                 }
-            });   
+            });
 
 
         });
 
-        
+
     </script>
 
 

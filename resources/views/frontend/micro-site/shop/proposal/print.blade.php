@@ -38,8 +38,16 @@
                                     else {
                                         $price = $user_price;
                                     }
+
+                                    $record = (array) json_decode($proposal->currency_record);
+                                    $exhangerate = $record[$proposal->offer_currency] ?? 1;
+                                    $HomeCurrency = 1;
+                                    $currency_symbol = $proposal->offer_currency ?? 'INR';
                                 @endphp
-                                <td> {{ format_price(($price)) }} </td>
+                                <td> 
+                                    {{ $currency_symbol }}
+                                    {{number_format(round(exchangerate($price,$exhangerate,$HomeCurrency)),2) }}    
+                                </td>
                                 <td>
                                     @php
                                         $url = asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png'));

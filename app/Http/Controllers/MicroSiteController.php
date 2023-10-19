@@ -20,9 +20,11 @@ use App\Models\ProductAttribute;
 use App\Models\ProductExtraInfo;
 use App\Models\Proposal;
 use App\Models\ProposalItem;
+use App\Models\UserCurrency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class MicroSiteController extends Controller
@@ -132,7 +134,9 @@ class MicroSiteController extends Controller
         if (!$user_shop->shop_view && $user_shop->user_id != auth()->id()) {
             return back();
         }
+        
 
+        $currency_record = UserCurrency::where('user_id',$user_shop->user_id)->get();
 
 
         $user_shop_items = Product::join('user_shop_items', 'products.id', '=', 'user_shop_items.product_id')
@@ -183,16 +187,6 @@ class MicroSiteController extends Controller
             "To" => $request->get('to')
         ]);
         
-        // magicstring($alll_searches);
-
-        // magicstring($request->all());
-        // return;
-
-
-
-
-
-
         if(request()->has('title') && request()->get('title') != null){
             $user_shop_items->where('user_shop_id',$user_shop->id)->where('products.title','like','%'.request()->get('title').'%')->orwhere('products.model_code','like','%'.request()->get('model_code').'%');
         }
@@ -273,13 +267,20 @@ class MicroSiteController extends Controller
             // dd($maxID);
             // magicstring($countattri);
             // return;
+
+
+        $proposalid = -1;
+        $temdata = json_decode($user_shop->team);
+        $manage_offer_guest = $temdata->manage_offer_guest ?? 0;
+        $manage_offer_verified = $temdata->manage_offer_verified ?? 0;
             
             
         if ($request->ajax()) {
-            return view('frontend.micro-site.shop.loadIndex',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','user_shop','alll_searches'));
+            return view('frontend.micro-site.shop.loadIndex',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','user_shop','alll_searches','currency_record'));
         }
 
-        return view('frontend.micro-site.shop.index',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','minID','maxID','user_shop','alll_searches' ));
+        // return view('frontend.micro-site.shop.index',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','minID','maxID','user_shop','alll_searches','currency_record'));
+        return view('frontend.micro-site.proposals.index',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','minID','maxID','user_shop','alll_searches','currency_record','proposalid','request','manage_offer_guest','manage_offer_verified'));
 
     }
 
@@ -667,7 +668,7 @@ class MicroSiteController extends Controller
 
         $groupIds = ProductExtraInfo::where('group_id',$product->sku)->groupBy('Cust_tag_group')->pluck('Cust_tag_group');
         
-        
+        $currency_record = UserCurrency::where('user_id',$user_shop->user_id)->get();
         
 
         $curretpage = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
@@ -687,7 +688,7 @@ class MicroSiteController extends Controller
         ->reddit();
 
         // ` Work End Here
-        return view('frontend.micro-site.shop.show',compact('slug','group_id','product','user_shop','shipping_details','carton_details','user_product','related_products','variations','scan','proposalidrequest','show_product','features','attributes','colors','sizes','materials','result_attri','shareButtons1','groupIds'));
+        return view('frontend.micro-site.shop.show',compact('slug','group_id','product','user_shop','shipping_details','carton_details','user_product','related_products','variations','scan','proposalidrequest','show_product','features','attributes','colors','sizes','materials','result_attri','shareButtons1','groupIds','currency_record'));
     }
 
     public function contactIndex(Request $request)
@@ -970,5 +971,33 @@ class MicroSiteController extends Controller
     }
 
 
+    public function chagecurrency(Request $request) {
+        
+        if ($request->ajax()) {
+            $slug = $request->subdomain;
+            $user_shop = UserShop::whereSlug($slug)->first();
+    
+            $record = UserCurrency::whereId($request->currency_Id)->where('user_id',$user_shop->user_id)->first();
+    
+    
+            Session::put('Currency_exchange', $record->exchange);
+            Session::put('Currency_id', $record->id);
+            Session::put('currency_name', $record->currency);
+            Session::save();
+
+            $crname = $record->currency;
+            $response = array(['key' => 200,"Result" => "Currency Change To $crname"]);
+            return json_encode($response);
+        }else{
+            // return "I Think You are Lost Go Back To Home";
+            abort(404);
+        }
+
+
+    }
+
+    
+    
+    
 
 }

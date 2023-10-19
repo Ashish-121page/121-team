@@ -12,6 +12,7 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
 use App\Models\Setting;
 use App\Models\Uploadrecord;
+use App\Models\UserCurrency;
 use App\Models\UserShop;
 use App\Models\UserShopItem;
 use App\User;
@@ -20,6 +21,7 @@ use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 use PhpParser\Node\Expr\Cast\Object_;
 use PhpParser\Node\Stmt\Return_;
@@ -2327,8 +2329,12 @@ class NewBulkController extends Controller
             $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
             $spreadSheet->getActiveSheet()->fromArray($products,null,'A3');
             $Excel_writer = new Xls($spreadSheet);
-            $fileName = "Customer_ExportedData";
             
+            $mytime = Carbon::now();
+
+            $user = auth()->user();
+            $fileName = "$user->name Exported Data-".$mytime->toDateTimeString();
+
             header('Content-Type: application/vnd.ms-excel');
             header("Content-Disposition: attachment;filename=$fileName.xls");
             header('Cache-Control: max-age=0');
@@ -3174,663 +3180,1137 @@ class NewBulkController extends Controller
     // Custom Fields Export Data
     public function exportDataCustom(Request $request,User $user_id) {
 
-        
-
         $request['myfields'] = $this->productBulkExport($request->myfields);
-        
-        // Uploading FIle
-        if($request->has('myfields')){
-            $path = "files/$user_id->id/Uploaded_excel/";
-            $filename = $request->file('myfields')->getClientOriginalName();
-
-            $img = $this->uploadFile($request->file("myfields"), "$path",null,$filename)->getFilePath();
-            $extension = pathinfo($filename, PATHINFO_EXTENSION);
-            Uploadrecord::create([
-                'user_id' =>$user_id->id,
-                'sheet_name' => $filename,
-                'remarks' => $request->remarks,
-                'path' => $img,
-                'last_used' => Carbon::now(),
-            ]);
-            
-        }
-
-        
-
-
 
         return back()->with('success',"File Download Success Fully..");
     }
 
 
     public function UploadDataCustom(Request $request,User $user_id) {
+        try {
 
+            $user_shop = UserShop::where('user_id',$user_id->id)->first();
+            $Array_saprator = "^^";
+            $count = 0;
+            $SampleMinYear = 1985;
+            $SampleMaxYear = Carbon::now()->format('Y');
+            $check_permision_array = ['yes','no',"Yes","No","YES","NO",'0','1'];
+            $allowed_array = ['yes',"Yes","YES",'1'];
+            $Months_array = ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November','December', 'january','february','march','april','may','june','july','august','september','october','november','december'];
+            $common_field = ['Colour','Size','Mateial'];
+            $custom_attriute_columns = json_decode($user_id->custom_attriute_columns);
+            $selected_custom_attribute = [];
 
-    try {
-
-
-        $user_shop = UserShop::where('user_id',$user_id->id)->first();
-        $Array_saprator = "^^";
-        $count = 0;
-        $SampleMinYear = 1985;
-        $SampleMaxYear = Carbon::now()->format('Y');
-        $check_permision_array = ['yes','no',"Yes","No","YES","NO",'0','1'];
-        $allowed_array = ['yes',"Yes","YES",'1'];
-        $Months_array = ['January', 'February', 'March', 'April', 'May','June', 'July', 'August', 'September', 'October', 'November','December', 'january','february','march','april','may','june','july','august','september','october','november','december'];
-        $common_field = ['Colour','Size','Mateial'];
-        $custom_attriute_columns = json_decode($user_id->custom_attriute_columns);
-        $selected_custom_attribute = [];
-
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->uploadcustomfield);
-        $worksheet = $spreadsheet->getActiveSheet();
-        $rows = [];
-        foreach ($worksheet->getRowIterator() as $row) {
-            $cellIterator = $row->getCellIterator();
-            $cellIterator->setIterateOnlyExistingCells(false); // This loops through all cells,
-            $cells = [];
-            foreach ($cellIterator as $cell) {
-                $cells[] = $cell->getValue();
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->uploadcustomfield);
+            $worksheet = $spreadsheet->getActiveSheet();
+            $rows = [];
+            foreach ($worksheet->getRowIterator() as $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(false); // This loops through all cells,
+                $cells = [];
+                foreach ($cellIterator as $cell) {
+                    $cells[] = $cell->getValue();
+                }
+                $rows[] = $cells;
             }
-            $rows[] = $cells;
-        }
-        $with_header = array_slice($rows,2);
-        $rows = array_slice($rows,3);
-        $master = $rows;
+            $with_header = array_slice($rows,2);
+            $rows = array_slice($rows,3);
+            $master = $rows;
 
 
-        magicstring($with_header[0]);
-        
-        // Creating Variables
-        foreach ($with_header[0] as $key => $value) {
-            ${"$value"} = $key;
-        }
-
-
-        // @ Validating Loop
-            foreach ($master as $tmp_key => $tmp_item) {
-                $row = $tmp_key+4;            
-                // magicstring($tmp_item);
-
-                if (isset(${'Model_Code'})) {
-                    // ` Checking Model Code
-                    if ($tmp_item[${'Model_Code'}] != null && $tmp_item[${'Model_Code'}] != "") {
-                        // Checking Group Id..
-                        $checkSKU = Product::where('model_code',$tmp_item[${'Model_Code'}])->where('user_id',auth()->id())->first();
-                        if (empty($checkSKU)) {
-                            // Group Id not Match with User  
-                            // Todo: Do Nothing
-                        }elseif($checkSKU->user_id != auth()->id()){
-                            // No Record found In product Need to Created New.!!
-                            return back()->with('error',"Group Id Didn't Match!!");
-                        }
-                        elseif ($checkSKU->user_id == auth()->id()) {
-                            // Get Product and User id is Matched
-                            $GroupId = $checkSKU->sku;
-                        }else{
-                            echo "Sometyhing Went Wrong!!";
-                            return;
-                        }
-                    }
-
-                    
-                }else{
-                    return back()->with('error',"Model Code Should Require Add That Field.");
-                }
-
-
-                // checking Category
-                if (isset(${'Category'})) {
-                    if ($tmp_item[${'Category'}] == null) {
-                        return back()->with('error',"Category Is Blank at Row $row");
-                    }else{
-                        $chk = Category::where('name',$tmp_item[${'Category'}])->where('category_type_id',13)->get();
-                        if (count($chk) > 0) {
-                            $Category_id = $chk[0]->id;
-                        }else{
-                            return back()->with('error',"Category is Not Exist at Row $row");
-                        }
-                    }
-                }else{
-                    return back()->with('error',"Category Should Require Add That Field.");
-                }
-
-
-                // checking Category
-                if (isset(${'Sub_Category'})) {
-                    if ($tmp_item[${'Sub_Category'}] == null) {
-                        return back()->with('error',"Sub Category Is Blank at Row $row");
-                    }else{
-                        $chk = Category::where('name',$tmp_item[${'Sub_Category'}])->where('parent_id',$Category_id)->get();
-                        if (!count($chk) > 0) {
-                            return back()->with('error',"Sub category Is Matched with Category at Row $row");
-                        }
-                        $sub_category_id = $chk[0]->id;
-                    }
-                }else{
-                    return back()->with('error',"Sub category Should Require Add That Field.");
-                }
-
-
-                // ` Checking Currency
-                if (isset(${'Base_currency'})) {
-                    if ($tmp_item[${'Base_currency'}] == null) {
-                        $Currency = 'INR';
-                    }else{
-                        $chk = Country::where('currency',$tmp_item[${'Base_currency'}])->get();
-                        if (count($chk) > 0) {
-                            // echo "We Have ... $tmp_item[${'Base_currency'}] <br>";
-                            $Currency = $tmp_item[${'Base_currency'}];
-                        }else{
-                            return back()->with('error',"That Currency is not Available at Row $row");
-                        }
-                    }
-                }else{
-                    // return back()->with('error',"CategSub category Should Require Add That Field.");
-                    $Currency = 'INR';
-                }
-
-                
-                // ` Checking Allow Reseller Input
-                if (isset(${'Allow_Resellers'})) {    
-                    if (!in_array($tmp_item[${'Allow_Resellers'}],$check_permision_array)) {
-                        return back()->with('error',"The Value is not Matched in Allow Reseller at Row $row");
-                    }
-                }else{
-                    // return back()->with('error',"CategSub category Should Require Add That Field.");
-                }
-
-                // ` Checking Exclusive Product          
-                if (isset(${'Copyright/ Exclusive item'})) {    
-                    if (!in_array($tmp_item[${'Copyright/ Exclusive item'}],$check_permision_array)) {
-                        return back()->with('error',"you Didn't Fill Exclusive Product Option at Row $row");
-                    }
-                }else{
-                    // return back()->with('error',"CategSub category Should Require Add That Field.");
-                }
-                
-                // ` Checking Sample Stock Available
-        
-                if (isset(${'Sample / Stock available'})) {    
-                    if (!in_array($tmp_item[${'Sample / Stock available'}],$check_permision_array)) {
-                        $tmp_item[${'Sample / Stock available'}] = 'No';
-                    }else{
-                        $tmp_item[${'Sample / Stock available'}] = 'Yes';
-                    }
-                }else{
-                    // return back()->with('error',"CategSub category Should Require Add That Field.");
-                }
-                    
-
-                // ` Checking Selling Price_Unit
-                if (isset(${'Selling Price_Unit'})) {
-                    // ` Checking Customer Price
-                    if ($tmp_item[${'Selling Price_Unit'}] != null) {
-                        if (!is_numeric($tmp_item[${'Selling Price_Unit'}])){
-                            return back()->with('error',"Enter valid amount in Customer Price at Row $row");
-                        }
-                    }
-                }
-
-                // ` Checking Customer_Price_without_GST
-                if (isset(${'Customer_Price_without_GST'})) {
-                    // ` Checking Customer Price
-                    if ($tmp_item[${'Customer_Price_without_GST'}] != null) {
-                        if (!is_numeric($tmp_item[${'Customer_Price_without_GST'}])){
-                            return back()->with('error',"Enter valid amount in Customer Price without GST at Row $row");
-                        }
-                    }
-                }
-
-                // ` Checking Shop_Price_VIP_Customer
-                if (isset(${'Shop_Price_VIP_Customer'})) {
-                    // ` Checking Customer Price
-                    if ($tmp_item[${'Shop_Price_VIP_Customer'}] != null) {
-                        if (!is_numeric($tmp_item[${'Shop_Price_VIP_Customer'}])){
-                            return back()->with('error',"Enter valid amount in Shop VIP Customer Price at Row $row");
-                        }
-                    }
-                }
-
-                // ` Checking Shop_Price_Reseller
-                if (isset(${'Shop_Price_Reseller'})) {
-                    // ` Checking Customer Price
-                    if ($tmp_item[${'Shop_Price_Reseller'}] != null) {
-                        if (!is_numeric($tmp_item[${'Shop_Price_Reseller'}])){
-                            return back()->with('error',"Enter valid amount in Shop Price Reseller at Row $row");
-                        }
-                    }
-                }
-
-                // ` Checking mrpIncl tax
-                if (isset(${'mrpIncl tax'})) {
-                    // ` Checking Customer Price
-                    if ($tmp_item[${'mrpIncl tax'}] != null) {
-                        if (!is_numeric($tmp_item[${'mrpIncl tax'}])){
-                            return back()->with('error',"Enter valid amount in MRP Incl. tax Reseller at Row $row");
-                        }
-                    }
-                }
-
-
-                // ` Checking HSN Tax
-                if (isset(${'HSN Tax'})) {
-                    // ` Checking Customer Price
-                    if ($tmp_item[${'HSN Tax'}] != null) {
-                        if (!is_numeric($tmp_item[${'HSN Tax'}])){
-                            return back()->with('error',"Enter valid amount HSN Tax Reseller at Row $row");
-                        }
-                    }
-                }
-
-                // ` Checking HSN_Percnt
-                if (isset(${'HSN_Percnt'})) {
-                    // ` Checking Customer Price
-                    if ($tmp_item[${'HSN_Percnt'}] != null) {
-                        if (!is_numeric($tmp_item[${'HSN_Percnt'}])){
-                            return back()->with('error',"Enter valid amount in HSN_Percnt Reseller at Row $row");
-                        }
-                    }
-                }
-
-
-                // ` Checking Theme / COllection Year...
-                if (isset(${'Theme / Collection Year'})) {
-                    if ($tmp_item[${'Theme / Collection Year'}] != null) {
-                        if ($tmp_item[${'Theme / Collection Year'}] >= $SampleMinYear && $tmp_item[${'Theme / Collection Year'}] <= $SampleMaxYear) {
-                            // echo "Between Theme Collection Range..".newline(5);
-                        }else{
-                            return back()->with('error',"Enter valid Theme / Collection Year at Row $row");
-                        }
-                    }
-                }
-
-                // ` Checking Sourcing Year...
-                if (isset(${'Sourcing Year'})) {
-                    if ($tmp_item[${'Sourcing Year'}] != null) {
-                        if ($tmp_item[${'Sourcing Year'}] >= $SampleMinYear && $tmp_item[${'Sourcing Year'}] <= $SampleMaxYear) {
-                            // echo "Between Theme Collection Range..".newline(5);
-                        }else{
-                            return back()->with('error',"Enter valid Sourcing Year at Row $row");
-                        }
-                    }
-                }
-
-                // ` Checking Sample Year...
-                if (isset(${'Sample Year'})) {
-                    if ($tmp_item[${'Sample Year'}] != null) {
-                        if ($tmp_item[${'Sample Year'}] >= $SampleMinYear && $tmp_item[${'Sample Year'}] <= $SampleMaxYear) {
-                            // echo "Between Theme Collection Range..".newline(5);
-                        }else{
-                            return back()->with('error',"Enter valid Sample Year at Row $row");
-                        }
-                    }
-                }
-                    
-                // ` Checking Sample Month...
-                if (isset(${'Sample Month'})) {
-                    if ($tmp_item[${'Sample Month'}] != null) {   
-                        if (!in_array($tmp_item[${'Sample Month'}],$Months_array)) {
-                            return back()->with('error',"Enter Valid Month in Sampling month at Row $row");
-                        }
-                    }    
-                }
-
-
-                // ` Checking Season / Month...
-                if (isset(${'Season / Month'})) {
-                    if ($tmp_item[${'Season / Month'}] != null) {   
-                        if (!in_array($tmp_item[${'Season / Month'}],$Months_array)) {
-                            return back()->with('error',"Enter Valid Month in Season / Month at Row $row");
-                        }
-                    }    
-                }
-
-
-                // ` Checking Sourcing month...
-                if (isset(${'Sourcing month'})) {
-                    if ($tmp_item[${'Sourcing month'}] != null) {   
-                        if (!in_array($tmp_item[${'Sourcing month'}],$Months_array)) {
-                            return back()->with('error',"Enter Valid Month in Sourcing month at Row $row");
-                        }
-                    }    
-                }
-
-                // ` Checking CBM
-                if (isset(${'CBM'})) {
-                    // ` Checking Customer Price
-                    if ($tmp_item[${'CBM'}] != null) {
-                        if (!is_numeric($tmp_item[${'CBM'}])){
-                            return back()->with('error',"Enter valid CBM at Row $row");
-                        }
-                    }
-                }
-
-
-                // ` Checking Production time (days)
-                if (isset(${'Production time (days)'})) {
-                    // ` Checking Customer Price
-                    if ($tmp_item[${'Production time (days)'}] != null) {
-                        if (!is_numeric($tmp_item[${'Production time (days)'}])){
-                            return back()->with('error',"Enter valid Production time (days) at Row $row");
-                        }
-                    }
-                }
-
-                // ` Checking MBQ
-                if (isset(${'MBQ'})) {
-                    // ` Checking Customer Price
-                    if ($tmp_item[${'MBQ'}] != null) {
-                        if (!is_numeric($tmp_item[${'MBQ'}])){
-                            return back()->with('error',"Enter valid MBQ at Row $row");
-                        }
-                    }
-                }
-
-                // ` Checking MBQ_units
-                if (isset(${'MBQ_units'})) {
-                    // ` Checking Customer Price
-                    if ($tmp_item[${'MBQ_units'}] != null) {
-                        if (!is_numeric($tmp_item[${'MBQ_units'}])){
-                            return back()->with('error',"Enter valid MBQ_units at Row $row");
-                        }
-                    }
-                }
-
-                // ` Getting Selected Variation Name (Values) and Columns (Key)
-                foreach ($with_header[0] as $col => $item) {
-                    if (in_array($item,$custom_attriute_columns)) {
-
-                        $selected_custom_attribute[$col] = $item;
-
-                    }
-                }
-
-
-                // ` Checking Up Values of Attribute Variation Column
-                if (isset(${'Variation attributes'})) {
-
-                    $receive_data = explode($Array_saprator,$tmp_item[${'Variation attributes'}]);
-                    
-                    // * Checking Define Attribute Exist in Their Account Or Not
-                    if ($tmp_item[${'Variation attributes'}] != null || $tmp_item[${'Variation attributes'}] != '') {
-                        foreach ($receive_data as $datakey => $data) {
-                            if (!in_array($data,$custom_attriute_columns)) {
-                                return back()->with('error',"$data is Not Exist in Your Account at Row $row, Tmp");
-                            }
-                        }
-                    
-                        // * Checking Define Attribute Exist in Upload file
-                        foreach ($receive_data as $datakey => $data) {
-                            if (!in_array($data,$selected_custom_attribute)) {
-                                return back()->with('error',"$data is Not Exist in Excel at Row $row");
-                            }
-                        }
-
-                    }
-
-
-                    $variation_count = ($receive_data != null) ? count($receive_data) : 0;          
-                    if ($variation_count > 3) {
-                        return back()->with('error',"You Have More Than 3 Varient At Row $row. You Only Have 3 at a Row");
-                    }
-
-                }else{
-                    return back()->with('error',"Variation attributes Column is Required for Upload In Excel.");
-                }
-
-
-
-                // ` Checking Extra Image
-                // if (isset(${'Additional Image Use ^^'})) {
-                //     if ($temp_item[${'Additional Image Use ^^'}] != null) {
-                //         $ProductextraImages = explode($Array_saprator,$temp_item[${'Additional Image Use ^^'}]);
-                //     }else{
-                //         $ProductextraImages = null;
-                //     }
-                // }
-                $ProductextraImages = null;
-
-
-                // ` Checking Up Values of Attributes Column (::All::)
-                foreach ($selected_custom_attribute as $tmp_col => $attribute_name) {
-
-                    $receive_data = explode($Array_saprator,$tmp_item[$tmp_col]);
-
-                    foreach ($receive_data as $gkey => $gvalue) {
-                        $attribute_data_default = ProductAttribute::where('name',$attribute_name)->where('user_id',null)->first();
-                        $attribute_data_custom = ProductAttribute::where('name',$attribute_name)->where('user_id',$user_id->id)->first();
-                            
-                        if ($attribute_data_default != null) {
-                            $attribute_data = $attribute_data_default;
-                        }else{
-                            $attribute_data = $attribute_data_custom;
-                        }
-
-                        $attribute_value_obj = ProductAttributeValue::where('parent_id',$attribute_data->id)->pluck('attribute_value');
-                        $attribute_value = [];
-
-                        foreach ($attribute_value_obj as $key => $value) {
-                            $value = strtolower($value);
-                            $value = ucwords($value);
-                            array_push($attribute_value,trim($value));
-                        }
-
-                        // ` Converting Input value to Proper case
-                        $gvalue = strtolower($gvalue);
-                        $gvalue = ucwords($gvalue);
-
-                        // ! checking Value Exist in Records or Not
-                        if ($gvalue != '') {
-                            if (!in_array($gvalue,$attribute_value,true)) {
-                                return back()->with('error',"$gvalue Not Exist At Row $row");
-                            }
-                        }
-
-                    }
-                }
-
+            magicstring($with_header[0]);
+            
+            // Creating Variables
+            foreach ($with_header[0] as $key => $value) {
+                ${"$value"} = $key;
             }
-        // @ End of Validating Loop
-
-        $modalArray = [];
-        $SKUArray = [];
-        $debuging_mode = 0;
-
-        // ! Main For Uploading Data Start
-            foreach ($master as $index => $item) {
-                $variationType_array =[];
-                $row = $index + 4;
-                
-
-                $myTmp_array = [];    
-                $Productids_array = [];
 
 
-                // ` Checking Up Values of Attribute Variation Column
-                if (isset(${'Variation attributes'})) {
+            // @ Validating Loop
+                foreach ($master as $tmp_key => $tmp_item) {
+                    $row = $tmp_key+4;            
+                    // magicstring($tmp_item);
 
-                    $variationType_array = explode($Array_saprator,$item[${'Variation attributes'}]);
-                    
-                    // * Checking Define Attribute Exist in Their Account Or Not
-                    if ($item[${'Variation attributes'}] != null || $item[${'Variation attributes'}] != '') {
-                        foreach ($variationType_array as $datakey => $data) {
-                            if (!in_array($data,$custom_attriute_columns)) {
-                                return back()->with('error',"$data is Not Exist in Your Account at Row $row");
+                    if (isset(${'Model_Code'})) {
+                        // ` Checking Model Code
+                        if ($tmp_item[${'Model_Code'}] != null && $tmp_item[${'Model_Code'}] != "") {
+                            // Checking Group Id..
+                            $checkSKU = Product::where('model_code',$tmp_item[${'Model_Code'}])->where('user_id',auth()->id())->first();
+                            if (empty($checkSKU)) {
+                                // Group Id not Match with User  
+                                // Todo: Do Nothing
+                            }elseif($checkSKU->user_id != auth()->id()){
+                                // No Record found In product Need to Created New.!!
+                                return back()->with('error',"Group Id Didn't Match!!");
                             }
-                        }
-                 
-                        // * Checking Define Attribute Exist in Upload file
-                        foreach ($variationType_array as $datakey => $data) {
-                            if (!in_array($data,$selected_custom_attribute)) {
-                                return back()->with('error',"$data is Not Exist in Excel at Row $row");
-                            }
-                        }
-                    }
-                    $variation_count = ($variationType_array != null) ? count($variationType_array) : 0;
-
-
-                }else{
-                    return back()->with('error',"Variation attributes Column is Required for Upload In Excel.");
-                }
-
-
-                // ` Checking Up Values of Attributes Column (::All::)
-                foreach ($selected_custom_attribute as $tmp_col => $attribute_name) {
-
-                    $receive_data = explode($Array_saprator,$item[$tmp_col]);
-                    
-                    foreach ($receive_data as $gkey => $gvalue) {
-                        $attribute_data_default = ProductAttribute::where('name',$attribute_name)->where('user_id',null)->first();
-                        $attribute_data_custom = ProductAttribute::where('name',$attribute_name)->where('user_id',$user_id->id)->first();
-                            
-                        if ($attribute_data_default != null) {
-                            $attribute_data = $attribute_data_default;
-                        }else{
-                            $attribute_data = $attribute_data_custom;
-                        }
-
-                        $attribute_value_obj = ProductAttributeValue::where('parent_id',$attribute_data->id)->pluck('attribute_value');
-                        $attribute_value = [];
-
-                        foreach ($attribute_value_obj as $key => $value) {
-                            $value = strtolower($value);
-                            $value = ucwords($value);
-                            array_push($attribute_value,trim($value));
-                        }
-
-                        // ` Converting Input value to Proper case
-                        $gvalue = strtolower($gvalue);
-                        $gvalue = ucwords($gvalue);
-
-                        // ! checking Value Exist in Records or Not
-                        if ($gvalue != '') {
-                            if (!in_array($gvalue,$attribute_value,true)) {
-                                return back()->with('error',"$gvalue Not Exist At Row $row");
+                            elseif ($checkSKU->user_id == auth()->id()) {
+                                // Get Product and User id is Matched
+                                $GroupId = $checkSKU->sku;
+                            }else{
+                                echo "Sometyhing Went Wrong!!";
+                                return;
                             }
                         }
 
-                    }
-                }
-
-
-
-                // * CREATING loop1,loop2 and loop3 
-                if ($item[${'Variation attributes'}] != null) {
-                    foreach ($variationType_array as $variation) {
-
-                        $tmp_colindex = ${$variation};
-
-                        $user_custom_col_list = $custom_attriute_columns;
-
-                        // ! Making Multidiamentional Array
-                        array_push($myTmp_array,explode($Array_saprator,$item[$tmp_colindex]));
                         
-                        // - Removing Used Variation From Array
-                        foreach ($variationType_array as $key => $val) {
-                            if (in_array($val,$user_custom_col_list)) {
-                                $user_custom_col_list = array_diff($user_custom_col_list,[$val]);
+                    }else{
+                        return back()->with('error',"Model Code Should Require Add That Field.");
+                    }
+
+
+                    // checking Category
+                    if (isset(${'Category'})) {
+                        if ($tmp_item[${'Category'}] == null) {
+                            return back()->with('error',"Category Is Blank at Row $row");
+                        }else{
+                            $chk = Category::where('name',$tmp_item[${'Category'}])->where('category_type_id',13)->get();
+                            if (count($chk) > 0) {
+                                $Category_id = $chk[0]->id;
+                            }else{
+                                return back()->with('error',"Category is Not Exist at Row $row");
+                            }
+                        }
+                    }else{
+                        return back()->with('error',"Category Should Require Add That Field.");
+                    }
+
+
+                    // checking Category
+                    if (isset(${'Sub_Category'})) {
+                        if ($tmp_item[${'Sub_Category'}] == null) {
+                            return back()->with('error',"Sub Category Is Blank at Row $row");
+                        }else{
+                            $chk = Category::where('name',$tmp_item[${'Sub_Category'}])->where('parent_id',$Category_id)->get();
+                            if (!count($chk) > 0) {
+                                return back()->with('error',"Sub category Is Matched with Category at Row $row");
+                            }
+                            $sub_category_id = $chk[0]->id;
+                        }
+                    }else{
+                        return back()->with('error',"Sub category Should Require Add That Field.");
+                    }
+
+
+                    // ` Checking Currency
+                    if (isset(${'Base_currency'})) {
+                        if ($tmp_item[${'Base_currency'}] == null) {
+                            $Currency = 'INR';
+                        }else{
+                            $chk = Country::where('currency',$tmp_item[${'Base_currency'}])->get();
+                            if (count($chk) > 0) {
+                                // echo "We Have ... $tmp_item[${'Base_currency'}] <br>";
+                                $Currency = $tmp_item[${'Base_currency'}];
+                            }else{
+                                return back()->with('error',"That Currency is not Available at Row $row");
+                            }
+                        }
+                    }else{
+                        // return back()->with('error',"CategSub category Should Require Add That Field.");
+                        $Currency = 'INR';
+                    }
+
+                    
+                    // ` Checking Allow Reseller Input
+                    if (isset(${'Allow_Resellers'})) {    
+                        if (!in_array($tmp_item[${'Allow_Resellers'}],$check_permision_array)) {
+                            return back()->with('error',"The Value is not Matched in Allow Reseller at Row $row");
+                        }
+                    }else{
+                        // return back()->with('error',"CategSub category Should Require Add That Field.");
+                    }
+
+                    // ` Checking Exclusive Product          
+                    if (isset(${'Copyright/ Exclusive item'})) {    
+                        if (!in_array($tmp_item[${'Copyright/ Exclusive item'}],$check_permision_array)) {
+                            return back()->with('error',"you Didn't Fill Exclusive Product Option at Row $row");
+                        }
+                    }else{
+                        // return back()->with('error',"CategSub category Should Require Add That Field.");
+                    }
+                    
+                    // ` Checking Sample Stock Available
+            
+                    if (isset(${'Sample / Stock available'})) {    
+                        if (!in_array($tmp_item[${'Sample / Stock available'}],$check_permision_array)) {
+                            $tmp_item[${'Sample / Stock available'}] = 'No';
+                        }else{
+                            $tmp_item[${'Sample / Stock available'}] = 'Yes';
+                        }
+                    }else{
+                        // return back()->with('error',"CategSub category Should Require Add That Field.");
+                    }
+                        
+
+                    // ` Checking Selling Price_Unit
+                    if (isset(${'Selling Price_Unit'})) {
+                        // ` Checking Customer Price
+                        if ($tmp_item[${'Selling Price_Unit'}] != null) {
+                            if (!is_numeric($tmp_item[${'Selling Price_Unit'}])){
+                                return back()->with('error',"Enter valid amount in Customer Price at Row $row");
                             }
                         }
                     }
 
-                    if (isset($variationType_array[0])) {
-                        $tmp_colindex = ${$variationType_array[0]};
-                        $loop1 = explode($Array_saprator,$item[$tmp_colindex]) ?? [];
+                    // ` Checking Customer_Price_without_GST
+                    if (isset(${'Customer_Price_without_GST'})) {
+                        // ` Checking Customer Price
+                        if ($tmp_item[${'Customer_Price_without_GST'}] != null) {
+                            if (!is_numeric($tmp_item[${'Customer_Price_without_GST'}])){
+                                return back()->with('error',"Enter valid amount in Customer Price without GST at Row $row");
+                            }
+                        }
+                    }
+
+                    // ` Checking Shop_Price_VIP_Customer
+                    if (isset(${'Shop_Price_VIP_Customer'})) {
+                        // ` Checking Customer Price
+                        if ($tmp_item[${'Shop_Price_VIP_Customer'}] != null) {
+                            if (!is_numeric($tmp_item[${'Shop_Price_VIP_Customer'}])){
+                                return back()->with('error',"Enter valid amount in Shop VIP Customer Price at Row $row");
+                            }
+                        }
+                    }
+
+                    // ` Checking Shop_Price_Reseller
+                    if (isset(${'Shop_Price_Reseller'})) {
+                        // ` Checking Customer Price
+                        if ($tmp_item[${'Shop_Price_Reseller'}] != null) {
+                            if (!is_numeric($tmp_item[${'Shop_Price_Reseller'}])){
+                                return back()->with('error',"Enter valid amount in Shop Price Reseller at Row $row");
+                            }
+                        }
+                    }
+
+                    // ` Checking mrpIncl tax
+                    if (isset(${'mrpIncl tax'})) {
+                        // ` Checking Customer Price
+                        if ($tmp_item[${'mrpIncl tax'}] != null) {
+                            if (!is_numeric($tmp_item[${'mrpIncl tax'}])){
+                                return back()->with('error',"Enter valid amount in MRP Incl. tax Reseller at Row $row");
+                            }
+                        }
+                    }
+
+
+                    // ` Checking HSN Tax
+                    if (isset(${'HSN Tax'})) {
+                        // ` Checking Customer Price
+                        if ($tmp_item[${'HSN Tax'}] != null) {
+                            if (!is_numeric($tmp_item[${'HSN Tax'}])){
+                                return back()->with('error',"Enter valid amount HSN Tax Reseller at Row $row");
+                            }
+                        }
+                    }
+
+                    // ` Checking HSN_Percnt
+                    if (isset(${'HSN_Percnt'})) {
+                        // ` Checking Customer Price
+                        if ($tmp_item[${'HSN_Percnt'}] != null) {
+                            if (!is_numeric($tmp_item[${'HSN_Percnt'}])){
+                                return back()->with('error',"Enter valid amount in HSN_Percnt Reseller at Row $row");
+                            }
+                        }
+                    }
+
+
+                    // ` Checking Theme / COllection Year...
+                    if (isset(${'Theme / Collection Year'})) {
+                        if ($tmp_item[${'Theme / Collection Year'}] != null) {
+                            if ($tmp_item[${'Theme / Collection Year'}] >= $SampleMinYear && $tmp_item[${'Theme / Collection Year'}] <= $SampleMaxYear) {
+                                // echo "Between Theme Collection Range..".newline(5);
+                            }else{
+                                return back()->with('error',"Enter valid Theme / Collection Year at Row $row");
+                            }
+                        }
+                    }
+
+                    // ` Checking Sourcing Year...
+                    if (isset(${'Sourcing Year'})) {
+                        if ($tmp_item[${'Sourcing Year'}] != null) {
+                            if ($tmp_item[${'Sourcing Year'}] >= $SampleMinYear && $tmp_item[${'Sourcing Year'}] <= $SampleMaxYear) {
+                                // echo "Between Theme Collection Range..".newline(5);
+                            }else{
+                                return back()->with('error',"Enter valid Sourcing Year at Row $row");
+                            }
+                        }
+                    }
+
+                    // ` Checking Sample Year...
+                    if (isset(${'Sample Year'})) {
+                        if ($tmp_item[${'Sample Year'}] != null) {
+                            if ($tmp_item[${'Sample Year'}] >= $SampleMinYear && $tmp_item[${'Sample Year'}] <= $SampleMaxYear) {
+                                // echo "Between Theme Collection Range..".newline(5);
+                            }else{
+                                return back()->with('error',"Enter valid Sample Year at Row $row");
+                            }
+                        }
+                    }
+                        
+                    // ` Checking Sample Month...
+                    if (isset(${'Sample Month'})) {
+                        if ($tmp_item[${'Sample Month'}] != null) {   
+                            if (!in_array($tmp_item[${'Sample Month'}],$Months_array)) {
+                                return back()->with('error',"Enter Valid Month in Sampling month at Row $row");
+                            }
+                        }    
+                    }
+
+
+                    // ` Checking Season / Month...
+                    if (isset(${'Season / Month'})) {
+                        if ($tmp_item[${'Season / Month'}] != null) {   
+                            if (!in_array($tmp_item[${'Season / Month'}],$Months_array)) {
+                                return back()->with('error',"Enter Valid Month in Season / Month at Row $row");
+                            }
+                        }    
+                    }
+
+
+                    // ` Checking Sourcing month...
+                    if (isset(${'Sourcing month'})) {
+                        if ($tmp_item[${'Sourcing month'}] != null) {   
+                            if (!in_array($tmp_item[${'Sourcing month'}],$Months_array)) {
+                                return back()->with('error',"Enter Valid Month in Sourcing month at Row $row");
+                            }
+                        }    
+                    }
+
+                    // ` Checking CBM
+                    if (isset(${'CBM'})) {
+                        // ` Checking Customer Price
+                        if ($tmp_item[${'CBM'}] != null) {
+                            if (!is_numeric($tmp_item[${'CBM'}])){
+                                return back()->with('error',"Enter valid CBM at Row $row");
+                            }
+                        }
+                    }
+
+
+                    // ` Checking Production time (days)
+                    if (isset(${'Production time (days)'})) {
+                        // ` Checking Customer Price
+                        if ($tmp_item[${'Production time (days)'}] != null) {
+                            if (!is_numeric($tmp_item[${'Production time (days)'}])){
+                                return back()->with('error',"Enter valid Production time (days) at Row $row");
+                            }
+                        }
+                    }
+
+                    // ` Checking MBQ
+                    if (isset(${'MBQ'})) {
+                        // ` Checking Customer Price
+                        if ($tmp_item[${'MBQ'}] != null) {
+                            if (!is_numeric($tmp_item[${'MBQ'}])){
+                                return back()->with('error',"Enter valid MBQ at Row $row");
+                            }
+                        }
+                    }
+
+                    // ` Checking MBQ_units
+                    if (isset(${'MBQ_units'})) {
+                        // ` Checking Customer Price
+                        if ($tmp_item[${'MBQ_units'}] != null) {
+                            if (!is_numeric($tmp_item[${'MBQ_units'}])){
+                                return back()->with('error',"Enter valid MBQ_units at Row $row");
+                            }
+                        }
+                    }
+
+                    // ` Getting Selected Variation Name (Values) and Columns (Key)
+                    foreach ($with_header[0] as $col => $item) {
+                        if (in_array($item,$custom_attriute_columns)) {
+
+                            $selected_custom_attribute[$col] = $item;
+
+                        }
+                    }
+
+
+                    // ` Checking Up Values of Attribute Variation Column
+                    if (isset(${'Variation attributes'})) {
+
+                        $receive_data = explode($Array_saprator,$tmp_item[${'Variation attributes'}]);
+                        
+                        // * Checking Define Attribute Exist in Their Account Or Not
+                        if ($tmp_item[${'Variation attributes'}] != null || $tmp_item[${'Variation attributes'}] != '') {
+                            foreach ($receive_data as $datakey => $data) {
+                                if (!in_array($data,$custom_attriute_columns)) {
+                                    return back()->with('error',"$data is Not Exist in Your Account at Row $row, Tmp");
+                                }
+                            }
+                        
+                            // * Checking Define Attribute Exist in Upload file
+                            foreach ($receive_data as $datakey => $data) {
+                                if (!in_array($data,$selected_custom_attribute)) {
+                                    return back()->with('error',"$data is Not Exist in Excel at Row $row");
+                                }
+                            }
+
+                        }
+
+
+                        $variation_count = ($receive_data != null) ? count($receive_data) : 0;          
+                        if ($variation_count > 3) {
+                            return back()->with('error',"You Have More Than 3 Varient At Row $row. You Only Have 3 at a Row");
+                        }
+
+                    }else{
+                        return back()->with('error',"Variation attributes Column is Required for Upload In Excel.");
+                    }
+
+
+
+                    // ` Checking Extra Image
+                    // if (isset(${'Additional Image Use ^^'})) {
+                    //     if ($temp_item[${'Additional Image Use ^^'}] != null) {
+                    //         $ProductextraImages = explode($Array_saprator,$temp_item[${'Additional Image Use ^^'}]);
+                    //     }else{
+                    //         $ProductextraImages = null;
+                    //     }
+                    // }
+                    $ProductextraImages = null;
+
+
+                    // ` Checking Up Values of Attributes Column (::All::)
+                    foreach ($selected_custom_attribute as $tmp_col => $attribute_name) {
+
+                        $receive_data = explode($Array_saprator,$tmp_item[$tmp_col]);
+
+                        foreach ($receive_data as $gkey => $gvalue) {
+                            $attribute_data_default = ProductAttribute::where('name',$attribute_name)->where('user_id',null)->first();
+                            $attribute_data_custom = ProductAttribute::where('name',$attribute_name)->where('user_id',$user_id->id)->first();
+                                
+                            if ($attribute_data_default != null) {
+                                $attribute_data = $attribute_data_default;
+                            }else{
+                                $attribute_data = $attribute_data_custom;
+                            }
+
+                            $attribute_value_obj = ProductAttributeValue::where('parent_id',$attribute_data->id)->pluck('attribute_value');
+                            $attribute_value = [];
+
+                            foreach ($attribute_value_obj as $key => $value) {
+                                $value = strtolower($value);
+                                $value = ucwords($value);
+                                array_push($attribute_value,trim($value));
+                            }
+
+                            // ` Converting Input value to Proper case
+                            $gvalue = strtolower($gvalue);
+                            $gvalue = ucwords($gvalue);
+
+                            // ! checking Value Exist in Records or Not
+                            if ($gvalue != '') {
+                                if (!in_array($gvalue,$attribute_value,true)) {
+                                    return back()->with('error',"$gvalue Not Exist At Row $row");
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+            // @ End of Validating Loop
+
+            $modalArray = [];
+            $SKUArray = [];
+            $debuging_mode = 0;
+
+            // ! Main For Uploading Data Start
+                foreach ($master as $index => $item) {
+                    $variationType_array =[];
+                    $row = $index + 4;
+                    
+
+                    $myTmp_array = [];    
+                    $Productids_array = [];
+
+
+                    // ` Checking Up Values of Attribute Variation Column
+                    if (isset(${'Variation attributes'})) {
+
+                        $variationType_array = explode($Array_saprator,$item[${'Variation attributes'}]);
+                        
+                        // * Checking Define Attribute Exist in Their Account Or Not
+                        if ($item[${'Variation attributes'}] != null || $item[${'Variation attributes'}] != '') {
+                            foreach ($variationType_array as $datakey => $data) {
+                                if (!in_array($data,$custom_attriute_columns)) {
+                                    return back()->with('error',"$data is Not Exist in Your Account at Row $row");
+                                }
+                            }
+                    
+                            // * Checking Define Attribute Exist in Upload file
+                            foreach ($variationType_array as $datakey => $data) {
+                                if (!in_array($data,$selected_custom_attribute)) {
+                                    return back()->with('error',"$data is Not Exist in Excel at Row $row");
+                                }
+                            }
+                        }
+                        $variation_count = ($variationType_array != null) ? count($variationType_array) : 0;
+
+
+                    }else{
+                        return back()->with('error',"Variation attributes Column is Required for Upload In Excel.");
+                    }
+
+
+                    // ` Checking Up Values of Attributes Column (::All::)
+                    foreach ($selected_custom_attribute as $tmp_col => $attribute_name) {
+
+                        $receive_data = explode($Array_saprator,$item[$tmp_col]);
+                        
+                        foreach ($receive_data as $gkey => $gvalue) {
+                            $attribute_data_default = ProductAttribute::where('name',$attribute_name)->where('user_id',null)->first();
+                            $attribute_data_custom = ProductAttribute::where('name',$attribute_name)->where('user_id',$user_id->id)->first();
+                                
+                            if ($attribute_data_default != null) {
+                                $attribute_data = $attribute_data_default;
+                            }else{
+                                $attribute_data = $attribute_data_custom;
+                            }
+
+                            $attribute_value_obj = ProductAttributeValue::where('parent_id',$attribute_data->id)->pluck('attribute_value');
+                            $attribute_value = [];
+
+                            foreach ($attribute_value_obj as $key => $value) {
+                                $value = strtolower($value);
+                                $value = ucwords($value);
+                                array_push($attribute_value,trim($value));
+                            }
+
+                            // ` Converting Input value to Proper case
+                            $gvalue = strtolower($gvalue);
+                            $gvalue = ucwords($gvalue);
+
+                            // ! checking Value Exist in Records or Not
+                            if ($gvalue != '') {
+                                if (!in_array($gvalue,$attribute_value,true)) {
+                                    return back()->with('error',"$gvalue Not Exist At Row $row");
+                                }
+                            }
+
+                        }
+                    }
+
+
+
+                    // * CREATING loop1,loop2 and loop3 
+                    if ($item[${'Variation attributes'}] != null) {
+                        foreach ($variationType_array as $variation) {
+
+                            $tmp_colindex = ${$variation};
+
+                            $user_custom_col_list = $custom_attriute_columns;
+
+                            // ! Making Multidiamentional Array
+                            array_push($myTmp_array,explode($Array_saprator,$item[$tmp_colindex]));
+                            
+                            // - Removing Used Variation From Array
+                            foreach ($variationType_array as $key => $val) {
+                                if (in_array($val,$user_custom_col_list)) {
+                                    $user_custom_col_list = array_diff($user_custom_col_list,[$val]);
+                                }
+                            }
+                        }
+
+                        if (isset($variationType_array[0])) {
+                            $tmp_colindex = ${$variationType_array[0]};
+                            $loop1 = explode($Array_saprator,$item[$tmp_colindex]) ?? [];
+                        }else{
+                            $loop1 = [];
+                        }
+                        
+                        
+                        if (isset($variationType_array[1])) {
+                            $tmp_colindex = ${$variationType_array[1]};
+                            $loop2 = explode($Array_saprator,$item[$tmp_colindex]) ?? [];
+                        }else{
+                            $loop2 = [];
+                        }
+                        
+                        if (isset($variationType_array[2])) {
+                            $tmp_colindex = ${$variationType_array[2]};
+                            $loop3 = explode($Array_saprator,$item[$tmp_colindex]) ?? [];
+                        }else{
+                            $loop3 = [];
+                        }
                     }else{
                         $loop1 = [];
-                    }
-                    
-                    
-                    if (isset($variationType_array[1])) {
-                        $tmp_colindex = ${$variationType_array[1]};
-                        $loop2 = explode($Array_saprator,$item[$tmp_colindex]) ?? [];
-                    }else{
                         $loop2 = [];
-                    }
-                    
-                    if (isset($variationType_array[2])) {
-                        $tmp_colindex = ${$variationType_array[2]};
-                        $loop3 = explode($Array_saprator,$item[$tmp_colindex]) ?? [];
-                    }else{
                         $loop3 = [];
+                        $variationType_array = [];
                     }
-                }else{
-                    $loop1 = [];
-                    $loop2 = [];
-                    $loop3 = [];
-                    $variationType_array = [];
-                }
 
 
 
-                
-                //` checking Category
-                if (isset(${'Category'})) {
-                    if ($item[${'Category'}] == null) {
-                        return back()->with('error',"Category Is Blank at Row $row");
-                    }else{
-                        $chk = Category::where('name',$item[${'Category'}])->where('category_type_id',13)->get();
-                        if (count($chk) > 0) {
-                            $Category_id = $chk[0]->id;
+                    
+                    //` checking Category
+                    if (isset(${'Category'})) {
+                        if ($item[${'Category'}] == null) {
+                            return back()->with('error',"Category Is Blank at Row $row");
                         }else{
-                            return back()->with('error',"Category is Not Exist at Row $row");
+                            $chk = Category::where('name',$item[${'Category'}])->where('category_type_id',13)->get();
+                            if (count($chk) > 0) {
+                                $Category_id = $chk[0]->id;
+                            }else{
+                                return back()->with('error',"Category is Not Exist at Row $row");
+                            }
                         }
-                    }
-                }else{
-                    return back()->with('error',"Category Should Require Add That Field.");
-                }
-
-
-                //` checking Category
-                if (isset(${'Sub_Category'})) {
-                    if ($item[${'Sub_Category'}] == null) {
-                        return back()->with('error',"Sub Category Is Blank at Row $row");
                     }else{
-                        $chk = Category::where('name',$item[${'Sub_Category'}])->where('parent_id',$Category_id)->get();
-                        if (!count($chk) > 0) {
-                            return back()->with('error',"Sub category Is Matched with Category at Row $row");
-                        }
-                        $sub_category_id = $chk[0]->id;
+                        return back()->with('error',"Category Should Require Add That Field.");
                     }
-                }else{
-                    return back()->with('error',"Sub category Should Require Add That Field.");
-                }
 
 
-                // ` Checking Currency
-                if (isset(${'Base_currency'})) {
-                    if ($item[${'Base_currency'}] == null) {
+                    //` checking Category
+                    if (isset(${'Sub_Category'})) {
+                        if ($item[${'Sub_Category'}] == null) {
+                            return back()->with('error',"Sub Category Is Blank at Row $row");
+                        }else{
+                            $chk = Category::where('name',$item[${'Sub_Category'}])->where('parent_id',$Category_id)->get();
+                            if (!count($chk) > 0) {
+                                return back()->with('error',"Sub category Is Matched with Category at Row $row");
+                            }
+                            $sub_category_id = $chk[0]->id;
+                        }
+                    }else{
+                        return back()->with('error',"Sub category Should Require Add That Field.");
+                    }
+
+
+                    // ` Checking Currency
+                    if (isset(${'Base_currency'})) {
+                        if ($item[${'Base_currency'}] == null) {
+                            $Currency = 'INR';
+                        }else{
+                            $chk = Country::where('currency',$item[${'Base_currency'}])->get();
+                            if (count($chk) > 0) {
+                                // echo "We Have ... $item[${'Base_currency'}] <br>";
+                                $Currency = $item[${'Base_currency'}];
+                            }else{
+                                return back()->with('error',"That Currency is not Available at Row $row");
+                            }
+                        }
+                    }else{
+                        // return back()->with('error',"CategSub category Should Require Add That Field.");
                         $Currency = 'INR';
-                    }else{
-                        $chk = Country::where('currency',$item[${'Base_currency'}])->get();
-                        if (count($chk) > 0) {
-                            // echo "We Have ... $item[${'Base_currency'}] <br>";
-                            $Currency = $item[${'Base_currency'}];
-                        }else{
-                            return back()->with('error',"That Currency is not Available at Row $row");
-                        }
                     }
-                }else{
-                    // return back()->with('error',"CategSub category Should Require Add That Field.");
-                    $Currency = 'INR';
-                }
 
 
 
-                $Productids_array = [];
-                $CREATED_PRODUUCT_ID = [];
-                $CREATED_PRODUUCT_ID_2 = [];
-                $user = $user_id;
+                    $Productids_array = [];
+                    $CREATED_PRODUUCT_ID = [];
+                    $CREATED_PRODUUCT_ID_2 = [];
+                    $user = $user_id;
 
-                $Productids_array = [];
+                    $Productids_array = [];
 
 
 
-                if($loop1 != [] && $loop2 != [] && $loop3 != []) {
-                    foreach ($loop1 as $key1 => $first) {
-                        foreach ($loop2 as $key2 => $second) {
-    
-                            foreach ($loop3 as $key3 => $third) {
+                    if($loop1 != [] && $loop2 != [] && $loop3 != []) {
+                        foreach ($loop1 as $key1 => $first) {
+                            foreach ($loop2 as $key2 => $second) {
+        
+                                foreach ($loop3 as $key3 => $third) {
+                                    $reseller_group = Group::whereUserId($user->id)->where('name',"Reseller")->first();
+                                    if(!$reseller_group){
+                                    $reseller_group = Group::create([
+                                            'user_id' => $user->id,
+                                            'name' => "Reseller",
+                                            'type' => 0,
+                                        ]);
+                                    }
+                                    $vip_group = Group::whereUserId($user->id)->where('name',"VIP")->first();
+                                    if(!$vip_group){
+                                    $vip_group =  Group::create([
+                                        'user_id' => $user->id,
+                                        'name' => "VIP",
+                                        'type' => 0,
+                                    ]);
+                                    }
+                                
+                                    // - SKU CODE Generation BASED ON MODEL CODE
+                                    if ($item[${'Model_Code'}] == null && $item[${'Model_Code'}] == "") {
+                                        $sku_code = 'SKU'.generateRandomStringNative(6);
+                                        $item[${'Model_Code'}] = $sku_code;
+                                    }elseif (isset($GroupId)) {
+                                        $sku_code = $GroupId;
+                                    }
+                                    else{
+                                        $sku_code = 'SKU'.generateRandomStringNative(6);
+                                    }
+                                    if (in_array($item[${'Model_Code'}],$modalArray)) {
+                                        // echo "Yes Bro!";
+                                        $sku_code = $SKUArray[array_search($item[${'Model_Code'}],$modalArray)];
+                                    }else{
+                                        array_push($modalArray,$item[${'Model_Code'}]);
+                                        array_push($SKUArray,$sku_code);
+                                    }
+                                    $unique_slug  = getUniqueProductSlug($item[${'Product name'}]);
+                                    // - Start Uploading Product....
+                                    // Todo: Checking Product Exist in Database or Not..
+                                    $product_chk = Product::where('sku',$sku_code)->get();
+                                    if (count($product_chk) != 0) {
+                                        $product_exist = $product_chk[0];
+                                            
+                                    } # If end (Product Exist in Record)
+                                    else{
+                                        $product_exist = null;
+                                    }
+                                
+                                    
+                                    $carton_details = [
+                                        'standard_carton' => (isset(${'standard_carton_pcs'})) ? $item[${'standard_carton_pcs'}] : '',
+                                        'carton_weight' => (isset(${'carton_weight_actual'})) ? $item[${'carton_weight_actual'}] : '',
+                                        'carton_unit' => (isset(${'unit'})) ? $item[${'unit'}] : '',
+                                        'carton_length' => (isset(${'Carton length'})) ? $item[${'Carton length'}] : '',
+                                        'carton_width' => (isset(${'Carton width'})) ? $item[${'Carton width'}] : '',
+                                        'carton_height' => (isset(${'Carton height'})) ? $item[${'Carton height'}] : '',
+                                        'Carton_Dimensions_unit' => (isset(${'Carton_Dimensions_unit'})) ? $item[${'Carton_Dimensions_unit'}] : '',
+                                    ];
+
+                                    $shipping = [
+                                        'height' => (isset(${'Product height'})) ? $item[${'Product height'}] : '',
+                                        'gross_weight' =>(isset(${'Gross weight'})) ? $item[${'Gross weight'}] : '',
+                                        'weight' => (isset(${'Net weight'})) ? $item[${'Net weight'}] : '',
+                                        'width' => (isset(${'Product width'})) ? $item[${'Product width'}] : '',
+                                        'length' => (isset(${'Product length'})) ? $item[${'Product length'}] : '',
+                                        'unit' => (isset(${'Weight_unit'})) ? $item[${'Weight_unit'}] : '',
+                                        'length_unit' => (isset(${'Dimensions_unit'})) ? $item[${'Dimensions_unit'}] : '',
+                                    ];
+
+                                    $carton_details = json_encode($carton_details);
+                                    $shipping = json_encode($shipping);
+                                            
+            
+                                    echo $first." - ".$second." - ".$third.newline();
+            
+            
+                                    $price = ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->price : trim($item[${'Customer_Price_without_GST'}]);
+
+                                    
+                                    $product_obj =  [
+                                        'title' => ($product_exist != null && $item[${'Product name'}] == null) ? $product_exist->title : $item[${'Product name'}],
+                                        'model_code' => ($product_exist != null && $item[${'Model_Code'}] == null) ? $product_exist->model_code : $item[${'Model_Code'}],
+                                        'category_id' => ($product_exist != null && $Category_id == '') ? $product_exist->category_id : $Category_id,
+                                        'sub_category' => ($product_exist != null && $sub_category_id == '') ? $product_exist->sub_category : $sub_category_id,
+                                        'brand_id' => ($product_exist != null) ? $product_exist->brand_id : 0,
+                                        'user_id' => $user->id,
+                                        'sku' => $sku_code,
+                                        'slug' => $unique_slug,
+                                        'description' => ($product_exist != null && $item[${'description'}] == '') ? $product_exist->description : $item[${'description'}],
+                                        'carton_details' =>  ($product_exist != null && $carton_details == null) ? $product_exist->carton_details : $carton_details,
+                                        'shipping' =>  ($product_exist != null && $shipping == null) ? $product_exist->shipping : $shipping,
+                                        'manage_inventory' =>  0,
+                                        'stock_qty' => 0,
+                                        'status' => 0,
+                                        // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                                        'is_publish' => 1,
+                                        'price' => $price ?? 0,
+                                        'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}], 
+                                        'hsn' => ($product_exist != null && $item[${'HSN Tax'}] == '') ? $product_exist->hsn : $item[${'HSN Tax'}] ?? null,
+                                        'hsn_percent' => ($product_exist != null && $item[${'HSN_Percnt'}] == '') ? $product_exist->hsn_percent : $item[${'HSN_Percnt'}] ?? null,
+                                        'mrp' => ($product_exist != null && $item[${'mrpIncl tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl tax'}]),
+                                        'video_url' => ($product_exist != null && $item[${'Video URL'}] == '') ? $product_exist->video_url : $item[${'Video URL'}],
+                                        'search_keywords' => ($product_exist != null && $item[${'Search keywords'}] == '') ? $product_exist->tag1 : $item[${'Search keywords'}],
+                                        'artwork_url' => $item[${'artwork_url'}] ?? null,
+                                        'exclusive' => (in_array($item[${'Copyright/ Exclusive item'}],$allowed_array)) ? 1 : 0,
+                                        'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
+                                        'SellingPriceUnitIndex' => $item[${'Selling Price_Unit'}] ?? '',
+                                        // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
+                                    ];
+                                        
+                                    $product_obj = Product::create($product_obj);
+            
+                                    // debugtext($debuging_mode,"Printing Product Object","Red");
+                                    // magicstring($product_obj);
+            
+                                    array_push($Productids_array,$product_obj->id); 
+            
+                                    debugtext($debuging_mode,"Printing Product Ids","Red");
+                                    // magicstring($Productids_array);
+        
+                                    $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
+                                    $third = strtolower($third);
+                                    $third = ucwords($third);
+                                    $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$third)->first();
+                                    $vname = $product_att_val->attribute_value;
+                                
+                                    debugtext($debuging_mode,"making Variation for $vname","Red");
+            
+                                    if ($product_att_val != null) {
+                                        $product_extra_info_obj_user = [
+                                            'product_id' => $product_obj->id,
+                                            'user_id' => $user->id,
+                                            'user_shop_id' => $user_shop->id, 
+                                            'allow_resellers' => $item[${'Allow_Resellers'}],
+                                            'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
+                                            'collection_name' => $item[${'Theme / Collection Name'}],
+                                            'season_month' => $item[${'Season / Month'}],
+                                            'season_year' => $item[${'Theme / Collection Year'}],
+                                            'sample_year' => $item[${'Sample Year'}],
+                                            'sample_month' => $item[${'Sample Month'}],
+                                            'sampling_time' => $item[${'Sampling time'}],
+                                            'CBM' => $item[${'CBM'}],
+                                            'production_time' => $item[${'Production time (days)'}],
+                                            'MBQ' => $item[${'MBQ'}],
+                                            'MBQ_unit' => $item[${'MBQ_units'}],
+                                            'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
+                                            'vendor_price' => $item[${'Vendor price'}],
+                                            'product_cost_unit' => $item[${'Product Cost_Unit'}],
+                                            'vendor_currency' => $item[${'Vendor currency'}],
+                                            'sourcing_year' => $item[${'Sourcing Year'}],
+                                            'sourcing_month' => $item[${'Sourcing month'}],
+                                            'attribute_value_id' => $product_att_val->id,
+                                            'attribute_id' => $product_att_val->parent_id,
+                                            // 'attribute_value_id' => $product_att_val->attribute_value,
+                                            // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
+                                            'group_id' => $sku_code,
+                                            'Cust_tag_group' =>$item[${'Group ID'}],
+                                            'remarks' => $item[${'Remarks'}] ?? '' ,
+                                            'brand_name' => $item[${'Brand Name'}],
+                                        ];
+                
+                                        ProductExtraInfo::create($product_extra_info_obj_user);
+                                    }
+            
+                                    echo "Selected In Excel File";
+                                    magicstring($selected_custom_attribute);
+
+                                    echo "Selected In Variation Column";
+                                    magicstring($variationType_array);
+
+                                    // MAking Not Define Attribute
+                                    if (count($selected_custom_attribute) != count($variationType_array)) {
+                                        foreach ($selected_custom_attribute as $chkkey => $checkval) {
+                                            if (!in_array($checkval,$variationType_array)) {
+                                                $tmp_col = ${$checkval};
+                                                $attribute_default = ProductAttribute::where('name',$checkval)->where('user_id',null)->pluck('id');
+                                                $attribute_custom = ProductAttribute::where('name',$checkval)->where('user_id',$user->id)->pluck('id');
+                                                        
+                                                if (count($attribute_default) == 0 ) {
+                                                    $attribute = $attribute_custom;
+                                                }else{
+                                                    $attribute = $attribute_default;
+                                                }
+            
+                                                $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$item[$tmp_col])->first();
+
+                                                $checkval = strtolower($checkval);
+                                                $checkval = ucwords($checkval);
+                                                                                        
+                                                if ($product_att_val != null) {
+                                                    
+                                                    $product_extra_info_obj_user = [
+                                                        'product_id' => $product_obj->id,
+                                                        'user_id' => $user->id,
+                                                        'user_shop_id' => $user_shop->id, 
+                                                        'allow_resellers' => $item[${'Allow_Resellers'}],
+                                                        'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
+                                                        'collection_name' => $item[${'Theme / Collection Name'}],
+                                                        'season_month' => $item[${'Season / Month'}],
+                                                        'season_year' => $item[${'Theme / Collection Year'}],
+                                                        'sample_year' => $item[${'Sample Year'}],
+                                                        'sample_month' => $item[${'Sample Month'}],
+                                                        'sampling_time' => $item[${'Sampling time'}],
+                                                        'CBM' => $item[${'CBM'}],
+                                                        'production_time' => $item[${'Production time (days)'}],
+                                                        'MBQ' => $item[${'MBQ'}],
+                                                        'MBQ_unit' => $item[${'MBQ_units'}],
+                                                        'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
+                                                        'vendor_price' => $item[${'Vendor price'}],
+                                                        'product_cost_unit' => $item[${'Product Cost_Unit'}],
+                                                        'vendor_currency' => $item[${'Vendor currency'}],
+                                                        'sourcing_year' => $item[${'Sourcing Year'}],
+                                                        'sourcing_month' => $item[${'Sourcing month'}],
+                                                        'attribute_value_id' => $product_att_val->id,
+                                                        'attribute_id' => $product_att_val->parent_id,
+                                                        // 'attribute_value_id' => $product_att_val->attribute_value,
+                                                        // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
+                                                        'group_id' => $sku_code,
+                                                        'Cust_tag_group' =>$item[${'Group ID'}],
+                                                        'remarks' => $item[${'Remarks'}] ?? '' ,
+                                                        'brand_name' => $item[${'Brand Name'}],
+                                                    ];
+                                                    ProductExtraInfo::create($product_extra_info_obj_user);
+                                                }
+                                            } // If End
+                                        } // Loop End
+                                    } // If End
+                                    
+                                    // Create USI Rec
+                                    $usi = UserShopItem::create([
+                                        'user_id'=> $user->id,
+                                        'category_id'=> $Category_id,
+                                        'sub_category_id'=> $sub_category_id,
+                                        'product_id'=> $product_obj->id,
+                                        'user_shop_id'=> $user_shop->id,
+                                        'parent_shop_id'=> 0,
+                                        'is_published'=> 1,
+                                        'price'=> $price,
+                                    ]);
+                            
+                                    if($reseller_group){
+                                        // create Reseller Group record
+                                        $g_p =  GroupProduct::create([
+                                            'group_id'=>$reseller_group->id,
+                                            'product_id'=>$product_obj->id,
+                                            'price'=> $item[${'Shop_Price_Reseller'}],
+                                        ]);
+                                    }
+                                
+                                    if($vip_group){
+                                        // create Vip Group record
+                                        GroupProduct::create([
+                                            'group_id'=>$vip_group->id,
+                                            'product_id'=>$product_obj->id,
+                                            'price'=>  $item[${'Shop_Price_VIP_Customer'}],
+                                        ]);
+                                    }
+                                    $arr_images = [];
+                                    // * Start Creating Media...
+                                    
+                                    if (isset(${'Image_main'})) {
+                                        if(isset($item[${'Image_main'}]) && $item[${'Image_main'}] != null){
+                                            $media = new Media();
+                                            $media->tag = "Product_Image";
+                                            $media->file_type = "Image";
+                                            $media->type = "Product";
+                                            $media->type_id = $product_obj->id;
+                                            $media->file_name = $item[${'Image_main'}];
+                                            $media->path = "storage/files/".auth()->id()."/".$item[${'Image_main'}];
+                                            $media->extension = explode('.',$item[${'Image_main'}])[1] ?? '';
+                                            $media->save();
+                                            $arr_images[] = $media->id;
+                                        }
+                                    }
+                                    
+                                    if (isset(${'image_name_front'}) ) {
+                                        if($item[${'image_name_front'}] != null){
+                                            $media = new Media();
+                                            $media->tag = "Product_Image";
+                                            $media->file_type = "Image";
+                                            $media->type = "Product";
+                                            $media->type_id = $product_obj->id;
+                                            $media->file_name = $item[${'image_name_front'}];
+                                            $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_front'}];
+                                            $media->extension = explode('.',$item[${'image_name_front'}])[1] ?? '';
+                                            $media->save();
+                                            $arr_images[] = $media->id;
+                                        }
+                                    }
+                                    
+                                    if (isset(${'image_name_back'})) {
+                                        if(isset($item[${'image_name_back'}]) && $item[${'image_name_back'}] != null){
+                                            $media = new Media();
+                                            $media->tag = "Product_Image";
+                                            $media->file_type = "Image";
+                                            $media->type = "Product";
+                                            $media->type_id = $product_obj->id;
+                                            $media->file_name = $item[${'image_name_back'}];
+                                            $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_back'}];
+                                            $media->extension = explode('.',$item[${'image_name_back'}])[1] ?? '';
+                                            $media->save();
+                                            $arr_images[] = $media->id;
+                                        }                                    
+                                    }
+
+
+                                    if (isset(${'image_name_side1'})) {
+                                        if(isset($item[${'image_name_side1'}]) && $item[${'image_name_side1'}] != null){
+                                            $media = new Media();
+                                            $media->tag = "Product_Image";
+                                            $media->file_type = "Image";
+                                            $media->type = "Product";
+                                            $media->type_id = $product_obj->id;
+                                            $media->file_name = $item[${'image_name_side1'}];
+                                            $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side1'}];
+                                            $media->extension = explode('.',$item[${'image_name_side1'}])[1] ?? '';
+                                            $media->save();
+                                            $arr_images[] = $media->id;
+                                        }
+                                    }
+
+
+                                    if (isset(${'image_name_side2'})) {
+                                        if(isset($item[${'image_name_side2'}]) && $item[${'image_name_side2'}] != null){
+                                            $media = new Media();
+                                            $media->tag = "Product_Image";
+                                            $media->file_type = "Image";
+                                            $media->type = "Product";
+                                            $media->type_id = $product_obj->id;
+                                            $media->file_name = $item[${'image_name_side2'}];
+                                            $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side2'}];
+                                            $media->extension = explode('.',$item[${'image_name_side2'}])[1] ?? '';
+                                            $media->save();
+                                            $arr_images[] = $media->id;
+                                        }   
+                                    }
+
+
+
+                                    if (isset(${'image_name_poster'})) {
+                                        if(isset($item[${'image_name_poster'}]) && $item[${'image_name_poster'}] != null){
+                                            $media = new Media();
+                                            $media->tag = "Product_Image";
+                                            $media->file_type = "Image";
+                                            $media->type = "Product";
+                                            $media->type_id = $product_obj->id;
+                                            $media->file_name = $item[${'image_name_poster'}];
+                                            $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_poster'}];
+                                            $media->extension = explode('.',$item[${'image_name_poster'}])[1] ?? '';
+                                            $media->save();
+                                            $arr_images[] = $media->id;
+                                        }
+                                    }
+
+                                    
+                                    if ($ProductextraImages != null) {
+                                        foreach ($ProductextraImages as $key => $ExtImg) {
+                                            $media = new Media();
+                                            $media->tag = "Product_Image";
+                                            $media->file_type = "Image";
+                                            $media->type = "Product";
+                                            $media->type_id = $product_obj->id;
+                                            $media->file_name = $ExtImg;
+                                            $media->path = "storage/files/".auth()->id()."/".$ExtImg;
+                                            $media->extension = explode('.',$ExtImg)[1] ?? '';
+                                            $media->save();
+                                            $arr_images[] = $media->id;
+                                        }
+                                    }
+                                    // // Add images to UserShopItem
+                                    if(count($arr_images) > 0) {
+                                        $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                        $usi->save();
+                                    }
+        
+                                    if($product_obj){
+                                        ++$count;
+                                    }
+                                }
+        
+                                // Creating VArition for Second VAriation
+                                foreach ($Productids_array as $key => $id) {
+                                    if (!in_array($id,$CREATED_PRODUUCT_ID)) {
+                                        echo $id.newline();
+        
+                                        $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
+                                        $second = strtolower($second);
+                                        $second = ucwords($second);
+                                        $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$second)->first();
+                                        $vname = $product_att_val->attribute_value;
+                                        debugtext($debuging_mode,"making Variation for $vname","Red");
+                                        $product_extra_info_obj_user = [
+                                            'product_id' => $id,
+                                            'user_id' => $user->id,
+                                            'user_shop_id' => $user_shop->id, 
+                                            'allow_resellers' => $item[${'Allow_Resellers'}],
+                                            'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
+                                            'collection_name' => $item[${'Theme / Collection Name'}],
+                                            'season_month' => $item[${'Season / Month'}],
+                                            'season_year' => $item[${'Theme / Collection Year'}],
+                                            'sample_available' => 0,
+                                            'sample_year' => $item[${'Sample Year'}],
+                                            'sample_month' => $item[${'Sample Month'}],
+                                            'sampling_time' => $item[${'Sampling time'}],
+                                            'CBM' => $item[${'CBM'}],
+                                            'production_time' => $item[${'Production time (days)'}],
+                                            'MBQ' => $item[${'MBQ'}],
+                                            'MBQ_unit' => $item[${'MBQ_units'}],
+                                            'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
+                                            'vendor_price' => $item[${'Vendor price'}],
+                                            'product_cost_unit' => $item[${'Product Cost_Unit'}],
+                                            'vendor_currency' => $item[${'Vendor currency'}],
+                                            'sourcing_year' => $item[${'Sourcing Year'}],
+                                            'sourcing_month' => $item[${'Sourcing month'}],
+                                            'attribute_value_id' => $product_att_val->id,
+                                            'attribute_id' => $product_att_val->parent_id,
+                                            // 'attribute_value_id' => $product_att_val->attribute_value,
+                                            // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
+                                            'group_id' => $sku_code,
+                                            'Cust_tag_group' =>$item[${'Group ID'}],
+                                            'remarks' => $item[${'Remarks'}] ?? '' ,
+                                            'brand_name' => $item[${'Brand Name'}],
+                                        ];
+        
+                                        ProductExtraInfo::create($product_extra_info_obj_user);
+        
+        
+                                        if (!in_array($id,$CREATED_PRODUUCT_ID)) {
+                                            array_push($CREATED_PRODUUCT_ID,$id);
+                                        }
+                                    }
+                                }
+        
+                            }
+        
+        
+                            // Creating VArition for first VAriation
+                            foreach ($Productids_array as $key => $id) {
+                                if (!in_array($id,$CREATED_PRODUUCT_ID_2)) {
+                                    echo $id.newline();
+        
+                                    $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');                            
+                                    $first = strtolower($first);
+                                    $first = ucwords($first);
+                                    
+                                    $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$first)->first();
+                                    
+                                    $vname = $product_att_val->attribute_value;
+                                    debugtext($debuging_mode,"making Variation for $vname","Red");
+                                    $product_extra_info_obj_user = [
+                                        'product_id' => $id,
+                                        'user_id' => $user->id,
+                                        'user_shop_id' => $user_shop->id, 
+                                        'allow_resellers' => $item[${'Allow_Resellers'}],
+                                        'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
+                                        'collection_name' => $item[${'Theme / Collection Name'}],
+                                        'season_month' => $item[${'Season / Month'}],
+                                        'season_year' => $item[${'Theme / Collection Year'}],
+                                        'sample_available' => 0,
+                                        'sample_year' => $item[${"Sample Year"}],
+                                        'sample_month' => $item[${'Sample Month'}],
+                                        'sampling_time' => $item[${'Sampling time'}],
+                                        'CBM' => $item[${'CBM'}],
+                                        'production_time' => $item[${'Production time (days)'}],
+                                        'MBQ' => $item[${'MBQ'}],
+                                        'MBQ_unit' => $item[${'MBQ_units'}],
+                                        'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
+                                        'vendor_price' => $item[${'Vendor price'}],
+                                        'product_cost_unit' => $item[${'Product Cost_Unit'}],
+                                        'vendor_currency' => $item[${'Vendor currency'}],
+                                        'sourcing_year' => $item[${'Sourcing Year'}],
+                                        'sourcing_month' => $item[${'Sourcing month'}],
+                                        'attribute_value_id' => $product_att_val->id,
+                                        'attribute_id' => $product_att_val->parent_id,
+                                        // 'attribute_value_id' => $product_att_val->attribute_value,
+                                        // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
+                                        'group_id' => $sku_code,
+                                        'Cust_tag_group' =>$item[${'Group ID'}],
+                                        'remarks' => $item[${'Remarks'}] ?? '' ,
+                                        'brand_name' => $item[${'Brand Name'}],
+                                    ];
+        
+                                    ProductExtraInfo::create($product_extra_info_obj_user);
+        
+        
+                                    if (!in_array($id,$CREATED_PRODUUCT_ID_2)) {
+                                        array_push($CREATED_PRODUUCT_ID_2,$id);
+                                    }
+                                }
+                            }
+        
+                        }
+        
+                        
+        
+                    }
+                    elseif ($loop1 != [] && $loop2 != []) {
+                        // ! For 2 VAriations
+                        foreach ($loop1 as $key1 => $second) {
+                            $Productids_array = [];
+                        
+                            foreach ($loop2 as $key3 => $third) {
                                 $reseller_group = Group::whereUserId($user->id)->where('name',"Reseller")->first();
                                 if(!$reseller_group){
                                 $reseller_group = Group::create([
@@ -3948,7 +4428,7 @@ class NewBulkController extends Controller
         
                                 debugtext($debuging_mode,"Printing Product Ids","Red");
                                 // magicstring($Productids_array);
-    
+
                                 $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
                                 $third = strtolower($third);
                                 $third = ucwords($third);
@@ -3999,7 +4479,6 @@ class NewBulkController extends Controller
                                 echo "Selected In Variation Column";
                                 magicstring($variationType_array);
 
-                                // MAking Not Define Attribute
                                 if (count($selected_custom_attribute) != count($variationType_array)) {
                                     foreach ($selected_custom_attribute as $chkkey => $checkval) {
                                         if (!in_array($checkval,$variationType_array)) {
@@ -4017,7 +4496,7 @@ class NewBulkController extends Controller
 
                                             $checkval = strtolower($checkval);
                                             $checkval = ucwords($checkval);
-                                                                                    
+                                                                            
                                             if ($product_att_val != null) {
                                                 
                                                 $product_extra_info_obj_user = [
@@ -4203,17 +4682,17 @@ class NewBulkController extends Controller
                                     $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
                                     $usi->save();
                                 }
-    
+
                                 if($product_obj){
                                     ++$count;
                                 }
                             }
-    
+
                             // Creating VArition for Second VAriation
                             foreach ($Productids_array as $key => $id) {
                                 if (!in_array($id,$CREATED_PRODUUCT_ID)) {
                                     echo $id.newline();
-    
+
                                     $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
                                     $second = strtolower($second);
                                     $second = ucwords($second);
@@ -4252,1094 +4731,152 @@ class NewBulkController extends Controller
                                         'remarks' => $item[${'Remarks'}] ?? '' ,
                                         'brand_name' => $item[${'Brand Name'}],
                                     ];
-    
+
                                     ProductExtraInfo::create($product_extra_info_obj_user);
-    
-    
+
+
                                     if (!in_array($id,$CREATED_PRODUUCT_ID)) {
                                         array_push($CREATED_PRODUUCT_ID,$id);
                                     }
                                 }
                             }
-    
+                            
+                            
+                            
+                            
+                            
+                        
                         }
-    
-    
-                        // Creating VArition for first VAriation
-                        foreach ($Productids_array as $key => $id) {
-                            if (!in_array($id,$CREATED_PRODUUCT_ID_2)) {
-                                echo $id.newline();
-    
-                                $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');                            
-                                $first = strtolower($first);
-                                $first = ucwords($first);
-                                
-                                $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$first)->first();
-                                
-                                $vname = $product_att_val->attribute_value;
-                                debugtext($debuging_mode,"making Variation for $vname","Red");
-                                $product_extra_info_obj_user = [
-                                    'product_id' => $id,
-                                    'user_id' => $user->id,
-                                    'user_shop_id' => $user_shop->id, 
-                                    'allow_resellers' => $item[${'Allow_Resellers'}],
-                                    'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                    'collection_name' => $item[${'Theme / Collection Name'}],
-                                    'season_month' => $item[${'Season / Month'}],
-                                    'season_year' => $item[${'Theme / Collection Year'}],
-                                    'sample_available' => 0,
-                                    'sample_year' => $item[${"Sample Year"}],
-                                    'sample_month' => $item[${'Sample Month'}],
-                                    'sampling_time' => $item[${'Sampling time'}],
-                                    'CBM' => $item[${'CBM'}],
-                                    'production_time' => $item[${'Production time (days)'}],
-                                    'MBQ' => $item[${'MBQ'}],
-                                    'MBQ_unit' => $item[${'MBQ_units'}],
-                                    'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                    'vendor_price' => $item[${'Vendor price'}],
-                                    'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                    'vendor_currency' => $item[${'Vendor currency'}],
-                                    'sourcing_year' => $item[${'Sourcing Year'}],
-                                    'sourcing_month' => $item[${'Sourcing month'}],
-                                    'attribute_value_id' => $product_att_val->id,
-                                    'attribute_id' => $product_att_val->parent_id,
-                                    // 'attribute_value_id' => $product_att_val->attribute_value,
-                                    // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
-                                    'group_id' => $sku_code,
-                                    'Cust_tag_group' =>$item[${'Group ID'}],
-                                    'remarks' => $item[${'Remarks'}] ?? '' ,
-                                    'brand_name' => $item[${'Brand Name'}],
-                                ];
-    
-                                ProductExtraInfo::create($product_extra_info_obj_user);
-    
-    
-                                if (!in_array($id,$CREATED_PRODUUCT_ID_2)) {
-                                    array_push($CREATED_PRODUUCT_ID_2,$id);
-                                }
-                            }
-                        }
-    
                     }
-    
-                    
-    
-                }
-                elseif ($loop1 != [] && $loop2 != []) {
-                    // ! For 2 VAriations
-                    foreach ($loop1 as $key1 => $second) {
-                        $Productids_array = [];
-                    
-                        foreach ($loop2 as $key3 => $third) {
-                            $reseller_group = Group::whereUserId($user->id)->where('name',"Reseller")->first();
-                            if(!$reseller_group){
-                            $reseller_group = Group::create([
+                    elseif ($loop1 != []) {
+                        
+                        foreach ($loop1 as $key3 => $third) {
+                                $Productids_array = [];
+                                $reseller_group = Group::whereUserId($user->id)->where('name',"Reseller")->first();
+                                if(!$reseller_group){
+                                $reseller_group = Group::create([
+                                        'user_id' => $user->id,
+                                        'name' => "Reseller",
+                                        'type' => 0,
+                                    ]);
+                                }
+                                $vip_group = Group::whereUserId($user->id)->where('name',"VIP")->first();
+                                if(!$vip_group){
+                                $vip_group =  Group::create([
                                     'user_id' => $user->id,
-                                    'name' => "Reseller",
+                                    'name' => "VIP",
                                     'type' => 0,
                                 ]);
-                            }
-                            $vip_group = Group::whereUserId($user->id)->where('name',"VIP")->first();
-                            if(!$vip_group){
-                            $vip_group =  Group::create([
-                                'user_id' => $user->id,
-                                'name' => "VIP",
-                                'type' => 0,
-                            ]);
-                            }
-                        
-                            // - SKU CODE Generation BASED ON MODEL CODE
-                            if ($item[${'Model_Code'}] == null && $item[${'Model_Code'}] == "") {
-                                $sku_code = 'SKU'.generateRandomStringNative(6);
-                                $item[${'Model_Code'}] = $sku_code;
-                            }elseif (isset($GroupId)) {
-                                $sku_code = $GroupId;
-                            }
-                            else{
-                                $sku_code = 'SKU'.generateRandomStringNative(6);
-                            }
-                            if (in_array($item[${'Model_Code'}],$modalArray)) {
-                                // echo "Yes Bro!";
-                                $sku_code = $SKUArray[array_search($item[${'Model_Code'}],$modalArray)];
-                            }else{
-                                array_push($modalArray,$item[${'Model_Code'}]);
-                                array_push($SKUArray,$sku_code);
-                            }
-                            $unique_slug  = getUniqueProductSlug($item[${'Product name'}]);
-                            // - Start Uploading Product....
-                            // Todo: Checking Product Exist in Database or Not..
-                            $product_chk = Product::where('sku',$sku_code)->get();
-                            if (count($product_chk) != 0) {
-                                $product_exist = $product_chk[0];
-                                    
-                            } # If end (Product Exist in Record)
-                            else{
-                                $product_exist = null;
-                            }
-                        
+                                }
                             
-                            $carton_details = [
-                                'standard_carton' => (isset(${'standard_carton_pcs'})) ? $item[${'standard_carton_pcs'}] : '',
-                                'carton_weight' => (isset(${'carton_weight_actual'})) ? $item[${'carton_weight_actual'}] : '',
-                                'carton_unit' => (isset(${'unit'})) ? $item[${'unit'}] : '',
-                                'carton_length' => (isset(${'Carton length'})) ? $item[${'Carton length'}] : '',
-                                'carton_width' => (isset(${'Carton width'})) ? $item[${'Carton width'}] : '',
-                                'carton_height' => (isset(${'Carton height'})) ? $item[${'Carton height'}] : '',
-                                'Carton_Dimensions_unit' => (isset(${'Carton_Dimensions_unit'})) ? $item[${'Carton_Dimensions_unit'}] : '',
-                            ];
-
-                            $shipping = [
-                                'height' => (isset(${'Product height'})) ? $item[${'Product height'}] : '',
-                                'gross_weight' =>(isset(${'Gross weight'})) ? $item[${'Gross weight'}] : '',
-                                'weight' => (isset(${'Net weight'})) ? $item[${'Net weight'}] : '',
-                                'width' => (isset(${'Product width'})) ? $item[${'Product width'}] : '',
-                                'length' => (isset(${'Product length'})) ? $item[${'Product length'}] : '',
-                                'unit' => (isset(${'Weight_unit'})) ? $item[${'Weight_unit'}] : '',
-                                'length_unit' => (isset(${'Dimensions_unit'})) ? $item[${'Dimensions_unit'}] : '',
-                            ];
-
-                            $carton_details = json_encode($carton_details);
-                            $shipping = json_encode($shipping);
-                                    
-    
-                            echo $first." - ".$second." - ".$third.newline();
-    
-    
-                            $price = ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->price : trim($item[${'Customer_Price_without_GST'}]);
-
+                                // - SKU CODE Generation BASED ON MODEL CODE
+                                if ($item[${'Model_Code'}] == null && $item[${'Model_Code'}] == "") {
+                                    $sku_code = 'SKU'.generateRandomStringNative(6);
+                                    $item[${'Model_Code'}] = $sku_code;
+                                }elseif (isset($GroupId)) {
+                                    $sku_code = $GroupId;
+                                }
+                                else{
+                                    $sku_code = 'SKU'.generateRandomStringNative(6);
+                                }
+                                if (in_array($item[${'Model_Code'}],$modalArray)) {
+                                    // echo "Yes Bro!";
+                                    $sku_code = $SKUArray[array_search($item[${'Model_Code'}],$modalArray)];
+                                }else{
+                                    array_push($modalArray,$item[${'Model_Code'}]);
+                                    array_push($SKUArray,$sku_code);
+                                }
+                                $unique_slug  = getUniqueProductSlug($item[${'Product name'}]);
+                                // - Start Uploading Product....
+                                // Todo: Checking Product Exist in Database or Not..
+                                $product_chk = Product::where('sku',$sku_code)->get();
+                                if (count($product_chk) != 0) {
+                                    $product_exist = $product_chk[0];
+                                        
+                                } # If end (Product Exist in Record)
+                                else{
+                                    $product_exist = null;
+                                }
                             
-                            $product_obj =  [
-                                'title' => ($product_exist != null && $item[${'Product name'}] == null) ? $product_exist->title : $item[${'Product name'}],
-                                'model_code' => ($product_exist != null && $item[${'Model_Code'}] == null) ? $product_exist->model_code : $item[${'Model_Code'}],
-                                'category_id' => ($product_exist != null && $Category_id == '') ? $product_exist->category_id : $Category_id,
-                                'sub_category' => ($product_exist != null && $sub_category_id == '') ? $product_exist->sub_category : $sub_category_id,
-                                'brand_id' => ($product_exist != null) ? $product_exist->brand_id : 0,
-                                'user_id' => $user->id,
-                                'sku' => $sku_code,
-                                'slug' => $unique_slug,
-                                'description' => ($product_exist != null && $item[${'description'}] == '') ? $product_exist->description : $item[${'description'}],
-                                'carton_details' =>  ($product_exist != null && $carton_details == null) ? $product_exist->carton_details : $carton_details,
-                                'shipping' =>  ($product_exist != null && $shipping == null) ? $product_exist->shipping : $shipping,
-                                'manage_inventory' =>  0,
-                                'stock_qty' => 0,
-                                'status' => 0,
-                                // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
-                                'is_publish' => 1,
-                                'price' => $price ?? 0,
-                                'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}], 
-                                'hsn' => ($product_exist != null && $item[${'HSN Tax'}] == '') ? $product_exist->hsn : $item[${'HSN Tax'}] ?? null,
-                                'hsn_percent' => ($product_exist != null && $item[${'HSN_Percnt'}] == '') ? $product_exist->hsn_percent : $item[${'HSN_Percnt'}] ?? null,
-                                'mrp' => ($product_exist != null && $item[${'mrpIncl tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl tax'}]),
-                                'video_url' => ($product_exist != null && $item[${'Video URL'}] == '') ? $product_exist->video_url : $item[${'Video URL'}],
-                                'search_keywords' => ($product_exist != null && $item[${'Search keywords'}] == '') ? $product_exist->tag1 : $item[${'Search keywords'}],
-                                'artwork_url' => $item[${'artwork_url'}] ?? null,
-                                'exclusive' => (in_array($item[${'Copyright/ Exclusive item'}],$allowed_array)) ? 1 : 0,
-                                'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
-                                'SellingPriceUnitIndex' => $item[${'Selling Price_Unit'}] ?? '',
-                                // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
-                            ];
                                 
-                            $product_obj = Product::create($product_obj);
-    
-                            // debugtext($debuging_mode,"Printing Product Object","Red");
-                            // magicstring($product_obj);
-    
-                            array_push($Productids_array,$product_obj->id); 
-    
-                            debugtext($debuging_mode,"Printing Product Ids","Red");
-                            // magicstring($Productids_array);
-
-                            $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                            $third = strtolower($third);
-                            $third = ucwords($third);
-                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$third)->first();
-                            $vname = $product_att_val->attribute_value;
-                        
-                            debugtext($debuging_mode,"making Variation for $vname","Red");
-    
-                            if ($product_att_val != null) {
-                                $product_extra_info_obj_user = [
-                                    'product_id' => $product_obj->id,
-                                    'user_id' => $user->id,
-                                    'user_shop_id' => $user_shop->id, 
-                                    'allow_resellers' => $item[${'Allow_Resellers'}],
-                                    'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                    'collection_name' => $item[${'Theme / Collection Name'}],
-                                    'season_month' => $item[${'Season / Month'}],
-                                    'season_year' => $item[${'Theme / Collection Year'}],
-                                    'sample_year' => $item[${'Sample Year'}],
-                                    'sample_month' => $item[${'Sample Month'}],
-                                    'sampling_time' => $item[${'Sampling time'}],
-                                    'CBM' => $item[${'CBM'}],
-                                    'production_time' => $item[${'Production time (days)'}],
-                                    'MBQ' => $item[${'MBQ'}],
-                                    'MBQ_unit' => $item[${'MBQ_units'}],
-                                    'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                    'vendor_price' => $item[${'Vendor price'}],
-                                    'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                    'vendor_currency' => $item[${'Vendor currency'}],
-                                    'sourcing_year' => $item[${'Sourcing Year'}],
-                                    'sourcing_month' => $item[${'Sourcing month'}],
-                                    'attribute_value_id' => $product_att_val->id,
-                                    'attribute_id' => $product_att_val->parent_id,
-                                    // 'attribute_value_id' => $product_att_val->attribute_value,
-                                    // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
-                                    'group_id' => $sku_code,
-                                    'Cust_tag_group' =>$item[${'Group ID'}],
-                                    'remarks' => $item[${'Remarks'}] ?? '' ,
-                                    'brand_name' => $item[${'Brand Name'}],
+                                $carton_details = [
+                                    'standard_carton' => (isset(${'standard_carton_pcs'})) ? $item[${'standard_carton_pcs'}] : '',
+                                    'carton_weight' => (isset(${'carton_weight_actual'})) ? $item[${'carton_weight_actual'}] : '',
+                                    'carton_unit' => (isset(${'unit'})) ? $item[${'unit'}] : '',
+                                    'carton_length' => (isset(${'Carton length'})) ? $item[${'Carton length'}] : '',
+                                    'carton_width' => (isset(${'Carton width'})) ? $item[${'Carton width'}] : '',
+                                    'carton_height' => (isset(${'Carton height'})) ? $item[${'Carton height'}] : '',
+                                    'Carton_Dimensions_unit' => (isset(${'Carton_Dimensions_unit'})) ? $item[${'Carton_Dimensions_unit'}] : '',
                                 ];
+
+                                $shipping = [
+                                    'height' => (isset(${'Product height'})) ? $item[${'Product height'}] : '',
+                                    'gross_weight' =>(isset(${'Gross weight'})) ? $item[${'Gross weight'}] : '',
+                                    'weight' => (isset(${'Net weight'})) ? $item[${'Net weight'}] : '',
+                                    'width' => (isset(${'Product width'})) ? $item[${'Product width'}] : '',
+                                    'length' => (isset(${'Product length'})) ? $item[${'Product length'}] : '',
+                                    'unit' => (isset(${'Weight_unit'})) ? $item[${'Weight_unit'}] : '',
+                                    'length_unit' => (isset(${'Dimensions_unit'})) ? $item[${'Dimensions_unit'}] : '',
+                                ];
+
+                                $carton_details = json_encode($carton_details);
+                                $shipping = json_encode($shipping);
+                                        
         
-                                ProductExtraInfo::create($product_extra_info_obj_user);
-                            }
-    
-                            echo "Selected In Excel File";
-                            magicstring($selected_custom_attribute);
+        
+                                $price = ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->price : trim($item[${'Customer_Price_without_GST'}]);
 
-                            echo "Selected In Variation Column";
-                            magicstring($variationType_array);
-
-                            if (count($selected_custom_attribute) != count($variationType_array)) {
-                                foreach ($selected_custom_attribute as $chkkey => $checkval) {
-                                    if (!in_array($checkval,$variationType_array)) {
-                                        $tmp_col = ${$checkval};
-                                        $attribute_default = ProductAttribute::where('name',$checkval)->where('user_id',null)->pluck('id');
-                                        $attribute_custom = ProductAttribute::where('name',$checkval)->where('user_id',$user->id)->pluck('id');
-                                                
-                                        if (count($attribute_default) == 0 ) {
-                                            $attribute = $attribute_custom;
-                                        }else{
-                                            $attribute = $attribute_default;
-                                        }
-    
-                                        $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$item[$tmp_col])->first();
-
-                                        $checkval = strtolower($checkval);
-                                        $checkval = ucwords($checkval);
-                                                                           
-                                        if ($product_att_val != null) {
-                                            
-                                            $product_extra_info_obj_user = [
-                                                'product_id' => $product_obj->id,
-                                                'user_id' => $user->id,
-                                                'user_shop_id' => $user_shop->id, 
-                                                'allow_resellers' => $item[${'Allow_Resellers'}],
-                                                'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                                'collection_name' => $item[${'Theme / Collection Name'}],
-                                                'season_month' => $item[${'Season / Month'}],
-                                                'season_year' => $item[${'Theme / Collection Year'}],
-                                                'sample_year' => $item[${'Sample Year'}],
-                                                'sample_month' => $item[${'Sample Month'}],
-                                                'sampling_time' => $item[${'Sampling time'}],
-                                                'CBM' => $item[${'CBM'}],
-                                                'production_time' => $item[${'Production time (days)'}],
-                                                'MBQ' => $item[${'MBQ'}],
-                                                'MBQ_unit' => $item[${'MBQ_units'}],
-                                                'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                                'vendor_price' => $item[${'Vendor price'}],
-                                                'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                                'vendor_currency' => $item[${'Vendor currency'}],
-                                                'sourcing_year' => $item[${'Sourcing Year'}],
-                                                'sourcing_month' => $item[${'Sourcing month'}],
-                                                'attribute_value_id' => $product_att_val->id,
-                                                'attribute_id' => $product_att_val->parent_id,
-                                                // 'attribute_value_id' => $product_att_val->attribute_value,
-                                                // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
-                                                'group_id' => $sku_code,
-                                                'Cust_tag_group' =>$item[${'Group ID'}],
-                                                'remarks' => $item[${'Remarks'}] ?? '' ,
-                                                'brand_name' => $item[${'Brand Name'}],
-                                            ];
-                                            ProductExtraInfo::create($product_extra_info_obj_user);
-                                        }
-                                    } // If End
-                                } // Loop End
-                            } // If End
-                            
-                            // Create USI Rec
-                            $usi = UserShopItem::create([
-                                'user_id'=> $user->id,
-                                'category_id'=> $Category_id,
-                                'sub_category_id'=> $sub_category_id,
-                                'product_id'=> $product_obj->id,
-                                'user_shop_id'=> $user_shop->id,
-                                'parent_shop_id'=> 0,
-                                'is_published'=> 1,
-                                'price'=> $price,
-                            ]);
-                    
-                            if($reseller_group){
-                                // create Reseller Group record
-                                $g_p =  GroupProduct::create([
-                                    'group_id'=>$reseller_group->id,
-                                    'product_id'=>$product_obj->id,
-                                    'price'=> $item[${'Shop_Price_Reseller'}],
-                                ]);
-                            }
-                        
-                            if($vip_group){
-                                // create Vip Group record
-                                GroupProduct::create([
-                                    'group_id'=>$vip_group->id,
-                                    'product_id'=>$product_obj->id,
-                                    'price'=>  $item[${'Shop_Price_VIP_Customer'}],
-                                ]);
-                            }
-                            $arr_images = [];
-                            // * Start Creating Media...
-                            
-                            if (isset(${'Image_main'})) {
-                                if(isset($item[${'Image_main'}]) && $item[${'Image_main'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'Image_main'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'Image_main'}];
-                                    $media->extension = explode('.',$item[${'Image_main'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                            }
-                            
-                            if (isset(${'image_name_front'}) ) {
-                                if($item[${'image_name_front'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'image_name_front'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_front'}];
-                                    $media->extension = explode('.',$item[${'image_name_front'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                            }
-                            
-                            if (isset(${'image_name_back'})) {
-                                if(isset($item[${'image_name_back'}]) && $item[${'image_name_back'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'image_name_back'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_back'}];
-                                    $media->extension = explode('.',$item[${'image_name_back'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }                                    
-                            }
-
-
-                            if (isset(${'image_name_side1'})) {
-                                if(isset($item[${'image_name_side1'}]) && $item[${'image_name_side1'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'image_name_side1'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side1'}];
-                                    $media->extension = explode('.',$item[${'image_name_side1'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                            }
-
-
-                            if (isset(${'image_name_side2'})) {
-                                if(isset($item[${'image_name_side2'}]) && $item[${'image_name_side2'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'image_name_side2'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side2'}];
-                                    $media->extension = explode('.',$item[${'image_name_side2'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }   
-                            }
-
-
-
-                            if (isset(${'image_name_poster'})) {
-                                if(isset($item[${'image_name_poster'}]) && $item[${'image_name_poster'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'image_name_poster'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_poster'}];
-                                    $media->extension = explode('.',$item[${'image_name_poster'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                            }
-
-                            
-                            if ($ProductextraImages != null) {
-                                foreach ($ProductextraImages as $key => $ExtImg) {
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $ExtImg;
-                                    $media->path = "storage/files/".auth()->id()."/".$ExtImg;
-                                    $media->extension = explode('.',$ExtImg)[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                            }
-                            // // Add images to UserShopItem
-                            if(count($arr_images) > 0) {
-                                $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
-                                $usi->save();
-                            }
-
-                            if($product_obj){
-                                ++$count;
-                            }
-                        }
-
-                        // Creating VArition for Second VAriation
-                        foreach ($Productids_array as $key => $id) {
-                            if (!in_array($id,$CREATED_PRODUUCT_ID)) {
-                                echo $id.newline();
+                                
+                                $product_obj =  [
+                                    'title' => ($product_exist != null && $item[${'Product name'}] == null) ? $product_exist->title : $item[${'Product name'}],
+                                    'model_code' => ($product_exist != null && $item[${'Model_Code'}] == null) ? $product_exist->model_code : $item[${'Model_Code'}],
+                                    'category_id' => ($product_exist != null && $Category_id == '') ? $product_exist->category_id : $Category_id,
+                                    'sub_category' => ($product_exist != null && $sub_category_id == '') ? $product_exist->sub_category : $sub_category_id,
+                                    'brand_id' => ($product_exist != null) ? $product_exist->brand_id : 0,
+                                    'user_id' => $user->id,
+                                    'sku' => $sku_code,
+                                    'slug' => $unique_slug,
+                                    'description' => ($product_exist != null && $item[${'description'}] == '') ? $product_exist->description : $item[${'description'}],
+                                    'carton_details' =>  ($product_exist != null && $carton_details == null) ? $product_exist->carton_details : $carton_details,
+                                    'shipping' =>  ($product_exist != null && $shipping == null) ? $product_exist->shipping : $shipping,
+                                    'manage_inventory' =>  0,
+                                    'stock_qty' => 0,
+                                    'status' => 0,
+                                    // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                                    'is_publish' => 1,
+                                    'price' => $price ?? 0,
+                                    'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}], 
+                                    'hsn' => ($product_exist != null && $item[${'HSN Tax'}] == '') ? $product_exist->hsn : $item[${'HSN Tax'}] ?? null,
+                                    'hsn_percent' => ($product_exist != null && $item[${'HSN_Percnt'}] == '') ? $product_exist->hsn_percent : $item[${'HSN_Percnt'}] ?? null,
+                                    'mrp' => ($product_exist != null && $item[${'mrpIncl tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl tax'}]),
+                                    'video_url' => ($product_exist != null && $item[${'Video URL'}] == '') ? $product_exist->video_url : $item[${'Video URL'}],
+                                    'search_keywords' => ($product_exist != null && $item[${'Search keywords'}] == '') ? $product_exist->tag1 : $item[${'Search keywords'}],
+                                    'artwork_url' => $item[${'artwork_url'}] ?? null,
+                                    'exclusive' => (in_array($item[${'Copyright/ Exclusive item'}],$allowed_array)) ? 1 : 0,
+                                    'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
+                                    'SellingPriceUnitIndex' => $item[${'Selling Price_Unit'}] ?? '',
+                                    // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
+                                ];
+                                    
+                                $product_obj = Product::create($product_obj);
+        
+                                // debugtext($debuging_mode,"Printing Product Object","Red");
+                                // magicstring($product_obj);
+        
+                                array_push($Productids_array,$product_obj->id); 
+        
+                                debugtext($debuging_mode,"Printing Product Ids","Red");
+                                // magicstring($Productids_array);
 
                                 $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                                $second = strtolower($second);
-                                $second = ucwords($second);
-                                $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$second)->first();
+                                $third = strtolower($third);
+                                $third = ucwords($third);
+                                $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$third)->first();
                                 $vname = $product_att_val->attribute_value;
+                            
                                 debugtext($debuging_mode,"making Variation for $vname","Red");
-                                $product_extra_info_obj_user = [
-                                    'product_id' => $id,
-                                    'user_id' => $user->id,
-                                    'user_shop_id' => $user_shop->id, 
-                                    'allow_resellers' => $item[${'Allow_Resellers'}],
-                                    'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                    'collection_name' => $item[${'Theme / Collection Name'}],
-                                    'season_month' => $item[${'Season / Month'}],
-                                    'season_year' => $item[${'Theme / Collection Year'}],
-                                    'sample_available' => 0,
-                                    'sample_year' => $item[${'Sample Year'}],
-                                    'sample_month' => $item[${'Sample Month'}],
-                                    'sampling_time' => $item[${'Sampling time'}],
-                                    'CBM' => $item[${'CBM'}],
-                                    'production_time' => $item[${'Production time (days)'}],
-                                    'MBQ' => $item[${'MBQ'}],
-                                    'MBQ_unit' => $item[${'MBQ_units'}],
-                                    'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                    'vendor_price' => $item[${'Vendor price'}],
-                                    'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                    'vendor_currency' => $item[${'Vendor currency'}],
-                                    'sourcing_year' => $item[${'Sourcing Year'}],
-                                    'sourcing_month' => $item[${'Sourcing month'}],
-                                    'attribute_value_id' => $product_att_val->id,
-                                    'attribute_id' => $product_att_val->parent_id,
-                                    // 'attribute_value_id' => $product_att_val->attribute_value,
-                                    // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
-                                    'group_id' => $sku_code,
-                                    'Cust_tag_group' =>$item[${'Group ID'}],
-                                    'remarks' => $item[${'Remarks'}] ?? '' ,
-                                    'brand_name' => $item[${'Brand Name'}],
-                                ];
-
-                                ProductExtraInfo::create($product_extra_info_obj_user);
-
-
-                                if (!in_array($id,$CREATED_PRODUUCT_ID)) {
-                                    array_push($CREATED_PRODUUCT_ID,$id);
-                                }
-                            }
-                        }
-                        
-                        
-                        
-                        
-                        
-                    
-                    }
-                }
-                elseif ($loop1 != []) {
-                    
-                    foreach ($loop1 as $key3 => $third) {
-                            $Productids_array = [];
-                            $reseller_group = Group::whereUserId($user->id)->where('name',"Reseller")->first();
-                            if(!$reseller_group){
-                            $reseller_group = Group::create([
-                                    'user_id' => $user->id,
-                                    'name' => "Reseller",
-                                    'type' => 0,
-                                ]);
-                            }
-                            $vip_group = Group::whereUserId($user->id)->where('name',"VIP")->first();
-                            if(!$vip_group){
-                            $vip_group =  Group::create([
-                                'user_id' => $user->id,
-                                'name' => "VIP",
-                                'type' => 0,
-                            ]);
-                            }
-                        
-                            // - SKU CODE Generation BASED ON MODEL CODE
-                            if ($item[${'Model_Code'}] == null && $item[${'Model_Code'}] == "") {
-                                $sku_code = 'SKU'.generateRandomStringNative(6);
-                                $item[${'Model_Code'}] = $sku_code;
-                            }elseif (isset($GroupId)) {
-                                $sku_code = $GroupId;
-                            }
-                            else{
-                                $sku_code = 'SKU'.generateRandomStringNative(6);
-                            }
-                            if (in_array($item[${'Model_Code'}],$modalArray)) {
-                                // echo "Yes Bro!";
-                                $sku_code = $SKUArray[array_search($item[${'Model_Code'}],$modalArray)];
-                            }else{
-                                array_push($modalArray,$item[${'Model_Code'}]);
-                                array_push($SKUArray,$sku_code);
-                            }
-                            $unique_slug  = getUniqueProductSlug($item[${'Product name'}]);
-                            // - Start Uploading Product....
-                            // Todo: Checking Product Exist in Database or Not..
-                            $product_chk = Product::where('sku',$sku_code)->get();
-                            if (count($product_chk) != 0) {
-                                $product_exist = $product_chk[0];
-                                    
-                            } # If end (Product Exist in Record)
-                            else{
-                                $product_exist = null;
-                            }
-                        
-                            
-                            $carton_details = [
-                                'standard_carton' => (isset(${'standard_carton_pcs'})) ? $item[${'standard_carton_pcs'}] : '',
-                                'carton_weight' => (isset(${'carton_weight_actual'})) ? $item[${'carton_weight_actual'}] : '',
-                                'carton_unit' => (isset(${'unit'})) ? $item[${'unit'}] : '',
-                                'carton_length' => (isset(${'Carton length'})) ? $item[${'Carton length'}] : '',
-                                'carton_width' => (isset(${'Carton width'})) ? $item[${'Carton width'}] : '',
-                                'carton_height' => (isset(${'Carton height'})) ? $item[${'Carton height'}] : '',
-                                'Carton_Dimensions_unit' => (isset(${'Carton_Dimensions_unit'})) ? $item[${'Carton_Dimensions_unit'}] : '',
-                            ];
-
-                            $shipping = [
-                                'height' => (isset(${'Product height'})) ? $item[${'Product height'}] : '',
-                                'gross_weight' =>(isset(${'Gross weight'})) ? $item[${'Gross weight'}] : '',
-                                'weight' => (isset(${'Net weight'})) ? $item[${'Net weight'}] : '',
-                                'width' => (isset(${'Product width'})) ? $item[${'Product width'}] : '',
-                                'length' => (isset(${'Product length'})) ? $item[${'Product length'}] : '',
-                                'unit' => (isset(${'Weight_unit'})) ? $item[${'Weight_unit'}] : '',
-                                'length_unit' => (isset(${'Dimensions_unit'})) ? $item[${'Dimensions_unit'}] : '',
-                            ];
-
-                            $carton_details = json_encode($carton_details);
-                            $shipping = json_encode($shipping);
-                                    
-    
-    
-                            $price = ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->price : trim($item[${'Customer_Price_without_GST'}]);
-
-                            
-                            $product_obj =  [
-                                'title' => ($product_exist != null && $item[${'Product name'}] == null) ? $product_exist->title : $item[${'Product name'}],
-                                'model_code' => ($product_exist != null && $item[${'Model_Code'}] == null) ? $product_exist->model_code : $item[${'Model_Code'}],
-                                'category_id' => ($product_exist != null && $Category_id == '') ? $product_exist->category_id : $Category_id,
-                                'sub_category' => ($product_exist != null && $sub_category_id == '') ? $product_exist->sub_category : $sub_category_id,
-                                'brand_id' => ($product_exist != null) ? $product_exist->brand_id : 0,
-                                'user_id' => $user->id,
-                                'sku' => $sku_code,
-                                'slug' => $unique_slug,
-                                'description' => ($product_exist != null && $item[${'description'}] == '') ? $product_exist->description : $item[${'description'}],
-                                'carton_details' =>  ($product_exist != null && $carton_details == null) ? $product_exist->carton_details : $carton_details,
-                                'shipping' =>  ($product_exist != null && $shipping == null) ? $product_exist->shipping : $shipping,
-                                'manage_inventory' =>  0,
-                                'stock_qty' => 0,
-                                'status' => 0,
-                                // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
-                                'is_publish' => 1,
-                                'price' => $price ?? 0,
-                                'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}], 
-                                'hsn' => ($product_exist != null && $item[${'HSN Tax'}] == '') ? $product_exist->hsn : $item[${'HSN Tax'}] ?? null,
-                                'hsn_percent' => ($product_exist != null && $item[${'HSN_Percnt'}] == '') ? $product_exist->hsn_percent : $item[${'HSN_Percnt'}] ?? null,
-                                'mrp' => ($product_exist != null && $item[${'mrpIncl tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl tax'}]),
-                                'video_url' => ($product_exist != null && $item[${'Video URL'}] == '') ? $product_exist->video_url : $item[${'Video URL'}],
-                                'search_keywords' => ($product_exist != null && $item[${'Search keywords'}] == '') ? $product_exist->tag1 : $item[${'Search keywords'}],
-                                'artwork_url' => $item[${'artwork_url'}] ?? null,
-                                'exclusive' => (in_array($item[${'Copyright/ Exclusive item'}],$allowed_array)) ? 1 : 0,
-                                'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
-                                'SellingPriceUnitIndex' => $item[${'Selling Price_Unit'}] ?? '',
-                                // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
-                            ];
-                                
-                            $product_obj = Product::create($product_obj);
-    
-                            // debugtext($debuging_mode,"Printing Product Object","Red");
-                            // magicstring($product_obj);
-    
-                            array_push($Productids_array,$product_obj->id); 
-    
-                            debugtext($debuging_mode,"Printing Product Ids","Red");
-                            // magicstring($Productids_array);
-
-                            $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                            $third = strtolower($third);
-                            $third = ucwords($third);
-                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$third)->first();
-                            $vname = $product_att_val->attribute_value;
-                        
-                            debugtext($debuging_mode,"making Variation for $vname","Red");
-    
-                            if ($product_att_val != null) {
-                                $product_extra_info_obj_user = [
-                                    'product_id' => $product_obj->id,
-                                    'user_id' => $user->id,
-                                    'user_shop_id' => $user_shop->id, 
-                                    'allow_resellers' => $item[${'Allow_Resellers'}],
-                                    'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                    'collection_name' => $item[${'Theme / Collection Name'}],
-                                    'season_month' => $item[${'Season / Month'}],
-                                    'season_year' => $item[${'Theme / Collection Year'}],
-                                    'sample_year' => $item[${'Sample Year'}],
-                                    'sample_month' => $item[${'Sample Month'}],
-                                    'sampling_time' => $item[${'Sampling time'}],
-                                    'CBM' => $item[${'CBM'}],
-                                    'production_time' => $item[${'Production time (days)'}],
-                                    'MBQ' => $item[${'MBQ'}],
-                                    'MBQ_unit' => $item[${'MBQ_units'}],
-                                    'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                    'vendor_price' => $item[${'Vendor price'}],
-                                    'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                    'vendor_currency' => $item[${'Vendor currency'}],
-                                    'sourcing_year' => $item[${'Sourcing Year'}],
-                                    'sourcing_month' => $item[${'Sourcing month'}],
-                                    'attribute_value_id' => $product_att_val->id,
-                                    'attribute_id' => $product_att_val->parent_id,
-                                    // 'attribute_value_id' => $product_att_val->attribute_value,
-                                    // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
-                                    'group_id' => $sku_code,
-                                    'Cust_tag_group' =>$item[${'Group ID'}],
-                                    'remarks' => $item[${'Remarks'}] ?? '' ,
-                                    'brand_name' => $item[${'Brand Name'}],
-                                ];
         
-                                ProductExtraInfo::create($product_extra_info_obj_user);
-                            }
-    
-                            echo "Selected In Excel File";
-                            magicstring($selected_custom_attribute);
-
-                            echo "Selected In Variation Column";
-                            magicstring($variationType_array);
-
-                            if (count($selected_custom_attribute) != count($variationType_array)) {
-                                foreach ($selected_custom_attribute as $chkkey => $checkval) {
-                                    if (!in_array($checkval,$variationType_array)) {
-                                        $tmp_col = ${$checkval};
-                                        $attribute_default = ProductAttribute::where('name',$checkval)->where('user_id',null)->pluck('id');
-                                        $attribute_custom = ProductAttribute::where('name',$checkval)->where('user_id',$user->id)->pluck('id');
-                                                
-                                        if (count($attribute_default) == 0 ) {
-                                            $attribute = $attribute_custom;
-                                        }else{
-                                            $attribute = $attribute_default;
-                                        }
-    
-                                        $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$item[$tmp_col])->first();
-
-                                        $checkval = strtolower($checkval);
-                                        $checkval = ucwords($checkval);
-                                                                           
-                                        if ($product_att_val != null) {
-                                            
-                                            $product_extra_info_obj_user = [
-                                                'product_id' => $product_obj->id,
-                                                'user_id' => $user->id,
-                                                'user_shop_id' => $user_shop->id, 
-                                                'allow_resellers' => $item[${'Allow_Resellers'}],
-                                                'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                                'collection_name' => $item[${'Theme / Collection Name'}],
-                                                'season_month' => $item[${'Season / Month'}],
-                                                'season_year' => $item[${'Theme / Collection Year'}],
-                                                'sample_year' => $item[${'Sample Year'}],
-                                                'sample_month' => $item[${'Sample Month'}],
-                                                'sampling_time' => $item[${'Sampling time'}],
-                                                'CBM' => $item[${'CBM'}],
-                                                'production_time' => $item[${'Production time (days)'}],
-                                                'MBQ' => $item[${'MBQ'}],
-                                                'MBQ_unit' => $item[${'MBQ_units'}],
-                                                'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                                'vendor_price' => $item[${'Vendor price'}],
-                                                'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                                'vendor_currency' => $item[${'Vendor currency'}],
-                                                'sourcing_year' => $item[${'Sourcing Year'}],
-                                                'sourcing_month' => $item[${'Sourcing month'}],
-                                                'attribute_value_id' => $product_att_val->id,
-                                                'attribute_id' => $product_att_val->parent_id,
-                                                // 'attribute_value_id' => $product_att_val->attribute_value,
-                                                // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
-                                                'group_id' => $sku_code,
-                                                'Cust_tag_group' =>$item[${'Group ID'}],
-                                                'remarks' => $item[${'Remarks'}] ?? '' ,
-                                                'brand_name' => $item[${'Brand Name'}],
-                                            ];
-                                            ProductExtraInfo::create($product_extra_info_obj_user);
-                                        }
-                                    } // If End
-                                } // Loop End
-                            } // If End
-                            
-                            // Create USI Rec
-                            $usi = UserShopItem::create([
-                                'user_id'=> $user->id,
-                                'category_id'=> $Category_id,
-                                'sub_category_id'=> $sub_category_id,
-                                'product_id'=> $product_obj->id,
-                                'user_shop_id'=> $user_shop->id,
-                                'parent_shop_id'=> 0,
-                                'is_published'=> 1,
-                                'price'=> $price,
-                            ]);
-                    
-                            if($reseller_group){
-                                // create Reseller Group record
-                                $g_p =  GroupProduct::create([
-                                    'group_id'=>$reseller_group->id,
-                                    'product_id'=>$product_obj->id,
-                                    'price'=> $item[${'Shop_Price_Reseller'}],
-                                ]);
-                            }
-                        
-                            if($vip_group){
-                                // create Vip Group record
-                                GroupProduct::create([
-                                    'group_id'=>$vip_group->id,
-                                    'product_id'=>$product_obj->id,
-                                    'price'=>  $item[${'Shop_Price_VIP_Customer'}],
-                                ]);
-                            }
-                            $arr_images = [];
-                            // * Start Creating Media...
-                            
-                            if (isset(${'Image_main'})) {
-                                if(isset($item[${'Image_main'}]) && $item[${'Image_main'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'Image_main'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'Image_main'}];
-                                    $media->extension = explode('.',$item[${'Image_main'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                            }
-                            
-                            if (isset(${'image_name_front'}) ) {
-                                if($item[${'image_name_front'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'image_name_front'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_front'}];
-                                    $media->extension = explode('.',$item[${'image_name_front'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                            }
-                            
-                            if (isset(${'image_name_back'})) {
-                                if(isset($item[${'image_name_back'}]) && $item[${'image_name_back'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'image_name_back'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_back'}];
-                                    $media->extension = explode('.',$item[${'image_name_back'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }                                    
-                            }
-
-
-                            if (isset(${'image_name_side1'})) {
-                                if(isset($item[${'image_name_side1'}]) && $item[${'image_name_side1'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'image_name_side1'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side1'}];
-                                    $media->extension = explode('.',$item[${'image_name_side1'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                            }
-
-
-                            if (isset(${'image_name_side2'})) {
-                                if(isset($item[${'image_name_side2'}]) && $item[${'image_name_side2'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'image_name_side2'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side2'}];
-                                    $media->extension = explode('.',$item[${'image_name_side2'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }   
-                            }
-
-
-
-                            if (isset(${'image_name_poster'})) {
-                                if(isset($item[${'image_name_poster'}]) && $item[${'image_name_poster'}] != null){
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $item[${'image_name_poster'}];
-                                    $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_poster'}];
-                                    $media->extension = explode('.',$item[${'image_name_poster'}])[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                            }
-
-                            
-                            if ($ProductextraImages != null) {
-                                foreach ($ProductextraImages as $key => $ExtImg) {
-                                    $media = new Media();
-                                    $media->tag = "Product_Image";
-                                    $media->file_type = "Image";
-                                    $media->type = "Product";
-                                    $media->type_id = $product_obj->id;
-                                    $media->file_name = $ExtImg;
-                                    $media->path = "storage/files/".auth()->id()."/".$ExtImg;
-                                    $media->extension = explode('.',$ExtImg)[1] ?? '';
-                                    $media->save();
-                                    $arr_images[] = $media->id;
-                                }
-                            }
-                            // // Add images to UserShopItem
-                            if(count($arr_images) > 0) {
-                                $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
-                                $usi->save();
-                            }
-
-                            if($product_obj){
-                                ++$count;
-                            }
-                    }
-
-                    
-                    
-                 
-                }
-                else{
-                    $reseller_group = Group::whereUserId($user->id)->where('name',"Reseller")->first();
-                    if(!$reseller_group){
-                    $reseller_group = Group::create([
-                            'user_id' => $user->id,
-                            'name' => "Reseller",
-                            'type' => 0,
-                        ]);
-                    }
-                    $vip_group = Group::whereUserId($user->id)->where('name',"VIP")->first();
-                    if(!$vip_group){
-                    $vip_group =  Group::create([
-                        'user_id' => $user->id,
-                        'name' => "VIP",
-                        'type' => 0,
-                    ]);
-                    }
-                
-                    // - SKU CODE Generation BASED ON MODEL CODE
-                    if ($item[${'Model_Code'}] == null && $item[${'Model_Code'}] == "") {
-                        $sku_code = 'SKU'.generateRandomStringNative(6);
-                        $item[${'Model_Code'}] = $sku_code;
-                    }elseif (isset($GroupId)) {
-                        $sku_code = $GroupId;
-                    }
-                    else{
-                        $sku_code = 'SKU'.generateRandomStringNative(6);
-                    }
-                    if (in_array($item[${'Model_Code'}],$modalArray)) {
-                        // echo "Yes Bro!";
-                        $sku_code = $SKUArray[array_search($item[${'Model_Code'}],$modalArray)];
-                    }else{
-                        array_push($modalArray,$item[${'Model_Code'}]);
-                        array_push($SKUArray,$sku_code);
-                    }
-                    $unique_slug  = getUniqueProductSlug($item[${'Product name'}]);
-                    // - Start Uploading Product....
-                    // Todo: Checking Product Exist in Database or Not..
-                    $product_chk = Product::where('sku',$sku_code)->get();
-                    if (count($product_chk) != 0) {
-                        $product_exist = $product_chk[0];
-                            
-                    } # If end (Product Exist in Record)
-                    else{
-                        $product_exist = null;
-                    }
-                
-                    
-                    $carton_details = [
-                        'standard_carton' => (isset(${'standard_carton_pcs'})) ? $item[${'standard_carton_pcs'}] : '',
-                        'carton_weight' => (isset(${'carton_weight_actual'})) ? $item[${'carton_weight_actual'}] : '',
-                        'carton_unit' => (isset(${'unit'})) ? $item[${'unit'}] : '',
-                        'carton_length' => (isset(${'Carton length'})) ? $item[${'Carton length'}] : '',
-                        'carton_width' => (isset(${'Carton width'})) ? $item[${'Carton width'}] : '',
-                        'carton_height' => (isset(${'Carton height'})) ? $item[${'Carton height'}] : '',
-                        'Carton_Dimensions_unit' => (isset(${'Carton_Dimensions_unit'})) ? $item[${'Carton_Dimensions_unit'}] : '',
-                    ];
-
-                    $shipping = [
-                        'height' => (isset(${'Product height'})) ? $item[${'Product height'}] : '',
-                        'gross_weight' =>(isset(${'Gross weight'})) ? $item[${'Gross weight'}] : '',
-                        'weight' => (isset(${'Net weight'})) ? $item[${'Net weight'}] : '',
-                        'width' => (isset(${'Product width'})) ? $item[${'Product width'}] : '',
-                        'length' => (isset(${'Product length'})) ? $item[${'Product length'}] : '',
-                        'unit' => (isset(${'Weight_unit'})) ? $item[${'Weight_unit'}] : '',
-                        'length_unit' => (isset(${'Dimensions_unit'})) ? $item[${'Dimensions_unit'}] : '',
-                    ];
-
-                    $carton_details = json_encode($carton_details);
-                    $shipping = json_encode($shipping);
-                            
-
-                    $price = ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->price : trim($item[${'Customer_Price_without_GST'}]);
-
-                    
-                    $product_obj =  [
-                        'title' => ($product_exist != null && $item[${'Product name'}] == null) ? $product_exist->title : $item[${'Product name'}],
-                        'model_code' => ($product_exist != null && $item[${'Model_Code'}] == null) ? $product_exist->model_code : $item[${'Model_Code'}],
-                        'category_id' => ($product_exist != null && $Category_id == '') ? $product_exist->category_id : $Category_id,
-                        'sub_category' => ($product_exist != null && $sub_category_id == '') ? $product_exist->sub_category : $sub_category_id,
-                        'brand_id' => ($product_exist != null) ? $product_exist->brand_id : 0,
-                        'user_id' => $user->id,
-                        'sku' => $sku_code,
-                        'slug' => $unique_slug,
-                        'description' => ($product_exist != null && $item[${'description'}] == '') ? $product_exist->description : $item[${'description'}],
-                        'carton_details' =>  ($product_exist != null && $carton_details == null) ? $product_exist->carton_details : $carton_details,
-                        'shipping' =>  ($product_exist != null && $shipping == null) ? $product_exist->shipping : $shipping,
-                        'manage_inventory' =>  0,
-                        'stock_qty' => 0,
-                        'status' => 0,
-                        // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
-                        'is_publish' => 1,
-                        'price' => $price ?? 0,
-                        'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}], 
-                        'hsn' => ($product_exist != null && $item[${'HSN Tax'}] == '') ? $product_exist->hsn : $item[${'HSN Tax'}] ?? null,
-                        'hsn_percent' => ($product_exist != null && $item[${'HSN_Percnt'}] == '') ? $product_exist->hsn_percent : $item[${'HSN_Percnt'}] ?? null,
-                        'mrp' => ($product_exist != null && $item[${'mrpIncl tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl tax'}]),
-                        'video_url' => ($product_exist != null && $item[${'Video URL'}] == '') ? $product_exist->video_url : $item[${'Video URL'}],
-                        'search_keywords' => ($product_exist != null && $item[${'Search keywords'}] == '') ? $product_exist->tag1 : $item[${'Search keywords'}],
-                        'artwork_url' => $item[${'artwork_url'}] ?? null,
-                        'exclusive' => (in_array($item[${'Copyright/ Exclusive item'}],$allowed_array)) ? 1 : 0,
-                        'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
-                        'SellingPriceUnitIndex' => $item[${'Selling Price_Unit'}] ?? '',
-                        // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
-                    ];
-                        
-                    $product_obj = Product::create($product_obj);
-
-                    // debugtext($debuging_mode,"Printing Product Object","Red");
-                    // magicstring($product_obj);
-
-                    array_push($Productids_array,$product_obj->id); 
-
-                    debugtext($debuging_mode,"Printing Product Ids","Red");
-                    // magicstring($Productids_array);
-
-                    // $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                    // $third = strtolower($third);
-                    // $third = ucwords($third);
-                    // $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$third)->first();
-                    // $vname = $product_att_val->attribute_value;
-                
-                    // debugtext($debuging_mode,"making Variation for $vname","Red");
-
-                    // if ($product_att_val != null) {
-                    //     $product_extra_info_obj_user = [
-                    //         'product_id' => $product_obj->id,
-                    //         'user_id' => $user->id,
-                    //         'user_shop_id' => $user_shop->id, 
-                    //         'allow_resellers' => $item[${'Allow_Resellers'}],
-                    //         'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                    //         'collection_name' => $item[${'Theme / Collection Name'}],
-                    //         'season_month' => $item[${'Season / Month'}],
-                    //         'season_year' => $item[${'Theme / Collection Year'}],
-                    //         'sample_year' => $item[${'Sample Year'}],
-                    //         'sample_month' => $item[${'Sample Month'}],
-                    //         'sampling_time' => $item[${'Sampling time'}],
-                    //         'CBM' => $item[${'CBM'}],
-                    //         'production_time' => $item[${'Production time (days)'}],
-                    //         'MBQ' => $item[${'MBQ'}],
-                    //         'MBQ_unit' => $item[${'MBQ_units'}],
-                    //         'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                    //         'vendor_price' => $item[${'Vendor price'}],
-                    //         'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                    //         'vendor_currency' => $item[${'Vendor currency'}],
-                    //         'sourcing_year' => $item[${'Sourcing Year'}],
-                    //         'sourcing_month' => $item[${'Sourcing month'}],
-                    //         'attribute_value_id' => $product_att_val->id,
-                    //         'attribute_id' => $product_att_val->parent_id,
-                    //         // 'attribute_value_id' => $product_att_val->attribute_value,
-                    //         // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
-                    //         'group_id' => $sku_code,
-                    //         'Cust_tag_group' =>$item[${'Group ID'}],
-                    //         'remarks' => $item[${'Remarks'}] ?? '' ,
-                    //         'brand_name' => $item[${'Brand Name'}],
-                    //     ];
-
-                    //     ProductExtraInfo::create($product_extra_info_obj_user);
-                    // }
-
-                    echo "Selected In Excel File";
-                    magicstring($selected_custom_attribute);
-
-                    echo "Selected In Variation Column";
-                    magicstring($variationType_array);
-
-                    if (count($selected_custom_attribute) != count($variationType_array)) {
-                        foreach ($selected_custom_attribute as $chkkey => $checkval) {
-                            if (!in_array($checkval,$variationType_array)) {
-
-                                $tmp_col = ${$checkval};
-                                $attribute_default = ProductAttribute::where('name',$checkval)->where('user_id',null)->pluck('id');
-                                $attribute_custom = ProductAttribute::where('name',$checkval)->where('user_id',$user->id)->pluck('id');
-                                        
-                                if (count($attribute_default) == 0 ) {
-                                    $attribute = $attribute_custom;
-                                }else{
-                                    $attribute = $attribute_default;
-                                }
-
-                                $checkval = strtolower($checkval);
-                                $checkval = ucwords($checkval);
-
-                                $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$item[$tmp_col])->first();
-                                  
-
-                                
                                 if ($product_att_val != null) {
-                                    
                                     $product_extra_info_obj_user = [
                                         'product_id' => $product_obj->id,
                                         'user_id' => $user->id,
@@ -5371,179 +4908,835 @@ class NewBulkController extends Controller
                                         'remarks' => $item[${'Remarks'}] ?? '' ,
                                         'brand_name' => $item[${'Brand Name'}],
                                     ];
+            
                                     ProductExtraInfo::create($product_extra_info_obj_user);
                                 }
-                            } // If End
-                        } // Loop End
-                    } // If End
+        
+                                echo "Selected In Excel File";
+                                magicstring($selected_custom_attribute);
+
+                                echo "Selected In Variation Column";
+                                magicstring($variationType_array);
+
+                                if (count($selected_custom_attribute) != count($variationType_array)) {
+                                    foreach ($selected_custom_attribute as $chkkey => $checkval) {
+                                        if (!in_array($checkval,$variationType_array)) {
+                                            $tmp_col = ${$checkval};
+                                            $attribute_default = ProductAttribute::where('name',$checkval)->where('user_id',null)->pluck('id');
+                                            $attribute_custom = ProductAttribute::where('name',$checkval)->where('user_id',$user->id)->pluck('id');
+                                                    
+                                            if (count($attribute_default) == 0 ) {
+                                                $attribute = $attribute_custom;
+                                            }else{
+                                                $attribute = $attribute_default;
+                                            }
+        
+                                            $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$item[$tmp_col])->first();
+
+                                            $checkval = strtolower($checkval);
+                                            $checkval = ucwords($checkval);
+                                                                            
+                                            if ($product_att_val != null) {
+                                                
+                                                $product_extra_info_obj_user = [
+                                                    'product_id' => $product_obj->id,
+                                                    'user_id' => $user->id,
+                                                    'user_shop_id' => $user_shop->id, 
+                                                    'allow_resellers' => $item[${'Allow_Resellers'}],
+                                                    'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
+                                                    'collection_name' => $item[${'Theme / Collection Name'}],
+                                                    'season_month' => $item[${'Season / Month'}],
+                                                    'season_year' => $item[${'Theme / Collection Year'}],
+                                                    'sample_year' => $item[${'Sample Year'}],
+                                                    'sample_month' => $item[${'Sample Month'}],
+                                                    'sampling_time' => $item[${'Sampling time'}],
+                                                    'CBM' => $item[${'CBM'}],
+                                                    'production_time' => $item[${'Production time (days)'}],
+                                                    'MBQ' => $item[${'MBQ'}],
+                                                    'MBQ_unit' => $item[${'MBQ_units'}],
+                                                    'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
+                                                    'vendor_price' => $item[${'Vendor price'}],
+                                                    'product_cost_unit' => $item[${'Product Cost_Unit'}],
+                                                    'vendor_currency' => $item[${'Vendor currency'}],
+                                                    'sourcing_year' => $item[${'Sourcing Year'}],
+                                                    'sourcing_month' => $item[${'Sourcing month'}],
+                                                    'attribute_value_id' => $product_att_val->id,
+                                                    'attribute_id' => $product_att_val->parent_id,
+                                                    // 'attribute_value_id' => $product_att_val->attribute_value,
+                                                    // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
+                                                    'group_id' => $sku_code,
+                                                    'Cust_tag_group' =>$item[${'Group ID'}],
+                                                    'remarks' => $item[${'Remarks'}] ?? '' ,
+                                                    'brand_name' => $item[${'Brand Name'}],
+                                                ];
+                                                ProductExtraInfo::create($product_extra_info_obj_user);
+                                            }
+                                        } // If End
+                                    } // Loop End
+                                } // If End
+                                
+                                // Create USI Rec
+                                $usi = UserShopItem::create([
+                                    'user_id'=> $user->id,
+                                    'category_id'=> $Category_id,
+                                    'sub_category_id'=> $sub_category_id,
+                                    'product_id'=> $product_obj->id,
+                                    'user_shop_id'=> $user_shop->id,
+                                    'parent_shop_id'=> 0,
+                                    'is_published'=> 1,
+                                    'price'=> $price,
+                                ]);
+                        
+                                if($reseller_group){
+                                    // create Reseller Group record
+                                    $g_p =  GroupProduct::create([
+                                        'group_id'=>$reseller_group->id,
+                                        'product_id'=>$product_obj->id,
+                                        'price'=> $item[${'Shop_Price_Reseller'}],
+                                    ]);
+                                }
+                            
+                                if($vip_group){
+                                    // create Vip Group record
+                                    GroupProduct::create([
+                                        'group_id'=>$vip_group->id,
+                                        'product_id'=>$product_obj->id,
+                                        'price'=>  $item[${'Shop_Price_VIP_Customer'}],
+                                    ]);
+                                }
+                                $arr_images = [];
+                                // * Start Creating Media...
+                                
+                                if (isset(${'Image_main'})) {
+                                    if(isset($item[${'Image_main'}]) && $item[${'Image_main'}] != null){
+                                        $media = new Media();
+                                        $media->tag = "Product_Image";
+                                        $media->file_type = "Image";
+                                        $media->type = "Product";
+                                        $media->type_id = $product_obj->id;
+                                        $media->file_name = $item[${'Image_main'}];
+                                        $media->path = "storage/files/".auth()->id()."/".$item[${'Image_main'}];
+                                        $media->extension = explode('.',$item[${'Image_main'}])[1] ?? '';
+                                        $media->save();
+                                        $arr_images[] = $media->id;
+                                    }
+                                }
+                                
+                                if (isset(${'image_name_front'}) ) {
+                                    if($item[${'image_name_front'}] != null){
+                                        $media = new Media();
+                                        $media->tag = "Product_Image";
+                                        $media->file_type = "Image";
+                                        $media->type = "Product";
+                                        $media->type_id = $product_obj->id;
+                                        $media->file_name = $item[${'image_name_front'}];
+                                        $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_front'}];
+                                        $media->extension = explode('.',$item[${'image_name_front'}])[1] ?? '';
+                                        $media->save();
+                                        $arr_images[] = $media->id;
+                                    }
+                                }
+                                
+                                if (isset(${'image_name_back'})) {
+                                    if(isset($item[${'image_name_back'}]) && $item[${'image_name_back'}] != null){
+                                        $media = new Media();
+                                        $media->tag = "Product_Image";
+                                        $media->file_type = "Image";
+                                        $media->type = "Product";
+                                        $media->type_id = $product_obj->id;
+                                        $media->file_name = $item[${'image_name_back'}];
+                                        $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_back'}];
+                                        $media->extension = explode('.',$item[${'image_name_back'}])[1] ?? '';
+                                        $media->save();
+                                        $arr_images[] = $media->id;
+                                    }                                    
+                                }
+
+
+                                if (isset(${'image_name_side1'})) {
+                                    if(isset($item[${'image_name_side1'}]) && $item[${'image_name_side1'}] != null){
+                                        $media = new Media();
+                                        $media->tag = "Product_Image";
+                                        $media->file_type = "Image";
+                                        $media->type = "Product";
+                                        $media->type_id = $product_obj->id;
+                                        $media->file_name = $item[${'image_name_side1'}];
+                                        $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side1'}];
+                                        $media->extension = explode('.',$item[${'image_name_side1'}])[1] ?? '';
+                                        $media->save();
+                                        $arr_images[] = $media->id;
+                                    }
+                                }
+
+
+                                if (isset(${'image_name_side2'})) {
+                                    if(isset($item[${'image_name_side2'}]) && $item[${'image_name_side2'}] != null){
+                                        $media = new Media();
+                                        $media->tag = "Product_Image";
+                                        $media->file_type = "Image";
+                                        $media->type = "Product";
+                                        $media->type_id = $product_obj->id;
+                                        $media->file_name = $item[${'image_name_side2'}];
+                                        $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side2'}];
+                                        $media->extension = explode('.',$item[${'image_name_side2'}])[1] ?? '';
+                                        $media->save();
+                                        $arr_images[] = $media->id;
+                                    }   
+                                }
+
+
+
+                                if (isset(${'image_name_poster'})) {
+                                    if(isset($item[${'image_name_poster'}]) && $item[${'image_name_poster'}] != null){
+                                        $media = new Media();
+                                        $media->tag = "Product_Image";
+                                        $media->file_type = "Image";
+                                        $media->type = "Product";
+                                        $media->type_id = $product_obj->id;
+                                        $media->file_name = $item[${'image_name_poster'}];
+                                        $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_poster'}];
+                                        $media->extension = explode('.',$item[${'image_name_poster'}])[1] ?? '';
+                                        $media->save();
+                                        $arr_images[] = $media->id;
+                                    }
+                                }
+
+                                
+                                if ($ProductextraImages != null) {
+                                    foreach ($ProductextraImages as $key => $ExtImg) {
+                                        $media = new Media();
+                                        $media->tag = "Product_Image";
+                                        $media->file_type = "Image";
+                                        $media->type = "Product";
+                                        $media->type_id = $product_obj->id;
+                                        $media->file_name = $ExtImg;
+                                        $media->path = "storage/files/".auth()->id()."/".$ExtImg;
+                                        $media->extension = explode('.',$ExtImg)[1] ?? '';
+                                        $media->save();
+                                        $arr_images[] = $media->id;
+                                    }
+                                }
+                                // // Add images to UserShopItem
+                                if(count($arr_images) > 0) {
+                                    $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                    $usi->save();
+                                }
+
+                                if($product_obj){
+                                    ++$count;
+                                }
+                        }
+
+                        
+                        
                     
-                    // Create USI Rec
-                    $usi = UserShopItem::create([
-                        'user_id'=> $user->id,
-                        'category_id'=> $Category_id,
-                        'sub_category_id'=> $sub_category_id,
-                        'product_id'=> $product_obj->id,
-                        'user_shop_id'=> $user_shop->id,
-                        'parent_shop_id'=> 0,
-                        'is_published'=> 1,
-                        'price'=> $price,
-                    ]);
-            
-                    if($reseller_group){
-                        // create Reseller Group record
-                        $g_p =  GroupProduct::create([
-                            'group_id'=>$reseller_group->id,
-                            'product_id'=>$product_obj->id,
-                            'price'=> $item[${'Shop_Price_Reseller'}],
+                    }
+                    else{
+                        $reseller_group = Group::whereUserId($user->id)->where('name',"Reseller")->first();
+                        if(!$reseller_group){
+                        $reseller_group = Group::create([
+                                'user_id' => $user->id,
+                                'name' => "Reseller",
+                                'type' => 0,
+                            ]);
+                        }
+                        $vip_group = Group::whereUserId($user->id)->where('name',"VIP")->first();
+                        if(!$vip_group){
+                        $vip_group =  Group::create([
+                            'user_id' => $user->id,
+                            'name' => "VIP",
+                            'type' => 0,
                         ]);
-                    }
-                
-                    if($vip_group){
-                        // create Vip Group record
-                        GroupProduct::create([
-                            'group_id'=>$vip_group->id,
-                            'product_id'=>$product_obj->id,
-                            'price'=>  $item[${'Shop_Price_VIP_Customer'}],
+                        }
+                    
+                        // - SKU CODE Generation BASED ON MODEL CODE
+                        if ($item[${'Model_Code'}] == null && $item[${'Model_Code'}] == "") {
+                            $sku_code = 'SKU'.generateRandomStringNative(6);
+                            $item[${'Model_Code'}] = $sku_code;
+                        }elseif (isset($GroupId)) {
+                            $sku_code = $GroupId;
+                        }
+                        else{
+                            $sku_code = 'SKU'.generateRandomStringNative(6);
+                        }
+                        if (in_array($item[${'Model_Code'}],$modalArray)) {
+                            // echo "Yes Bro!";
+                            $sku_code = $SKUArray[array_search($item[${'Model_Code'}],$modalArray)];
+                        }else{
+                            array_push($modalArray,$item[${'Model_Code'}]);
+                            array_push($SKUArray,$sku_code);
+                        }
+                        $unique_slug  = getUniqueProductSlug($item[${'Product name'}]);
+                        // - Start Uploading Product....
+                        // Todo: Checking Product Exist in Database or Not..
+                        $product_chk = Product::where('sku',$sku_code)->get();
+                        if (count($product_chk) != 0) {
+                            $product_exist = $product_chk[0];
+                                
+                        } # If end (Product Exist in Record)
+                        else{
+                            $product_exist = null;
+                        }
+                    
+                        
+                        $carton_details = [
+                            'standard_carton' => (isset(${'standard_carton_pcs'})) ? $item[${'standard_carton_pcs'}] : '',
+                            'carton_weight' => (isset(${'carton_weight_actual'})) ? $item[${'carton_weight_actual'}] : '',
+                            'carton_unit' => (isset(${'unit'})) ? $item[${'unit'}] : '',
+                            'carton_length' => (isset(${'Carton length'})) ? $item[${'Carton length'}] : '',
+                            'carton_width' => (isset(${'Carton width'})) ? $item[${'Carton width'}] : '',
+                            'carton_height' => (isset(${'Carton height'})) ? $item[${'Carton height'}] : '',
+                            'Carton_Dimensions_unit' => (isset(${'Carton_Dimensions_unit'})) ? $item[${'Carton_Dimensions_unit'}] : '',
+                        ];
+
+                        $shipping = [
+                            'height' => (isset(${'Product height'})) ? $item[${'Product height'}] : '',
+                            'gross_weight' =>(isset(${'Gross weight'})) ? $item[${'Gross weight'}] : '',
+                            'weight' => (isset(${'Net weight'})) ? $item[${'Net weight'}] : '',
+                            'width' => (isset(${'Product width'})) ? $item[${'Product width'}] : '',
+                            'length' => (isset(${'Product length'})) ? $item[${'Product length'}] : '',
+                            'unit' => (isset(${'Weight_unit'})) ? $item[${'Weight_unit'}] : '',
+                            'length_unit' => (isset(${'Dimensions_unit'})) ? $item[${'Dimensions_unit'}] : '',
+                        ];
+
+                        $carton_details = json_encode($carton_details);
+                        $shipping = json_encode($shipping);
+                                
+
+                        $price = ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->price : trim($item[${'Customer_Price_without_GST'}]);
+
+                        
+                        $product_obj =  [
+                            'title' => ($product_exist != null && $item[${'Product name'}] == null) ? $product_exist->title : $item[${'Product name'}],
+                            'model_code' => ($product_exist != null && $item[${'Model_Code'}] == null) ? $product_exist->model_code : $item[${'Model_Code'}],
+                            'category_id' => ($product_exist != null && $Category_id == '') ? $product_exist->category_id : $Category_id,
+                            'sub_category' => ($product_exist != null && $sub_category_id == '') ? $product_exist->sub_category : $sub_category_id,
+                            'brand_id' => ($product_exist != null) ? $product_exist->brand_id : 0,
+                            'user_id' => $user->id,
+                            'sku' => $sku_code,
+                            'slug' => $unique_slug,
+                            'description' => ($product_exist != null && $item[${'description'}] == '') ? $product_exist->description : $item[${'description'}],
+                            'carton_details' =>  ($product_exist != null && $carton_details == null) ? $product_exist->carton_details : $carton_details,
+                            'shipping' =>  ($product_exist != null && $shipping == null) ? $product_exist->shipping : $shipping,
+                            'manage_inventory' =>  0,
+                            'stock_qty' => 0,
+                            'status' => 0,
+                            // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                            'is_publish' => 1,
+                            'price' => $price ?? 0,
+                            'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}], 
+                            'hsn' => ($product_exist != null && $item[${'HSN Tax'}] == '') ? $product_exist->hsn : $item[${'HSN Tax'}] ?? null,
+                            'hsn_percent' => ($product_exist != null && $item[${'HSN_Percnt'}] == '') ? $product_exist->hsn_percent : $item[${'HSN_Percnt'}] ?? null,
+                            'mrp' => ($product_exist != null && $item[${'mrpIncl tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl tax'}]),
+                            'video_url' => ($product_exist != null && $item[${'Video URL'}] == '') ? $product_exist->video_url : $item[${'Video URL'}],
+                            'search_keywords' => ($product_exist != null && $item[${'Search keywords'}] == '') ? $product_exist->tag1 : $item[${'Search keywords'}],
+                            'artwork_url' => $item[${'artwork_url'}] ?? null,
+                            'exclusive' => (in_array($item[${'Copyright/ Exclusive item'}],$allowed_array)) ? 1 : 0,
+                            'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
+                            'SellingPriceUnitIndex' => $item[${'Selling Price_Unit'}] ?? '',
+                            // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
+                        ];
+                            
+                        $product_obj = Product::create($product_obj);
+
+                        // debugtext($debuging_mode,"Printing Product Object","Red");
+                        // magicstring($product_obj);
+
+                        array_push($Productids_array,$product_obj->id); 
+
+                        debugtext($debuging_mode,"Printing Product Ids","Red");
+                        // magicstring($Productids_array);
+
+                        // $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
+                        // $third = strtolower($third);
+                        // $third = ucwords($third);
+                        // $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$third)->first();
+                        // $vname = $product_att_val->attribute_value;
+                    
+                        // debugtext($debuging_mode,"making Variation for $vname","Red");
+
+                        // if ($product_att_val != null) {
+                        //     $product_extra_info_obj_user = [
+                        //         'product_id' => $product_obj->id,
+                        //         'user_id' => $user->id,
+                        //         'user_shop_id' => $user_shop->id, 
+                        //         'allow_resellers' => $item[${'Allow_Resellers'}],
+                        //         'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
+                        //         'collection_name' => $item[${'Theme / Collection Name'}],
+                        //         'season_month' => $item[${'Season / Month'}],
+                        //         'season_year' => $item[${'Theme / Collection Year'}],
+                        //         'sample_year' => $item[${'Sample Year'}],
+                        //         'sample_month' => $item[${'Sample Month'}],
+                        //         'sampling_time' => $item[${'Sampling time'}],
+                        //         'CBM' => $item[${'CBM'}],
+                        //         'production_time' => $item[${'Production time (days)'}],
+                        //         'MBQ' => $item[${'MBQ'}],
+                        //         'MBQ_unit' => $item[${'MBQ_units'}],
+                        //         'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
+                        //         'vendor_price' => $item[${'Vendor price'}],
+                        //         'product_cost_unit' => $item[${'Product Cost_Unit'}],
+                        //         'vendor_currency' => $item[${'Vendor currency'}],
+                        //         'sourcing_year' => $item[${'Sourcing Year'}],
+                        //         'sourcing_month' => $item[${'Sourcing month'}],
+                        //         'attribute_value_id' => $product_att_val->id,
+                        //         'attribute_id' => $product_att_val->parent_id,
+                        //         // 'attribute_value_id' => $product_att_val->attribute_value,
+                        //         // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
+                        //         'group_id' => $sku_code,
+                        //         'Cust_tag_group' =>$item[${'Group ID'}],
+                        //         'remarks' => $item[${'Remarks'}] ?? '' ,
+                        //         'brand_name' => $item[${'Brand Name'}],
+                        //     ];
+
+                        //     ProductExtraInfo::create($product_extra_info_obj_user);
+                        // }
+
+                        echo "Selected In Excel File";
+                        magicstring($selected_custom_attribute);
+
+                        echo "Selected In Variation Column";
+                        magicstring($variationType_array);
+
+                        if (count($selected_custom_attribute) != count($variationType_array)) {
+                            foreach ($selected_custom_attribute as $chkkey => $checkval) {
+                                if (!in_array($checkval,$variationType_array)) {
+
+                                    $tmp_col = ${$checkval};
+                                    $attribute_default = ProductAttribute::where('name',$checkval)->where('user_id',null)->pluck('id');
+                                    $attribute_custom = ProductAttribute::where('name',$checkval)->where('user_id',$user->id)->pluck('id');
+                                            
+                                    if (count($attribute_default) == 0 ) {
+                                        $attribute = $attribute_custom;
+                                    }else{
+                                        $attribute = $attribute_default;
+                                    }
+
+                                    $checkval = strtolower($checkval);
+                                    $checkval = ucwords($checkval);
+
+                                    $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$item[$tmp_col])->first();
+                                    
+
+                                    
+                                    if ($product_att_val != null) {
+                                        
+                                        $product_extra_info_obj_user = [
+                                            'product_id' => $product_obj->id,
+                                            'user_id' => $user->id,
+                                            'user_shop_id' => $user_shop->id, 
+                                            'allow_resellers' => $item[${'Allow_Resellers'}],
+                                            'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
+                                            'collection_name' => $item[${'Theme / Collection Name'}],
+                                            'season_month' => $item[${'Season / Month'}],
+                                            'season_year' => $item[${'Theme / Collection Year'}],
+                                            'sample_year' => $item[${'Sample Year'}],
+                                            'sample_month' => $item[${'Sample Month'}],
+                                            'sampling_time' => $item[${'Sampling time'}],
+                                            'CBM' => $item[${'CBM'}],
+                                            'production_time' => $item[${'Production time (days)'}],
+                                            'MBQ' => $item[${'MBQ'}],
+                                            'MBQ_unit' => $item[${'MBQ_units'}],
+                                            'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
+                                            'vendor_price' => $item[${'Vendor price'}],
+                                            'product_cost_unit' => $item[${'Product Cost_Unit'}],
+                                            'vendor_currency' => $item[${'Vendor currency'}],
+                                            'sourcing_year' => $item[${'Sourcing Year'}],
+                                            'sourcing_month' => $item[${'Sourcing month'}],
+                                            'attribute_value_id' => $product_att_val->id,
+                                            'attribute_id' => $product_att_val->parent_id,
+                                            // 'attribute_value_id' => $product_att_val->attribute_value,
+                                            // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
+                                            'group_id' => $sku_code,
+                                            'Cust_tag_group' =>$item[${'Group ID'}],
+                                            'remarks' => $item[${'Remarks'}] ?? '' ,
+                                            'brand_name' => $item[${'Brand Name'}],
+                                        ];
+                                        ProductExtraInfo::create($product_extra_info_obj_user);
+                                    }
+                                } // If End
+                            } // Loop End
+                        } // If End
+                        
+                        // Create USI Rec
+                        $usi = UserShopItem::create([
+                            'user_id'=> $user->id,
+                            'category_id'=> $Category_id,
+                            'sub_category_id'=> $sub_category_id,
+                            'product_id'=> $product_obj->id,
+                            'user_shop_id'=> $user_shop->id,
+                            'parent_shop_id'=> 0,
+                            'is_published'=> 1,
+                            'price'=> $price,
                         ]);
-                    }
-                    $arr_images = [];
-                    // * Start Creating Media...
-                    
-                    if (isset(${'Image_main'})) {
-                        if(isset($item[${'Image_main'}]) && $item[${'Image_main'}] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $product_obj->id;
-                            $media->file_name = $item[${'Image_main'}];
-                            $media->path = "storage/files/".auth()->id()."/".$item[${'Image_main'}];
-                            $media->extension = explode('.',$item[${'Image_main'}])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                    }
-                    
-                    if (isset(${'image_name_front'}) ) {
-                        if($item[${'image_name_front'}] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $product_obj->id;
-                            $media->file_name = $item[${'image_name_front'}];
-                            $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_front'}];
-                            $media->extension = explode('.',$item[${'image_name_front'}])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                    }
-                    
-                    if (isset(${'image_name_back'})) {
-                        if(isset($item[${'image_name_back'}]) && $item[${'image_name_back'}] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $product_obj->id;
-                            $media->file_name = $item[${'image_name_back'}];
-                            $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_back'}];
-                            $media->extension = explode('.',$item[${'image_name_back'}])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }                                    
-                    }
-
-
-                    if (isset(${'image_name_side1'})) {
-                        if(isset($item[${'image_name_side1'}]) && $item[${'image_name_side1'}] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $product_obj->id;
-                            $media->file_name = $item[${'image_name_side1'}];
-                            $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side1'}];
-                            $media->extension = explode('.',$item[${'image_name_side1'}])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                    }
-
-
-                    if (isset(${'image_name_side2'})) {
-                        if(isset($item[${'image_name_side2'}]) && $item[${'image_name_side2'}] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $product_obj->id;
-                            $media->file_name = $item[${'image_name_side2'}];
-                            $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side2'}];
-                            $media->extension = explode('.',$item[${'image_name_side2'}])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }   
-                    }
-
-
-
-                    if (isset(${'image_name_poster'})) {
-                        if(isset($item[${'image_name_poster'}]) && $item[${'image_name_poster'}] != null){
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $product_obj->id;
-                            $media->file_name = $item[${'image_name_poster'}];
-                            $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_poster'}];
-                            $media->extension = explode('.',$item[${'image_name_poster'}])[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                    }
-
-                    
-                    if ($ProductextraImages != null) {
-                        foreach ($ProductextraImages as $key => $ExtImg) {
-                            $media = new Media();
-                            $media->tag = "Product_Image";
-                            $media->file_type = "Image";
-                            $media->type = "Product";
-                            $media->type_id = $product_obj->id;
-                            $media->file_name = $ExtImg;
-                            $media->path = "storage/files/".auth()->id()."/".$ExtImg;
-                            $media->extension = explode('.',$ExtImg)[1] ?? '';
-                            $media->save();
-                            $arr_images[] = $media->id;
-                        }
-                    }
-                    // // Add images to UserShopItem
-                    if(count($arr_images) > 0) {
-                        $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
-                        $usi->save();
-                    }
-
-                    if($product_obj){
-                        ++$count;
-                    }
                 
+                        if($reseller_group){
+                            // create Reseller Group record
+                            $g_p =  GroupProduct::create([
+                                'group_id'=>$reseller_group->id,
+                                'product_id'=>$product_obj->id,
+                                'price'=> $item[${'Shop_Price_Reseller'}],
+                            ]);
+                        }
                     
+                        if($vip_group){
+                            // create Vip Group record
+                            GroupProduct::create([
+                                'group_id'=>$vip_group->id,
+                                'product_id'=>$product_obj->id,
+                                'price'=>  $item[${'Shop_Price_VIP_Customer'}],
+                            ]);
+                        }
+                        $arr_images = [];
+                        // * Start Creating Media...
+                        
+                        if (isset(${'Image_main'})) {
+                            if(isset($item[${'Image_main'}]) && $item[${'Image_main'}] != null){
+                                $media = new Media();
+                                $media->tag = "Product_Image";
+                                $media->file_type = "Image";
+                                $media->type = "Product";
+                                $media->type_id = $product_obj->id;
+                                $media->file_name = $item[${'Image_main'}];
+                                $media->path = "storage/files/".auth()->id()."/".$item[${'Image_main'}];
+                                $media->extension = explode('.',$item[${'Image_main'}])[1] ?? '';
+                                $media->save();
+                                $arr_images[] = $media->id;
+                            }
+                        }
+                        
+                        if (isset(${'image_name_front'}) ) {
+                            if($item[${'image_name_front'}] != null){
+                                $media = new Media();
+                                $media->tag = "Product_Image";
+                                $media->file_type = "Image";
+                                $media->type = "Product";
+                                $media->type_id = $product_obj->id;
+                                $media->file_name = $item[${'image_name_front'}];
+                                $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_front'}];
+                                $media->extension = explode('.',$item[${'image_name_front'}])[1] ?? '';
+                                $media->save();
+                                $arr_images[] = $media->id;
+                            }
+                        }
+                        
+                        if (isset(${'image_name_back'})) {
+                            if(isset($item[${'image_name_back'}]) && $item[${'image_name_back'}] != null){
+                                $media = new Media();
+                                $media->tag = "Product_Image";
+                                $media->file_type = "Image";
+                                $media->type = "Product";
+                                $media->type_id = $product_obj->id;
+                                $media->file_name = $item[${'image_name_back'}];
+                                $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_back'}];
+                                $media->extension = explode('.',$item[${'image_name_back'}])[1] ?? '';
+                                $media->save();
+                                $arr_images[] = $media->id;
+                            }                                    
+                        }
+
+
+                        if (isset(${'image_name_side1'})) {
+                            if(isset($item[${'image_name_side1'}]) && $item[${'image_name_side1'}] != null){
+                                $media = new Media();
+                                $media->tag = "Product_Image";
+                                $media->file_type = "Image";
+                                $media->type = "Product";
+                                $media->type_id = $product_obj->id;
+                                $media->file_name = $item[${'image_name_side1'}];
+                                $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side1'}];
+                                $media->extension = explode('.',$item[${'image_name_side1'}])[1] ?? '';
+                                $media->save();
+                                $arr_images[] = $media->id;
+                            }
+                        }
+
+
+                        if (isset(${'image_name_side2'})) {
+                            if(isset($item[${'image_name_side2'}]) && $item[${'image_name_side2'}] != null){
+                                $media = new Media();
+                                $media->tag = "Product_Image";
+                                $media->file_type = "Image";
+                                $media->type = "Product";
+                                $media->type_id = $product_obj->id;
+                                $media->file_name = $item[${'image_name_side2'}];
+                                $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_side2'}];
+                                $media->extension = explode('.',$item[${'image_name_side2'}])[1] ?? '';
+                                $media->save();
+                                $arr_images[] = $media->id;
+                            }   
+                        }
+
+
+
+                        if (isset(${'image_name_poster'})) {
+                            if(isset($item[${'image_name_poster'}]) && $item[${'image_name_poster'}] != null){
+                                $media = new Media();
+                                $media->tag = "Product_Image";
+                                $media->file_type = "Image";
+                                $media->type = "Product";
+                                $media->type_id = $product_obj->id;
+                                $media->file_name = $item[${'image_name_poster'}];
+                                $media->path = "storage/files/".auth()->id()."/".$item[${'image_name_poster'}];
+                                $media->extension = explode('.',$item[${'image_name_poster'}])[1] ?? '';
+                                $media->save();
+                                $arr_images[] = $media->id;
+                            }
+                        }
+
+                        
+                        if ($ProductextraImages != null) {
+                            foreach ($ProductextraImages as $key => $ExtImg) {
+                                $media = new Media();
+                                $media->tag = "Product_Image";
+                                $media->file_type = "Image";
+                                $media->type = "Product";
+                                $media->type_id = $product_obj->id;
+                                $media->file_name = $ExtImg;
+                                $media->path = "storage/files/".auth()->id()."/".$ExtImg;
+                                $media->extension = explode('.',$ExtImg)[1] ?? '';
+                                $media->save();
+                                $arr_images[] = $media->id;
+                            }
+                        }
+                        // // Add images to UserShopItem
+                        if(count($arr_images) > 0) {
+                            $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                            $usi->save();
+                        }
+
+                        if($product_obj){
+                            ++$count;
+                        }
+                    
+                        
+                    }
                 }
+            // ! Main For Uploading Data End
+
+            // Uploading FIle
+            if($request->has('uploadcustomfield')){
+                $path = "files/$user_id->id/Uploaded_excel/";
+
+                $filename = $request->uploadcustomfield->getClientOriginalName();
+
+                $img = $this->uploadFile($request->uploadcustomfield, "$path",null,$filename)->getFilePath();
+                
+                $extension = pathinfo($filename, PATHINFO_EXTENSION);
+
+                
+                Uploadrecord::create([
+                    'user_id' =>$user_id->id,
+                    'sheet_name' => $filename,
+                    'remarks' => $request->remarks ?? '',
+                    'path' => $img,
+                    'records' => $count,
+                    'field_set' => json_encode($request->myfields),
+                    'last_used' => Carbon::now(),
+                ]);
             }
-        // ! Main For Uploading Data End
-
-        return back()->with('success',"$count Record Are Uploaded");
-
-
-
-
-    } catch (\Throwable $th) {
-        throw $th;
-    }
+            
+            return back()->with('success',"$count Record Are Uploaded");
+        } catch (\Throwable $th) {
+            throw $th;
+        }
 
         
     }
     
+
+
+    public function exportExcel($record,$filename) {
+        ini_set('max_execution_time', 0);
+        ini_set('memory_limit', '4000M');
+        try {
+            $spreadSheet = new Spreadsheet();
+            $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+            $spreadSheet->getActiveSheet()->fromArray($record,null,'A3');
+            $Excel_writer = new Xlsx($spreadSheet);
+            
+            header('Content-Type: application/vnd.ms-excel');
+            header("Content-Disposition: attachment;filename=$filename.xlsx");
+            header('Cache-Control: max-age=0');
+            ob_end_clean();
+            $Excel_writer->save('php://output');
+            exit();
+        } catch (Exception $e) {
+            return;
+        }
+        
+    }
+
+
+    public function exportfileCurrency(){
+        try {
+            $filename = "Upload Currency";
+            $user = auth()->user();
+
+            $data = ["Currency","Exchange Rate","Remark"];
+
+            $this->exportExcel($data,$filename);
+
+            return back()->with('success',"File Download Success Fully");
+        } catch (\Throwable $th) {
+            return back()->with('error',"Try After Some Time.");
+        }
+
+    }
+    
+    
+    
+    
+
+    // Upload Currency Data in Bulk
+    public function uploadCurrency(Request $request,User $user){
+
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file);
+            $worksheet = $spreadsheet->getActiveSheet();
+            $rows = [];
+            foreach ($worksheet->getRowIterator() as $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(false); // This loops through all cells,
+                $cells = [];
+                foreach ($cellIterator as $cell) {
+                    $cells[] = $cell->getValue();
+                }
+                $rows[] = $cells;
+            }
+            $with_header = array_slice($rows,2);
+            $rows = array_slice($rows,3);
+            $master = $rows;
+
+            $count = 0;
+            $user_shop = getShopDataByUserId($user->id);
+
+            $CurrencyIndex = 0;
+            $ExchangeRateIndex = 1;
+            $RemarkIndex = 2;
+            
+            
+            magicstring($with_header[0]);
+            
+            foreach ($master as $key => $item) {
+                
+                    $chk = UserCurrency::where('currency',$item[$CurrencyIndex])->where('user_id',$user->id)->get();
+                    if (count($chk) != 0) {
+                        $name = $item[$CurrencyIndex];
+                        echo $name;
+                        return back()->with('error',"$name Already Exist in Your Account.");
+                    }else{
+
+                        UserCurrency::create([
+                            'user_id' => $user->id,
+                            'User_shop_id' => $user_shop->id ?? 0,
+                            'currency' => $item[$CurrencyIndex],
+                            'exchange' => $item[$ExchangeRateIndex],
+                            'remark' => $item[$RemarkIndex],
+                            'default_currency' => 0
+                        ]);
+                        $count++;
+                    }
+                }
+                return back()->with('success',"$count Record are added");
+                
+        } catch (\Throwable $th) {
+            throw $th;
+            // return back()->with('error',"There was and some issue. Try again later.");
+        }
+
+
+        echo "Downlaod Excel File";
+    }
+    
+
+    // Update Existing Currency Records 
+    public function updateCurrency(Request $request,User $user){
+
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file);
+            $worksheet = $spreadsheet->getActiveSheet();
+            $rows = [];
+            foreach ($worksheet->getRowIterator() as $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(false); // This loops through all cells,
+                $cells = [];
+                foreach ($cellIterator as $cell) {
+                    $cells[] = $cell->getValue();
+                }
+                $rows[] = $cells;
+            }
+            $with_header = array_slice($rows,2);
+            $rows = array_slice($rows,3);
+            $master = $rows;
+
+            $count = 0;
+            $user_shop = getShopDataByUserId($user->id);
+
+            $IdIndex = 0;
+            $CurrencyIndex = 1;
+            $ExchangeRateIndex = 2;
+            $RemarkIndex = 3;
+            
+            
+            magicstring($with_header[0]);
+            
+            foreach ($master as $key => $item) {
+                    $row = $key +4;
+                
+                    $chk = UserCurrency::where('id',$item[$IdIndex])->where('user_id',$user->id)->get();
+                    if (count($chk) == 0) {
+                        return back()->with('error',"Currency is not Exist in Your Account at $row.");
+                    }else{
+                            
+                        $chk[0]->update([
+                            'currency' => $item[$CurrencyIndex],
+                            'exchange' => $item[$ExchangeRateIndex],
+                            'remark' => $item[$RemarkIndex],
+                        ]);
+                        $count++;   
+                    }
+
+            }
+
+
+            return back()->with('success',"$count Record are added");
+    
+        } catch (\Throwable $th) {
+            throw $th;
+            // return back()->with('error',"There was and some issue. Try again later.");
+        }
+    }
+    
+    public function exportrecordCurrecy(Request $request,User $user){
+
+
+        try {
+
+            $record = UserCurrency::where('user_id',$user->id)->get();
+
+            $tempate[] = array("Id","Currency","Exchange Rate","Remark","Default");
+
+            foreach ($record as $key => $value) {
+                $tempate[] = array(
+                    'Id' => $value->id,
+                    'Currency' => $value->currency, 
+                    'Exchange Rate' => $value->exchange,
+                    'Remark' => $value->remark,
+                    'Default' => $value->default_currency
+                );
+            }
+            
+            $this->exportExcel($tempate,"Currecy ExportedData");
+
+            return back()->with('success',"Download Started");
+            
+            
+        } catch (\Throwable $th) {
+            //throw $th;
+            return back()->with('error',"Try Again later");
+        }
+
+    }
+
 
 }

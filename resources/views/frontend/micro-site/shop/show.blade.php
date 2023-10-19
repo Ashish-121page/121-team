@@ -7,6 +7,13 @@
         $price =  getPriceByGroupIdProductId($group_id,$product->id,$price);
     }
     $phone_number = getSellerPhoneBySlug($slug);
+
+    $record = App\Models\UserCurrency::where('currency',$product->base_currency)->where('user_id',$user_shop->user_id)->first();
+    $exhangerate = Session::get('Currency_exchange') ?? 1;
+    $HomeCurrency = $record->exchange ?? 1;
+    $currency_symbol = Session::get('currency_name') ?? 'INR';
+    
+    
 @endphp
 
 @section('meta_data')
@@ -179,20 +186,36 @@
                                                 <span class="text-success" style="font-weight: 600;"><small>In Stock</small></span>
                                             @endif
                                             <h5 class="text-muted my-2">
-                                                {{ format_price($price) }} &nbsp;&nbsp;&nbsp;
-                                                MRP : <strike> {{ format_price($product->mrp) }} </strike>
+                                                {{ $currency_symbol." ". exchangerate($price,$exhangerate,$HomeCurrency) }} &nbsp;&nbsp;&nbsp;
+                                                MRP : <strike> {{ $currency_symbol." ". exchangerate($product->mrp,$exhangerate,$HomeCurrency) }} </strike>
                                             </h5>
                                             
                                         </div>
 
-                                        <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-end gap-3">
+                                        <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-end gap-3 align-items-center">
                                             <a class="btn btn-outline-primary" id="sharebtn" href="#sharemodal" role="button"> 
                                                 Share <i class="fas fa-share"></i>
                                             </a>
                                             @if ($user_shop->user_id == auth()->id())
                                                 <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Internal Details</a>
-                                            @endif
+                                            @endif                                            
                                         </div>
+
+                                        <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-start gap-3 align-items-center">
+                                            <div class="d-flex mb-2">
+                                                <div class="container" id="selector" style="width: max-content !important;">
+                                                    <select class="form-control select_box w-auto" id="changeCurrency" name="Currency">
+                                                        <option aria-readonly="true" disabled>Change Currency</option>
+                                                        @foreach ($currency_record as $item)
+                                                            <option value="{{ $item->id }}" @if ($item->id == (Session::get('Currency_id') ?? 'INR')) selected @endif > {{ $item->currency }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+
+                                        
 
                                         
                                     </div>

@@ -33,6 +33,8 @@
         $ppt_price = [];
         $slug_guest = getShopDataByUserId(155)->slug;
 
+
+
         
         if (Auth::check()) {
             $slug = App\Models\Usershop::where('user_id',auth()->user()->id)->first()->slug ?? 'ASHISH';
@@ -43,6 +45,7 @@
         }
 
         $offer_url = inject_subdomain("shop/proposal/$proposal->slug",$slug_guest);
+
 
 	@endphp
 @endsection
@@ -223,9 +226,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
                                 @foreach ($products as $key => $product)
                                                   
                                 @php
-                                    $user_shop = App\Models\UserShop::where('user_id',auth()->id())->first();
+                                    $user_shop = App\Models\UserShop::where('user_id',(auth()->id() ?? 155))->first();
                                     // $usi = productExistInUserShop($product->id,auth()->id(),$user_shop->id);
                                     $productId= \Crypt::encrypt($product->id);
+                                    $record = (array) json_decode($proposal->currency_record);
+                                    $exhangerate = $record[$proposal->offer_currency] ?? 1;
+                                    $HomeCurrency = 1;
+                                    $currency_symbol = $proposal->offer_currency ?? 'INR';
                                 @endphp
                                     <div class="col-lg-3 col-md-4 col-12 mt-4 pt-2 d-print-none" style="position: relative;" id="contain-{{ $product->id }}">
                    
@@ -296,7 +303,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
                                                         else {
                                                             $price = $user_price;
                                                         }
-                                                        array_push($ppt_price,format_price($price));
+
+                                                        $price = number_format(round(exchangerate($price,$exhangerate,$HomeCurrency)),2);
+                                                        array_push($ppt_price,( $currency_symbol." ".$price));
                                                     @endphp
 
                                                     {{-- @if($proposal->enable_price_range == 1)
@@ -304,7 +313,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
                                                         {{ format_price(($price)-($price*10/100)) }} - {{ format_price(($price)+ ($price*10/100)) }}</h6>
                                                     @else --}}
                                                         <h6 class="text-dark small fst-italic mb-0 mt-1 w-100 product_price" contenteditable="true">
-                                                        {{ format_price($price) }}</h6>
+                                                            {{ $currency_symbol }}
+                                                            {{ $price }}
+
+                                                        {{-- {{ format_price($price) }} --}}
+                                                    </h6>
                                                     {{-- @endif --}}
                                                     
                                                 </div>
