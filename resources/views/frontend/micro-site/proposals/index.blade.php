@@ -645,37 +645,39 @@
                             {{-- Applying scoobooo layout in color and other attri --}}
                                 @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
                                     @foreach ($additional_attribute as $key => $item)
-                                <div class="container mt-3">
-                                    <!-- Collapsible Button -->
-                                    <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#AttributeList_{{$key}}" aria-expanded="false" aria-controls="AttributeList_{{$key}}">
-                                        {{ getAttruibuteById($item)->name }}
-                                    <i class="fas fa-chevron-down fa-xs"></i>
-                                    </h6>
-                                    @php
-                                        $atrriBute_valueGet = getParentAttruibuteValuesByIds($item,$proIds);
-                                    @endphp
-                                    <div class="collapse" id="AttributeList_{{$key}}">
-                                        <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
-                                            @foreach ($atrriBute_valueGet as $mater)
-                                            @if($mater != '' || $mater != null)
-                                            <li>
-                                                <h5 class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal_{{ $key }}[]"
-                                                    @if(request()->has("searchVal_$key"))
-                                                        @if(isset($mater) && in_array($mater,request()->get("searchVal_$key")))
-                                                            checked
+                                        @if (getAttruibuteById($item)->visibility == 1)
+                                            <div class="container mt-3">
+                                                <!-- Collapsible Button -->
+                                                <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#AttributeList_{{$key}}" aria-expanded="false" aria-controls="AttributeList_{{$key}}">
+                                                    {{ getAttruibuteById($item)->name }}
+                                                <i class="fas fa-chevron-down fa-xs"></i>
+                                                </h6>
+                                                @php
+                                                    $atrriBute_valueGet = getParentAttruibuteValuesByIds($item,$proIds);
+                                                @endphp
+                                                <div class="collapse" id="AttributeList_{{$key}}">
+                                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
+                                                        @foreach ($atrriBute_valueGet as $mater)
+                                                        @if($mater != '' || $mater != null)
+                                                        <li>
+                                                            <h5 class="form-check">
+                                                                <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal_{{ $key }}[]"
+                                                                @if(request()->has("searchVal_$key"))
+                                                                    @if(isset($mater) && in_array($mater,request()->get("searchVal_$key")))
+                                                                        checked
+                                                                    @endif
+                                                                @endif >
+                                                                <label for="searchId{{ $mater }}" class="form-check-label fltr-lbl ">
+                                                                    {{ getAttruibuteValueById($mater)->attribute_value ?? ''}}
+                                                                </label>
+                                                            </h5>
+                                                        </li>
                                                         @endif
-                                                    @endif >
-                                                    <label for="searchId{{ $mater }}" class="form-check-label fltr-lbl ">
-                                                        {{ getAttruibuteValueById($mater)->attribute_value ?? ''}}
-                                                    </label>
-                                                </h5>
-                                            </li>
-                                            @endif
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        @endif
                                     @endforeach
                                 @endif
                             {{-- Applying scoobooo layout in color and other attri End --}}

@@ -18,7 +18,9 @@ use App\Models\Inventory;
 use App\Models\ProductAttribute;
 use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
+use App\Models\Setting;
 use App\Models\UserShopItem;
+use Illuminate\Support\Facades\Auth;
 use phpseclib3\File\ASN1\Maps\AttributeValue;
 
 class ProductController extends Controller
@@ -256,6 +258,9 @@ class ProductController extends Controller
                 $brand_activation = true;
             }
 
+
+            $user = auth()->user();
+
             $brand = Brand::whereId(request()->get('id'))->first();
 
                 if(!$brand && $brand_activation == true){
@@ -267,9 +272,20 @@ class ProductController extends Controller
             $sizes = $attributes->where('name','Size')->first();
             $materials = $attributes->where('name','Material')->first();
             $prodextra = ProductExtraInfo::whereId(request()->get('id'))->first();
-            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra'));
 
-        }catch(Exception $e){            
+            $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
+            $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
+            $num = end($delfault_cols) +1;
+            $new_custom_attribute = [];
+            foreach ($user_custom_col_list as $key => $value) {
+                $new_custom_attribute += [$value => $num];
+                $num++;
+            }
+
+            $col_list = (object) array_merge((array)$delfault_cols,$new_custom_attribute);
+            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list'));
+
+        }catch(\Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }

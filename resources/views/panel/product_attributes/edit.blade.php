@@ -9,7 +9,9 @@ $breadcrumb_arr = [
     <!-- push external head elements to head -->
     @push('head')
     <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
-     <link rel="stylesheet" href="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
+
     <style>
         .error{
             color:red;
@@ -64,12 +66,31 @@ $breadcrumb_arr = [
                             <input type="hidden" value="{{getShopDataByUserId(auth()->id())->id  ?? null}}" name="user_shop_id">
 
                             <div class="row asded">
-                                <div class="col-md-12 col-12"> 
+                                @if ($product_attribute->user_id == auth()->id() || AuthRole() == 'Admin')
+                                    <div class="col-md-8 col-12"> 
+                                @else
+                                    <div class="col-md-12 col-12"> 
+                                @endif
+
                                     <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
                                         <label for="name" class="control-label">Name<span class="text-danger">*</span></label>
                                         <input required  class="form-control" name="name" type="text" id="name" value="{{$product_attribute->name}}" placeholder="Enter Name" readonly >
                                     </div>
                                 </div>
+
+                                @if ($product_attribute->user_id == auth()->id() || AuthRole() == 'Admin')
+                                    <div class="col-md-4 col-12"> 
+                                        <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
+                                            <label for="visibility">
+                                                visibility
+                                                <i class="fas fa-info-circle" title="Attribute visibility in Offer and Display"></i>
+                                            </label>
+                                            <br>
+                                            <input type="checkbox" name="visibility" id="visibility" class="form-control" value="1" @if ($product_attribute->visibility == 1) checked @endif>
+                                        </div>
+                                    </div>
+                                @endif
+
                                 <div class="col-md-12 col-12"> 
                                     <div class="h6">Values</div>
                                 </div>
@@ -128,6 +149,9 @@ $breadcrumb_arr = [
      <script src="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
     <script src="{{asset('backend/plugins/mohithg-switchery/dist/switchery.min.js') }}"></script>
     <script src="{{asset('backend/js/form-advanced.js') }}"></script>
+
+    <!-- Switcher -->
+    <script src="{{ asset('frontend/assets/js/switcher.js') }}"></script>
     <script>
         $('#ProductAttributeForm').validate();
         $('#tags').tagsinput('items');
@@ -152,6 +176,14 @@ $breadcrumb_arr = [
                     alert(" No special characters allowed in Product Property values")
                 }
             });
+            
+            
+            var acr_btn = document.querySelector('#visibility');
+            var switchery = new Switchery(acr_btn, {
+                color: '#6666CC',
+                jackColor: '#fff'
+            });
+            
             
             
         });

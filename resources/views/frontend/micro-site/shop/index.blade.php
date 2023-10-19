@@ -132,15 +132,19 @@
                             {{-- Scooboo Tags filter --}}
                             <div class="selected-tags my-3">
                                 @if ($alll_searches != null)
-                                    @foreach ($alll_searches[0] as $key =>  $Color)
-                                        @if ($Color != '')
-                                            <span class="badge bg-primary searchabletag">
-                                                {{-- {{ getAttruibuteValueById($Color)->attribute_value }} --}}
-                                                <span class="badge bg-primary">
-                                                {{ $key }}: {{ App\Models\Category::where('id',$Color)->first()->name ?? $Color  }}
-                                                </span>
-                                                <span class="remove-tag" data-color="{{ $Color }}" title="click to Remove ">x</span>
+                                    @foreach ($alll_searches[0] as $key =>  $extra)
+                                        @if ($extra != '')
+                                        <span class="badge bg-primary searchabletag mb-1">
+                                            {{-- {{ getAttruibuteValueById($extra)->attribute_value }} --}}
+                                            <span class="badge bg-primary">
+                                                    @if ($loop->iteration  == 1 || $loop->iteration == 2 )
+                                                        {{ $key }}: {{ App\Models\Category::where('id',$extra)->first()->name ?? $extra  }}
+                                                    @else
+                                                        {{ $key }}: {{ $extra  }}
+                                                    @endif
                                             </span>
+                                            <span class="remove-tag" data-color="{{ $extra }}" title="click to Remove ">x</span>
+                                        </span>
                                         @endif
                                     @endforeach
                                 @endif
@@ -152,7 +156,7 @@
                                             $name =  getAttruibuteValueById($Color)->attribute_value;
                                             // $parent =  getAttruibuteById(getAttruibuteValueById($Color)->parent_id)->name;
                                         @endphp
-                                            <span class="badge bg-primary searchabletag">
+                                            <span class="badge bg-primary searchabletag mb-1">
                                                 {{-- {{ getAttruibuteValueById($Color)->attribute_value }} --}}
                                                 <span class="badge bg-primary">
                                                      {{ $name }}
@@ -212,19 +216,18 @@
                                                 <div style="padding-left: 25px">
                                                     <ul class="list-unstyled custom-scrollbar">
                                                         @foreach ($subcategories as $subcategorie)
-                                                        
-                                                        <li>
-                                                            <h6 class="form-check">
-                                                                <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
-                                                                <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
-                                                                    {{$subcategorie->name}} 
-                                                                    {{-- Sub Category Count --}}
-                                                                    <span style="font-size: 11px">
-                                                                        ({{ getProductCountViaSubCategoryId($subcategorie->id,$user_shop->user_id) }})
-                                                                    </span>
-                                                                </label>
-                                                            </h6>
-                                                        </li>
+                                                            <li>        
+                                                                <h6 class="form-check">
+                                                                    <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
+                                                                    <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
+                                                                        {{$subcategorie->name}}
+                                                                        {{-- Sub Category Count --}}
+                                                                        <span style="font-size: 11px">
+                                                                            ({{ getProductCountViaSubCategoryId($subcategorie->id,$user_shop->user_id) }})
+                                                                        </span>
+                                                                    </label>
+                                                                </h6>
+                                                            </li>
                                                         @endforeach
                                                     </ul>
                                                 </div>
@@ -318,6 +321,7 @@
                                     {{-- Applying scoobooo layout in color and other attri --}}
                                     @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
                                         @foreach ($additional_attribute as $key => $item)
+                                        @if (getAttruibuteById($item)->visibility == 1)
                                                 <div class="container mt-3">
                                                     <!-- Collapsible Button -->
                                                     <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#AttributeList_{{$key}}" aria-expanded="false" aria-controls="AttributeList_{{$key}}">
@@ -332,27 +336,28 @@
                                                         <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
                                                             @foreach ($atrriBute_valueGet as $mater)
                                                             @if($mater != '' || $mater != null)
-                                                            <li>
-                                                                <h5 class="form-check">
-                                                                    <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal_{{ $key }}[]"
-                                                                    @if(request()->has("searchVal_$key"))
-                                                                        @if(isset($mater) && in_array($mater,request()->get("searchVal_$key")))
-                                                                            checked
-                                                                        @endif
-                                                                    @endif >
-                                                                    <label for="searchId{{ $mater }}" class="form-check-label fltr-lbl ">
-                                                                        {{ getAttruibuteValueById($mater)->attribute_value ?? ''}}
-                                                                        <span style="font-size: 11px">
-                                                                            {{ count( App\Models\ProductExtraInfo::where('attribute_value_id',$mater)->where('user_id',$user_shop->user_id)->groupBy('attribute_value_id')->get()); }}
-                                                                        </span>
-                                                                    </label>
-                                                                </h5>
-                                                            </li>
+                                                                <li>
+                                                                    <h5 class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal_{{ $key }}[]"
+                                                                        @if(request()->has("searchVal_$key"))
+                                                                            @if(isset($mater) && in_array($mater,request()->get("searchVal_$key")))
+                                                                                checked
+                                                                            @endif
+                                                                        @endif >
+                                                                        <label for="searchId{{ $mater }}" class="form-check-label fltr-lbl ">
+                                                                            {{ getAttruibuteValueById($mater)->attribute_value ?? ''}}
+                                                                            <span style="font-size: 11px">
+                                                                                {{ count( App\Models\ProductExtraInfo::where('attribute_value_id',$mater)->where('user_id',$user_shop->user_id)->groupBy('attribute_value_id')->get()); }}
+                                                                            </span>
+                                                                        </label>
+                                                                    </h5>
+                                                                </li>
                                                             @endif
                                                             @endforeach
                                                         </ul>
                                                     </div>
                                                 </div>
+                                            @endif
                                           @endforeach
                                       @endif
                                   {{-- Applying scoobooo layout in color and other attri End --}}

@@ -84,9 +84,7 @@
                 @if ($user_shop->user_id == auth()->id())
                     <div class="col-12 col-md-6 col-lg-6 col-sm-8 d-flex justify-content-end">
                         <li class="nav-item ">
-                            <a class="nav-link active" aria-current="page" href="{{ route('panel.products.edit',$product->id) }}">
-                            <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i>Edit</button></a>
-
+                            
                         </li>
                         <li class="nav-item d-none">
                             <a class="nav-link" href="#">
@@ -126,7 +124,7 @@
                                     $ProductExinfo = App\Models\ProductExtraInfo::where('product_id',$product->id)->first();
                                 @endphp
                             
-                                @if($ProductExinfo->brand_name != '')   
+                                @if(($ProductExinfo->brand_name ?? '') != '')   
                                     <h5 class="text-muted">Brand: <span class="text-dark">{{ $ProductExinfo->brand_name }}</span>  </h5>
                                 @endif
 
@@ -151,6 +149,22 @@
                                 
                             @endforeach
                         </div>
+                        <div d-flex justify-content-end gap-3 >
+
+                        <a  aria-current="page" href="{{ route('panel.products.edit',$product->id) }}">
+                            <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i>Edit</button></a>
+
+                            @if ($user_shop->user_id == auth()->id())
+                                <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Internal Details</a>
+                            @endif
+
+                            <a class="btn btn-outline-primary" id="sharebtn" href="#sharemodal" role="button"> 
+                                Share <i class="fas fa-share"></i>
+                            </a>
+                        </div>
+
+
+
                     </div>
                 </div>
 
@@ -186,12 +200,8 @@
                                         </div>
 
                                         <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-end gap-3">
-                                            <a class="btn btn-outline-primary" id="sharebtn" href="#sharemodal" role="button"> 
-                                                Share <i class="fas fa-share"></i>
-                                            </a>
-                                            @if ($user_shop->user_id == auth()->id())
-                                                <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Internal Details</a>
-                                            @endif
+                                            
+                                            
                                         </div>
 
                                         
@@ -238,7 +248,7 @@
                                 @if (count($colors) > 0)
                                     <div class="">
                                         <select name="selected_default[]" class="form-control form-select" id="selected_1">
-                                            <option value="" @if ($result_attri != null) disabled @endif>Select Color</option>
+                                            <option value="" disabled >Select Color</option>
                                             @foreach ($colors as $color)
                                                 <option value="{{ $color->attribute_value_id }}" 
                                                 @if ($result_attri != null) 
@@ -253,7 +263,7 @@
                                 @if (count($sizes) > 0)
                                     <div class="">
                                         <select name="selected_default[]" class="form-control form-select" id="selected_2">
-                                            <option value="" @if ($result_attri != null) disabled @endif>Select Size</option>
+                                            <option value="" disabled>Select Size</option>
                                             @foreach ($sizes as $size)
                                                 <option value="{{ $size->attribute_value_id }}"
                                                 @if ($result_attri != null) 
@@ -268,7 +278,7 @@
                                 @if (count($materials) > 0)
                                     <div class="">
                                         <select name="selected_default[]" class="form-control form-select" id="selected_3">
-                                            <option value="" @if ($result_attri != null) disabled @endif>Select Material</option>
+                                            <option value="" disabled>Select Material</option>
                                             @foreach ($materials as $material)
                                                 <option value="{{ $material->attribute_value_id }}"
                                                 @if ($result_attri != null) 
@@ -283,7 +293,7 @@
 
                        
 
-                                <div class="">
+                                <div class="d-none">
                                     <button class="collapsed btn btn-icon btn-outline-primary p-2 rounded-circle" type="button" data-bs-toggle="collapse" data-bs-target="#attributeval-1" aria-expanded="false" aria-controls="attributeval-1" title="Load More">
                                         {{-- <i class="fas fa-plus"></i>  --}}
                                         <i class="fas fa-angle-down"></i>
@@ -300,7 +310,7 @@
                             <div class="accordion accordion-flush mt-3 w-lg-50" id="moreattributes">
                                 {{-- Item Start --}}
                                 <div class="accordion-item">
-                                  <div id="attributeval-1" class="accordion-collapse collapse @if ($result_attri != null) show @endif" data-bs-parent="#moreattributes">
+                                  <div id="attributeval-1" class="accordion-collapse collapse show" data-bs-parent="#moreattributes">
                                     <div class="accordion-body">
                                         <div class="d-flex flex-wrap gap-3">
                                             @foreach ($attributes as $key => $attribute)
@@ -313,7 +323,7 @@
                                                 @if (count($attribute_values) != 0)
                                                     <select class="form-control form-select" style="width: max-content"
                                                      name="selected_Cust[]">
-                                                        <option value="" @if ($result_attri != null) disabled @endif>Select {{ $attribute->name }}</option>
+                                                        <option value="" disabled >Select {{ $attribute->name }}</option>
                                                         @foreach ($attribute_values as $attribute_value)
                                                             @if ($attribute_value != '')
                                                                 <option value="{{ $attribute_value->attribute_value_id ?? ''}}"

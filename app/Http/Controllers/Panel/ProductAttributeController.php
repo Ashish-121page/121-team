@@ -191,6 +191,7 @@ class ProductAttributeController extends Controller
         try{
             $newrecord = 0;
             $loopcount = 0; 
+
             //` Create New Values
             if (request()->has('newval') && request()->get('newval') != null) {
                 foreach (explode(",",request()->get('newval')) as $key => $items) {    
@@ -206,10 +207,6 @@ class ProductAttributeController extends Controller
                     }
                 }
             }
-       
-            // magicstring($request->except(['_token','user_id','user_shop_id','name','newval']));
-            // magicstring($request->all());
-            // return;
             
             // Updating Existing Value
             foreach ($request->except(['_token','user_id','user_shop_id','name','newval']) as $key => $value) {
@@ -220,6 +217,11 @@ class ProductAttributeController extends Controller
                 $loopcount++; 
             }
             
+
+            $product_attribute->visibility = $request->visibility ?? 0;
+            $product_attribute->save();
+
+
             $msg = "$newrecord are Created and $loopcount are Updated !!";
             // return back()->with('success',"Product Attribute Values Updated")->withInput($request->all());
             return back()->with('success',$msg)->withInput($request->all());
