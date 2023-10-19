@@ -69,7 +69,16 @@
                 </li>
                 <li class="list-inline-item mb-0">
                     <div class="dropdown dropdown-primary">
-                        <button type="button" class="btn btn-icon btn-pills btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i data-feather="user" class="icons"></i></button>
+                        {{-- <button type="button" class="btn btn-icon btn-pills btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i data-feather="user" class="icons"></i></button> --}}
+                        <a class="dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <img class="avatar" src="{{ auth()->user() && auth()->user()->avatar ? auth()->user()->avatar : asset('frontend/default/default-avatar.png') }}"
+                            style="object-fit: cover; width: 35px; height: 35px" alt="">
+                        <span class="user-name font-weight-bolder"
+                            style="top: -0.8rem;position: relative;margin-left: 8px;">{{ auth()->user()->name }}
+                            <span class="text-muted" style="font-size: 10px;position: absolute;top: 16px;left: 0px;">@if ( authRole() == 'User')Seller @else {{ authRole()  }} @endif</span>
+                            </span>
+                        </a>
                         <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow rounded border-0 mt-3 py-2" style="width: 200px;">
                             @if (AuthRole() == 'Admin')
                                 <a class="dropdown-item text-dark" href="{{ route('panel.dashboard') }}"><i class="uil uil-dashboard align-middle me-1"></i>Dashboard</a>

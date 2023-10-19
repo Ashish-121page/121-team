@@ -24,7 +24,6 @@ class CurrencyController extends Controller
 
     public function makedefault(Request $request, UserCurrency $record){
         
-
         try {
 
             $user = auth()->user();
