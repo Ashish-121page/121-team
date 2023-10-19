@@ -7,6 +7,15 @@
             if($group_id && $group_id != 0){
                 $price =  getPriceByGroupIdProductId($group_id,$product->id,$price);
             }
+            
+            $record = App\Models\UserCurrency::where('currency',$product->base_currency)->where('user_id',$user_shop->user_id)->first();
+            $exhangerate = Session::get('Currency_exchange') ?? 1;
+            $HomeCurrency = $record->exchange ?? 1;
+            $currency_symbol = Session::get('currency_name') ?? 'INR';
+            
+            $price = exchangerate($price,$exhangerate,$HomeCurrency);
+
+
             $productId= \Crypt::encrypt($product->id);
             $search_val = '';
             if ($is_search = 1) {
@@ -34,11 +43,12 @@
                     <div class="ashu mb-3 d-none">
                     <div class="">{{ \Str::limit($product->title,30) }}</div>
                     <div>Model Code: {{ \Str::limit($product->model_code,30) }}</div>
-                        <div class="">
+                        <div class=""> 
+                            {{ $currency_symbol }}
                             @if($price == 0)
                                     <span>{{ __("Ask For Price") }}</span>
                             @elseif($price)
-                                {{ format_price($price) }}
+                                {{ number_format(round($price,2)) }}
                             @else
                                 <span>{{ __("Ask For Price") }}</span>
                             @endif
@@ -83,12 +93,12 @@
                         {{ fetchFirst('App\Models\Category',$product->sub_category,'name','') }}
                     </div>
                     <div class="h6">
+                        {{ $currency_symbol }}
                         @if($price == 0)
                                 <span>{{ __("Ask For Price") }}</span>
                         @elseif($price)
-                            {{ format_price($price) }}
+                            {{ number_format(round($price,2)) }}
                         @else
-                            {{-- <span>{{ format_price(0) }}</span> --}}
                             <span>{{ __("Ask For Price") }}</span>
                         @endif
                     </div>

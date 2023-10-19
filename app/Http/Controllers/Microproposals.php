@@ -16,9 +16,11 @@ use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\City;
 use App\Models\Inventory;
+use App\Models\Media;
 use App\Models\ProductExtraInfo;
 use App\Models\Proposalenquiry;
 use App\Models\TimeandActionModal;
+use App\Models\UserCurrency;
 use Carbon\Carbon;
 use Carbon\Doctrine\CarbonDoctrineType;
 use Illuminate\Support\Arr;
@@ -51,6 +53,7 @@ class Microproposals extends Controller
             auth()->loginUsingId(155);
         }
         
+
         $slug = $request->subdomain;
         $user_shop = UserShop::whereSlug($slug)->first();
 
@@ -90,10 +93,9 @@ class Microproposals extends Controller
                 'customer_name'=> $request->get('offerfor'),
                 'customer_mob_no'=> $request->get('offerphone') ?? "", 
                 'customer_email'=> $request->get('offeremail') ?? "", 
+                'offer_alias' => $request->get('offeralias') ?? "",  
             ];
             
-
-            // magicstring($request->all());
 
             $proposal = new Proposal();
             $proposal->customer_details = json_encode($arr);
@@ -212,6 +214,9 @@ class Microproposals extends Controller
         }else{
             $master_products->where('exclusive','0');
         }
+
+
+
         
         $colors = Product::whereIn('id',$master_products->pluck('id'))->groupBy('color')->orderBy('color')->pluck('color');
         $sizes = Product::whereIn('id',$master_products->pluck('id'))->groupBy('size')->orderBy('size')->pluck('size');
@@ -233,7 +238,10 @@ class Microproposals extends Controller
         }
 
         $additional_attribute = ProductExtraInfo::whereIn('product_id',$proIds)->groupBy('attribute_id')->pluck('attribute_id');
-        
+
+
+
+
         foreach ($additional_attribute as $key => $value) {
             if (request()->has("searchVal_$key") && request()->get("searchVal_$key") != null) {
                 $GetProduct = ProductExtraInfo::whereIn("attribute_value_id",request()->get("searchVal_$key"))->pluck('product_id');
@@ -333,9 +341,18 @@ class Microproposals extends Controller
         
         
         $master_products = $master_products->where('is_publish',1)->orderBy('price','ASC')->paginate(21);
+        $currency_record = UserCurrency::where('user_id',$user_shop->user_id)->get();
+        
 
 
 
+        $alll_searches = [];
+        array_push($alll_searches,[
+            "Category" =>$request->get('category_id'),
+            "Sub Category" => $request->get('sub_category_id'),
+            "From" => $request->get('from'),
+            "To" => $request->get('to')
+        ]);
 
         
         $proposalid = $proposal->id;
@@ -344,10 +361,10 @@ class Microproposals extends Controller
         $proposal->save();
 
         if ($request->ajax()) {
-            return view('frontend.micro-site.proposals.load',compact('categories','brands','slug','user_shop','colors','sizes','material','items','user_key','proposalid','excape_items','added_products','proposal','suppliers','request','TandADeliveryPeriod','TandAStock','additional_attribute','proIds'));
+            return view('frontend.micro-site.proposals.load',compact('categories','brands','slug','user_shop','colors','sizes','material','items','user_key','proposalid','excape_items','added_products','proposal','suppliers','request','TandADeliveryPeriod','TandAStock','additional_attribute','proIds','currency_record','alll_searches'));
         }else{
 
-            return view('frontend.micro-site.proposals.index',compact('categories','brands','slug','user_shop','colors','sizes','material','items','user_key','proposalid','excape_items','added_products','proposal','suppliers','request','TandADeliveryPeriod','TandAStock','additional_attribute','proIds'));
+            return view('frontend.micro-site.proposals.index',compact('categories','brands','slug','user_shop','colors','sizes','material','items','user_key','proposalid','excape_items','added_products','proposal','suppliers','request','TandADeliveryPeriod','TandAStock','additional_attribute','proIds','currency_record','alll_searches'));
 
         }
 
@@ -446,14 +463,18 @@ class Microproposals extends Controller
         
         $added_products = ProposalItem::whereProposalId($proposal->id)->orderBy('sequence','ASC')->get();
         $excape_items = $added_products->pluck('product_id')->toArray();
+
+        $aval_atrribute = ProductExtraInfo::whereIn('product_id',$excape_items)->groupBy('attribute_id')->pluck('attribute_id')->toArray();
         
         $user = auth()->user();
         
         $my_resellers = AccessCatalogueRequest::whereNumber(auth()->user()->phone)->whereStatus(1)->get() ?? $user; 
         $offerPasscode = $proposal->password ?? json_decode($user->extra_passcode)->offers_passcode ?? "1111";
 
+        $currency_record = UserCurrency::where('user_id',$user_shop->user_id)->get();
+
         
-        return view('frontend.micro-site.proposals.move',compact('added_products','excape_items','proposal','slug','user','my_resellers','offerPasscode'));
+        return view('frontend.micro-site.proposals.move',compact('added_products','excape_items','proposal','slug','user','my_resellers','offerPasscode','aval_atrribute','currency_record'));
 
 
     }
@@ -461,15 +482,56 @@ class Microproposals extends Controller
     public function updatePrice(Request $request,Proposal $proposal)
     {
         // return $request->all();
-        $this->validate($request, [
-            'price'     => 'required',
-        ]);
-            $proposal_item = ProposalItem::where('proposal_id',$proposal->id)->whereProductId($request->product_id)->first();
+        // $this->validate($request, [
+        //     'price'     => 'required',
+        // ]);
+
+
+        $proposal_item = ProposalItem::where('proposal_id',$proposal->id)->whereProductId($request->product_id)->first();
+
         try{
                               
             if($proposal_item){
-                          
+                $notes = array(
+                    'Customise_product' => $request->Customise_product,
+                    'remarks_offer' => $request->remarks_offer
+                );
+
+                $request['notes'] = json_encode($notes);
+
+
+                $user_id = auth()->id();
+
+
+                $path = "files/offer/$user_id";
+
+                // magicstring($request->all());
+                // return;
+
+                if ($request->has('attachment')) {
+                    $filename = $request->attachment->getClientOriginalName();
+                    
+                    
+                    $img = $this->uploadFile($request->attachment, "$path",null,$filename)->getFilePath();
+                    
+                    $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                    
+                    $media = new Media();
+                    $media->tag = "offer_attachment";
+                    $media->file_type = "file";
+                    $media->type = "offer_attachment";
+                    $media->type_id = $request->product_id;
+                    $media->file_name = $filename;
+                    $media->path = $img;
+                    $media->extension = $extension ?? '';
+                    $media->save();
+                    $proposal_item->attachment = $media->id;
+                    
+                }
+                
                 $proposal_item->user_price = $request->price;
+                $proposal_item->note = json_encode($notes);
+                
                 $proposal_item->save();
 
               
@@ -486,12 +548,15 @@ class Microproposals extends Controller
 
     public function update(Request $request,Proposal $proposal)
     {
-        // return $request->all();
+        // return magicstring($request->all());
         $this->validate($request, [
             'slug'     => 'required',
             'customer_name'     => 'required',
             'user_shop_id'     => 'required'
         ]);
+
+        
+
 
         if($request->customer_mob_no != null){
             $this->validate($request, [
@@ -511,6 +576,7 @@ class Microproposals extends Controller
                     'customer_mob_no'=> $request->customer_mob_no ?? json_decode($proposal->customer_details)->customer_mob_no ?? "",
                     'customer_email'=> $request->customer_email ?? json_decode($proposal->customer_details)->customer_email ?? "",
                     'sample_charge' => $request->sample_charge ?? json_decode($proposal->customer_details)->sample_charge ?? 0,
+                    'customer_alias' => $request->customer_alias ?? json_decode($proposal->customer_details)->customer_alias ?? "",
                 ];
 
                 $request['customer_details'] = json_encode($arr);
@@ -521,20 +587,38 @@ class Microproposals extends Controller
                 }
 
                 
+                if($request->hasFile("client_visiting_card")){
+                    $request['visiting_card'] = $this->uploadFile($request->file("client_visiting_card"), "client_logo")->getFilePath();
+                } else {
+                    $request['visiting_card'] = null;
+                }
+                
+                
+                $options = $request->optionsforoffer;
+                
                 if ($request->get('optionsforoffer')) {
                     $show_desc = in_array("description",$request->get('optionsforoffer')) ? 1 : 0;
-                    $show_color = in_array("color",$request->get('optionsforoffer')) ? 1 : 0;
                     $show_notes = in_array("notes",$request->get('optionsforoffer')) ? 1 : 0;
-                    $show_size = in_array("size",$request->get('optionsforoffer')) ? 1 : 0;
+                    $show_attrbute = array_filter($options,"is_numeric") ?? [];
+                    
                 }else{
+                    
                     $show_desc =  0;
-                    $show_color = 0;
                     $show_notes = 0;
-                    $show_size =  0;
+                    $show_attrbute =  0;
                 }
 
 
-                $options_arr = ["show_Description" => $show_desc ?? 0,"Show_notes" => $show_notes ?? 0,"show_color" => $show_color ?? 0,"show_size" => $show_size];
+                $currency_record = UserCurrency::where('user_id',$request->user_id)->get();
+                $Current_currency_record = [];
+
+                foreach ($currency_record as $key => $value) {
+                    $Current_currency_record[$value->currency] = $value->exchange;
+                }
+
+                $request['currency_record'] = json_encode($Current_currency_record);                
+
+                $options_arr = ["show_Description" => $show_desc ?? 0,"Show_notes" => $show_notes ?? 0,"show_Attrbute" => $show_attrbute ?? 0];
 
                 $request['options'] = json_encode($options_arr);
                 $request['status'] = 1;
@@ -550,6 +634,7 @@ class Microproposals extends Controller
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
+
 
 
 

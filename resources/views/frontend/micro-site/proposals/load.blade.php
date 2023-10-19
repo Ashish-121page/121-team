@@ -18,6 +18,15 @@
                 $proposal_item_record = null;
             }
             $productId= \Crypt::encrypt($products->id);
+
+
+            $record = App\Models\UserCurrency::where('currency',$products->base_currency)->where('user_id',$user_shop->user_id)->first();
+            $exhangerate = Session::get('Currency_exchange') ?? 1;
+            $HomeCurrency = $record->exchange ?? 1;
+            $currency_symbol = Session::get('currency_name') ?? 'INR';
+            $price = exchangerate($price,$exhangerate,$HomeCurrency);
+
+            
         @endphp
 
             <div class="col-3">
@@ -75,10 +84,11 @@
                     {{-- <div class="h5">{{ \Str::limit($products->title,30) }}</div> --}}
              
                     <div class="">
+                        {{ $currency_symbol }}
                         @if($price == 0)
                                 <span>{{ __("Ask For Price") }}</span>
                         @elseif($price)
-                            {{ format_price($price) }}
+                            {{ number_format(round($price,2)) }}
                         @else
                             {{-- <span>{{ format_price(0) }}</span> --}}
                             <span>{{ __("Ask For Price") }}</span>
@@ -133,10 +143,11 @@
                 </p>
                 {{-- <p>{!! \Str::limit($products->description,150) !!}</p> --}}
                 <div class="h6">
+                    {{ $currency_symbol }}
                     @if($price == 0)
                             <span>{{ __("Ask For Price") }}</span>
                     @elseif($price)
-                        {{ format_price($price) }}
+                        {{ number_format(round($price,2)) }}
                     @else
                         {{-- <span>{{ format_price(0) }}</span> --}}
                         <span>{{ __("Ask For Price") }}</span>

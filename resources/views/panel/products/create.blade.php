@@ -827,10 +827,7 @@
                                 <form action="{{ route('panel.bulk.product.custom.bulk-sheet-export',auth()->id()) }}" method="POST">
                                     <div class="mb-3">
 
-                                        <div class="form-group">
-                                            <label for="remarks" class="form-label">Remarks</label>
-                                            <input type="text" class="form-control" name="remarks" id="remarks" placeholder="Enter Remarks for Next Time">
-                                        </div>
+                                    
                                         
                                         <select name="myfields[]" id="myfields"  class="form-control select2" multiple>
                                             @foreach ($col_list as $key => $item)
@@ -969,6 +966,10 @@
                             <div class="create">
                                 <form action="{{ route('panel.bulk.custom.product-upload',auth()->id()) }}" method="POST" enctype="multipart/form-data">
                                     @csrf
+                                    {{-- <div class="form-group">
+                                        <label for="remarks" class="form-label">Remarks</label>
+                                        <input type="text" class="form-control" name="remarks" id="remarks" placeholder="Enter Remarks for Next Time">
+                                    </div> --}}
                                     <div class="mb-3">
                                       <label for="myfields" class="form-label">Select Fields</label>    
                                       <input type="file" name="uploadcustomfield" id="uploadcustomfield" class="form-control">
@@ -976,6 +977,48 @@
                                     <button class="btn btn-outline-primary" type="submit">Submit</button>
                                 </form>
                             </div>
+
+
+                            <div class="table-responsive mt-3">
+                                <table class="table table-light">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">S no.</th>
+                                            <th scope="col">File name</th>
+                                            <th scope="col">Uploaded on</th>
+                                            <th scope="col">Records</th>
+                                            <th scope="col">Download</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php
+                                            $record = App\Models\Uploadrecord::where('user_id',auth()->id())->paginate(20);
+                                            $user = auth()->user();
+                                        @endphp
+                                        
+                                        @forelse ($record as $item)
+                                            <tr class="">
+                                                <td scope="row">{{ $loop->iteration}}</td>
+                                                <td>{{ $item->sheet_name }}</td>
+                                                <td>{{ $item->last_used }}</td>
+                                                <td>{{ $item->records }}</td>
+                                                <td>
+                                                    <a href="{{ asset($item->path) }}" class="btn btn-outline-primary btn-sm">Download</a>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="4">No FIle Uploaded..</td>
+                                        </tr>
+                                            
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+
+
+
                         </div>
                         
                     </div>
@@ -1053,13 +1096,12 @@
 
 
             // enable Shortcutkey for ( Ctrl + <- ) TO Back
-            $(document).keydown(function (e) {
-                if (e.ctrlKey && e.which == 37) {
-                    $(".back_btn").click()
-                }
-            });
-
-            $(".getcustomProduct").click()
+            // $(document).keydown(function (e) {
+            //     if (e.ctrlKey && e.which == 37) {
+            //         $(".back_btn").click()
+            //     }
+            // });
+            $('.getcustomProduct').click();
 
         });
 
