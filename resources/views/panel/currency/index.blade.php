@@ -51,10 +51,7 @@
                 @include('panel.currency.load')
             </div>
         </div>
-        
-
-        
-        @include("panel.currency.modal.uploadfile")
+    
         @include("panel.currency.modal.updatefile")
    
     </div>
