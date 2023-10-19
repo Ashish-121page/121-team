@@ -164,7 +164,7 @@
                                                 <span class="remove-tag" data-color="{{ $Color }}" title="click to Remove {{$name}}">x</span>
                                             </span>
                                         @endforeach
-                                    @endif                                     
+                                    @endif
                                 @endforeach
                             </div>
                             {{-- Scooboo Tags filter End --}}
@@ -447,13 +447,24 @@
                 
                     <div class="d-flex mb-2">
                         <div class="container" id="selector" style="width: max-content !important;">
-                            <select class="form-control select_box" id="productSort" name="sort">
+                            <select class="form-control select_box  w-auto" id="productSort" name="sort">
                                 <option aria-readonly="true">Sort by<i class="fa fa-angle-down"></i></option>
                                 <option @if(request()->get('sort') == 1) selected @endif value="1">Sort by latest</option>
                                 <option @if(request()->get('sort') == 2) selected @endif value="2">Sort by price: low to high</option>
                                 <option @if(request()->get('sort') == 3) selected @endif value="3">Sort by price: high to low</option>
                             </select>
-                            <i class="fa fa-chevron-down"></i>
+                            {{-- <i class="fa fa-chevron-down"></i> --}}
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-2">
+                        <div class="container" id="selector" style="width: max-content !important;">
+                            <select class="form-control select_box w-auto" id="changeCurrency" name="Currency">
+                                <option aria-readonly="true">Change Currency</option>
+                                @foreach ($currency_record as $item)
+                                    <option value="{{ $item->id }}" @if ($item->id == (Session::get('Currency_id') ?? 'INR')) selected @endif > {{ $item->currency }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
@@ -581,6 +592,7 @@
             });
         });
         // confirm
+
 
     </script>
 

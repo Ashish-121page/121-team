@@ -811,189 +811,6 @@
                     </div>
                 </div>
             {{-- Bulk Cart end --}}
-
-
-
-            {{-- Custom Bulk Sheet Start --}}
-                
-            <div class="row get_custom_Product d-none">
-                <div class="col-md-10 mx-auto">
-                    <div class="card">  
-                        <div class="card-header">
-                            <h3>Custom Upload Folders</h3>
-                        </div>
-                        <div class="import pt-0 p-3">
-                            <div class="create">
-                                <form action="{{ route('panel.bulk.product.custom.bulk-sheet-export',auth()->id()) }}" method="POST">
-                                    <div class="mb-3">
-
-                                        <div class="form-group">
-                                            <label for="remarks" class="form-label">Remarks</label>
-                                            <input type="text" class="form-control" name="remarks" id="remarks" placeholder="Enter Remarks for Next Time">
-                                        </div>
-                                        
-                                        <select name="myfields[]" id="myfields"  class="form-control select2" multiple>
-                                            @foreach ($col_list as $key => $item)
-                                            <option value="{{ $key }}" selected>{{ $key }} </option>
-                                            @endforeach
-                                        </select>
-
-                                        {{-- <div class="row">
-                                            <div class="h6 mx-4">
-                                                <u>Essentials</u>
-                                            </div>
-                                            <div class="col-12 d-flex flex-wrap gap-3 justify-content-start align-items-start">
-                                                @foreach ($col_list as $key => $item)
-                                                    @if (in_array($key,$Essentials))
-                                                        <div class="col-4 my-1">
-                                                            <label for="{{$item}}">{{ $key }} </label>
-                                                            <input type="checkbox" value="{{ $key }}" id="{{$item}}" name="myfields[]">
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="h6 mx-4">
-                                                <u>Sale Price</u>
-                                            </div>
-                                            <div class="col-12 d-flex flex-wrap gap-3 justify-content-start align-items-start">
-                                                @foreach ($col_list as $key => $item)
-                                                    @if (in_array($key,$Sale_Pricing))
-                                                        <div class="col-6 my-1">
-                                                            <label for="{{$item}}">{{ $key }} </label>
-                                                            <input type="checkbox" value="{{ $key }}" id="{{$item}}" name="myfields[]">
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="h6 mx-4">
-                                                <u>Basic Info</u>
-                                            </div>
-                                            <div class="col-12 d-flex flex-wrap gap-3 justify-content-start align-items-start">
-                                                @foreach ($col_list as $key => $item)
-                                                    @if (in_array($key,$Basic_info))
-                                                        <div class="col-6 my-1">
-                                                            <label for="{{$item}}">{{ $key }} </label>
-                                                            <input type="checkbox" value="{{ $key }}" id="{{$item}}" name="myfields[]">
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        </div>
-
-
-                                        <div class="row">
-                                            <div class="h6 mx-4">
-                                                <u>Variations</u>
-                                            </div>
-                                            <div class="col-12 d-flex flex-wrap gap-3 justify-content-start align-items-start">
-                                                @foreach ($col_list as $key => $item)
-                                                    @if (in_array($key,$Variations))
-                                                        <div class="col-6 my-1">
-                                                            <label for="{{$item}}">{{ $key }} </label>
-                                                            <input type="checkbox" value="{{ $key }}" id="{{$item}}" name="myfields[]">
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        </div>
-
-
-                                        
-                                        <div class="row">
-                                            <div class="h5 mx-4">
-                                                <u>Internal - Production</u>
-                                            </div>
-                                            <div class="col-12 d-flex flex-wrap gap-3 justify-content-start align-items-start">
-                                                <div class="col-12">
-                                                    <h6>1. Exclusive</h6>
-                                                </div>
-                                                @foreach ($col_list as $key => $item)
-                                                    @if (in_array($key,$Exclusive))
-                                                        <div class="col-6 my-1">
-                                                            <label for="{{$item}}">{{ $key }} </label>
-                                                            <input type="checkbox" value="{{ $key }}" id="{{$item}}" name="myfields[]">
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-
-                                            <div class="col-12 d-flex flex-wrap gap-3 justify-content-start align-items-start">
-                                                <div class="col-12">
-                                                    <h6>2. Sample details</h6>
-                                                </div>
-                                                @foreach ($col_list as $key => $item)
-                                                    @if (in_array($key,$Sample_details))
-                                                        <div class="col-6 my-1">
-                                                            <label for="{{$item}}">{{ $key }} </label>
-                                                            <input type="checkbox" value="{{ $key }}" id="{{$item}}" name="myfields[]">
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-
-                                            <div class="col-12 d-flex flex-wrap gap-3 justify-content-start align-items-start">
-                                                <div class="col-12">
-                                                    <h6>3. Sourced from outside</h6>
-                                                </div>
-                                                @foreach ($col_list as $key => $item)
-                                                    @if (in_array($key,$Sourced_from_outside))
-                                                        <div class="col-6 my-1">
-                                                            <label for="{{$item}}">{{ $key }} </label>
-                                                            <input type="checkbox" value="{{ $key }}" id="{{$item}}" name="myfields[]">
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                       --}}
-                                      
-                                      
-                                    </div>
-                                    <button class="btn btn-outline-primary" type="submit">Download File</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">  
-                        <div class="card-header">
-                            <h3>Custom Upload Folders</h3>
-                        </div>
-                        <div class="import pt-0 p-3">
-                            <div class="create">
-                                <form action="{{ route('panel.bulk.custom.product-upload',auth()->id()) }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="mb-3">
-                                      <label for="myfields" class="form-label">Select Fields</label>    
-                                      <input type="file" name="uploadcustomfield" id="uploadcustomfield" class="form-control">
-                                    </div>
-                                    <button class="btn btn-outline-primary" type="submit">Submit</button>
-                                </form>
-                            </div>
-                        </div>
-                        
-                    </div>
-
-
-
-                </div>
-            </div>
-            
-            
-            {{-- Custom Bulk Sheet End --}}
-
-
-
-
-            
-            
-            
         </div>
     </div>
 
@@ -1032,35 +849,23 @@
         });
 
         
-        $(document).ready(function () {
-
-            $('#import-btn').on('click', function () {
-                $('.import').removeClass('d-none')
-                $('.export').addClass('d-none')
-                $('.import-div').removeClass('d-none')
-                $('.export-div').addClass('d-none')
-                $('#export-btn').removeClass('btn-primary')
-                $(this).addClass('btn-primary')
-            });
-            $('#export-btn').on('click', function () {
-                $('.export').removeClass('d-none')
-                $('.import').addClass('d-none')
-                $('.import-div').addClass('d-none')
-                $('#import-btn').removeClass('btn-primary')
-                $('#import-btn').addClass('')
-                $(this).addClass('btn-primary')
-            });
-
-
-            // enable Shortcutkey for ( Ctrl + <- ) TO Back
-            $(document).keydown(function (e) {
-                if (e.ctrlKey && e.which == 37) {
-                    $(".back_btn").click()
-                }
-            });
-
-            $(".getcustomProduct").click()
-
+        $(document).ready(function(){
+         $('#import-btn').on('click',function(){
+            $('.import').removeClass('d-none') 
+            $('.export').addClass('d-none') 
+            $('.import-div').removeClass('d-none') 
+            $('.export-div').addClass('d-none') 
+            $('#export-btn').removeClass('btn-primary')  
+            $(this).addClass('btn-primary') 
+         });
+         $('#export-btn').on('click',function(){
+            $('.export').removeClass('d-none') 
+            $('.import').addClass('d-none') 
+             $('.import-div').addClass('d-none') 
+             $('#import-btn').removeClass('btn-primary')  
+             $('#import-btn').addClass('')  
+            $(this).addClass('btn-primary') 
+         });
         });
 
        

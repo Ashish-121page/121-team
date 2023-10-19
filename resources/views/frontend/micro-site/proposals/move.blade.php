@@ -302,6 +302,7 @@
 
     $customer_mob_no = $customer_details->customer_mob_no ?? '';
     $customer_email = $customer_details->customer_email ?? '';
+    $customer_alias = $customer_details->offer_alias ?? '';
     $sample_charge = json_decode($proposal->customer_details)->sample_charge ?? '';
     $user_shop_record = App\Models\UserShop::whereId($proposal->user_shop_id)->first();                
 
@@ -436,10 +437,17 @@
                                                                                 if($group_id && $group_id != 0){
                                                                                     $price =  getPriceByGroupIdProductId($group_id,$product->id,$price);
                                                                                 }
+
+                                                                                $record = App\Models\UserCurrency::where('currency',$product->base_currency)->where('user_id',$product->user_id)->first();
+                                                                                $exhangerate = Session::get('Currency_exchange') ?? 1;
+                                                                                $HomeCurrency = $record->exchange ?? 1;
+                                                                                $currency_symbol = Session::get('currency_name') ?? 'INR';
+                                                                                $price = exchangerate($price,$exhangerate,$HomeCurrency);
                                                                             @endphp
                                                                                 Product Price:
                                                                                 <span>
-                                                                                    {{ isset($price) ? format_price($price) : '' }}
+                                                                                    {{ $currency_symbol }}
+                                                                                    {{ isset($price) ? number_format(round($price,2)) : '' }}
                                                                                 </span> 
                                                                                 <br>
                                                                             {{-- Shop Price:<span> {{ (isset($product_record) && $product_record->price > 0) ?  format_price($product_record->price) : 'Ask for Price' }}</span> --}}
@@ -459,13 +467,33 @@
                                                                                     $price = $proposal_item->user_price;
                                                                                     $margin = "Custom Price";
                                                                                 }
+                                                                                $price = exchangerate($price,$exhangerate,$HomeCurrency);
                                                                             @endphp
                                                                             @if ($proposal->relate_to == $proposal->user_shop_id)
                                                                                 {{-- <span>Offer Price: {{ format_price($price) }}</span> --}}
-                                                                                <span>Offer Price: {{ format_price($price) }}</span> 
+                                                                                <span>Offer Price:
+                                                                                    {{ $currency_symbol }}
+                                                                                    {{ isset($price) ? number_format(round($price,2)) : '' }}    
+                                                                                </span> 
                                                                                 <a href="javascript:void(0)" data-product="{{ $proposal_item->product_id }}" class="edit-price" > 
                                                                                     <i class="fas fa-pencil-alt text-primary"></i>
                                                                                 </a>
+                                                                            @endif
+
+
+                                                                            @if ($proposal_item->note != null)
+                                                                            <br>
+                                                                                @php
+                                                                                    $ashus = json_decode($proposal_item->note);
+                                                                                @endphp
+                                                                                <span>Remarks: {!! $ashus->remarks_offer !!}</span>
+                                                                                <br>
+                                                                                <span>Customise: {!! $ashus->Customise_product !!}</span>
+                                                                            @endif
+
+                                                                            @if ($proposal_item->attachment != null)
+                                                                                <br>
+                                                                                <span>Attachment: <a href="{{ asset(getMediaByIds([$proposal_item->attachment])->path) }}" class="btn-link text-primary">Download</a></span>
                                                                             @endif
 
                                                                         </div>
@@ -582,7 +610,7 @@
                                                         <div class="form-group {{ $errors->has('customer_name') ? 'has-error' : '' }}">
                                                             <label for="customer_name" class="control-label">
                                                                 @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == null  )
-                                                                    Offer To
+                                                                    Buyer Name
                                                                 @else
                                                                     Offer By
                                                                 @endif
@@ -603,18 +631,13 @@
                                                             </datalist>
                                                         </div>
                                                     </div>
-                                                    {{-- <div class="col-md-12 col-12">
-                                                        <div class="form-group {{ $errors->has('customer_mob_no') ? 'has-error' : '' }}">
-                                                            <label for="customer_mob_no" class="control-label">Send proposal to</label>
-                                                            <div class="input-group" style="width: 290px;">
-                                                                <span class="input-group-prepend" id="basic-addon2">
-                                                                    <label class="input-group-text">+91</label>
-                                                                </span>
-                                                                <input class="form-control" name="customer_mob_no" type="number"
-                                                                id="customer_mob_no" value="{{ $customer_mob_no }}">
-                                                            </div>
+
+                                                    <div class="col-md-12 col-12">
+                                                        <div class="form-group {{ $errors->has('customer_alias') ? 'has-error' : '' }}">
+                                                            <label for="customer_alias" class="control-label">Alias (optional)</label>
+                                                            <input class="form-control" name="customer_alias" type="text" id="customer_alias" value="{{ $customer_alias }}">
                                                         </div>
-                                                    </div> --}}
+                                                    </div>
 
                                                     <div class="col-md-12 col-12">
                                                         <div class="row">
@@ -632,7 +655,6 @@
                                                             </div>
 
                                                             <div class="col-6">
-                                                                
                                                                 <div class="form-group {{ $errors->has('customer_email') ? 'has-error' : '' }}">
                                                                     <label for="customer_email" class="control-label">Email</label>
                                                                     <div class="input-group">
@@ -642,8 +664,60 @@
                                                                 </div>
                                                             </div>
 
+                                                            <div class="col-6">
+                                                                <div class="form-group {{ $errors->has('offer_currency') ? 'has-error' : '' }}">
+                                                                    <label for="customer_mob_no" class="control-label">offer_currency</label>
+                                                                    <div class="input-group">
+                                                                        <select name="offer_currency" id="offer_currency" class="form-group select2">
+                                                                            @foreach ($currency_record as $item)
+                                                                                <option value="{{ $item->currency }}" @if ($item->currency == ($proposal->offer_currency ?? 'INR')) selected @endif > {{ $item->currency }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
                                                         </div>
                                                     </div>
+
+
+                                                    @if ($proposal->relate_to == $proposal->user_shop_id)   
+                                                       <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="card-body">
+                                                                        <label for="">Upload Client Logo</label>
+                                                                        <input type='file' id="file-input"  name="client_logo_file" />
+                                                                        @if($proposal->client_logo != null)
+                                                                            <div id='img_contain'>
+                                                                                <img class="image-preview" src="{{ asset($proposal->client_logo) }}" alt="" title=''/>
+                                                                                <a class="btn btn-icon btn-primary cross-icon delete-item" href="{{ route('panel.proposals.remove-image',$proposal->id) }}"><i class="fa fa-times"></i></a>
+                                                                            </div>
+                                                                        @else
+                                                                            <div id='img_contain'>
+                                                                                <img class="image-preview" src="" alt="" title=''/>
+                                                                            </div>
+                                                                        @endif
+                                                                </div>                                             
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="card-body">
+                                                                    <label for="file-input">Upload Visiting Card</label>
+                                                                    <br>
+                                                                    <input type='file' id="file-input" class="file-input-vs"  name="client_visiting_card" />
+                                                                    @if($proposal->client_logo != null)
+                                                                        <div id='img_contain'>
+                                                                            <img class="image-preview-vs" src="{{ asset($proposal->visiting_card) ?? "" }}" alt="" title=''/>
+                                                                            {{-- <a class="btn btn-icon btn-primary cross-icon delete-item" href="{{ route('panel.proposals.remove-image',$proposal->id) }}"><i class="fa fa-times"></i></a> --}}
+                                                                        </div>
+                                                                    @else
+                                                                        <div id='img_contain'>
+                                                                            <img class="image-preview-vs" src="" alt="" title=''/>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>          
+                                                            </div>
+                                                       </div>
+                                                    @endif
 
 
                                                     @if ($proposal->relate_to == $proposal->user_shop_id)
@@ -682,44 +756,15 @@
                                                         
                                                         @foreach ($aval_atrribute as $item)
                                                             <option value="{{ $item }}" 
-                                                            @if ($proposal->options != null)
-                                                                @if (in_array($item,(array) json_decode($proposal->options)->show_Attrbute))
+                                                            @if ($proposal->options != null && isset(json_decode($proposal->options)->show_Attrbute))
+                                                                @if (in_array($item,((array) json_decode($proposal->options)->show_Attrbute) ?? ['']))
                                                                     selected 
                                                                 @endif
                                                             @endif
                                                             >{{ getAttruibuteById($item)->name ?? '' }}</option>
                                                         @endforeach
-
                                                     </select>
-
-                                              
-                                                    {{-- <div class="">
-                                                        @if (auth()->id() != 155)
-                                                            <div class="form-group">
-                                                                <input type="checkbox" name="optionsforoffer[]" value="description" class="form-check-input"  @if (json_decode($proposal->options)->show_Description ?? 0) selected @endif>
-                                                                <label for="" class="form-check-label">Description</label>
-                                                            </div>
-                                                        @endif
-                                                            
-                                                        <div class="form-group">
-                                                            <input type="checkbox" name="optionsforoffer[]" value="notes" class="form-check-input"  @if (json_decode($proposal->options)->Show_notes ?? 0) selected @endif>
-                                                            <label for="" class="form-check-label">notes</label>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="">
-                                                        <div class="form-group">
-                                                            <input type="checkbox" name="optionsforoffer[]" value="color" class="form-check-input" @if (json_decode($proposal->options)->show_color ?? 0) selected @endif>
-                                                            <label for="" class="form-check-label">color</label>
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <input type="checkbox" name="optionsforoffer[]" value="size" class="form-check-input" @if (json_decode($proposal->options)->show_size ?? 0) selected @endif Id="size">
-                                                            <label for="size" class="form-check-label">size</label>
-                                                        </div>
-                                                    </div> --}}
-                                                
-
+                                            
 
                                                     @if ($proposal->relate_to == $proposal->user_shop_id)
                                                         <div class="form-group my-3">
@@ -746,47 +791,7 @@
                                                         </div>
                                                     @endif
                                             </div>
-                                          
 
-
-                                            @if ($proposal->relate_to == $proposal->user_shop_id)   
-                                                
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="card-body">
-                                                                <label for="">Upload Client Logo</label>
-                                                                <input type='file' id="file-input"  name="client_logo_file" />
-                                                                @if($proposal->client_logo != null)
-                                                                    <div id='img_contain'>
-                                                                        <img class="image-preview" src="{{ asset($proposal->client_logo) }}" alt="" title=''/>
-                                                                        <a class="btn btn-icon btn-primary cross-icon delete-item" href="{{ route('panel.proposals.remove-image',$proposal->id) }}"><i class="fa fa-times"></i></a>
-                                                                    </div>
-                                                                @else
-                                                                    <div id='img_contain'>
-                                                                        <img class="image-preview" src="" alt="" title=''/>
-                                                                    </div>
-                                                                @endif
-                                                        </div>                                             
-                                                    </div>
-                                                    <div class="col-md-6 d-none">
-                                                        <div class="card-body">
-                                                            <label for="file-input">Upload Visiting Card</label>
-                                                            <br>
-                                                            <input type='file' id="file-input" class="file-input-vs"  name="client_visiting_card" />
-                                                            @if($proposal->client_logo != null)
-                                                                <div id='img_contain'>
-                                                                    <img class="image-preview-vs" src="{{ asset($proposal->visiting_card) ?? "" }}" alt="" title=''/>
-                                                                    {{-- <a class="btn btn-icon btn-primary cross-icon delete-item" href="{{ route('panel.proposals.remove-image',$proposal->id) }}"><i class="fa fa-times"></i></a> --}}
-                                                                </div>
-                                                            @else
-                                                                <div id='img_contain'>
-                                                                    <img class="image-preview-vs" src="" alt="" title=''/>
-                                                                </div>
-                                                            @endif
-                                                        </div>          
-                                                    </div>
-                                                </div>
-                                            @endif
 
 
                                             <div class="col-md-12 ">

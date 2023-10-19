@@ -89,8 +89,10 @@ Route::group(['middleware' => 'subdomain'],  function () {
             Route::get('/shop/{id}', [MicroSiteController::class,'shopShow'])->name('shop-show');
             Route::post('/enquiry', [MicroSiteController::class,'storeEnquiry'])->name('store-enquiry');
             Route::get('/thank-you', [MicroSiteController::class,'thankYou'])->name('thank-you');
+            Route::get('/change-currency',[MicroSiteController::class,'chagecurrency'])->name('change.currency');
         });
 });
+
 
 
 Route::get('/search',[WebsiteController::class,'searchon121'])->name('home.search');

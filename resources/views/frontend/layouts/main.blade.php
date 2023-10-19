@@ -66,6 +66,25 @@
 					}
 				}
 			})
+
+
+			$(document).ready(function () {
+				$("#changeCurrency").change(function (e) { 
+					e.preventDefault();
+					$.ajax({
+						type: "get",
+						url: "{{ route('pages.change.currency') }}",
+						data: {
+							"currency_Id": $(this).val()
+						},
+						success: function (response) {
+							window.location.reload(true);
+							console.log(response);
+						}
+					});
+				});
+
+			});
 		</script>
 			
 

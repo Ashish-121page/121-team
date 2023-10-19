@@ -132,11 +132,29 @@ class SellerController extends Controller
         // $user = auth()->user();
         // magicstring(session()->all());
 
-        $msg = "Hello Ashish";
-        $code = "<h1>Hello Ji</h1>";
-        return view('devloper.ashish.index',compact('msg','code'));
 
 
+        // $costPrice = 500;
+        // $exchangePrice = 0;
+
+        // echo "Old exchange Price Is $exchangePrice".newline();
+        // echo "Old Cost Price Is $costPrice".newline(3);
+
+        // $doller = 85;
+        // $homecr = 1;
+
+        // $diffrence = $homecr / $doller;
+
+        
+        // $exchangePrice = $costPrice*$diffrence  ;
+
+        // echo "New exchange Price Is $exchangePrice".newline();
+        // echo "New Cost Price Is $costPrice".newline(3);
+        
+
+
+        
+        // return view('devloper.ashish.index',compact('msg','code'));
     }
 
 

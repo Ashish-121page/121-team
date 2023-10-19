@@ -7,7 +7,7 @@
     $user = App\User::where('id',$user_id)->first();
     $have_access_code = App\Models\AccessCode::where('redeemed_user_id',$user_id)->first();
 @endphp
-<header id="topnav" class="defaultscroll" style=" position: inherit;">
+<header id="topnav" class="defaultscroll" style="position: inherit">
     <div class="container">
       <!-- Logo container-->
       <a class="logo" href="{{ route('pages.index') }}">
