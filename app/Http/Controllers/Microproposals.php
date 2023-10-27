@@ -617,6 +617,7 @@ class Microproposals extends Controller
                 }
 
                 $request['currency_record'] = json_encode($Current_currency_record);                
+                $request['user_shop_id'] = getShopDataByUserId(auth()->id() ?? 155)->id;
 
                 $options_arr = ["show_Description" => $show_desc ?? 0,"Show_notes" => $show_notes ?? 0,"show_Attrbute" => $show_attrbute ?? 0];
 

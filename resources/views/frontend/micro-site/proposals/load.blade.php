@@ -4,7 +4,7 @@
             // $image_ids = App\Models\UserShopItem::where('product_id',$products->id)->images != null ? explode(',',$products->images) : [];
             $user = App\Models\UserShop::where('user_id',$products->user_id)->first();
             $image_ids = getUserShopItemByProductId($user->slug,$products->id);
-            if ($image_ids->images != null) {
+            if ( isset($image_ids->images) && $image_ids->images != null) {
                 // If Not Empty
                 $image_ids = explode(',',$products->images);
             }else{

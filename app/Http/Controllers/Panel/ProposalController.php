@@ -158,8 +158,7 @@ class ProposalController extends Controller
         return view('frontend.micro-site.shop.proposal.index',compact('slug','products','user_shop','cust_details','proposal','proposal_slug','product_ids','product_title','product_model','product_color','product_size','product_desc','newimag'));
     }
 
-   
-
+    
     /**
      * Show the form for creating a new resource.
      *

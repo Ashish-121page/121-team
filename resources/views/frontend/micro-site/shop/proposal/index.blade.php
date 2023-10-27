@@ -52,7 +52,7 @@
 <style>
     @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css");
     body{
-        text-align: center !important;
+        /* text-align: center !important; */
     }
     #topnav{
         display: none !important;
@@ -221,138 +221,28 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
                 <form action="{{ route('pages.proposal.samplecheckout') }}" method="POST" id="checkourform">
                     @csrf
                     <input type="hidden" name="proposal_id" value="{{ $proposal->id }}">
-                <div class="row">
-                    @if($products->count() > 0)
-                                @foreach ($products as $key => $product)
-                                                  
-                                @php
-                                    $user_shop = App\Models\UserShop::where('user_id',(auth()->id() ?? 155))->first();
-                                    // $usi = productExistInUserShop($product->id,auth()->id(),$user_shop->id);
-                                    $productId= \Crypt::encrypt($product->id);
-                                    $record = (array) json_decode($proposal->currency_record);
-                                    $exhangerate = $record[$proposal->offer_currency] ?? 1;
-                                    $HomeCurrency = 1;
-                                    $currency_symbol = $proposal->offer_currency ?? 'INR';
-                                @endphp
-                                    <div class="col-lg-3 col-md-4 col-12 mt-4 pt-2 d-print-none" style="position: relative;" id="contain-{{ $product->id }}">
-                   
 
-                                        <div class="sampleenquiry" style="position: absolute1; top: 10px;left: 10px;">
-                                            <input type="checkbox" name="enquir[]" id="enquir-{{ $product->id }}" value="{{ $product->id }}">
-                                            <label for="enquir-{{ $product->id }}" class="checkmark bi" style="position: absolute;top: -1%;right: 1%;cursor: pointer;"></label>
-                                        </div>
-
-                                        <div class="card shop-list border-0 position-relative">
-                                            <div class="shop-image position-relative overflow-hidden rounded text-center">
-                                                <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank">
-                                                    @if( getShopProductImage($product->id,'single') != null)
-                                                        <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" class="" style="height:185px;">
-                                                    @else
-                                                        <img src="{{ asset('backend/default/placeholder.jpg')  }}" class="img-fluid rounded" style="height:185px;">
-                                                    @endif
-
-                                                    <div class="sampleenquiry">
-                                                        <label for="" data-contain="contain-{{ $product->id }}" class="deleteitem">
-                                                            <i class="fas fa-trash" style="color: #ff0c0c;"></i>
-                                                        </label>
-                                                    </div>
-
-                                                </a> 
-                                            </div>
-                                            <div class="card-body content pt-4 p-2">
-
-                                                <a href="#" class="text-dark product-name h6" contenteditable="true">{{ $product->title }}</a>
-                                                
-                                                {{-- <div style="width:100%">
-                                                    <span></span><small contenteditable="true">{{ fetchFirst('App\Models\Category',$product->sub_category_id,'name') }} </small>
-                                                </div> --}}
-
-                                                @if (isset($product->brand->name) && isset($product->brand->name) != '')
-                                                    <p class="mb-0" contenteditable="true"><b>Brand:</b><span>{{ $product->brand->name ?? '--' }}</span></p>
-                                                @endif
-
-                                                <div style="wdith:100%">
-                                                    <small contenteditable="true" >
-                                                        
-                                                            @if ($proposal_options->show_color)
-                                                                {{ $product->color ?? '' }} 
-                                                            @endif
-
-                                                            @if ($proposal_options->show_size)
-                                                                @if($product->size) , @endif 
-                                                                {{ $product->size ?? ''}}
-                                                            @endif                                                        
-                                                    </small>
-                                                </div>
-
-                                                {{-- @if($product->user_id == auth()->id()) --}}
-                                                    <span contenteditable="true">Model Code :# <span>{{ $product->model_code }}</span></span>
-                                                {{-- @else 
-                                                    <span>Ref ID :#{{ isset($usi) ? $usi->id : '' }}</span>
-                                                @endif    --}}
-                                                <div class="d-flex justify-content-between mt-1 text-center">
-
-                                                    @php
-                                                        $price = getProductProposalPriceByProposalId($proposal->id,$product->id) ?? $product->price;
-                                                        $margin = App\Models\ProposalItem::whereProposalId($proposal->id)->where('product_id',$product->id)->first()->margin ?? 10;
-                                                        $user_price = App\Models\ProposalItem::whereProposalId($proposal->id)->where('product_id',$product->id)->first()->user_price ?? null;
-                                                        if ($user_price == null) {
-                                                            $margin_factor = (100 - $margin) / 100;
-                                                            $price = $price/$margin_factor;
-                                                        }
-                                                        else {
-                                                            $price = $user_price;
-                                                        }
-
-                                                        $price = number_format(round(exchangerate($price,$exhangerate,$HomeCurrency)),2);
-                                                        array_push($ppt_price,( $currency_symbol." ".$price));
-                                                    @endphp
-
-                                                    {{-- @if($proposal->enable_price_range == 1)
-                                                        <h6 class="text-dark small fst-italic mb-0 mt-1 w-100">
-                                                        {{ format_price(($price)-($price*10/100)) }} - {{ format_price(($price)+ ($price*10/100)) }}</h6>
-                                                    @else --}}
-                                                        <h6 class="text-dark small fst-italic mb-0 mt-1 w-100 product_price" contenteditable="true">
-                                                            {{ $currency_symbol }}
-                                                            {{ $price }}
-
-                                                        {{-- {{ format_price($price) }} --}}
-                                                    </h6>
-                                                    {{-- @endif --}}
-                                                    
-                                                </div>
-                                                @if ($proposal_options->show_Description == 1)
-                                                    <span contenteditable="true">
-                                                        {!! $product->description ?? "No Description" !!}
-                                                    </span>
-                                                @endif
-                                                
-                                            </div>
-                                        </div>
-                                        
-                                    </div>
-
-                                    @if(++$key%12==0)
-                                        <div class="col-12 pdf-margin d-none" style="margin-bottom: 250px">
-
-                                        </div>
-                                    @endif
-                                @endforeach
-                            {{-- </div> --}}
-                        {{-- </div><!--end col--> --}}
+                <div class="row justify-content-between">
+                    {{-- <div class="col-12"> --}}
+                    
+                    @if (request()->has('firstview'))
+                        @include('frontend.micro-site.shop.proposal.include.firstview')
+                    @elseif(request()->has('secondview'))
+                        @include('frontend.micro-site.shop.proposal.include.secondView')
+                    @elseif(request()->has('row-view'))
+                        @include('frontend.micro-site.shop.proposal.include.row-view')
+                    @elseif(request()->has('thirdview'))
+                        @include('frontend.micro-site.shop.proposal.include.thirdview')
+                    @elseif(request()->has('latest-view'))
+                        @include('frontend.micro-site.shop.proposal.include.latest-view')
                     @else
-                         <div class="col-lg-6 mx-auto text-center mt-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        
-                                        <i class="fa text-primary fa-lg fa-shopping-cart"></i>
-                                        <p class="mt-4">No Products added yet!</p>
-                                                                                
-                                    </div>
-                                </div>
-                            </div>
+                        @include('frontend.micro-site.shop.proposal.include.firstview')
                     @endif
-                </div><!--end row-->
+                    {{-- </div> --}}
+ 
+                </div>
+
+
             </div><!--end container-->
 
 
@@ -363,9 +253,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
             </div>
 
 
-            @if (auth()->id() != $proposal->user_id)
+            {{-- @if (auth()->id() != $proposal->user_id)
                 @include('frontend.micro-site.shop.proposal.modal.notice')                
-            @endif          
+            @endif --}}
 
 
             <div class="noprint">
@@ -386,7 +276,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
             <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">
                 <div class=""> 
                     <button onclick="getPPT()" type="button" class="btn btn-outline-warning sdfgesd" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PPT</button>
-                    <button onclick="getPDF();" class="btn btn-outline-primary " style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PDF</button>
+                    <button onclick="getPDF();" class="btn btn-outline-primary " type="button" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PDF</button>
 
                     <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i> Save as Excel</button>
 
@@ -400,7 +290,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
                 </div>
             </div>
             
-        </section>
+</section>
 @endsection
 @section('InlineScript')
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -434,25 +324,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
 
 
     });
-
-    // function chkpass() {
-    //     var pass = prompt("Enter Passcode !!",{{ $proposal->password }});
-    //     if (attempt < 3) {
-    //         if (pass == "{{ $proposal->password }}") {
-    //             $("#ndfjkvnrs").toggleClass('d-none');
-    //             status = true;
-    //         } else {
-    //             attempt = attempt+1;
-    //             alert("Wrong Password,re-enter");
-    //             console.log(attempt);
-    //             chkpass();
-    //         }
-    //     }else{
-    //         // DO Something if 3 Attempts are Over
-    //         history.back();
-    //     }
-    // };
-
 
     $(document).ready(function () {
         function readURL(input) {
@@ -588,13 +459,23 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
 
             var imgData = canvas.toDataURL("image/jpeg", 1.0);
             var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
-            pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
+
+             // Added a blank page as first
+            // pdf.addPage(PDF_Width, PDF_Height);
             
+            pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
             
             for (var i = 1; i <= totalPDFPages; i++) { 
                 pdf.addPage(PDF_Width, PDF_Height);
                 pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
             }
+            // pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
+            
+            
+            // for (var i = 1; i <= totalPDFPages; i++) { 
+            //     pdf.addPage(PDF_Width, PDF_Height);
+            //     pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
+            // }
             
             $.ajax({
                 type: "GET",

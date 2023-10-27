@@ -21,7 +21,6 @@
     @push('head')
     @endpush
     <div class="container-fluid p-0 m-0">
-    	
         <iframe src="{{ url('/laravel-filemanager') }}" style="width: 100%; height: 85vh; overflow: hidden; border: none;"></iframe>
     </div>
      @push('script')

@@ -83,9 +83,7 @@
             <ul class="nav justify-content-between">
                 <div class="col-12 col-md-6 col-lg-6 col-sm-4">
                     <div class="nav-item">
-                        <a class="nav-link" href="#">
-                        <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-0 me-2 mx-2"><i class="fas fa-chevron-left"></i> Back</a>
-                        </a>
+                        {{-- <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-0 me-2 mx-2"><i class="fas fa-chevron-left"></i> Back</a> --}}
                     </div>
                 </div>
                 @if ($user_shop->user_id == auth()->id())
@@ -196,9 +194,9 @@
                                             <a class="btn btn-outline-primary" id="sharebtn" href="#sharemodal" role="button"> 
                                                 Share <i class="fas fa-share"></i>
                                             </a>
-                                            @if ($user_shop->user_id == auth()->id())
+                                            @if ($product->user_id == auth()->id() )
                                                 <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Internal Details</a>
-                                            @endif                                            
+                                            @endif
                                         </div>
 
                                         <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-start gap-3 align-items-center">
@@ -260,8 +258,9 @@
                                 
                                 @if (count($colors) > 0)
                                     <div class="">
+                                        <label for="selected_Cust"> Colour </label>
                                         <select name="selected_default[]" class="form-control form-select" id="selected_1">
-                                            <option value="" disabled >Select Color</option>
+                                            {{-- <option value="" disabled >Select Color</option> --}}
                                             @foreach ($colors as $color)
                                                 <option value="{{ $color->attribute_value_id }}" 
                                                 @if ($result_attri != null) 
@@ -275,8 +274,9 @@
                                 @endif
                                 @if (count($sizes) > 0)
                                     <div class="">
+                                        <label for="selected_Cust"> Size </label>
                                         <select name="selected_default[]" class="form-control form-select" id="selected_2">
-                                            <option value="" disabled>Select Size</option>
+                                            {{-- <option value="" disabled>Select Size</option> --}}
                                             @foreach ($sizes as $size)
                                                 <option value="{{ $size->attribute_value_id }}"
                                                 @if ($result_attri != null) 
@@ -290,8 +290,8 @@
                                 @endif
                                 @if (count($materials) > 0)
                                     <div class="">
+                                        <label for="selected_Cust"> Material </label>                                                    
                                         <select name="selected_default[]" class="form-control form-select" id="selected_3">
-                                            <option value="" disabled>Select Material</option>
                                             @foreach ($materials as $material)
                                                 <option value="{{ $material->attribute_value_id }}"
                                                 @if ($result_attri != null) 
@@ -322,7 +322,7 @@
                             {{-- ` Start of first accordion for extra attributes --}}
                             <div class="accordion accordion-flush mt-3 w-lg-50" id="moreattributes">
                                 {{-- Item Start --}}
-                                <div class="accordion-item">
+                                <div class="accordion-item shadow-none">
                                   <div id="attributeval-1" class="accordion-collapse collapse show" data-bs-parent="#moreattributes">
                                     <div class="accordion-body">
                                         <div class="d-flex flex-wrap gap-3">
@@ -334,9 +334,10 @@
                                                     @continue
                                                 @endif
                                                 @if (count($attribute_values) != 0)
+                                                   <div class="form-group">
+                                                    <label for="selected_Cust"> {{ $attribute->name }} </label>                                                    
                                                     <select class="form-control form-select" style="width: max-content"
                                                      name="selected_Cust[]">
-                                                        <option value="" disabled >Select {{ $attribute->name }}</option>
                                                         @foreach ($attribute_values as $attribute_value)
                                                             @if ($attribute_value != '')
                                                                 <option value="{{ $attribute_value->attribute_value_id ?? ''}}"
@@ -349,6 +350,7 @@
                                                             @endif
                                                         @endforeach
                                                     </select>
+                                                   </div>
                                                 @endif
                                             @endforeach
                                         </div>

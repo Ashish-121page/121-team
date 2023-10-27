@@ -15,9 +15,12 @@ use App\Models\Uploadrecord;
 use App\Models\UserCurrency;
 use App\Models\UserShop;
 use App\Models\UserShopItem;
+use App\Models\Usertemplates;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
@@ -26,6 +29,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 use PhpParser\Node\Expr\Cast\Object_;
 use PhpParser\Node\Stmt\Return_;
 use Psy\TabCompletion\Matcher\ObjectMethodDefaultParametersMatcher;
+use ZipArchive;
+
 
 use function GuzzleHttp\Promise\all;
 class NewBulkController extends Controller
@@ -2268,9 +2273,13 @@ class NewBulkController extends Controller
             $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
             $spreadSheet->getActiveSheet()->fromArray($merged_array,null,'A3');
             $Excel_writer = new Xls($spreadSheet);            
-            $fileName = "Product Bulk sheet of $user_id->name.xls";
+            
+            $mytime = Carbon::now();
+            $user = auth()->user();  
+            $fileName = "$user->name Exported Data-".$mytime->toDateTimeString();
+
             header('Content-Type: application/vnd.ms-excel');
-            header("Content-Disposition: attachment;filename=$fileName");
+            header("Content-Disposition: attachment;filename=$fileName.xls");
             header('Cache-Control: max-age=0');
             ob_end_clean();
             $Excel_writer->save('php://output');
@@ -2320,7 +2329,7 @@ class NewBulkController extends Controller
 
     // @ This Function Will Be USe in Admin Panel For Changeing Order of Excel Sheet
 
-    public function productBulkExport($products){
+    public function productBulkExport($products,$name = null){
         // return $products;
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
@@ -2333,7 +2342,11 @@ class NewBulkController extends Controller
             $mytime = Carbon::now();
 
             $user = auth()->user();
-            $fileName = "$user->name Exported Data-".$mytime->toDateTimeString();
+            if ($name == null) {
+                $fileName = "$user->name Exported Data-".$mytime->toDateTimeString();
+            }else{
+                $fileName = $name;
+            }
 
             header('Content-Type: application/vnd.ms-excel');
             header("Content-Disposition: attachment;filename=$fileName.xls");
@@ -3180,9 +3193,36 @@ class NewBulkController extends Controller
     // Custom Fields Export Data
     public function exportDataCustom(Request $request,User $user_id) {
 
-        $request['myfields'] = $this->productBulkExport($request->myfields);
+        $validated = $request->validate([
+            'template_name' => 'required',
+        ]);
+     
+        
+        try {
+            $request['finaldata'] = array_merge($request->get('systemfiels'),$request->get('myfields') ?? []);
+            magicstring($request->all());
+            $user_shop = getShopDataByUserId($user_id->id);
+            $templatename =$request->get('template_name');
+            $mytime = Carbon::now();
 
-        return back()->with('success',"File Download Success Fully..");
+            $filename = "$templatename -$user_id->name -".$mytime->toDateTimeString();
+
+            Usertemplates::create([
+                'user_id' => $user_id->id,
+                'user_shop_id' => $user_shop->id,
+                'columns_values' => json_encode($request->finaldata),
+                'template_name' => $templatename,
+            ]);
+
+
+            $this->exportExcel($request->finaldata,$filename);
+
+
+            return back()->with('success',"File Download Success Fully..");
+        } catch (\Throwable $th) {
+            //throw $th;
+            return back()->with('error',"There Was an Error Try Again later !!");
+        }
     }
 
 
@@ -3388,7 +3428,10 @@ class NewBulkController extends Controller
                             if (!is_numeric($tmp_item[${'mrpIncl tax'}])){
                                 return back()->with('error',"Enter valid amount in MRP Incl. tax Reseller at Row $row");
                             }
+                            $mrp = $tmp_item[${'mrpIncl tax'}];
                         }
+                    }else{
+                        $mrp = 0;
                     }
 
 
@@ -3692,6 +3735,32 @@ class NewBulkController extends Controller
                         }
                     }
 
+
+                    if (isset(${'Video URL'})) {
+                        $video_url = $item[${'Video URL'}];
+                    }else{
+                        $video_url = '';
+                    }
+
+                    if (isset(${'Search keywords'})) {
+                        $search_keywords = $item[${'Search keywords'}];
+                    }else{
+                        $search_keywords = '';
+                    }
+
+
+                    if (isset(${'Copyright/ Exclusive item'})) {
+                        $exclusive_item = $item[${'Copyright/ Exclusive item'}];
+                    }else{
+                        $exclusive_item = 'No';
+                    }
+
+                    if (isset(${'Selling Price_Unit'})) {
+                        $SellingPrice_Unit = $item[${'Selling Price_Unit'}];
+                    }else{
+                        $SellingPrice_Unit = '';
+                    }
+                    
 
 
                     // * CREATING loop1,loop2 and loop3 
@@ -4382,7 +4451,7 @@ class NewBulkController extends Controller
                                 $shipping = json_encode($shipping);
                                         
         
-                                echo $first." - ".$second." - ".$third.newline();
+                                // echo $first." - ".$second." - ".$third.newline();
         
         
                                 $price = ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->price : trim($item[${'Customer_Price_without_GST'}]);
@@ -4409,13 +4478,15 @@ class NewBulkController extends Controller
                                     'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}], 
                                     'hsn' => ($product_exist != null && $item[${'HSN Tax'}] == '') ? $product_exist->hsn : $item[${'HSN Tax'}] ?? null,
                                     'hsn_percent' => ($product_exist != null && $item[${'HSN_Percnt'}] == '') ? $product_exist->hsn_percent : $item[${'HSN_Percnt'}] ?? null,
-                                    'mrp' => ($product_exist != null && $item[${'mrpIncl tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl tax'}]),
-                                    'video_url' => ($product_exist != null && $item[${'Video URL'}] == '') ? $product_exist->video_url : $item[${'Video URL'}],
-                                    'search_keywords' => ($product_exist != null && $item[${'Search keywords'}] == '') ? $product_exist->tag1 : $item[${'Search keywords'}],
-                                    'artwork_url' => $item[${'artwork_url'}] ?? null,
-                                    'exclusive' => (in_array($item[${'Copyright/ Exclusive item'}],$allowed_array)) ? 1 : 0,
+
+                                    'mrp' => ($product_exist != null && $mrp == '') ? $product_exist->mrp : trim($mrp),
+                                    'video_url' => ($product_exist != null && $video_url == '') ? $product_exist->video_url : $video_url,
+
+                                    'search_keywords' => ($product_exist != null && $search_keywords == '') ? $product_exist->tag1 : $search_keywords,
+                                    'artwork_url' => $artwork_url ?? null,
+                                    'exclusive' => (in_array($exclusive_item,$allowed_array)) ? 1 : 0,
                                     'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
-                                    'SellingPriceUnitIndex' => $item[${'Selling Price_Unit'}] ?? '',
+                                    'SellingPriceUnitIndex' => $SellingPrice_Unit ?? '',
                                     // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
                                 ];
                                     
@@ -4442,7 +4513,7 @@ class NewBulkController extends Controller
                                         'product_id' => $product_obj->id,
                                         'user_id' => $user->id,
                                         'user_shop_id' => $user_shop->id, 
-                                        'allow_resellers' => $item[${'Allow_Resellers'}],
+                                        'allow_resellers' => $item[${'Allow_Resellers'}] ?? 'No',
                                         'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
                                         'collection_name' => $item[${'Theme / Collection Name'}],
                                         'season_month' => $item[${'Season / Month'}],
@@ -5544,6 +5615,29 @@ class NewBulkController extends Controller
     }
     
 
+    public function ZipMaker($fileName = null){
+
+        $zip = new ZipArchive;
+
+        if ($fileName == null) {
+            $fileName = 'Instructions.zip';
+        }        
+        $fileName = 'zipFile.zip';
+        if ($zip->open($fileName,ZipArchive::CREATE)) {
+            $files = File::files(storage_path("app/public/instructions"));
+
+            foreach ($files as $key => $file) {
+                $nameinZip = basename($file);
+                $zip->addFile($file,$nameinZip);
+            }
+            $zip->close();
+        }
+
+
+        return response()->download($fileName);
+        exit();
+    }
+
 
     public function exportExcel($record,$filename) {
         ini_set('max_execution_time', 0);
@@ -5558,6 +5652,7 @@ class NewBulkController extends Controller
             header("Content-Disposition: attachment;filename=$filename.xlsx");
             header('Cache-Control: max-age=0');
             ob_end_clean();
+
             $Excel_writer->save('php://output');
             exit();
         } catch (Exception $e) {
@@ -5583,10 +5678,6 @@ class NewBulkController extends Controller
 
     }
     
-    
-    
-    
-
     // Upload Currency Data in Bulk
     public function uploadCurrency(Request $request,User $user){
 

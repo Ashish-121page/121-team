@@ -14,7 +14,7 @@
  * @link        https://121.page/
  */
     $breadcrumb_arr = [
-        ['name'=>'Product Attributes', 'url'=> "javascript:void(0);", 'class' => 'active']
+        ['name'=>'Product Properties', 'url'=> "javascript:void(0);", 'class' => 'active']
     ]
     @endphp
     <!-- push external head elements to head -->
@@ -22,13 +22,13 @@
     @endpush
 
     <div class="container-fluid">
-    	<div class="page-header">
+    	<div class="page-header d-none">
             <div class="row align-items-end">
                 <div class="col-lg-8">
                     <div class="page-header-title">
                         <i class="ik ik-mail bg-blue"></i>
                         <div class="d-inline">
-                            <h5>Product Attributes</h5>
+                            <h5>Product Properties</h5>
                             {{-- <span>List of Product Attributes</span> --}}
                         </div>
                     </div>
@@ -46,18 +46,8 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between">
-                            <h3>Product Attributes</h3>
+                            <h3>Product Properties</h3>
                             <div class="d-flex justicy-content-right">
-                                <div class="form-group mb-0 mr-2">
-                                    <span>From</span>
-                                <label for=""><input type="date" name="from" class="form-control" value="{{request()->get('from')}}"></label>
-                                </div>
-                                <div class="form-group mb-0 mr-2"> 
-                                    <span>To</span>
-                                        <label for=""><input type="date" name="to" class="form-control" value="{{request()->get('to')}}"></label> 
-                                </div>
-                                <button type="submit" class="btn btn-icon btn-sm mr-2 btn-outline-warning" title="Filter"><i class="fa fa-filter" aria-hidden="true"></i></button>
-                                <a href="javascript:void(0);" id="reset" data-url="{{ route('panel.product_attributes.index') }}" class="btn btn-icon btn-sm btn-outline-danger mr-2" title="Reset"><i class="fa fa-redo" aria-hidden="true"></i></a>
                                 <a href="{{ route('panel.product_attributes.create') }}" class="btn btn-icon btn-sm btn-outline-primary" title="Add New Product Attribute"><i class="fa fa-plus" aria-hidden="true"></i></a>
                             </div>
                         </div>

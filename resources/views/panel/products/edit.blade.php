@@ -36,11 +36,18 @@
                 width: 100% !important;
             }
 
+            .hoverbtn{
+                position: fixed;
+                bottom: 30%;
+                right: 2%;
+                z-index: 9999;
+            }
+
         </style>
     @endpush
 
     <div class="container-fluid">
-        <div class="page-header">
+        <div class="page-header d-none">
             <div class="row align-items-end">
                 <div class="col-lg-8">
                     <div class="page-header-title">
@@ -56,6 +63,11 @@
                 </div>
             </div>
         </div>
+
+        <div class="hoverbtn">
+            <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_id={{auth()->id()}}&productsgrid=true" class="btn btn-xl btn-outline-secondary">Discard</a>
+        </div>
+        
         <div class="row">
             <div class="col-md-12">
                 <div class="row">
@@ -540,7 +552,6 @@
                                                             <div class="h6">Product Weight</div>
                                                         </label>
                                                         <br>
-                                                        if (weightboxbtn =!null)
                                                         <input type="checkbox" data-open="weightboxbtn" id="weightbox" class="hiddenbxbtn">
                                                     </div>
                                                 </div>

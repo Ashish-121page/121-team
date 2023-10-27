@@ -19,9 +19,9 @@
         @php
             $user_shop = App\Models\UserShop::whereUserId(auth()->id())->first();
         @endphp
-        <div class="mt-3 e-card-wrapper">
+        {{-- <div class="mt-3 e-card-wrapper">
             <a href="{{ inject_subdomain('home', $user_shop->slug, true, false)}}" class="btn btn-primary" target="_blank">My Page</a>
-        </div>
+        </div> --}}
   
         
         <ul class="buy-button list-inline mb-0">
@@ -69,7 +69,13 @@
                 </li>
                 <li class="list-inline-item mb-0">
                     <div class="dropdown dropdown-primary">
-                        <button type="button" class="btn btn-icon btn-pills btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i data-feather="user" class="icons"></i></button>
+                        <button type="button" class="btn btn-icon btn-pills dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 40px; width: 40px">
+                            @if($user->avatar != null)
+                                <img src="{{$user->avatar}}" class="rounded-circle" alt="" style="object-fit: cover;height: 100%;width: 100%;">
+                            @else
+                                <img src="{{ asset('backend/default/default-avatar.png') }}" class="rounded-circle" alt="" style="object-fit: cover;height: 100%;width: 100%;">
+                            @endif
+                        </button>
                         <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow rounded border-0 mt-3 py-2" style="width: 200px;">
                             @if (AuthRole() == 'Admin')
                                 <a class="dropdown-item text-dark" href="{{ route('panel.dashboard') }}"><i class="uil uil-dashboard align-middle me-1"></i>Dashboard</a>

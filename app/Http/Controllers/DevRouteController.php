@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Proposal;
 use App\Models\Proposalenquiry;
 use App\Models\Team;
+use App\Models\UserShop;
 
 class DevRouteController extends Controller
 {
@@ -31,9 +32,21 @@ class DevRouteController extends Controller
          // member
         $usershop = getShopDataByUserId(auth()->id());
         $teams = Team::where('user_shop_id',$usershop->id)->get();
+
+        $products = json_decode($user_shop->products,true);
+
+        $user_shop = UserShop::whereSlug($slug)->first();
+        if (!$user_shop->shop_view && $user_shop->user_id != auth()->id()) {
+            return back();
+        }
+
         
-        return view('devloper.Jaya.index',compact('enquiry_amt','Numbverofoffer','productcount','teams'));
+        
+        return view('devloper.Jaya.index',compact('enquiry_amt','Numbverofoffer','productcount','teams','products','user_shop'));
+
     }
+
+    
     
     public function jayaform(){
         return view('devloper.jaya.form-check');

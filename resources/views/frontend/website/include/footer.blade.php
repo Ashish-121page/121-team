@@ -43,7 +43,7 @@
                                             <li><a href="@if (auth()->check()){{ route('customer.dashboard') }} @else {{ route('auth.login-index') }} @endif" class="text-foot"><i class="uil uil-angle-right-b me-1"></i> My account </a></li>
                                         {{-- <li><a href="{{ route('customer.order-history') }}" class="text-foot"><i class="uil uil-angle-right-b me-1"></i> Order History </a></li> --}}
                                         {{-- <li><a href="#" class="text-foot"><i class="uil uil-angle-right-b me-1"></i> Enquiries </a></li> --}}
-                                        <li><a href="{{ route('website.faq') }}" class="text-foot"><i class="uil uil-angle-right-b me-1"></i> FAQs </a></li>
+                                        {{-- <li><a href="{{ route('website.faq') }}" class="text-foot"><i class="uil uil-angle-right-b me-1"></i> FAQs </a></li> --}}
                                     </ul>
                                 </div>
                             </div><!--end row-->
