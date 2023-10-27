@@ -76,6 +76,7 @@
                                 <img src="{{ asset('backend/default/default-avatar.png') }}" class="rounded-circle" alt="" style="object-fit: cover;height: 100%;width: 100%;">
                             @endif
                         </button>
+
                         <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow rounded border-0 mt-3 py-2" style="width: 200px;">
                             @if (AuthRole() == 'Admin')
                                 <a class="dropdown-item text-dark" href="{{ route('panel.dashboard') }}"><i class="uil uil-dashboard align-middle me-1"></i>Dashboard</a>

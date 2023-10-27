@@ -89,9 +89,7 @@
                 @if ($user_shop->user_id == auth()->id())
                     <div class="col-12 col-md-6 col-lg-6 col-sm-8 d-flex justify-content-end">
                         <li class="nav-item ">
-                            <a class="nav-link active" aria-current="page" href="{{ route('panel.products.edit',$product->id) }}">
-                            <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i>Edit</button></a>
-
+                            
                         </li>
                         <li class="nav-item d-none">
                             <a class="nav-link" href="#">
@@ -156,6 +154,22 @@
                                 
                             @endforeach
                         </div>
+                        <div d-flex justify-content-end gap-3 >
+
+                        <a  aria-current="page" href="{{ route('panel.products.edit',$product->id) }}">
+                            <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i>Edit</button></a>
+
+                            @if ($user_shop->user_id == auth()->id())
+                                <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Internal Details</a>
+                            @endif
+
+                            <a class="btn btn-outline-primary" id="sharebtn" href="#sharemodal" role="button"> 
+                                Share <i class="fas fa-share"></i>
+                            </a>
+                        </div>
+
+
+
                     </div>
                 </div>
 
@@ -197,7 +211,7 @@
                                             @if ($product->user_id == auth()->id() )
                                                 <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Internal Details</a>
                                             @endif
-                                        </div>
+
 
                                         <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-start gap-3 align-items-center">
                                             <div class="d-flex mb-2">

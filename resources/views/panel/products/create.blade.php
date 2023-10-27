@@ -793,9 +793,7 @@
                     </div>
                 </div>
             {{-- Bulk Cart end --}}
-
-
-
+            
             {{-- Custom Bulk Sheet Start --}}
 
                 <div class="row get_custom_Product d-none">
@@ -1080,6 +1078,7 @@
             //         $(".back_btn").click()
             //     }
             // });
+
 
         });
 

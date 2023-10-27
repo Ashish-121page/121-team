@@ -6,7 +6,7 @@
 
     }
 </style>
-<header id="topnav" class="defaultscroll sticky">
+<header id="topnav" class="defaultscroll" style=" position: inherit;">
     <div class="container">
       <!-- Logo container-->
       <a class="logo  list-inline-item mb-0 mt-2" href="{{ url('/') }}">
