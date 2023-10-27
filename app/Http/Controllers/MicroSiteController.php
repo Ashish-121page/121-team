@@ -48,6 +48,7 @@ class MicroSiteController extends Controller
          if(!$user_shop){
             return back()->with('error', 'No micro site assign to your account!');
          }
+         
         if(auth()->check()){
             $shop_owner_data = User::whereId($user_shop->user_id)->first();
             if(!$shop_owner_data){
@@ -567,7 +568,7 @@ class MicroSiteController extends Controller
 
     public function shopShow(Request $request,$id)
     {
-  
+
         $debugingMode = 0;
         $id = crypt::decrypt($id) ?? $id;
         $show_product = $id;
@@ -589,7 +590,16 @@ class MicroSiteController extends Controller
         if($group_id == 0 && $request->has('pg') && $request->get('pg')){
             $group_id = $request->get('pg');
         } 
+        
+        if (!$user_shop->shop_view && $user_shop->user_id != auth()->id()) {
+            return back();
+        }
+        
+
         $product = Product::whereId($id)->first(); 
+
+
+
 
         if (request()->has('search_keywords') &&  request()->get('search_keywords') != '') {
             $SerchParam = request()->get('search_keywords');
@@ -646,9 +656,11 @@ class MicroSiteController extends Controller
             return back()->with('error', 'Product does not exist!');
         }
         $user_product = getUserShopItemByProductId($user_shop->slug, $id);
-          if(!$user_product){
-                    return back()->with('error', 'Item does not exist!');
-            }
+        if(!$user_product){
+            return back()->with('error', 'Item does not exist!');
+        }
+
+        
         $shipping_details = json_decode($product->shipping,true);
         $related_product_ids = UserShopItem::where('user_shop_id',$user_shop->id)->where('sub_category_id',$product->sub_category_id)->where('is_published',1)->where('product_id','!=',$product->id)->inRandomOrder()->take(4)->get()->pluck('product_id');
         
@@ -687,6 +699,7 @@ class MicroSiteController extends Controller
         ->whatsapp()
         ->reddit();
 
+        
         // ` Work End Here
         return view('frontend.micro-site.shop.show',compact('slug','group_id','product','user_shop','shipping_details','carton_details','user_product','related_products','variations','scan','proposalidrequest','show_product','features','attributes','colors','sizes','materials','result_attri','shareButtons1','groupIds','currency_record'));
     }

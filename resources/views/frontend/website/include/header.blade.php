@@ -83,7 +83,7 @@
           <!-- Navigation Menu-->   
           @if(request()->routeIs('plan.checkout.store')  == false )
               <ul class="navigation-menu">
-                  <li><a href="{{ url('/') }}" class="sub-menu-item">Home</a></li>
+                  <li><a href="{{ url('/') }}" class="sub-menu-item">Product Tool</a></li>
                   {{-- <li><a href="{{ route('home.search') }}" class="sub-menu-item">Search</a></li> --}}
                   <li><a href="{{ route('about') }}" class="sub-menu-item">About</a></li>
                   {{-- <li><a href="{{ route('plan.index') }}" class="sub-menu-item">Plan</a></li> --}}

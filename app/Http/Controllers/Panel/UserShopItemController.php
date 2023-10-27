@@ -91,6 +91,7 @@ class UserShopItemController extends Controller
 
             $access_data = null;
             $access_id = $request->get('type_id') ?? 0;
+
             if($request->has('type') && $request->get('type') != null && $request->has('type_id') && $request->get('type_id') != null){
                 $type = $request->get('type');
                 $type_id = $request->get('type_id');
@@ -113,6 +114,9 @@ class UserShopItemController extends Controller
                     }
                     if($request->has('category_id') && $request->get('category_id') != null){
                         $product->where('category_id',$request->get('category_id'));
+                    }
+                    if($request->has('sub_category_id') && $request->get('sub_category_id') != null){
+                        $product->where('sub_category',$request->get('sub_category_id'));
                     }
                     
                     $scoped_products = $product->whereBrandId($type_id)->groupBy('sku')->latest()->get();
@@ -146,6 +150,10 @@ class UserShopItemController extends Controller
                     if($request->has('category_id') && $request->get('category_id') != null){
                         $product->where('category_id',$request->get('category_id'));
                     }
+                    if($request->has('sub_category_id') && $request->get('sub_category_id') != null){
+                        $product->where('sub_category',$request->get('sub_category_id'));
+                    }
+                    
                     if($request->type_id != auth()->id()){
                         $product->where('is_publish',1);
                     }
@@ -162,7 +170,6 @@ class UserShopItemController extends Controller
                     $qr_products = $product->whereIn('id', $scoped_items->pluck('product_id'))->latest()->paginate($length);
                     
                     $categories = Category::whereIn('id',$scoped_items->pluck('category_id'))->get();
-
                    
                     $parent_shop = getShopDataByUserId(@$supplier->id);
                     $title = $supplier->name ?? '';
@@ -171,7 +178,7 @@ class UserShopItemController extends Controller
                     $pinned_items = $pinned_products->pluck('id')->toArray();
 
 
-
+                
                 }
             }else{
                 $scoped_products = [];
@@ -179,6 +186,7 @@ class UserShopItemController extends Controller
                 $title = "Unknown";
                 $qr_products = [];
                 $pinned_items = [];
+                $subcategies = [];
             }
 
 
@@ -933,5 +941,26 @@ class UserShopItemController extends Controller
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
+    
+    public function checkdisplay(Request $reqest) {
+        $user_shop = getShopDataByUserId(auth()->id());
+        
+        return view('panel.display.index',compact('user_shop'));
+    }
+    
+    public function checkproductdisplay(Request $reqest,$id) {
+
+        $user_shop = getShopDataByUserId(auth()->id());
+
+        // Put Some Session Keys
+        session()->put('at',encrypt(auth()->id()));
+        session()->save();
+        $encid = $id;
+        return view('panel.user_shop_items.includes.view-product',compact('user_shop','encid'));
+    }
+    
+    
+
+
     
 }

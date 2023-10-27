@@ -35,6 +35,9 @@ use App\Http\Controllers\Backend\CaseWorkstreamAttachmentController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\NewBulkController;
+use App\Http\Controllers\Panel\ProposalController;
+use App\Http\Controllers\Panel\UserShopItemController;
+use App\Models\UserShopItem;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,8 +74,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::group(['namespace' => 'Admin\Message','middleware' => 'can:manage_chats','prefix' => 'chats','as' =>'chats.'], function () {
         Route::get('index', ['uses' => 'ChatController@index', 'as' => 'index']);
     });
-
-    
+  
     
     
     //only those have manage_user permission will get access
@@ -209,6 +211,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     });
     
     Route::group(['namespace' => 'Admin\ConstantManagement','prefix' => 'constant-management', 'as' => 'constant_management.'], function () {
+
         Route::group(['middleware' => 'can:manage_category', 'prefix' => 'category', 'as' => 'category.'], function () {
             Route::get('/view/{type_id}', [CategoryController::class,'index'])->name('index');
             Route::get('/create/{type_id}/{level?}/{parent_id?}', [CategoryController::class,'create'])->name('create');
@@ -219,6 +222,8 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
             Route::post('/change', [CategoryController::class,'change'])->name('changeup');
             Route::post('/update/{id}', [CategoryController::class,'update'])->name('update');
             Route::get('/delete/{id}', [CategoryController::class,'destroy'])->name('delete');
+
+            Route::post('bulk/delete/{user_id}', [CategoryController::class,'bulkdelete'])->name('bulk.delete');
 
         });
 
@@ -471,14 +476,22 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::get('/export/deliveryNew', [BulkController::class,'DeliveryExportDownload'])->name('product.deliveryExport');
     Route::post('/update/delivery-group/bulk', [BulkController::class,'DeliveryGroupBulkUpdate'])->name('delivery.group.bulk-update');
     
+    Route::get('/display',[UserShopItemController::class,'checkdisplay'])->name('check.display');
+    Route::get('/display/product/{id}',[UserShopItemController::class,'checkproductdisplay'])->name('view.product');
     
+
     Route::group(['middleware' => 'auth','namespace' => '/currency', 'prefix' => '/', 'as' => 'currency.'], function () {
         Route::get('/manage/Currency', [CurrencyController::class,'index'])->name('manage.index');
         Route::get('/make/default/{record}', [CurrencyController::class,'makedefault'])->name('make.default');
         Route::get('/export/bulkcurrency/{user}', [NewBulkController::class,'exportrecordCurrecy'])->name('export.bulk');
         Route::get('/download/bulkcurrency/', [NewBulkController::class,'exportfileCurrency'])->name('exportfileCurrency.bulk');
         Route::post('/upload/bulkcurrency/{user}', [NewBulkController::class,'uploadCurrency'])->name('upload.bulk');
+
+        Route::post('/upload/single/bulkcurrency/{user}', [CurrencyController::class,'uploadCurrency'])->name('upload.single');        
         Route::post('/update/bulkcurrency/{user}', [NewBulkController::class,'updateCurrency'])->name('update.bulk');
+
+        Route::post('/update/singlecurrency', [CurrencyController::class,'update'])->name('update.single');
+        
     });
 
 

@@ -78,19 +78,24 @@ class LoginController extends Controller
 
             } elseif (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'status' => 1])) {
                 if(AuthRole() == 'User'){
-                    return redirect('/customer/dashboard');
+                    // return redirect('/customer/dashboard');
+                    return redirect('/panel/dashboard');
+
                 }else{
                     return redirect('/panel/dashboard');
                 }
             } elseif(Auth::attempt([ 'phone' => $request->email, 'password' => $request->password,'status' => 1 ])){
                  if(AuthRole() == 'User'){
-                    return redirect('/customer/dashboard');
+                    // return redirect('/customer/dashboard');
+                    return redirect('/panel/dashboard');
+
                 }else{
                     return redirect('/panel/dashboard');
                 }
             }elseif (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'status' => 2])) {
                  if(AuthRole() == 'User'){
-                    return redirect('/customer/dashboard');
+                    // return redirect('/customer/dashboard');
+                    return redirect('/panel/dashboard');
                 }else{
                     return redirect('/panel/dashboard');
                 }

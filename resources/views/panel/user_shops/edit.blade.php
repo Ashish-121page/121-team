@@ -83,9 +83,13 @@
                             {{-- <li class="nav-item">
                                 <a data-active="my-info" class="mr-2 active-swicher btn pills-btn text-white @if(request()->has('active') && request()->get('active') == "my-info") active  @endif" id="pills-my-info-tab" data-toggle="pill" href="#previous-month" role="tab" aria-controls="pills-my-info" aria-selected="false">{{ __('My Info')}}</a>
                             </li> --}}
-                            <li class="nav-item ">
-                                <a data-active="shop-details" class="mr-2 active-swicher text-white pills-btn btn @if(request()->has('active') && request()->get('active') == "shop-details") active  @endif" id="pills-general-tab" data-toggle="pill" href="#last-month" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Account Info')}}</a>
-                            </li>
+                            @if(AuthRole() == 'Admin')
+
+                                <li class="nav-item ">
+                                    <a data-active="shop-details" class="mr-2 active-swicher text-white pills-btn btn @if(request()->has('active') && request()->get('active') == "shop-details") active  @endif" id="pills-general-tab" data-toggle="pill" href="#last-month" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Account Info')}}</a>
+                                </li>
+                            @endif
+                                
 
                             <li class="nav-item ">
                                 <a data-active="page-feature" class="mr-2 active-swicher text-white pills-btn btn @if(request()->has('active') && request()->get('active') == "page-feature") active  @endif" id="pills-general-tab" data-toggle="pill" href="#page-feature" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('My Page')}}</a>
@@ -174,15 +178,17 @@
                                                         <input @if($user->phone_no_verified_at != null) readonly @endif type="phone_no" placeholder="test@test.com" class="form-control" name="phone" id="phone_no" value="{{ $user->phone }}">
                                                     </div>  
                                                 </div>
-                                                <div class="col-md-12 ">
-                                                    <div class="form-group mb-3">
-                                                        <label class="form-label">vCards</label>
-                                                        <input type="file" class="form-control" name="vcard">
-                                                        @if(isset($vcard) && $vcard != null)
-                                                            <img src="{{ asset($vcard->path) }}" class="mt-3 rounded" alt="vcard" style="height: 100px;">
-                                                        @endif
+                                                @if(AuthRole() == 'Admin')
+                                                    <div class="col-md-12 ">
+                                                        <div class="form-group mb-3">
+                                                            <label class="form-label">vCards</label>
+                                                            <input type="file" class="form-control" name="vcard">
+                                                            @if(isset($vcard) && $vcard != null)
+                                                                <img src="{{ asset($vcard->path) }}" class="mt-3 rounded" alt="vcard" style="height: 100px;">
+                                                            @endif
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @endif
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-0 d-flex justify-content-center">
                                                         <button type="submit" class="btn btn-primary">Update</button>
@@ -191,170 +197,171 @@
                                             </div>
                                         </form> 
 
-
-                                        <form action="{{ route('customer.update.settings') }}" method="post" class="my-4">
-                                            @csrf
-                                            <input type="hidden" name="type" value="setting1">
-                                            <input type="hidden" name="user_shop" value="{{ $user_shop->id }}">
-                                            <div class="row mb-2">
-                                                <div class="col">
-                                                    <label for="">Public Display</label> <br>
-                                                    <input type="checkbox" @if($user_shop->shop_view == 1) checked @endif value="1" name="shop_view" class="js-single"/>
-                                                </div>  
-                                                <div class="col">
-                                                    <label for="auto_acr" title="Enable You A Feature That Auto Accepting Catelogue Request">Auto Accept Request</label> <br>
-                                                    <input type="checkbox" @if($user_shop->auto_acr == 1) checked @endif value="1" name="auto_acr" id="auto_acr" class="js-acr"/>
-                                                </div>
-                                                @php
-                                                    $teamdata = json_decode($user_shop->team);
-                                                    $teamdata->team_visiblity = $teamdata->team_visiblity ?? 0;
-                                                @endphp
-                                                
-                                                <div class="col">
-                                                    <label for="public_about" title="Enable You A Feature That Auto Accepting Catelogue Request py-2">Public Team</label> <br>
-                                                    <input type="checkbox" @if (isset($teamdata) && $teamdata != null && $teamdata->team_visiblity) checked @endif value="1" name="public_about" id="public_about" class="js-about"/>
-                                                </div>
-                                            </div>
-                                            <div class="mt-4 d-flex justify-content-center">
-                                                <button type="submit" class="btn btn-primary">Update</button>
-                                            </div>
-                                        </form>
-
-                                        {{-- Additional Phone Number --}}
-                                        <form action="{{ route('panel.update-user-profile', $user->id) }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
-                                            @csrf
-                                            {{-- <input type="hidden" name="additional_number[]" value=""> --}}
-                                            {{-- <h6>My Info</h6> --}}
-                                            <div class="row mt-3">
-                                                <div class="col-md-6 d-none">
-                                                    <div class="form-group">
-                                                        <label for="name">{{ __('Name')}}<span class="text-red">*</span></label>
-                                                        <input type="text" placeholder="Enter Name" class="form-control" name="name" id="name" value="{{ $user->name }}">
+                                        @if(AuthRole() == 'Admin')
+                                            <form action="{{ route('customer.update.settings') }}" method="post" class="my-4">
+                                                @csrf
+                                                <input type="hidden" name="type" value="setting1">
+                                                <input type="hidden" name="user_shop" value="{{ $user_shop->id }}">
+                                                <div class="row mb-2">
+                                                    <div class="col">
+                                                        <label for="">Public Display</label> <br>
+                                                        <input type="checkbox" @if($user_shop->shop_view == 1) checked @endif value="1" name="shop_view" class="js-single"/>
                                                     </div>  
-                                                </div>
-                                                <div class="col-md-6 d-none">
-                                                    <div class="form-group">
-                                                        <div class="d-flex">
-                                                            <label for="email">{{ __('Email')}}<span class="text-red">*</span>
-                                                            </label>
-                                                            @if($user->email_verified_at == null )
-                                                                <a class="btn btn-sm text-secondary ml-auto" style="line-height: 3px;" href="{{route('verification.resend')}}">Verify Email</a>
-                                                            @endif
-                                                        </div>
-                                                        <input @if($user->email_verified_at != null) readonly @endif type="email" placeholder="test@test.com" class="form-control" name="email" id="email" value="{{ $user->email }}">
-                                                    </div>  
-                                                </div>
-                                                
-                                                {{-- Additioal Phone Fields --}}
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="phone">{{ __('Phone No')}}<span class="text-red">*</span> <span><i class="ik ik-info" title="Request catalogs are processed using this number"></i></span></label>
-                                                        <div class="d-flex">
-                                                            <input type="number" placeholder="enter Phone number" id="phone" name="phone" readonly class="form-control w-75" value="{{ $user->phone }}" required >
-                                                            @if(AuthRole() != 'Admin')
-                                                                <button type="button" data-toggle="modal" data-target="#addAdditionalNumbers" class="btn btn-icon btn-primary ml-2"><i class="ik ik-plus"></i></button>
-                                                            @endif
-                                                        </div>
-                                                        @if(AuthRole() == 'Admin')
-                                                            <textarea name="phone[]" id="" cols="30" rows="10" class="form-control mt-2 additionalNumbers" placeholder="Enter Mobile Number" ></textarea>
-                                                            <p class="text-danger mt-1">Enter Number then use comma seperater Ex:3215478960,3215478962</p>
-                                                            <button data-user_id="{{$user_shop->user_id}}" class="btn btn-primary mt-1" id="save_additional_number">Save Additional Numbers</button>
-                                                        @endif
+                                                    <div class="col">
+                                                        <label for="auto_acr" title="Enable You A Feature That Auto Accepting Catelogue Request">Auto Accept Request</label> <br>
+                                                        <input type="checkbox" @if($user_shop->auto_acr == 1) checked @endif value="1" name="auto_acr" id="auto_acr" class="js-acr"/>
                                                     </div>
-                                                    @if($user->additional_numbers != "null")
-                                                        @if(!is_null($user->additional_numbers) && $user->additional_numbers != '""')
-                                                            <ul class="list-unstyled">
-                                                                @foreach (json_decode($user->additional_numbers) as $number)
-                                                                    {{-- @if($number != '"' && $number != null) --}}
-                                                                        <li>
-                                                                            <i class="ik ik-check text-success"></i>
-                                                                            {{$number}}
-                                                                            <a href="{{ route('panel.user.number.delete',[$user->id,$number]) }}" class="confirm-btn">
-                                                                                <i class="ml-5 ik ik-trash text-danger"></i>
-                                                                            </a>
-                                                                        </li>
-                                                                    {{-- @endif --}}
-                                                                @endforeach
-                                                            </ul>
-                                                        @endif
-                                                    @endif
-                                                </div>
-
-                                                @if (AuthRole() == 'Admin')
-                                                    <div class="col-md-6">
-                                                        @php
-                                                            $data = App\Models\survey::where('user_id',$user_shop->user_id)->first();
-                                                        @endphp
-                                                        @if ($data != null)
-                                                            <div class="h6">Survey Response</div>
-                                                            <span><b>{{ json_decode($data->question) }}</b></span>
-                                                            <p>
-                                                                @foreach (json_decode($data->response) as $item)
-                                                                    {{ $loop->iteration.". ". $item }} <br>
-                                                                @endforeach
-                                                            </p>
-                                                        @endif
-                                                    </div>
-                                                @endif
-
-                                                
-
-
-                                                <div class="col-md-6 d-none">
                                                     @php
-                                                        $industry = json_decode($user->industry_id,true);
+                                                        $teamdata = json_decode($user_shop->team);
+                                                        $teamdata->team_visiblity = $teamdata->team_visiblity ?? 0;
                                                     @endphp
-                                                    <div class="form-group">
-                                                        <label for="phone">{{ __('Industry')}}<span class="text-red">*</span></label>
-                                                        <select aria-readonly="true" @if(UserRole($user->id)['name'] == "User") required @endif name="industry_id[]" class="form-control select2" multiple id="industry_id">
-                                                            @foreach(App\Models\Category::where('category_type_id',13)->get() as $category)
-                                                                <option value="{{ $category->id }}" @if(isset($industry)) {{ in_array($category->id,$industry) ? 'selected' :'' }} @endif> {{ $category->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>  
-                                                </div>
-                                                <div class="col-md-4 d-none">
-                                                    <div class="form-group">
-                                                        <label for="dob">{{ __('DOB')}}<span class="text-red">*</span></label>
-                                                        <input id="" class="form-control" type="date" name="dob" placeholder="Select your birth date" value="{{ $user->dob }}" />
-                                                        <div class="help-block with-errors"></div>
-                                                    </div>  
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group d-none">
-                                                        <label for="">Gender</label>
-                                                        <div class="form-radio">
-                                                                <div class="radio radio-inline">
-                                                                    <label>
-                                                                        <input type="radio" name="gender" value="male" {{ $user->gender == 'male' ? 'checked' : '' }}>
-                                                                        <i class="helper"></i>{{ __('Male')}}
-                                                                    </label>
-                                                                </div>
-                                                                <div class="radio radio-inline">
-                                                                    <label>
-                                                                        <input type="radio" name="gender" value="female" {{ $user->gender == 'female' ? 'checked' : '' }}>
-                                                                        <i class="helper"></i>{{ __('Female')}}
-                                                                    </label>
-                                                                </div>
-                                                        </div>                                        
-                                                        <div class="help-block with-errors"></div>
+                                                    
+                                                    <div class="col">
+                                                        <label for="public_about" title="Enable You A Feature That Auto Accepting Catelogue Request py-2">Public Team</label> <br>
+                                                        <input type="checkbox" @if (isset($teamdata) && $teamdata != null && $teamdata->team_visiblity) checked @endif value="1" name="public_about" id="public_about" class="js-about"/>
                                                     </div>
                                                 </div>
-                                                
-                                                
-                                            
-                                                <div class="col-md-12 d-none">
-                                                    <div class="form-group">
-                                                        <label for="address">{{ __('Address')}}<span class="text-red">*</span></label>
-                                                        <textarea name="address" name="address" rows="5" class="form-control" placeholder="Enter Address">{{ $user->address }}</textarea>
-                                                    </div>  
-                                                </div>                                    
-                                            </div>
-                                            <div class="d-flex justify-content-center">
-                                                {{-- <button type="submit" class="btn btn-primary">Update</button> --}}
-                                            </div>
-                                        </form>
+                                                <div class="mt-4 d-flex justify-content-center">
+                                                    <button type="submit" class="btn btn-primary">Update</button>
+                                                </div>
+                                            </form>
 
+                                            {{-- Additional Phone Number --}}
+                                            <form action="{{ route('panel.update-user-profile', $user->id) }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
+                                                @csrf
+                                                {{-- <input type="hidden" name="additional_number[]" value=""> --}}
+                                                {{-- <h6>My Info</h6> --}}
+                                                <div class="row mt-3">
+                                                    <div class="col-md-6 d-none">
+                                                        <div class="form-group">
+                                                            <label for="name">{{ __('Name')}}<span class="text-red">*</span></label>
+                                                            <input type="text" placeholder="Enter Name" class="form-control" name="name" id="name" value="{{ $user->name }}">
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-6 d-none">
+                                                        <div class="form-group">
+                                                            <div class="d-flex">
+                                                                <label for="email">{{ __('Email')}}<span class="text-red">*</span>
+                                                                </label>
+                                                                @if($user->email_verified_at == null )
+                                                                    <a class="btn btn-sm text-secondary ml-auto" style="line-height: 3px;" href="{{route('verification.resend')}}">Verify Email</a>
+                                                                @endif
+                                                            </div>
+                                                            <input @if($user->email_verified_at != null) readonly @endif type="email" placeholder="test@test.com" class="form-control" name="email" id="email" value="{{ $user->email }}">
+                                                        </div>  
+                                                    </div>
+                                                    
+                                                    {{-- Additioal Phone Fields --}}
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="phone">{{ __('Phone No')}}<span class="text-red">*</span> <span><i class="ik ik-info" title="Request catalogs are processed using this number"></i></span></label>
+                                                            <div class="d-flex">
+                                                                <input type="number" placeholder="enter Phone number" id="phone" name="phone" readonly class="form-control w-75" value="{{ $user->phone }}" required >
+                                                                @if(AuthRole() != 'Admin')
+                                                                    <button type="button" data-toggle="modal" data-target="#addAdditionalNumbers" class="btn btn-icon btn-primary ml-2"><i class="ik ik-plus"></i></button>
+                                                                @endif
+                                                            </div>
+                                                            @if(AuthRole() == 'Admin')
+                                                                <textarea name="phone[]" id="" cols="30" rows="10" class="form-control mt-2 additionalNumbers" placeholder="Enter Mobile Number" ></textarea>
+                                                                <p class="text-danger mt-1">Enter Number then use comma seperater Ex:3215478960,3215478962</p>
+                                                                <button data-user_id="{{$user_shop->user_id}}" class="btn btn-primary mt-1" id="save_additional_number">Save Additional Numbers</button>
+                                                            @endif
+                                                        </div>
+                                                        @if($user->additional_numbers != "null")
+                                                            @if(!is_null($user->additional_numbers) && $user->additional_numbers != '""')
+                                                                <ul class="list-unstyled">
+                                                                    @foreach (json_decode($user->additional_numbers) as $number)
+                                                                        {{-- @if($number != '"' && $number != null) --}}
+                                                                            <li>
+                                                                                <i class="ik ik-check text-success"></i>
+                                                                                {{$number}}
+                                                                                <a href="{{ route('panel.user.number.delete',[$user->id,$number]) }}" class="confirm-btn">
+                                                                                    <i class="ml-5 ik ik-trash text-danger"></i>
+                                                                                </a>
+                                                                            </li>
+                                                                        {{-- @endif --}}
+                                                                    @endforeach
+                                                                </ul>
+                                                            @endif
+                                                        @endif
+                                                    </div>
+
+                                                    @if (AuthRole() == 'Admin')
+                                                        <div class="col-md-6">
+                                                            @php
+                                                                $data = App\Models\survey::where('user_id',$user_shop->user_id)->first();
+                                                            @endphp
+                                                            @if ($data != null)
+                                                                <div class="h6">Survey Response</div>
+                                                                <span><b>{{ json_decode($data->question) }}</b></span>
+                                                                <p>
+                                                                    @foreach (json_decode($data->response) as $item)
+                                                                        {{ $loop->iteration.". ". $item }} <br>
+                                                                    @endforeach
+                                                                </p>
+                                                            @endif
+                                                        </div>
+                                                    @endif
+
+                                                    
+
+
+                                                    <div class="col-md-6 d-none">
+                                                        @php
+                                                            $industry = json_decode($user->industry_id,true);
+                                                        @endphp
+                                                        <div class="form-group">
+                                                            <label for="phone">{{ __('Industry')}}<span class="text-red">*</span></label>
+                                                            <select aria-readonly="true" @if(UserRole($user->id)['name'] == "User") required @endif name="industry_id[]" class="form-control select2" multiple id="industry_id">
+                                                                @foreach(App\Models\Category::where('category_type_id',13)->get() as $category)
+                                                                    <option value="{{ $category->id }}" @if(isset($industry)) {{ in_array($category->id,$industry) ? 'selected' :'' }} @endif> {{ $category->name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-4 d-none">
+                                                        <div class="form-group">
+                                                            <label for="dob">{{ __('DOB')}}<span class="text-red">*</span></label>
+                                                            <input id="" class="form-control" type="date" name="dob" placeholder="Select your birth date" value="{{ $user->dob }}" />
+                                                            <div class="help-block with-errors"></div>
+                                                        </div>  
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group d-none">
+                                                            <label for="">Gender</label>
+                                                            <div class="form-radio">
+                                                                    <div class="radio radio-inline">
+                                                                        <label>
+                                                                            <input type="radio" name="gender" value="male" {{ $user->gender == 'male' ? 'checked' : '' }}>
+                                                                            <i class="helper"></i>{{ __('Male')}}
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="radio radio-inline">
+                                                                        <label>
+                                                                            <input type="radio" name="gender" value="female" {{ $user->gender == 'female' ? 'checked' : '' }}>
+                                                                            <i class="helper"></i>{{ __('Female')}}
+                                                                        </label>
+                                                                    </div>
+                                                            </div>                                        
+                                                            <div class="help-block with-errors"></div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    
+                                                
+                                                    <div class="col-md-12 d-none">
+                                                        <div class="form-group">
+                                                            <label for="address">{{ __('Address')}}<span class="text-red">*</span></label>
+                                                            <textarea name="address" name="address" rows="5" class="form-control" placeholder="Enter Address">{{ $user->address }}</textarea>
+                                                        </div>  
+                                                    </div>                                    
+                                                </div>
+                                                <div class="d-flex justify-content-center">
+                                                    {{-- <button type="submit" class="btn btn-primary">Update</button> --}}
+                                                </div>
+                                            </form>
+
+                                        @endif
                                       
                                        
                                     </div>
@@ -411,100 +418,101 @@
                                         </form> --}}
 
                                         {{-- brief_induction --}}
-                                        <div class="card-body">
-                                            <div class="h5 my-3">Brief Intro</div>
-                                            <form action="{{ route('panel.user_shops.story',$user_shop->id) }}" method="post" enctype="multipart/form-data">
-                                                @csrf
-                                                <div class="row mt-3">
-                                                    <div class="col-md-12 col-12  d-none">
-                                                        <div class="form-group {{ $errors->has('title') ? 'has-error' : '' }}">
-                                                            <label for="title" class="control-label">Title</label>
-                                                            <input class="form-control" name="title" type="text" id="title"
-                                                            value="{{ $story['title'] ?? '' }}" placeholder="Enter Title">
-                                                        </div>
-                                                    </div>  
-                                                    <div class="col-md-6 col-12 my-3">
-                                                        <div class="form-group {{ $errors->has('cta_link') ? 'has-error' : '' }}">
-                                                            <label for="cta_link" class="control-label">Catalogue</label>
-                                                            <input type="file" class="form-control" name="cta_file">
+                                        @if(AuthRole() == 'Admin')
+                                            <div class="card-body">
+                                                <div class="h5 my-3">Brief Intro</div>
+                                                <form action="{{ route('panel.user_shops.story',$user_shop->id) }}" method="post" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="row mt-3">
+                                                        <div class="col-md-12 col-12  d-none">
+                                                            <div class="form-group {{ $errors->has('title') ? 'has-error' : '' }}">
+                                                                <label for="title" class="control-label">Title</label>
+                                                                <input class="form-control" name="title" type="text" id="title"
+                                                                value="{{ $story['title'] ?? '' }}" placeholder="Enter Title">
+                                                            </div>
+                                                        </div>  
+                                                        <div class="col-md-6 col-12 my-3">
+                                                            <div class="form-group {{ $errors->has('cta_link') ? 'has-error' : '' }}">
+                                                                <label for="cta_link" class="control-label">Catalogue</label>
+                                                                <input type="file" class="form-control" name="cta_file">
 
-                                                            @if(isset($story['cta_link']) != null)
-                                                                @if ($story['cta_link'] != "")
-                                                                    <i title="eKyc Verified" class="fa fa-check-circle fa-sm text-success"></i>
-                                                                    <a href="{{ asset($story['cta_link']) }}" target="_blank" class="btn-link pt-2">Show Catalogue</a>
+                                                                @if(isset($story['cta_link']) != null)
+                                                                    @if ($story['cta_link'] != "")
+                                                                        <i title="eKyc Verified" class="fa fa-check-circle fa-sm text-success"></i>
+                                                                        <a href="{{ asset($story['cta_link']) }}" target="_blank" class="btn-link pt-2">Show Catalogue</a>
+                                                                    @endif
+                                                                    <input class="form-control d-none" name="cta_link" type="link" id="cta_link"
+                                                                    value="{{ $story['cta_link'] ?? '' }}" placeholder="Enter Button Link" readonly>
                                                                 @endif
-                                                                <input class="form-control d-none" name="cta_link" type="link" id="cta_link"
-                                                                value="{{ $story['cta_link'] ?? '' }}" placeholder="Enter Button Link" readonly>
-                                                            @endif
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12 my-3 d-none">
-                                                        <div class="form-group {{ $errors->has('cta_label') ? 'has-error' : '' }}">
-                                                            <label for="label" class="control-label ">Catalogue Label</label>
-                                                            <input class="form-control" name="cta_label" type="text" id="cta_label"
-                                                            value="{{ 'Download Catalogue' }}" placeholder="Enter Button Label">
+                                                        <div class="col-md-6 col-12 my-3 d-none">
+                                                            <div class="form-group {{ $errors->has('cta_label') ? 'has-error' : '' }}">
+                                                                <label for="label" class="control-label ">Catalogue Label</label>
+                                                                <input class="form-control" name="cta_label" type="text" id="cta_label"
+                                                                value="{{ 'Download Catalogue' }}" placeholder="Enter Button Label">
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12 my-3">
-                                                        <div class="form-group {{ $errors->has('prl_link') ? 'has-error' : '' }}">
-                                                            <label for="prl_link" class="control-label">Price List</label>
-                                                            <input type="file" class="form-control" name="prl_file">
+                                                        <div class="col-md-6 col-12 my-3">
+                                                            <div class="form-group {{ $errors->has('prl_link') ? 'has-error' : '' }}">
+                                                                <label for="prl_link" class="control-label">Price List</label>
+                                                                <input type="file" class="form-control" name="prl_file">
 
-                                                            @if(isset($story['prl_link']) != null)
-                                                                @if ($story['prl_link'] != "")
-                                                                    <i title="eKyc Verified" class="fa fa-check-circle fa-sm text-success"></i>
-                                                                    <a href="{{ asset($story['prl_link']) }}" target="_blank" class="btn-link pt-2">Show Price List</a>
+                                                                @if(isset($story['prl_link']) != null)
+                                                                    @if ($story['prl_link'] != "")
+                                                                        <i title="eKyc Verified" class="fa fa-check-circle fa-sm text-success"></i>
+                                                                        <a href="{{ asset($story['prl_link']) }}" target="_blank" class="btn-link pt-2">Show Price List</a>
+                                                                    @endif
+                                                                    <input class="form-control d-none" name="prl_link" type="link" id="prl_link"
+                                                                    value="{{ $story['prl_link'] ?? '' }}" placeholder="Enter Button Link" readonly>
                                                                 @endif
-                                                                <input class="form-control d-none" name="prl_link" type="link" id="prl_link"
-                                                                value="{{ $story['prl_link'] ?? '' }}" placeholder="Enter Button Link" readonly>
-                                                            @endif
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12 my-3 d-none">
-                                                        <div class="form-group {{ $errors->has('prl_label') ? 'has-error' : '' }}">
-                                                            <label for="label" class="control-label ">Price List Label</label>
-                                                            <input class="form-control" name="prl_label" type="text" id="prl_label"
-                                                            value="{{ 'Download Price List'}}" placeholder="Enter Button Label">
+                                                        <div class="col-md-6 col-12 my-3 d-none">
+                                                            <div class="form-group {{ $errors->has('prl_label') ? 'has-error' : '' }}">
+                                                                <label for="label" class="control-label ">Price List Label</label>
+                                                                <input class="form-control" name="prl_label" type="text" id="prl_label"
+                                                                value="{{ 'Download Price List'}}" placeholder="Enter Button Label">
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12">
-                                                        <div class="form-group {{ $errors->has('video_link') ? 'has-error' : '' }}">
-                                                            <label for="label" class="control-label">Video Link</label>
-                                                            <input class="form-control" name="video_link" type="url" id="video_link"
-                                                            value="{{ $story['video_link'] ?? '' }}" placeholder="Enter Video Link">
+                                                        <div class="col-md-6 col-12">
+                                                            <div class="form-group {{ $errors->has('video_link') ? 'has-error' : '' }}">
+                                                                <label for="label" class="control-label">Video Link</label>
+                                                                <input class="form-control" name="video_link" type="url" id="video_link"
+                                                                value="{{ $story['video_link'] ?? '' }}" placeholder="Enter Video Link">
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12 mt-lg-0 md-mt-0 mt-3">
-                                                        <div class="form-group {{ $errors->has('img') ? 'has-error' : '' }}">
-                                                            <label for="img" class="control-label">Image</label>
-                                                            <input class="form-control" name="img" type="file" id="img"
-                                                            value="">
-                                                            @if(isset($story['img']) && $story['img'] != null)
-                                                            <img src="{{ asset($story['img']) }}" class="mt-1" alt="img" style="width: 40%; height: 80px; object-fit: contain;">
-                                                            <input type="text"  class="d-none" name="old_img" value="{{ asset($story['img']) }}" readonly>
-                                                            @endif
+                                                        <div class="col-md-6 col-12 mt-lg-0 md-mt-0 mt-3">
+                                                            <div class="form-group {{ $errors->has('img') ? 'has-error' : '' }}">
+                                                                <label for="img" class="control-label">Image</label>
+                                                                <input class="form-control" name="img" type="file" id="img"
+                                                                value="">
+                                                                @if(isset($story['img']) && $story['img'] != null)
+                                                                <img src="{{ asset($story['img']) }}" class="mt-1" alt="img" style="width: 40%; height: 80px; object-fit: contain;">
+                                                                <input type="text"  class="d-none" name="old_img" value="{{ asset($story['img']) }}" readonly>
+                                                                @endif
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    
-                                                    <div class="col-md-12 col-12 mt-3"> 
-                                                        <div class="form-group {{ $errors->has('description') ? 'has-error' : ''}}">
-                                                            <label for="description" class="control-label mb-2">Description</label>
-                                                            <textarea name="description" class="form-control" id="description1" cols="30" rows="10">{{ $story['description'] ?? '' }}</textarea>
+                                                        
+                                                        <div class="col-md-12 col-12 mt-3"> 
+                                                            <div class="form-group {{ $errors->has('description') ? 'has-error' : ''}}">
+                                                                <label for="description" class="control-label mb-2">Description</label>
+                                                                <textarea name="description" class="form-control" id="description1" cols="30" rows="10">{{ $story['description'] ?? '' }}</textarea>
+                                                            </div>
                                                         </div>
-                                                    </div>
 
-                                                    
-                                                    
-                                                    <div class="col-md-12 mt-3">
-                                                        <div class="form-group">
-                                                            <button type="submit" class="btn btn-primary">Update</button>
-                                                            <a href="{{ inject_subdomain('about-us', $user_shop->slug)}}#story" target="_blank" class="btn btn-outline-primary">Preview</a>
-                                                        </div>
-                                                    </div>    
-                                                </div> 
-                                            </form> 
-                                        </div>
-
+                                                        
+                                                        
+                                                        <div class="col-md-12 mt-3">
+                                                            <div class="form-group">
+                                                                <button type="submit" class="btn btn-primary">Update</button>
+                                                                <a href="{{ inject_subdomain('about-us', $user_shop->slug)}}#story" target="_blank" class="btn btn-outline-primary">Preview</a>
+                                                            </div>
+                                                        </div>    
+                                                    </div> 
+                                                </form> 
+                                            </div>
+                                        @endif
                                                 
                                         {{-- Testimonial Form --}}
                                         <h6 class="my-3 d-none">Testimonials Section</h6>

@@ -24,12 +24,15 @@ use App\Models\Team;
 use App\Models\TimeandActionModal;
 use BaconQrCode\Encoder\QrCode;
 use Carbon\Carbon;
+use Defuse\Crypto\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File as FacadesFile;
 use League\CommonMark\Extension\Table\Table;
+use ZipArchive;
 
 class SellerController extends Controller
 {
@@ -128,6 +131,34 @@ class SellerController extends Controller
 
     public function ashish(Request $request)
     {        
+
+
+
+        // echo storage_path();
+        
+        // return;
+        
+        $zip = new ZipArchive;
+        $fileName = 'zipFile.zip';
+        if ($zip->open($fileName,ZipArchive::CREATE)) {
+            $files = FacadesFile::files(storage_path("app/public/instructions"));
+
+            foreach ($files as $key => $file) {
+                $nameinZip = basename($file);
+
+                $zip->addFile($file,$nameinZip);
+                
+            }
+
+            $zip->close();
+        }
+
+        return response()->download($fileName);
+
+
+
+        
+
         // echo "Test Function <br><br><br>";
         // $user = auth()->user();
         // magicstring(session()->all());

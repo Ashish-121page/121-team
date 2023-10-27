@@ -38,33 +38,16 @@
 
     // Grouping Columns
 
-    $Essentials = ['Model_Code','SKU Type','Product name','Category','Sub_Category','Allow_Resellers','Live / Active','Inventory / Sample / Stock available','Image_main','image_name_front','image_name_back','image_name_side1','image_name_side2','image_name_poster','images_additional','Theme / Collection Name','Season / Month', 'Theme / Collection Year'];
 
-    $Sale_Pricing = ['Base currency','Selling Price_Unit','Customer_Price_without_GST','mrpIncl tax','HSNTax','HSN_Percnt','Shop_Price_VIP_Customer','Shop_Price_Reseller'];
-
-    $Basic_info = ['description','Search keywords','Brand Name','Video URL','artwork_url'];
-
-    $Variations = ['Variation Tag /  Group id','Variation attributes'];
-
-    $Exclusive = ['Copyright/ Exclusive item','Exclusive Buyer Name'];
-
-    $Sample_details =  ['Sample Year','Sample Month','Sampling time'];
-
-    $Sourced_from_outside = ['Vendor Name / Alias','Vendor price','Product Cost_Unit','Vendor currency','Sourcing Year','Sourcing month'];
-
-    $product_weight  = ['Gross weight','Net weight','Weight_unit'];
-
-    $product_dimensions = ['Product length','Product width','Product height','Product_Dimensions_unit']; 
-
-    $productpacking = ['Carton length','Carton width','Carton height','Carton_Dimensions_unit','standard_carton_pcs','carton_weight_actual','unit'];
-
-    $shipping_detauils = ['CBM','Production time (days)','MBQ','MBQ_units','Remarks'];
+    $default_property  = ['Model_Code','SKU Type','Product name','Category','Sub_Category','Customer_Price_without_GST','HSN Tax','HSN_Percnt'];
 
 @endphp
 <!-- push external head elements to head -->
 @push('head')
     <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/assets/css/normalize.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}">
     <style>
         .error {
             color: red;
@@ -157,6 +140,7 @@
             -webkit-box-shadow: unset !important;
             box-shadow: unset !important;
         }
+        
     </style>
 @endpush
 
@@ -189,14 +173,12 @@
                 <div class="col-md-4 product_boxes">
                     <div class="card getSingleProduct" style="cursor: pointer;">
                         <div class="card-header">
-                            <i class="fas fa-upload btn text-primary h5" style="font-size: 1.2rem;"></i>
+                            <i class="fas fa-plus btn text-primary h5" style="font-size: 1.2rem;"></i>
                             <h5>Single Product</h5>
                         </div>
                         <div class="card-body wrap_equal_height">
                             <ul>
-                                {{-- <li>Over 5,000 SKU ready</li> --}}
-                                <li>Add on your site</li>
-                                <li>Start selling</li>
+                                <li>Add Products 1 by 1</li>
                             </ul>
                         </div>
                     </div>
@@ -211,7 +193,8 @@
                         <div class="card-body wrap_equal_height">
                             <ul>
                                 {{-- <li>Over 5,000 SKU ready</li> --}}
-                                <li>Quick upload With Custom Fields</li>
+                                <li>Use Excel to add products</li>
+                                <li>Create templates based on product category</li>
                             </ul>
                         </div>
                     </div>
@@ -219,21 +202,19 @@
 
 
                 <div class="col-md-4 product_boxes" >
-                    @if ($Team_bulkupload)
-                        <div class="card @if ($acc_permissions->bulkupload == "yes") bulk_upload_btn @endif" style="cursor: pointer;  @if ($acc_permissions->bulkupload == "no") background: #8080807a;cursor: default; @endif">
-                            <div class="card-header">
-                                <i class="fas fa-crown btn text-warning h5" style="font-size: 1.2rem;"></i>
-                                <h5>Bulk Product Upload</h5>
-                            </div>
-                            <div class="card-body wrap_equal_height">
-                                <ul>
-                                    <li>200 SKU in 1 go</li>
-                                    <li>Quick upload</li>
-                                    {{-- <li>Start selling</li> --}}
-                                </ul>
-                            </div>
+                    <div class="card updateproducts" style="cursor: pointer;">
+                        <div class="card-header">
+                            <svg width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="mx-3">
+                                <path fill="#6666cc" fill-rule="evenodd" d="M3 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3.25a.75.75 0 0 0 0-1.5H3a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v5.25a.75.75 0 0 0 1.5 0V4.364l2.19 1.14a.25.25 0 0 1 .107.338l-1.072 2.062a.75.75 0 0 0 1.33.692l1.073-2.062a1.75 1.75 0 0 0-.745-2.36l-2.912-1.516A2 2 0 0 0 9 1H3Zm10 12a2 2 0 1 1-4 0a2 2 0 0 1 4 0Z" clip-rule="evenodd"/>
+                            </svg>
+                            <h5>Update SKUs</h5>
                         </div>
-                    @endif
+                        <div class="card-body wrap_equal_height">
+                            <ul>
+                                <li>Updated Selected SKUs using Excel</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
                
@@ -261,7 +242,8 @@
                 </div>
             </div>
             {{-- Card end --}}
-    
+
+   
             {{-- single product start --}}
                 <div class="row show_single_prouduct d-none">
                     <div class="col-md-10 mx-auto">
@@ -811,11 +793,196 @@
                     </div>
                 </div>
             {{-- Bulk Cart end --}}
+            
+            {{-- Custom Bulk Sheet Start --}}
+
+                <div class="row get_custom_Product d-none">
+
+                    <div class="col-md-6 col-12 mx-auto">
+                        <div class="row p-2 card" style="height: 100%">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-2 d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-cloud-upload-alt text-light bg-primary p-3 rounded-circle"
+                                            style="font-size:2vh"></i>
+                                    </div>
+                                    <div class="col-10 d-flex flex-column justify-content-center">
+                                        <form action="{{ route('panel.bulk.custom.product-upload',auth()->id()) }}" method="POST" enctype="multipart/form-data">
+                                            @csrf
+                                            <div class="content">
+                                                <h5>Import file</h5>
+                                                <span>Upload Excel Sheet to Upload New Products Data.</span>
+                                                
+                                                <input type="file" name="uploadcustomfield" id="uploadcustomfield" class="form-control my-3">                                    </div>
+                                            <div class="action" style="margin: 20px 0">
+                                                <button class="btn btn-outline-primary" type="submit">
+                                                    Upload
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 2nd Card --}}
+                    
+                    <div class="col-md-6 col-12 mx-auto">
+                        <div class="row p-2 card" style="height: 100%">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-2 d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-cloud-download-alt text-light bg-primary p-3 rounded-circle"
+                                            style="font-size:2vh"></i>
+                                    </div>
+                                    <div class="col-10">
+                                        <div class="content">
+                                            <h5>Export data </h5>
+                                            <span>Information will be downloaded as per - All Details. Change
+                                                template.</span>
+                                            <div class="alert alert-warning p-1 mt-2 invisible" style="width: fit-content;"
+                                                role="alert">
+                                                <i class="fas fa-info-circle text-warning mx-1"></i> Sheet will have thumbnail
+                                                urls & not images
+                                            </div>
+                                        </div>
+                                        <div class="action">
+                                            <a href="{{ route('panel.bulk.product.bulk-sheet-export',auth()->id()) }}" type="button"  class="btn btn-outline-primary">Download</a>
+                                            <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Create Template</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 3rd Card --}}
+
+                    {{-- <div class="col-md-6 col-12 mx-auto my-3">
+                        <div class="row p-2 card" style="height: 100%">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-2 d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-cloud-upload-alt text-light bg-primary p-3 rounded-circle"
+                                            style="font-size:2vh"></i>
+                                    </div>
+                                    <div class="col-10 d-flex flex-column justify-content-center">
+                                        <form action="{{ route('panel.bulk.product.bulk-update') }}" method="post" enctype="multipart/form-data" class="">
+                                            @csrf
+                                            <div class="content">
+                                                <h5>Update Record</h5>
+                                                <span>Upload Excel Sheet to Update Products Data.</span>
+                                                
+                                                <input required type="file" name="file" class="form-control">
+                                            </div>
+                                            <div class="action" style="margin: 20px 0">
+                                                <button class="btn btn-outline-primary" type="submit">
+                                                    Upload
+                                                </button>
+                                                
+                                                <a href="{{route('panel.bulk.product.bulk-export',auth()->id())}}" type="button"  class="btn btn-outline-primary">Fill & Upload</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> --}}
+
+                </div>
+
+
+                <div class="row get_custom_Product d-none mt-3">
+                    
+                    <div class="col-md-12 col-12">
+
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Template Name</th>
+                                        <th scope="col">Action</th>
+                                        <th scope="col">Created On</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    
+                                    @forelse ($ExistingTemplates as $item)
+                                        <tr class="">
+                                            <td scope="row">{{ $loop->iteration }}</td>
+                                            <td> {{ $item->template_name ?? 'No Name'}} </td>
+                                            <td>
+                                                <a href="{{ route('panel.products.download.template',$item->id) }}" class="btn btn-outline-primary btn-sm">Download</a>
+                                                <a href="{{ route('panel.products.edit.template',$item->id) }}" class="btn btn-outline-primary btn-sm">Edit</a>
+                                            </td>
+                                            <td>
+                                                {{  $item->created_at }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr class="">
+                                            <td scope="row" colspan="4">Nothing to Show Here..</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+
+
+                </div>
+
+            {{-- Custom Bulk Sheet End --}}
+            
+
+
+
+            {{-- upload Bulk Record --}}
+            
+            <div class="row update_products d-none">
+                <div class="col-md-6 col-12 mx-auto my-3">
+                    <div class="row p-2 card" style="height: 100%">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-2 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-cloud-upload-alt text-light bg-primary p-3 rounded-circle"
+                                        style="font-size:2vh"></i>
+                                </div>
+                                <div class="col-10 d-flex flex-column justify-content-center">
+                                    <form action="{{ route('panel.bulk.product.bulk-update') }}" method="post" enctype="multipart/form-data" class="">
+                                        @csrf
+                                        <div class="content">
+                                            <h5>Update Record</h5>
+                                            <span>Upload Excel Sheet to Update Products Data.</span>
+                                            
+                                            <input required type="file" name="file" class="form-control">
+                                        </div>
+                                        <div class="action" style="margin: 20px 0">
+                                            <button class="btn btn-outline-primary" type="submit">
+                                                Upload
+                                            </button>
+                                            
+                                            <a href="{{route('panel.bulk.product.bulk-export',auth()->id())}}" type="button"  class="btn btn-outline-primary">Fill & Upload</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
         </div>
     </div>
+    @include('panel.products.include.create_template')
 
 
-        
+
 </div>
     <!-- push external js -->
     @push('script')
@@ -825,7 +992,41 @@
     <script src="{{asset('backend/js/form-advanced.js') }}"></script>
     <script src="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
     <script src="https://cdn.ckeditor.com/4.14.1/full/ckeditor.js"></script>
+    <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
     <script>
+
+        $(document).ready(function () {
+            $("#check_all").click(function (e) {
+                $(".my_attribute").click();
+            });
+
+            $(".my_attribute").click(function (e) { 
+                let keyindex = $(this).data('index');
+                let tag = `<div class="form-group" id="parent_${$(this).data('index')}">
+                    <input type="checkbox" value="${$(this).val()}" id="${$(this).attr('id')}" class="selected_prop m-2" checked data-parent="parent_${$(this).data('index')}">
+                    <label for="${$(this).attr('id')}" class="form-label" style="font-size: large;user-select: none;">${$(this).val()}</label>
+                </div>`;
+
+                if ($(this).is(":checked")) {
+                    $(".selected_tag").append(tag);
+                }else{
+                    $(`#parent_${$(this).data('index')}`).remove();
+                }
+            });
+
+        });
+    </script>
+    
+
+    <script>
+        //demo 01
+        $("#demo01").animatedModal({
+            animatedIn: 'lightSpeedIn',
+            animatedOut: 'bounceOutDown',
+            color: '#f3f3f3',
+
+        });
+        
 
         $('tags').tagsinput('items'); 
          var options = {
@@ -849,23 +1050,36 @@
         });
 
         
-        $(document).ready(function(){
-         $('#import-btn').on('click',function(){
-            $('.import').removeClass('d-none') 
-            $('.export').addClass('d-none') 
-            $('.import-div').removeClass('d-none') 
-            $('.export-div').addClass('d-none') 
-            $('#export-btn').removeClass('btn-primary')  
-            $(this).addClass('btn-primary') 
-         });
-         $('#export-btn').on('click',function(){
-            $('.export').removeClass('d-none') 
-            $('.import').addClass('d-none') 
-             $('.import-div').addClass('d-none') 
-             $('#import-btn').removeClass('btn-primary')  
-             $('#import-btn').addClass('')  
-            $(this).addClass('btn-primary') 
-         });
+        $(document).ready(function () {
+            
+            $('#import-btn').on('click', function () {
+                $('.import').removeClass('d-none')
+                $('.export').addClass('d-none')
+                $('.import-div').removeClass('d-none')
+                $('.export-div').addClass('d-none')
+                $('#export-btn').removeClass('btn-primary')
+                $(this).addClass('btn-primary')
+            });
+            $('#export-btn').on('click', function () {
+                $('.export').removeClass('d-none')
+                $('.import').addClass('d-none')
+                $('.import-div').addClass('d-none')
+                $('#import-btn').removeClass('btn-primary')
+                $('#import-btn').addClass('')
+                $(this).addClass('btn-primary')
+            });
+
+            
+
+
+            // enable Shortcutkey for ( Ctrl + <- ) TO Back
+            // $(document).keydown(function (e) {
+            //     if (e.ctrlKey && e.which == 37) {
+            //         $(".back_btn").click()
+            //     }
+            // });
+
+
         });
 
        
@@ -881,11 +1095,19 @@
             $('.back_btn').removeClass('d-none');
         })
 
+        $('.updateproducts').on('click', function () {
+            $('.update_products').removeClass('d-none')
+            $('.product_boxes').addClass('d-none');
+            $('.back_btn').removeClass('d-none');
+        });
+
+
 
         $('.back_btn').on('click',function(){
             $('.product_boxes').removeClass('d-none');
             $('.show_single_prouduct').addClass('d-none');
             $('.get_custom_Product').addClass('d-none');
+            $('.update_products').addClass('d-none');
             $('.bulk_product').addClass('d-none');
             $(this).addClass('d-none');
         })
@@ -1017,5 +1239,26 @@
         });
     });
     </script>
+
+
+    @if (request()->has('update_record'))
+        <script>
+            $(document).ready(function () {
+                $(".updateproducts").click();
+
+                $.toast({
+                    heading: 'Success',
+                    text: 'Upload Excel to Update SKUs',
+                    icon: 'success',
+                    position: 'top-right', 
+                    textAlign: 'left',
+                    loader: true,     
+                    loaderBg: '#9EC600'
+                })
+            });
+        </script>
+    @endif
+
+
     @endpush
 @endsection

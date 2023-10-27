@@ -361,8 +361,18 @@
     {{-- Over The Layer Content --}}
     @if ( isset($proposalid) && $proposalid != -1)
         <div class="ydfgwej">
-            <button class="btn btn-primary btn-sm" type="button" id="select-all">Select All</button>
-            <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-primary btn-sm" target="">Next</a>
+            <button class="btn btn-outline-primary" type="button" id="select-all">
+                <span class="d-none d-md-none d-sm-none">Select All</span>
+                <span class="d-block d-md-block d-sm-block">
+                    <i class="fas fa-check-double"></i>
+                </span>
+            </button>
+            <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-outline-primary" target="">
+                <span class="d-none d-md-none d-sm-none">Next</span>
+                <span class="d-block d-md-block d-sm-block">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+            </a>
         </div>
     @endif
     
@@ -405,13 +415,13 @@
                         </div>
 
                         
-                        @if (isset($proposalid) && $proposalid != -1 )
+                        {{-- @if (isset($proposalid) && $proposalid != -1 )
                             <div class="">
                                 <button type="button" class="btn btn-outline-primary">
                                     Collection <span>4</span>
                                 </button>
                             </div>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
                 <div class="row my-2">
@@ -679,37 +689,37 @@
                                     @endforeach
                                 @endif
                             {{-- Applying scoobooo layout in color and other attri End --}}
-                        {{-- Exclusive Products --}}
+                            {{-- Exclusive Products --}}
 
-                        {{-- <h6 class="widget px-2">Exclusive Products</h6> --}}
-                        <div class="mx-2 d-flex">
-                            <input type="checkbox" class="form-check-input visually-hidden" name="exclusive" id="exclusive" @if ($request->get('exclusive')) checked @endif>
-                            <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
-                            @if ($request->get('exclusive') == 'on')
-                                <div class="text-success" style="font-weight: bolder">
-                                    <i class="uil-check-circle" style="font-size: 20px"></i>
-                                </div>
-                            @else
-                                {{-- <div class="text-danger" style="font-weight: bolder"> OFF </div> --}}
-                            @endif
+                            {{-- <h6 class="widget px-2">Exclusive Products</h6> --}}
+                            <div class="mx-2 d-flex">
+                                <input type="checkbox" class="form-check-input visually-hidden" name="exclusive" id="exclusive" @if ($request->get('exclusive')) checked @endif>
+                                <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
+                                @if ($request->get('exclusive') == 'on')
+                                    <div class="text-success" style="font-weight: bolder">
+                                        <i class="uil-check-circle" style="font-size: 20px"></i>
+                                    </div>
+                                @else
+                                    {{-- <div class="text-danger" style="font-weight: bolder"> OFF </div> --}}
+                                @endif
+
+                            </div>
+
+                            {{-- Exclusive Products --}}
+
+
 
                         </div>
-
-                        {{-- Exclusive Products --}}
-
-
-
-                        </div>
-                        <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn">Filter</button>
-                        @if (isset($proposalid) && $proposalid != -1 )
-                            <a class="btn mt-2 d-block btn-primary w-100" href="{{ route('pages.proposal.edit',['proposal' => $proposalid,'user_key' => $user_key]) }}?margin=0" id="resetButton">Reset</a>
-                        @else
-                            <a class="btn mt-2 d-block btn-primary w-100" href="{{route('pages.shop-index')}}" id="resetButton">Reset</a>
-                        @endif
-
-
                     </form>
                 </div>
+
+                <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn" form="searchform">Filter</button>
+                @if (isset($proposalid) && $proposalid != -1 )
+                    <a class="btn mt-2 d-block btn-primary w-100" href="{{ route('pages.proposal.edit',['proposal' => $proposalid,'user_key' => $user_key]) }}?margin=0" id="resetButton">Reset</a>
+                @else
+                    <a class="btn mt-2 d-block btn-primary w-100" href="{{route('pages.shop-index')}}" id="resetButton">Reset</a>
+                @endif
+
                 
             </div><!--end col-->
 

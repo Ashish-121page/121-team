@@ -139,6 +139,12 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
         Route::get('delete/{product}', ['uses' => 'ProductController@destroy', 'as' => 'destroy']);
         Route::get('delete/product/image/{id}', ['uses' => 'ProductController@deleteImage', 'as' => 'deleteImage']);
         Route::get('/upload/qr/code', ['uses' => 'ProductController@updateProductSku', 'as' => 'update.qr']);
+
+        Route::get('edit/template/{template}', ['uses' => 'ProductController@edittemplate', 'as' => 'edit.template']);
+        Route::post('update/template/{template}', ['uses' => 'ProductController@updatetemplate', 'as' => 'update.template']);
+        Route::get('download/template/{template}', ['uses' => 'ProductController@downloadtemplate', 'as' => 'download.template']);
+        
+        
     }); 
         
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/user-shops','as' =>'panel.user_shops.'], function () {

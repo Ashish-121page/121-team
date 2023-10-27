@@ -21,7 +21,7 @@
     
 </head>
 <body>
-    <div id="app">
+    <div id="app" class="sidebar-mini">
         <main>
             @yield('content')
         </main>

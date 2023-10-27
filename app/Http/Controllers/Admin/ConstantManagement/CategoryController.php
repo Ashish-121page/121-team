@@ -30,38 +30,22 @@ class CategoryController extends Controller
     public function index($type_id,Request $request)
     {
         try {
-            if($request->has('level')){
-                $level = $request->get('level');
+
+            $length = 20;
+            $industries = Category::where('parent_id',null)->get();
+
+            if (AuthRole() == 'Admin') {
+                $category = Category::get();
+                $sub_category = Category::where('level',3)->get();
+
             }else{
-                $level = 1;
+                $category = Category::where('user_id',auth()->id())->where('level',2)->get();
+                $sub_category = Category::where('user_id',auth()->id())->where('level',3)->get();
             }
-            $nextlevel = $level + 1;
-            if($request->has('parent_id')){
-                $category = fetchGetData('App\Models\Category',['category_type_id','level','parent_id'],[$type_id,$level,$request->get('parent_id')]);
-            }else{
-                $category = fetchGetData('App\Models\Category',['category_type_id','level'],[$type_id,$level]);
-            }
-            
-            if(AuthRole() != 'Admin'){
-                $user = auth()->user();
-                // if(!empty($user->industry_id)){
-                if(!is_null($user->industry_id)){
-                    if($request->has('parent_id')){
-                        $self_category = Category::whereParentId($request->get('parent_id'))->whereLevel($level)->whereUserId($user->id)->whereType(0)->get();
-                        $category = Category::whereParentId($request->get('parent_id'))->whereLevel($level)->whereType(1)->whereIn('id',json_decode($user->industry_id))->get();
-                        $category = $self_category->merge($category);
-                    }else{
-                       $self_category = Category::whereLevel($level)->whereUserId($user->id)->whereType(0)->get();
-                        $category = Category::whereLevel($level)->whereType(1)->whereIn('id',json_decode($user->industry_id))->get();
-                        $category = $self_category->merge($category);
-                    }
-                }else{
-                       $self_category = Category::whereLevel($level)->whereUserId($user->id)->whereType(0)->get();
-                        $category = $self_category;
-                }
-               
-            }
-            return view('backend.constant-management.category.index', compact('category','level','nextlevel','type_id'));
+
+
+
+            return view('backend.constant-management.category.index', compact('category','industries','sub_category'));
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
@@ -86,12 +70,12 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|max:30',
-            'level' => 'required',
-            'category_type_id' => 'required',
-        ]);
-        //
+        // $this->validate($request, [
+        //     'name' => 'required|max:30',
+        //     'level' => 'required',
+        //     'category_type_id' => 'required',
+        // ]);
+        
         // return $request->all();
         try {
 
@@ -101,23 +85,136 @@ class CategoryController extends Controller
                 $type = 0;
             }
 
-            $data = new Category();
-            $data->name=$request->name;
-            $data->type=$type;
-            $data->level=$request->level;
-            $data->user_id=auth()->id();
-            $data->category_type_id=$request->category_type_id;
-            $data->parent_id=$request->parent_id;
-            if ($request->hasFile('icon')) {
-                $image = $request->file('icon');
-                $path = storage_path('app/public/backend/category-icon');
-                $imageName = 'category-icon' . $data->id.rand(000, 999).'.' . $image->getClientOriginalExtension();
-                $image->move($path, $imageName);
-                $data->icon=$imageName;
-            }
-            $data->save();
+            $count = 0;
 
-            return redirect('panel/constant-management/category/view/'.$request->category_type_id.'?level='.$request->level.'&parent_id='.$request->parent_id)->with('success', 'Category created successfully.');
+            // Decrypting Data Recenvied Data
+            $category_type_id = decrypt($request->category_type_id);
+            $user_id = decrypt($request->user_id);
+            $shop_id = decrypt($request->shop_id);
+            // Conveting To Proper Case
+            $catname = strtolower($request->name);
+            $catname = ucwords($catname);      
+            
+
+
+            // Creating and CHecking FO ruNdefined Category for Users Category
+            if ($request->get('parent_id') == null) {
+
+                $chk_undefined = Category::where('name','undefined')->where('user_id',null)->get();            
+                if (count($chk_undefined) == 0) {
+                    $industry_for_user = Category::create([
+                        'name' => 'undefined',
+                        'category_type_id' => $category_type_id,
+                        'level' => 1,
+                        'parent_id' => null,
+                        'user_id' => null,
+                        'type' => 1,
+                        'icon' => null
+                    ]);
+                    echo "UNdefined Industru Is not Exist".newline();
+                }else{
+                    echo "UNdefined Industru Already Exist".newline();
+                    $industry_for_user = $chk_undefined[0];
+                }
+    
+                $chk_own = Category::where('name',$catname)->where('user_id',$user_id)->get();
+                $chk_Default = Category::where('name',$catname)->where('user_id',null)->get();
+
+                // Validating Category Name
+                if (count($chk_own) != 0) {
+                    echo "Category Already Exist in Your Account.";
+                }
+
+                if (count($chk_Default) != 0) {
+                    echo "System Category Already Exist, With Same Name.";
+                }
+
+                
+                $category = Category::create([
+                    'name' => $catname,
+                    'category_type_id' => $category_type_id,
+                    'level' => 2,
+                    'parent_id' => $industry_for_user->id,
+                    'user_id' => $user_id,
+                    'type' => $type,
+                    'icon' => null
+                ]);
+
+                foreach (explode(",",$request->value[0]) as $key => $value) {
+                    // Converting TO ProperCase
+                    $value = strtolower($value);
+                    $value = ucwords($value);
+
+                    Category::create([
+                        'name' => $value,
+                        'category_type_id' => $category_type_id,
+                        'level' => 3,
+                        'parent_id' => $category->id,
+                        'user_id' => $user_id,
+                        'type' => $type,
+                        'icon' => null
+                    ]);
+
+                    $count++;
+                }
+
+            }else{
+
+
+                if (AuthRole() != 'Admin') {
+                    return back()->with('error',"You Don't Have Permission to Access This Page");
+                }
+
+                $chk_Default = Category::where('name',$catname)->where('user_id',null)->get();
+
+                if (count($chk_Default) != 0) {
+                    echo "System Category Already Exist, With Same Name.";
+                }
+                
+                $category = Category::create([
+                    'name' => $catname,
+                    'category_type_id' => $category_type_id,
+                    'level' => 2,
+                    'parent_id' => $request->parent_id,
+                    'user_id' => null,
+                    'type' => $type,
+                    'icon' => null
+                ]);
+
+                foreach (explode(",",$request->value[0]) as $key => $value) {
+                    // Converting TO ProperCase
+                    $value = strtolower($value);
+                    $value = ucwords($value);
+
+                    Category::create([
+                        'name' => $value,
+                        'category_type_id' => $category_type_id,
+                        'level' => 3,
+                        'parent_id' => $category->id,
+                        'user_id' => null,
+                        'type' => $type,
+                        'icon' => null
+                    ]);
+                    $count++;
+                }
+
+
+
+            }
+
+
+            // ` For Icon Of The Category
+
+            // if ($request->hasFile('icon')) {
+            //     $image = $request->file('icon');
+            //     $path = storage_path('app/public/backend/category-icon');
+            //     $imageName = 'category-icon' . $data->id.rand(000, 999).'.' . $image->getClientOriginalExtension();
+            //     $image->move($path, $imageName);
+            //     $data->icon=$imageName;
+            // }
+
+            
+            return redirect('panel/constant-management/category/view/13')->with('success', "1 Category and $count Sub-category created successfully.");
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
@@ -352,14 +449,54 @@ class CategoryController extends Controller
                 return back()->with('error','You cannot Update this Category ID since it is linked to a product ');   
             }
 
+        }        
+    }
+
+
+
+    public function bulkdelete(Request $request,$user_id) {
+
+        try {
+            
+            $countcategoy = 0;
+            $countSubcategoy = 0;
+            $ids = explode(",",$request->delete_ids);
+            
+            
+            
+            // ! Validating ....
+            foreach ($ids as $key => $value) {
+                $chk = Product::where('category_id',$value)->get();
+                if (count($chk) != 0) {
+                    $name = $chk[0]->name;
+                    // echo "You Cannot Delete $name Because it is linked with Products".newline();
+                    return back()->with('error',"You Cannot Delete $name Because it is linked with Products");
+                }
+            }
+
+            
+            // Deleting Sub Categories
+            foreach ($ids as $key => $value) {
+                $record = Category::where('parent_id',$value)->get();
+                foreach ($record as $key => $item) {
+                    $item->delete();
+                    $countSubcategoy++;
+                }
+                // $record->delete();
+                Category::whereId($value)->delete();
+
+                $countcategoy++;
+            }
+            
+            
+
+            return back()->with('success',"$countcategoy category, and $countSubcategoy are deleted Successfully.");
+        } catch (\Throwable $th) {
+            throw $th;
         }
 
 
- 
-
-        
     }
-
 
 
 

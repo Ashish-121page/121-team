@@ -812,6 +812,7 @@ function getSupportTicketStatus($id = -1)
 }
 if(!function_exists('getProductCategoryByShop')){
     function getProductCategoryByShop($slug, $type = 1){
+        $my_industry = [];
 
         // if type 1 = industry wise, 0 = product wise
 
@@ -833,7 +834,7 @@ if(!function_exists('getProductCategoryByShop')){
 
 
             if($user->industry_id == null){
-                $my_indrustry == [];
+                $my_industry = [];
             }else{
                 $my_indrustry = json_decode($user->industry_id, true);
             }
@@ -1219,6 +1220,24 @@ if(!function_exists('getProductCountViaCategoryId')){
     }
 }
 
+if(!function_exists('getProductCountViaCategoryIdOwner')){
+    function getProductCountViaCategoryIdOwner($categoryId,$userId){
+        if($userId == auth()->id()){
+
+            $shop_items_ids = App\Models\UserShopItem::where('category_id',$categoryId)->
+                                where('user_id',$userId)->
+                                pluck('product_id');
+            
+        }else{
+            $shop_items_ids = App\Models\UserShopItem::where('category_id',$categoryId)->whereIsPublished(1)->where('user_id',$userId)->pluck('product_id');
+
+        }
+        
+
+        return App\Models\Product::whereIn('id', $shop_items_ids)->where('is_publish',1)->groupBy('sku')->get()->count();
+    }
+}
+
 if(!function_exists('getProductCountViaSubCategoryId')){
     function getProductCountViaSubCategoryId($sub_categoryId,$userId){
         if($userId == auth()->id()){
@@ -1357,7 +1376,7 @@ if(!function_exists('getAccessCatelogueRequestByNumber')){
 }
 if(!function_exists('checkAccessCodeRedeemed')){
     function checkAccessCodeRedeemed($user_id){
-        return  App\Models\App\Models\AccessCode::where('redeemed_user_id',$user_id)->first();
+        return  App\Models\AccessCode::where('redeemed_user_id',$user_id)->first();
     }
 }
 if(!function_exists('getEnqCountFromWeb')){

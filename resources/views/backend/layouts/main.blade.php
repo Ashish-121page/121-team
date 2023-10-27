@@ -11,7 +11,7 @@
 
 	@yield('firebase_head')
 </head>
-<body id="app" >
+<body id="app" class="sidebar-mini">
     <div class="wrapper">
     	<!-- initiate header-->
     	@include('backend.include.header')

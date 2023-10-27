@@ -20,6 +20,9 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
 use App\Models\Setting;
 use App\Models\UserShopItem;
+use App\Models\Usertemplates;
+use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use phpseclib3\File\ASN1\Maps\AttributeValue;
 
@@ -283,13 +286,84 @@ class ProductController extends Controller
             }
 
             $col_list = (object) array_merge((array)$delfault_cols,$new_custom_attribute);
-            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list'));
+
+            $ExistingTemplates = Usertemplates::where('user_id',$user->id)->get();
+
+
+            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates'));
 
         }catch(\Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
 
+    public function downloadtemplate(Usertemplates $template) {
+
+        try {
+
+            $records = json_decode($template->columns_values);
+            $templatename = $template->template_name;
+            $user = auth()->user();
+            $mytime = Carbon::now();
+
+            $filename = "$templatename -$user->name -".$mytime->toDateTimeString();
+
+            // ` Calling Function from Another Controller
+            app('App\Http\Controllers\NewBulkController')->exportExcel($records,$filename);
+            
+            
+            return back()->with('success',"Download Started");
+        } catch (\Throwable $th) {
+            // throw $th;
+            return back()->with('error', 'There was an error: ' . $th->getMessage());
+        }
+        
+
+        
+    }
+    
+    public function edittemplate(Usertemplates $template) {
+        $user = auth()->user();
+        $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
+        $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
+        $num = end($delfault_cols) +1;
+        $new_custom_attribute = [];
+        foreach ($user_custom_col_list as $key => $value) {
+            $new_custom_attribute += [$value => $num];
+            $num++;
+        }
+
+        $col_list = (object) array_merge((array)$delfault_cols,$new_custom_attribute);  
+
+
+
+
+        return view('panel.products.edit-template',compact('col_list','template'));
+    }
+    public function updatetemplate(Request $request,Usertemplates $template) {
+        
+        try {
+            
+            $request['finalarray'] = array_merge($request->get('systemfiels'),$request->get('myfields') ?? []);
+            
+            $template->template_name = $request->template_name;
+            $template->columns_values = json_encode($request->finalarray);
+            $template->save();
+            
+            
+            
+            return back()->with('success',"Temlate Updated Successfully !!");
+        } catch (\Throwable $th) {
+            // throw $th;
+            return back()->with('error',"There was an error try again later.");
+        }
+        
+    }
+    
+    
+    
+    
+    
     /**
      * Store a newly created resource in storage.
      *

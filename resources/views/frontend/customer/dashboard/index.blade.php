@@ -22,6 +22,7 @@
         $acc_permissions->pricegroup  = $acc_permissions->pricegroup  ?? 'no';
         $acc_permissions->managegroup  = $acc_permissions->managegroup  ?? 'no';
         $acc_permissions->bulkupload  = $acc_permissions->bulkupload  ?? 'no';
+        $acc_permissions->Filemanager = $acc_permissions->Filemanager  ?? 'no';
         $user_key = encrypt(auth()->id());
         $slug = App\Models\Usershop::where('user_id',auth()->user()->id)->first()->slug;
         $teamDetails = App\Models\Team::where('contact_number',session()->get('phone'))->first();
@@ -356,18 +357,11 @@
                                              Support Ticket</h6>
                                     </div>
                                 </a><!--end nav link-->
-                                {{-- <a data-active="support-ticket" class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('active') == "support-ticket") active @endif" id="support-ticket-tab" data-bs-toggle="pill" href="#support-ticket" role="tab" aria-controls="support-ticket" aria-selected="false">
-                                    <div class="text-start py-1 px-3">
-                                        <h6 class="mb-0">
-                                            <i class="uil uil-envelope h5 align-middle me-2 mb-0"></i>
-                                             Support Ticket</h6>
-                                    </div>
-                                </a><!--end nav link--> --}}
                             </li><!--end nav item-->
 
                         </ul><!--end nav pills-->
-                        {{-- <div class="">
-                            @if (!App\Models\AccessCode::where('redeemed_user_id',auth()->id())->first()) --}}
+                        <div class="">
+                            {{-- @if (!App\Models\AccessCode::where('redeemed_user_id',auth()->id())->first()) --}}
                                 {{-- <div class="card ">
                                    <div class="card-body">
                                         <h4 class="text-left">Become 121 Seller!</h4>
@@ -383,14 +377,14 @@
                                 <div class="alert alert-info">
                                     Your Access Code has been submitted, Your profile requires admin approval.
                                 </div>
-                            @else
+                            @else --}}
                                 @if(auth()->user()->is_supplier == 1)
                                     @if (auth()->user()->status == 1)
-                                        <a type="submit" href="{{ route('panel.dashboard') }}" class="btn btn-outline-primary d-block">Open Seller Tools    </a>
+                                        <a type="submit" href="{{ route('panel.dashboard') }}" class="btn btn-outline-primary d-block">Open Seller Tools </a>
                                     @endif
                                 @endif
-                            @endif
-                        </div> --}}
+                            {{-- @endif --}}
+                        </div>
                     </div>
                 </div><!--end col-->
                 <div class="col-lg-8 col-md-12 col-12">
@@ -559,19 +553,13 @@
                                                 </h5> --}}
                                                 <div class="text-center mx-auto justify-content-center">
                                                     <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Make Offer</a>
+                                                    @if(getUserProgressStatistics(auth()->id()) == 100)
+                                                        <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Scan QR</a>
+                                                    @endif
+
+
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-12">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                {{-- <h5 class="">
-                                                    Create Offer
-                                                </h5> --}}
-                                                <div class="text-center mx-auto justify-content-center">
-                                                    <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Scan QR</a>
-                                                </div>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -724,12 +712,10 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    @endif
 
-                                    @if(getUserProgressStatistics(auth()->id()) == 100)
+                                    <!-- statistics -->
+                                    <div class="col-xl-6 col-md-12 mt-3">
 
-                                     <!-- statistics -->
-                                     <div class="col-xl-6 col-md-12 mt-3">
                                         <div class="card table-card-right">
                                             <div class="card-header">
                                                 <h4>{{ __('Statistics')}}</h4>
@@ -806,7 +792,7 @@
                                     </div>
                                     @endif
 
-
+                                    @endif
 
 
                                 </div>
@@ -905,18 +891,20 @@
                                 <div class="border-bottom"></div>
                                 <div class="card shadow mb-3 border-0" style="width: 100%; overflow-x: auto; flex-wrap: nowrap;">
                                     <ul class="nav custom-pills mb-0 wrapper_pills" id="pills-tab" role="tablist">
-                                        <li class="nav-item" role="presentation">
+                                        {{-- <li class="nav-item" role="presentation">
                                             <button class="btn pills-btn active" id="pills-setting1-tab" data-bs-toggle="pill" data-bs-target="#pills-setting1" type="button" role="tab" aria-controls="pills-setting1" aria-selected="false">Public Access</button>
-                                        </li>
+                                        </li> --}}
                                         <li class="nav-item" role="presentation">
-                                            <button class="btn pills-btn" id="pills-settings2-tab" data-bs-toggle="pill" data-bs-target="#pills-settings2" type="button" role="tab" aria-controls="pills-settings2" aria-selected="false">Passcodes</button>
+                                            <button class="btn pills-btn active" id="pills-settings4-tab" data-bs-toggle="pill" data-bs-target="#pills-settings4" type="button" role="tab" aria-controls="pills-settings4" aria-selected="false">Currencies</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
                                             <button class="btn pills-btn" id="pills-settings3-tab" data-bs-toggle="pill" data-bs-target="#pills-settings3" type="button" role="tab" aria-controls="pills-settings3" aria-selected="false">Team</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            {{-- <button class="btn pills-btn" id="pills-settings4-tab" data-bs-toggle="pill" data-bs-target="#pills-settings4" type="button" role="tab" aria-controls="pills-settings4" aria-selected="false">T&A</button> --}}
+                                            <button class="btn pills-btn" id="pills-settings2-tab" data-bs-toggle="pill" data-bs-target="#pills-settings2" type="button" role="tab" aria-controls="pills-settings2" aria-selected="false">Passcodes</button>
                                         </li>
+                                      
+                                     
                                     </ul>
                                 </div>
 
@@ -924,8 +912,8 @@
                                     <div class="tab-content" id="pills-tabContent">
 
                                         {{-- Display & My Customers List --}}
-                                        <div class="tab-pane fade show active" id="pills-setting1" role="tabpanel" aria-labelledby="pills-setting1-tab" tabindex="0">
-                                            {{-- Display and Customer Section --}}
+
+                                        {{-- <div class="tab-pane fade show active" id="pills-setting1" role="tabpanel" aria-labelledby="pills-setting1-tab" tabindex="0">
                                             <div class="card-body">
                                                 <h5 class="">Public Access</h5>
                                                 <form action="{{ route('customer.update.settings') }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
@@ -983,7 +971,9 @@
                                                     <button type="submit" class="btn btn-success mt-3"> Update </button>
                                                 </form>
                                             </div>
-                                        </div> {{-- End Div --}}
+                                        </div>  --}}
+                                        
+                                        {{-- End Div --}}
 
                                         {{-- Passcodes Only --}}
                                         <div class="tab-pane fade" id="pills-settings2" role="tabpanel" aria-labelledby="pills-settings2-tab" tabindex="0">
@@ -1024,7 +1014,7 @@
                                                             </div>
                                                         </div> --}}
                                                     </div>
-                                                    <button type="submit" class="btn btn-success mt-3"> Update Code</button>
+                                                    <button type="submit" class="btn btn-outline-primary mt-3"> Update </button>
                                                 </form>
                                             </div>
                                         </div>
@@ -1123,12 +1113,12 @@
                                             </div>
                                         </div>
 
-                                        {{-- T&A Only --}}
-                                        {{-- <div class="tab-pane fade" id="pills-settings4" role="tabpanel" aria-labelledby="pills-settings4-tab" tabindex="0">
+                                        {{-- Currencies Only --}}
+                                        <div class="tab-pane fade show active" id="pills-settings4" role="tabpanel" aria-labelledby="pills-settings4-tab" tabindex="0">
                                             <div class="card-body">
-                                                <h5 class="">T&A</h5>
+                                                @include('frontend.customer.dashboard.section.currency-load')
                                             </div>
-                                        </div>  --}}
+                                        </div> 
 
 
                                     </div>
@@ -1851,17 +1841,17 @@
                                             <a data-subactive="my_info" class="mr-2 customer_tabs btn pills-btn @if(!request()->get('subactive')  || request()->get('subactive')  == 'my_info') active @endif" >{{ __('Account Info')}}</a>
                                         </li>
 
-                                        <li class="nav-item">
+                                        {{-- <li class="nav-item">
                                             <a data-subactive="site_detail" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'site_detail') active @endif" >{{ __('My Page')}}</a>
-                                        </li>
+                                        </li> --}}
 
                                         <li class="nav-item">
                                             <a data-subactive="business_profile" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'business_profile') active @endif">{{ __('e-KYC')}}</a>
                                         </li>
 
-                                        <li class="nav-item">
+                                        {{-- <li class="nav-item">
                                             <a data-subactive="about_me" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'about_me') active @endif" >{{ __('Brief Intro')}}</a>
-                                        </li>
+                                        </li> --}}
 
                                         <li class="nav-item">
                                             <a data-subactive="my_address" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'my_address') active @endif">{{ __('My Address')}}</a>
@@ -2699,6 +2689,8 @@
 @include('frontend.customer.dashboard.includes.modal.send-catalogue')
 @include('frontend.customer.dashboard.includes.modal.survey')
 @include('frontend.customer.dashboard.includes.modal.createTeam')
+@include('frontend.customer.dashboard.includes.modal.add-currencies')
+@include('frontend.customer.dashboard.includes.modal.update-currency')
 @include('backend.seller.modal.catalogue-request')
 @include('panel.user_shops.include.add-numbers')
 
@@ -2732,6 +2724,15 @@
     </script>
 @endif
 
+
+@if (request()->has('upload_gst') && request()->get('upload_gst') == 'true')
+    <script>
+        $(document).ready(function () {
+            $('#ekycVerification').modal('show');
+        });
+    </script>
+@endif
+
 <script>
 
 
@@ -2739,12 +2740,31 @@
         $('.send-request').click(function(){
             $('#sendForCatalogue').modal('show');
         })
+
+        $(".updatecurrencybtn").click(function (e) { 
+            e.preventDefault();
+
+            let crrname = $(this).data('crrname');
+            let crrid = $(this).data('crrid');
+            let crrvalue = $(this).data('crrvalue');
+            
+            $('#currencyname').val(crrname);
+            $('#crrid').val(crrid);
+
+            $('#currencyvalue').val(crrvalue);
+
+
+            $("#updatecurrency").modal('show')
+        });
+
+        $("#addcurrencyopen").click(function (e) { 
+            e.preventDefault();
+            $('#addcurrency').modal('show');
+        });
         $("#addmember").click(function (e) {
             e.preventDefault();
             $("#addTeam").modal("show");
         });
-
-
 
         // $(".openmicrsotesettingmodal").click(function (e) { 
         //     e.preventDefault();
@@ -3320,6 +3340,15 @@
             $('#industry_id').select2();
             $(".select2insidemodal").select2({
                 dropdownParent: $("#addAddressModal")
+            });
+
+            
+            $(".currselect2insidemodal").select2({
+                dropdownParent: $("#addcurrency")
+            });
+
+            $(".curreditselect2insidemodal").select2({
+                dropdownParent: $("#updatecurrency")
             });
 
             $(".select2insidemodaledit").select2({

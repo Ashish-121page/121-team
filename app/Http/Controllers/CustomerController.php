@@ -31,8 +31,7 @@ use Carbon\Carbon;
 
 use App\Models\Inventory;
 use App\Models\Team;
-
-
+use App\Models\UserCurrency;
 
 class CustomerController extends Controller
 {
@@ -263,9 +262,10 @@ class CustomerController extends Controller
             $lastupdatediffrence = 'never';
         }
 
+        $currency_record = UserCurrency::where('user_id',$user->id)->get();
 
         // dd($proposals);
-        return view('frontend.customer.dashboard.index',compact('user','enquiry','search','collections','orders','addresses','tickets','vcard','user_shop','media','story','additional_numbers','my_resellers','verify_customer','proposals','request','enquiry_amt','Numbverofoffer','productcount','teams','lastupdatediffrence'));
+        return view('frontend.customer.dashboard.index',compact('user','enquiry','search','collections','orders','addresses','tickets','vcard','user_shop','media','story','additional_numbers','my_resellers','verify_customer','proposals','request','enquiry_amt','Numbverofoffer','productcount','teams','lastupdatediffrence','currency_record'));
 
     }
 

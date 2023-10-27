@@ -1,5 +1,5 @@
 @extends('backend.layouts.main') 
-@section('title', 'Proposals')
+@section('title', 'Manage Offers')
 @section('content')
 <style>
     .remove-ik-class{
@@ -20,7 +20,7 @@
  * @link        https://121.page/
  */
     $breadcrumb_arr = [
-        ['name'=>'Proposals', 'url'=> "javascript:void(0);", 'class' => 'active']
+        ['name'=>'Offers', 'url'=> "javascript:void(0);", 'class' => 'active']
     ]
     @endphp
     <!-- push external head elements to head -->
@@ -28,13 +28,13 @@
     @endpush
 
     <div class="container-fluid">
-    	<div class="page-header">
+    	<div class="page-header d-none">
             <div class="row align-items-end">
                 <div class="col-lg-8">
                     <div class="page-header-title">
                         <i class="ik ik-mail bg-blue"></i>
                         <div class="d-flex">
-                            <h5>Proposals</h5>
+                            <h5>Offers</h5>
                             @if(AuthRole() == 'User')
                                 <span style="margin-top: -10px;">
                                     <i class="ik ik-info fa-2x text-dark ml-2 remove-ik-class" title="help Text"></i>
@@ -57,7 +57,7 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between">
-                            <h3>Proposals</h3>
+                            <h3>Offers</h3>
                             <div class="d-flex justicy-content-right">
                                 @php
                                     $slug = App\Models\Usershop::where('user_id',auth()->user()->id)->first()->slug;
@@ -74,9 +74,7 @@
                                     <button type="submit" class="btn btn-icon btn-sm mr-2 btn-outline-warning" title="Filter"><i class="fa fa-filter" aria-hidden="true"></i></button>
                                     <a href="javascript:void(0);" id="reset" data-url="{{ route('panel.proposals.index') }}" class="btn btn-icon btn-sm btn-outline-danger mr-2" title="Reset"><i class="fa fa-redo" aria-hidden="true"></i></a>
                                @else
-                                    <a href="{{ route('panel.proposals.create') }}" class="btn btn-icon btn-sm btn-outline-primary" title="Add New Proposal"><i class="fa fa-plus" aria-hidden="true"></i></a>
-
-                                    <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-icon btn-sm btn-outline-danger mx-2 microproposal" title="Add New Proposal With Microsite" target="_blank"><i class="fa fa-minus" aria-hidden="true"></i></a>
+                                <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Make Offer</a>
                                @endif  
                             </div>
                         </div>
@@ -88,75 +86,132 @@
                             <div class="col-md-12">
                                 <div class="card-body bg-white">
                                     <div class="row mt-3">
+                                        
                                         @if ($proposals->count() > 0)
-                                            @foreach ($proposals as $proposal)
-                                                @php
-                                                    $customer_detail = json_decode($proposal->customer_details);
-                                                    $customer_name = $customer_detail->customer_name ?? '--';
-                                                    $customer_mob_no = $customer_detail->customer_mob_no ?? '--';
-                                                    $direct = $proposal->status == 0 ? "?direct=1" : "";
-                                                @endphp
-                                                <div class="col-md-4">
-                                                    {{-- @dump($proposal) --}}
-                                                    <div class="card">
-                                                        <div class="card-body text-center" style="padding: 8px 10px;">
-                                                            <div class="profile-pic mb-20">
-                                                                <div class="row">
-                                                                    <div class="col-3 pr-0">
-                                                                        <img class="supplier-image mt-1" src="{{ $proposal->client_logo != null  ?  asset($proposal->client_logo) : asset('backend/default/default-avatar.png') }}"
-                                                                        style="object-fit: cover; height:60px;width:60px;" alt="" class="rounded mt-2">
-                                                                    </div>
-                                                                    
-                                                                    <div class="col-6 pl-15 pt-1 text-left">
-                                                                        <h6 class="mb-0">
-                                                                            <a href="{{ route('panel.proposals.edit', $proposal->id).$direct }}"> <h6 class="mb-0">#PROID{{ $proposal->id }} </h6></a>
-                                                                            
-                                                                            @php
-                                                                                $user_key = encrypt(auth()->id());
-                                                                            @endphp
-                                                                            <a href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank"> 
-                                                                                <h6 class="mb-0 text-danger my-2">#MiCRO{{ $proposal->id }}</h6>
-                                                                            </a>
-                                                                            
-                                                                        </h6>
-                                                                        <span class="ml-2 mb-1 text-{{ getProposalStatus($proposal->status)['color']}}" style="line-height: 15px;">{{ getProposalStatus($proposal->status)['name']}}</span><br>
-                                                                        <i class="ik ik-user"></i> {{ $customer_name ?? 'Unknown' }}  <br><i class="ik ik-phone"></i> <span>{{ $customer_mob_no ?? "N/A" }}</span>
-                                                                        <br>
-                                                                        <i title="incoming request" class="ik pr-1  ik-corner-up-left"></i>Items: <a href="{{ route('panel.proposals.edit', [$proposal->id,'type' => 'picked']) }}"
-                                                                            class="btn-link" title="Edit Proposal"> {{ $proposal->items_count }}</a><br>
-                                                                                <span>
-                                                                                <i class="ik ik-clock"></i> {{ getFormattedDate($proposal->created_at) }}
-                                                                                </span>
-                                                                    </div>
-                                                                    <div class="col-3">
-                                                                       
-                                                                        <button style="background: transparent;margin-left: -10px;" class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="ik ik-more-vertical pl-1"></i></button>
-                                                                        <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
-                                                                            @if($proposal->status == 1)
-                                                                                <a href="{{ route('panel.proposals.edit', $proposal->id).$direct }}"
-                                                                                    title="Show Proposal" class="dropdown-item">
-                                                                                    <li class=" p-0">Show</li>
-                                                                                </a>
-                                                                            @else  
-                                                                                <a href="{{ route('panel.proposals.destroy', $proposal->id) }}"
-                                                                                    title="Delete Proposal" class="dropdown-item  delete-item">
-                                                                                    <li class=" p-0">Delete</li>
-                                                                                </a>
-                                                                            @endif  
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                        @foreach ($proposals as $proposal)
+                                            @php
+                                                $customer_detail = json_decode($proposal->customer_details);
+                                                $customer_name = $customer_detail->customer_name ?? '--';
+                                                $customer_mob_no = $customer_detail->customer_mob_no ?? '--';
+                                                $direct = $proposal->status == 0 ? "?direct=1" : "";
+                                                $user_key = encrypt(auth()->id());
+                                            @endphp
+
+                                        <div class="col-12 border-bottom p-3" id="bro">
+                                            <div class="row">
+                                                <div class="d-flex justify-content-between col-md-12 pl-0 mt-lg-0 mt-md-0 mt-3 flex-wrap" style="width: 100%">
+                                                    <div class="text-muted mb-0 " style="auto">
+                                                        <span>
+                                                            {{ json_decode($proposal->customer_details)->customer_name }}
+                                                            @if ($proposal->status == 1)
+                                                                <span class="text-success"> Sent </span>
+                                                            @else
+                                                                <span class="text-danger"> Draft </span>
+                                                            @endif
+                                                        </span>
+                                                        <div>
+                                                            <small class="text-muted">
+                                                                <a href="{{ route("customer.checksample",$proposal->id)}}" target="_blank">
+                                                                    Samples : {{ App\Models\Proposalenquiry::where('proposal_id',$proposal->id)->latest()->first()->sample_count ?? 0 }}
+                                                                </a> ,&nbsp;
+
+                                                            Amount : {{ @App\Models\Proposalenquiry::where('proposal_id',$proposal->id)->latest()->first()->amount ?? "0"  }}
+                                                            </small>
+                                                        </div>
+
+                                                        <div class=" py-1" ><small class="text-muted">Last Access : {{ getFormattedDateTime($proposal->updated_at)  }}</small></div>
+                                                        <div class="">
+                                                            <small class="text-muted mx-1">
+                                                                View : {{ $proposal->view_count ?? '<i class="fa fa-times-circle fa-sm text-danger"></i>'  }}
+                                                            </small>
+                                                            <small class="text-muted mx-1">
+                                                                {{-- PPT : {{ $proposal->ppt_download ?? "No Open Yet"  }} --}}
+                                                                Download:
+                                                                @if ($proposal->ppt_download > 0 || $proposal->pdf_download > 0)
+                                                                    <i class="fa fa-check-circle fa-sm text-success"></i>
+                                                                @else
+                                                                    <i class="fa fa-times-circle fa-sm text-danger"></i>
+                                                                @endif
+                                                            </small>
                                                         </div>
                                                     </div>
+
+                                                    {{-- @if ($proposal->relate_to == null) --}}
+                                                    @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == "" || $proposal->user_id == auth()->id())
+                                                        <div style="display: flex;flex-direction: row-reverse;gap: 15px;font-size: 1.6vh;text-align: center !important;">
+                                                            @php
+                                                                $product_count = App\Models\ProposalItem::where('proposal_id',$proposal->id)->get()->count();
+                                                            @endphp
+
+                                                                <div class="dropdown">
+                                                                    <button class="btn btn-outline-primary my-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        More <i class="uil-angle-right"></i>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu">
+                                                                    @if ($proposal->status == 1)
+                                                                        @if ($product_count != 0)
+                                                                            <li>
+                                                                                <button class="dropdown-item copybtn"  value="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}">
+                                                                                    <i class="uil-link-alt"></i> Copy Link
+                                                                                </button>
+                                                                            </li>
+                                                                        @endif
+                                                                        <li>
+                                                                            <a href="{{inject_subdomain('make-copy/'.$proposal->id,$slug) }}" class="dropdown-item">
+                                                                                <i class="uil-copy"></i> Duplicate
+                                                                            </a>
+                                                                        </li>
+                                                                    @endif
+                                                                    <li>
+                                                                        <a href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" class="dropdown-item" target="_blank">
+                                                                            <i class="uil uil-comment-alt-edit h6"></i> Edit ( {{ $product_count }} )
+                                                                        </a>
+                                                                    </li>
+                                                                    {{-- @if ($proposal->status == 1)
+                                                                        <li>
+                                                                            <a href="{{ route('customer.lock.enquiry',$proposal->id) }}" class="dropdown-item">
+                                                                                <i class="uil-lock-alt h6"></i> 
+                                                                            </a>
+                                                                        </li>
+                                                                    @endif --}}
+                                                                    @if ($proposal->status == 1)
+                                                                        <li>
+                                                                            <a href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="dropdown-item text-danger delete-item">
+                                                                                <i class="uil uil-trash h6"></i> Delete
+                                                                            </a>
+                                                                        </li>
+                                                                    @endif
+                                                                    </ul>
+                                                                </div>
+
+
+
+                                                                {{-- <div class="d-flex gap-2 justify-content-end mb-3 d-none">
+                                                                    <a href="{{inject_subdomain('make-copy/'.$proposal->id,$slug) }}" class="btn btn-danger btn-sm">Duplicate</a>
+                                                                    <button class="btn btn-success btn-sm copybtn" value="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}">Copy Link</button>
+                                                                    <a href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" class="btn btn-outline-primary btn-sm shop-btn-mobile md-2" target="_blank">
+                                                                        <i class="uil uil-comment-alt-edit h6"></i> Edit ( {{ $product_count }} )
+                                                                    </a>
+                                                                </div> --}}
+                                                                {{-- <span class="mt-3">
+                                                                    Passcode: {{ $proposal->password }}
+                                                                </span> --}}
+                                                                <br>
+                                                                @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == "")
+                                                                    <span class="mt-3">Expiry : {{ $proposal->valid_upto ?? "None"}} </span>
+                                                                @endif
+                                                        </div>
+                                                    @endif
                                                 </div>
-                                            @endforeach
+                                            </div>
+                                        </div>
+                                                                                    
+                                        @endforeach
+
                                         @else
-                                            <tr>
-                                                <td class="" colspan="8"><span class="mx-auto">
-                                                    No Proposals yet!</span>
-                                                </td>
-                                            </tr>
+                                            <div class="col-12">
+                                                <span class="mx-auto"> No Proposals yet!</span>
+                                            </div>
                                         @endif
                                     </div>
                                 </div>
@@ -164,18 +219,6 @@
                             <div class="card-footer d-flex justify-content-between">
                                 <div class="pagination">
                                     {{ $proposals->appends(request()->except('page'))->links() }}
-                                </div>
-                                <div>
-                                    @if ($proposals->lastPage() > 1)
-                                        <label for="">Jump To:
-                                            <select name="page" style="width:60px;height:30px;border: 1px solid #eaeaea;" id="jumpTo">
-                                                @for ($i = 1; $i <= $proposals->lastPage(); $i++)
-                                                    <option value="{{ $i }}" {{ $proposals->currentPage() == $i ? 'selected' : '' }}>
-                                                        {{ $i }}</option>
-                                                @endfor
-                                            </select>
-                                        </label>
-                                    @endif
                                 </div>
                             </div>
                         @endif
@@ -188,7 +231,7 @@
     @push('script')
     <script src="{{ asset('backend/js/index-page.js') }}"></script>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
-        <script>
+    <script>
            
         function html_table_to_excel(type)
         {
@@ -217,34 +260,43 @@
             window.history.pushState("", "", url);
             $('#TableForm').trigger("reset");
         });
-        </script>
+    </script>
 
 
-        <script>
-              $(document).on('click','.microproposal',function(e){
+    <script>
+        $(document).ready(function () {
+            $("#makeoffer").click(function (e) { 
                 e.preventDefault();
                 var url = $(this).attr('href');
-                var msg = "<b>Step 1: </b>Set Approx Margin <input type='text' id='margin' class=' w-25' placeholder='Ex: 10'> % <div class='mt-1' > <b>Step 2: </b>Search and Shortlist</div><div class='mt-1' ><b>Step 3: </b>Review % Markup one-by-one</div><div class='mt-1' ><b>Step 4: </b>Send or Share</div>";
+                // var msg = "<input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Name'> <br> <input type='text' id='offeremail' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Email (Optional)'> <br> <input type='number' maxlength='10' id='offerphone' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Phone (Optional)'>";
+                var msg = "<input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Buyer Name'> <br> <input type='text' id='alias' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Alias (optional)'> <br> <input type='text' id='offeremail' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Email (Optional)'> <br> <input type='number' maxlength='10' id='offerphone' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Phone (Optional)'>";
 
                 $.confirm({
                     draggable: true,
-                    title: 'Create New Proposal',
+                    title: 'Offer for',
                     content: msg,
                     type: 'blue',
                     typeAnimated: true,
                     buttons: {
                         tryAgain: {
-                            text: 'Confirm',
-                            btnClass: 'btn-blue',
+                            text: 'Next',
+                            btnClass: 'btn-primary',
 
                             action: function(){
                                     let margin = $('#margin').val();
+                                    let offeremail = $('#offeremail').val();
+                                    let offerphone = $('#offerphone').val();
+
+                                    let alias = $('#alias').val();
+                                    let personname = $('#offerpersonname').val();
+
                                     if (!margin) {
                                         $.alert('provide a valid name');
                                         return false;
                                     }
-                                    url = url+"&margin="+margin;
-                                    window.location.href = url;                             
+                                    url = url+"&offerfor="+margin+"&offerphone="+offerphone+"&offeremail="+offeremail+"&offeralias="+alias+"&offerpersonname="+personname;
+                                    window.location.href = url;               
+                                    // console.log(url);
                             }
                         },
                         close: function () {
@@ -252,7 +304,8 @@
                     }
                 });
             });
-            
-        </script>
+        });
+        
+    </script>
     @endpush
 @endsection

@@ -24,7 +24,13 @@
     @push('head')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.css">
         <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
-        <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css">        
+        <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"> 
+        {{-- modal --}}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
+
+     <link rel="stylesheet" href="{{ asset('frontend/assets/css/normalize.min.css') }}">
+     <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}">
+
         <style>
             .app-sidebar , .header-top{
                 display: none !important;
@@ -271,6 +277,15 @@
 
                 .loader-hidden {
                     display: none;
+                }
+
+
+                 /* modal */
+                #btn-close-modal1{
+                    width:100%;
+                    text-align: center;
+                    cursor:pointer;
+                    color:#fff;
                 }
 
         </style>
@@ -540,7 +555,7 @@
                                                                     <button type="submit" class="btn btn-outline-primary">Save</button>
                                                                 </div>
                                                             @if ($proposal->status == 1 && $proposal->type == 0)
-                                                                <div class="">                                               
+                                                                {{-- <div class="">                                               
                                                                     @if ($customer_mob_no != null)
                                                                         <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
@@ -554,13 +569,13 @@
                                                                     <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
                                                                         <i class="far fa-envelope"></i>
                                                                     </a>
-                                                                </div>
+                                                                </div> --}}
                                                             @endif
 
                                                             {{--` Share Offer for Makeing Offer --}}
 
                                                             @if ($proposal->status == 1 && $proposal->type == 1)
-                                                                <div class="">                                               
+                                                                {{-- <div class="">                                               
                                                                     @if ($customer_mob_no != null)
                                                                         <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
@@ -574,7 +589,7 @@
                                                                     <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
                                                                         <i class="far fa-envelope"></i>
                                                                     </a>
-                                                                </div>
+                                                                </div> --}}
                                                             @endif
 
                                                         </div>
@@ -596,8 +611,8 @@
                                             </div>
 
 
-                                            <div class="col-md-6">
-                                                <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="row justify-content-between">
                                                     <div class="col-md-12 col-12 d-none">
                                                         <div class="form-group {{ $errors->has('slug') ? 'has-error' : '' }}">
                                                             <label for="slug" class="control-label">Your proposal link<span
@@ -606,7 +621,7 @@
                                                                 id="slug" value="{{ $proposal->slug }}">
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-12 col-12">
+                                                    <div class="col-md-2 col-12">
                                                         <div class="form-group {{ $errors->has('customer_name') ? 'has-error' : '' }}">
                                                             <label for="customer_name" class="control-label">
                                                                 @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == null  )
@@ -632,16 +647,18 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-12 col-12">
+                                                    {{-- original alias, phone and email --}}
+
+                                                    <div class="col-md-2 col-12"> 
                                                         <div class="form-group {{ $errors->has('customer_alias') ? 'has-error' : '' }}">
                                                             <label for="customer_alias" class="control-label">Alias (optional)</label>
                                                             <input class="form-control" name="customer_alias" type="text" id="customer_alias" value="{{ $customer_alias }}">
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-12 col-12">
+                                                    <div class="col-md-8 col-12">
                                                         <div class="row">
-                                                            <div class="col-6">
+                                                            <div class="col-5">
                                                                 <div class="form-group {{ $errors->has('customer_mob_no') ? 'has-error' : '' }}">
                                                                     <label for="customer_mob_no" class="control-label">Phone</label>
                                                                     <div class="input-group">
@@ -654,7 +671,7 @@
                                                                 </div>
                                                             </div>
 
-                                                            <div class="col-6">
+                                                            <div class="col-5">
                                                                 <div class="form-group {{ $errors->has('customer_email') ? 'has-error' : '' }}">
                                                                     <label for="customer_email" class="control-label">Email</label>
                                                                     <div class="input-group">
@@ -663,19 +680,28 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-
-                                                            <div class="col-6">
-                                                                <div class="form-group {{ $errors->has('offer_currency') ? 'has-error' : '' }}">
-                                                                    <label for="customer_mob_no" class="control-label">offer_currency</label>
-                                                                    <div class="input-group">
-                                                                        <select name="offer_currency" id="offer_currency" class="form-group select2">
-                                                                            @foreach ($currency_record as $item)
+                                                            @if (isset($currency_record) && count($currency_record) != 0)
+                                                                <div class="col-2">
+                                                                    <div class="form-group {{ $errors->has('offer_currency') ? 'has-error' : '' }}">
+                                                                        <label for="customer_mob_no" class="control-label">Offer Currency</label>
+                                                                        <div class="input-group">
+                                                                            <select name="offer_currency" id="offer_currency" class="form-group select2" disabled>
+                                                                              @foreach ($currency_record as $item)
+                                                                                <option value="{{ $item->currency }}" @if ($item->currency == ($proposal->offer_currency ?? 'INR')) selected @endif>{{ $item->currency }}</option>
+                                                                              @endforeach
+                                                                            </select>
+                                                                          </div>
+                                                                        {{-- <div class="input-group">
+                                                                           
+                                                                            <select name="offer_currency" id="offer_currency" class="form-group select2">
+                                                                                @foreach ($currency_record as $item)
                                                                                 <option value="{{ $item->currency }}" @if ($item->currency == ($proposal->offer_currency ?? 'INR')) selected @endif > {{ $item->currency }}</option>
-                                                                            @endforeach
-                                                                        </select>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div> --}}
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            @endif
 
                                                         </div>
                                                     </div>
@@ -737,16 +763,66 @@
 
                                                 </div> {{-- End Of ROw --}}
 
+                                                <div class="row">
+                                                    <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 " style="margin-left: 100px; height:200px;">
+                                                        {{-- <div class="col-md-12 d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap"> 
+                                                            <button onclick="getPDF();" class="btn btn-outline-primary " type="button" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PDF</button>
+                                                        </div> --}}
+                                                        <div class="col-md-12"> 
+                                                            <button onclick="getPPT()" type="button" class="btn btn-outline-warning sdfgesd" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PPT</button>
+                                                        </div>
+                                                            <div class="col-md-12"> 
+                                                            <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i> Save as Excel</button>
+                                                            </div>
+                                        
+                                                            {{-- @if ($proposal->type == 1)
+                                                                <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}&linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" target="_blank" class="btn btn-outline-primary" style="position: relative; right: 5rem;"> {{ _("Make Offer") }} </a>
+                                                            @endif --}}
+
+                                                            <div class="col-md-12"> 
+                                                                {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Open Modal</button>
+
+                                                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> --}}
+                                                                {{-- <div class="modal-dialog" role="document">
+                                                                    <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="myModalLabel">Modal Title</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                        <button type="button" class="btn btn-primary">Save changes</button>
+                                                                    </div>
+                                                                    </div>
+                                                                </div> --}}
+                                                                {{-- </div> --}}
+                                                                <a class="btn btn-outline-info" style="position: relative; right: 5rem;" id="jaya1" href="#animatedModal1" role="button">Change Style </a>
+                                                                {{-- <button class="btn btn-outline-info" style="position: relative; right: 5rem;" id="style_button" type="button"><i class="fa fa-download"></i> Change Style </button> --}}
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                    
+                                                </div>
+
                                             </div>
-                                              
                                             
-                                            <div class="col-md-6 float-start">
+
+
+                                            
+                                            
+                                            {{-- original custom fields --}}
+                                            {{-- <div class="col-md-6 float-start"> --}}
                                                     {{-- <div class="form-group">
                                                         <label for="passcode" class="form-label">Enter Passcode <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </label>
                                                         <input type="text" class="form-control" placeholder="0 0 0 0" name="password" id="passcode" maxlength="4" oninvalid="alert('Enter minimum 4 digit passcode')" value="{{ $offerPasscode ?? ""}}" required>
                                                     </div> --}}
                                                 
-                                                    <div class="h6">Fields to include <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </div>
+                                                    {{-- <div class="h6">Fields to include <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </div>
                                                     <select name="optionsforoffer[]" class="select2" multiple>
                                                         <option value="description" @if (json_decode($proposal->options)->show_Description ?? 0) selected @endif>Description</option>
 
@@ -775,25 +851,25 @@
 
                                                     
                                                     @if ($proposal->relate_to == $proposal->user_shop_id)
-                                                        <div class="form-group my-3">
+                                                        <div class="form-group my-3 d-none">
                                                             <label class="form-label" for="sample_charge"> Sample %age increase </label>
                                                             <input class="form-control" type="number" min="0" max="100" id="sample_charge" name="sample_charge" value="{{ $sample_charge }}" placeholder="% Increase">
                                                         </div>
                                                         <div class="form-group my-3">
-                                                            <label class="form-label" for="sample_charge"> Weekly Update </label>
+                                                            <label class="form-label" for="sample_charge"> Weekly Update </label> --}}
                                                             {{-- <select name="offer_type" class="form-select form-control" id="offer_type">
                                                                 <option value="0" @if ($proposal->type == 0) selected @endif>No</option>
                                                                 <option value="1" @if ($proposal->type == 1) selected @endif>Yes</option>
                                                             </select> --}}
-                                                            <br>
+                                                            {{-- <br>
                                                             <input type="checkbox" name="offer_type"  value="1" @if ($proposal->type == 1) checked @endif id="weekupdate">
 
                                                         </div>
                                                     @endif
-                                            </div>
+                                            </div> --}}
 
 
-
+ 
                                             <div class="col-md-12 ">
                                                 <div class="d-flex justify-content-between">
                                                     <div class="">
@@ -804,7 +880,7 @@
                                                                     <button type="submit" class="btn btn-outline-primary">Save</button>
                                                                 </div>
                                                             @if ($proposal->status == 1 && $proposal->type == 0)
-                                                                <div class="">                                               
+                                                                {{-- <div class="">                                               
                                                                     @if ($customer_mob_no != null)
                                                                         <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
@@ -818,10 +894,10 @@
                                                                     <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
                                                                         <i class="far fa-envelope"></i>
                                                                     </a>
-                                                                </div>
+                                                                </div> --}}
                                                                 @endif         
                                                                 @if ($proposal->status == 1 && $proposal->type == 1)
-                                                                    <div class="">                                               
+                                                                    {{-- <div class="">                                               
                                                                         @if ($customer_mob_no != null)
                                                                             <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                                 <i class="fab fa-whatsapp" class=""></i>
@@ -835,7 +911,7 @@
                                                                         <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
                                                                             <i class="far fa-envelope"></i>
                                                                         </a>
-                                                                    </div>
+                                                                    </div> --}}
                                                                 @endif
                                                         </div>
 
@@ -922,6 +998,9 @@
                         
             });
         </script>
+
+
+
         
         <script>
             
@@ -1386,5 +1465,113 @@
             })
 
         </script>
+
+
+        
     @endpush
+    {{-- <script>
+        function getPDF(){
+            $('.sampleenquiry').addClass('d-none');
+            $(".headbx").addClass('d-none');
+            $(".noprint").addClass('d-none');
+            $(".deleteitem").addClass('d-none');
+            
+            if($('.pdf-margin').hasClass('d-none')){
+                $('.pdf-margin').removeClass('d-none');
+            }else{
+                $('.pdf-margin').addClass('d-none');
+            }
+            document.querySelector('meta[name=viewport]').setAttribute("content", "width=1200");
+
+            var HTML_Width = $(".canvas_div_pdf").width();
+            var HTML_Height = $(".canvas_div_pdf").height();
+            var top_left_margin = 15;
+            var PDF_Width = HTML_Width+(top_left_margin*2);
+            var PDF_Height = (PDF_Width*1.5)+(top_left_margin*2);
+            var canvas_image_width = HTML_Width;
+            var canvas_image_height = HTML_Height;
+            var totalPDFPages = Math.ceil(HTML_Height/PDF_Height)-1;
+
+            html2canvas($(".canvas_div_pdf")[0],{allowTaint:true}).then(function(canvas) {
+                canvas.getContext('2d');
+                
+                // console.log(canvas.height+"  "+canvas.width);
+
+                var imgData = canvas.toDataURL("image/jpeg", 1.0);
+                var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
+
+                // Added a blank page as first
+                // pdf.addPage(PDF_Width, PDF_Height);
+                
+                pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
+                
+                for (var i = 1; i <= totalPDFPages; i++) { 
+                    pdf.addPage(PDF_Width, PDF_Height);
+                    pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
+                }
+                // pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
+                
+                
+                // for (var i = 1; i <= totalPDFPages; i++) { 
+                //     pdf.addPage(PDF_Width, PDF_Height);
+                //     pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
+                // }
+                
+                $.ajax({
+                    type: "GET",
+                    url: "{{ route('pages.proposals.update.download', $proposal->id) }}",
+                    data: {
+                        update: 1, 
+                    },
+                    success: function (response) {
+                        // console.log(response);
+                    }
+                });
+
+
+                pdf.save("{{Illuminate\Support\Str::slug($proposal_slug) }}.pdf");
+
+                setTimeout(() => {
+                    $('.pdf-margin').addClass('d-none');
+                }, 1000);
+                document.querySelector('meta[name=viewport]').setAttribute("content", "width=device-width, initial-scale=1.0");
+            });
+
+
+            $('.sampleenquiry').removeClass('d-none');
+            $(".headbx").removeClass('d-none');
+            $(".noprint").removeClass('d-none');
+            $(".deleteitem").removeClass('d-none');
+        };
+    </script> --}}
+
+    <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
+    <script>
+         //demo 01
+        //  $("#jaya1").animatedModal(
+        //     {
+        //         animatedIn:'lightSpeedIn',
+        //         animatedOut:'bounceOutDown',
+        //         color:'#f3f3f3',
+
+        //     });
+
+        $('#jaya1').click(function(e) {
+        e.preventDefault(); // Prevent the default link behavior
+        $('#animatedModal1').modal('show'); // Open the modal
+        });
+
+        // $(document).ready(function() {
+        // $('#myModal').on('shown.bs.modal', function() {
+            // Do something when the modal is shown
+        });
+
+        // $('#myModal').on('hidden.bs.modal', function() {
+            // Do something when the modal is hidden
+        });
+        });
+
+    </script>
+
+
 @endsection

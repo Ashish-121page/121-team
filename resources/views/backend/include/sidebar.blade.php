@@ -25,19 +25,28 @@
             </nav>
             <nav id="main-menu-navigation" class="navigation-main">
 
-                <div class="nav-item {{ ($segment2 == 'dashboard') ? 'active' : '' }}">
-                    <a href="{{route('panel.dashboard')}}" class="a-item" ><i class="ik ik-bar-chart-2"></i><span>{{ __('Dashboard')}}</span></a>
-                </div>                                                             
+                {{--! Not Visible to User Role only --}}
+                @if (AuthRole() != 'User')
+                    <div class="nav-item {{ ($segment2 == 'dashboard') ? 'active' : '' }}">
+                        <a href="{{route('panel.dashboard')}}" class="a-item" ><i class="ik ik-bar-chart-2"></i><span>{{ __('Dashboard')}}</span></a>
+                    </div>
+                @endif
                 
                 @if(AuthRole() == 'Super Admin')
-                    @include('backend.include.partial.crud_sidebar')
+                    @include('backend.include.partial.crud_sidebar')              
                     @include('backend.include.partial.dev_sidebar')
+                    
                 @elseif(AuthRole() == 'Marketer')
-                @include('backend.include.partial.marketer_sidebar')
+                
+                    @include('backend.include.partial.marketer_sidebar')
+
                 @elseif(AuthRole() == 'Admin')   
                    @include('backend.include.partial.admin_sidebar')
+                   
                 @elseif(AuthRole() == 'User')   
-                   @include('backend.include.partial.user_sidebar')
+                   {{-- @include('backend.include.partial.user_sidebar') --}}
+                   @include('backend.include.partial.exporter_sidebar')
+                   
                 @elseif(AuthRole() == 'Brand')   
                    @include('backend.include.partial.brand_sidebar')
                 @else

@@ -20,7 +20,7 @@ class ProductAttributeController extends Controller
      */
      public function index(Request $request)
      {
-         $length = 10;
+         $length = 50;
          if(request()->get('length')){
              $length = $request->get('length');
          }
@@ -50,6 +50,7 @@ class ProductAttributeController extends Controller
 
             if ($request->ajax()) {
                 return view('panel.product_attributes.load', ['product_attributes' => $product_attributes])->render();  
+                return view('panel.user_shop_items.includes.Properties', ['product_attributes' => $product_attributes])->render();  
             }
  
         return view('panel.product_attributes.index', compact('product_attributes'));
@@ -113,24 +114,29 @@ class ProductAttributeController extends Controller
                 $type = 0; // Admin Define Attribute
             }
  
-            // ! Uploading Attributes
-            $AttributValue = ProductAttribute::create([
-                'name' => $request->get('name'),
-                'type' => $type,
-                'value' => null,
-                'user_id' => $request->get('user_id') ?? null,
-                'user_shop_id' => $request->get('user_shop_id') ?? null,
-            ]);   
-            
-            // - Checking Values
-            foreach (explode(",",$request->value[0]) as $key => $items) {
-                ProductAttributeValue::create([
-                    'parent_id' => $AttributValue->id,
+            $chkCount = ProductAttribute::where('name',$request->name)->where('user_id',$request->user_id)->get();
+            if (count($chkCount) != 0) {   
+                // ! Uploading Attributes
+                $AttributValue = ProductAttribute::create([
+                    'name' => $request->get('name'),
+                    'type' => $type,
+                    'value' => null,
                     'user_id' => $request->get('user_id') ?? null,
-                    'attribute_value' => $items,
-                ]);
+                    'user_shop_id' => $request->get('user_shop_id') ?? null,
+                ]);   
+                
+                // - Checking Values
+                foreach (explode(",",$request->value[0]) as $key => $items) {
+                    ProductAttributeValue::create([
+                        'parent_id' => $AttributValue->id,
+                        'user_id' => $request->get('user_id') ?? null,
+                        'attribute_value' => $items,
+                    ]);
+                }
+            }else{
+                return back()->with('error',"$request->name Property already exists in your Account.");
             }
-         
+                
             return redirect()->route('panel.product_attributes.index')->with('success','Product Attribute Created Successfully!');
         }catch(\Exception $e){            
             // return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());

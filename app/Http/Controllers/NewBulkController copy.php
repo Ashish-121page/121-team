@@ -2266,6 +2266,7 @@ class NewBulkController extends Controller
             $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
             $spreadSheet->getActiveSheet()->fromArray($merged_array,null,'A3');
             $Excel_writer = new Xls($spreadSheet);            
+            
             $fileName = "Product Bulk sheet of $user_id->name.xls";
             header('Content-Type: application/vnd.ms-excel');
             header("Content-Disposition: attachment;filename=$fileName");
