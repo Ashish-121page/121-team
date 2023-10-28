@@ -332,6 +332,7 @@
                             @endif
 
                             {{-- @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id")) --}}
+                            @if(getUserProgressStatistics(auth()->id()) == 100)
 
                             @if($acc_permissions->Filemanager == "yes")
                                 @if ($Team_setting)
@@ -343,6 +344,7 @@
                                         </a><!--end nav link-->
                                     </li><!--end nav item-->
                                 @endif
+                            @endif
                             @endif
 
                             {{-- @endif --}}
@@ -542,6 +544,7 @@
                                             </div>
                                         </div>
                                     @endif
+                                    @if(getUserProgressStatistics(auth()->id()) == 100)
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="card">
                                             <div class="card-body">
@@ -560,6 +563,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @endif
 
                                     @if(getUserProgressStatistics(auth()->id()) == 100)
                                         <div class="col-12 border border-danger mt-4">
@@ -711,6 +715,7 @@
 
                                     <!-- statistics -->
                                     <div class="col-xl-6 col-md-12 mt-3">
+
                                         <div class="card table-card-right">
                                             <div class="card-header">
                                                 <h4>{{ __('Statistics')}}</h4>
@@ -785,6 +790,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @endif
 
                                     @endif
 
@@ -877,6 +883,7 @@
 
 
                         </div><!--end teb pane-->
+                        
                         @if($Team_setting)
                             {{-- Settings Tab --}}
                             <div class="tab-pane fade bg-white shadow rounded p-4 @if(request()->has('active') && request()->get('active') == "settings") active show @endif" id="settings" role="tabpanel" aria-labelledby="order-history">
@@ -1122,6 +1129,7 @@
 
                             </div><!--end teb pane-->
                         @endif
+                        
                         <div class="tab-pane fade bg-white shadow rounded p-4 @if(request()->has('active') && request()->get('active') == "enquiry") active show @endif" id="enquirys" role="tabpanel" aria-labelledby="enquiry-history">
                             <div class="d-flex justify-content-between">
                                 <h5 class="mt-1">My Enquiry</h5>

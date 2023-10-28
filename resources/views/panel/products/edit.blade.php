@@ -542,6 +542,77 @@
                                         <h3>Product Properties</h3>
                                     </div>
                                     <div class="card-body">
+
+                                        <div class="col-12">
+                                            <div class="row mb-3">
+
+                                                {{-- <div class="col-12">
+                                                    <div class="h4">
+                                                        Used
+                                                    </div>
+                                                </div> --}}
+
+                                                {{-- custom variations --}}
+                                                @foreach ($custom_attribute as $item)
+                                                
+                                                @php
+                                                $tmp_var = []; 
+
+                                                if (is_object($prodextra) && property_exists($prodextra, 'Cust_tag_group')){
+                                                    $myvar = App\Models\ProductExtraInfo::where('Cust_tag_group',$prodextra->Cust_tag_group)->where('attribute_id',$item->id)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
+                                                    // $tmp_var = []; 
+                                                    
+
+                                                    foreach ($myvar as $key => $value) {
+                                                        array_push($tmp_var,getAttruibuteValueById($value)->attribute_value);
+                                                    }
+                                                }
+                                            
+                                                @endphp
+                                        
+                                                    @if (!empty($tmp_var))
+                                                        <div class="col-md-4 col-12">
+                                                            <div class="form-group ">
+                                                                <label for="{{$item->name ?? '' }}" class="control-label">{{$item->name ?? '' }}</label>
+                                                                <input  class="form-control TAGGROUP" name="custom_attri_{{ $loop->iteration }}" type="text" id="{{$item->name ?? '' }}" value="{{ implode(",",$tmp_var) }}" >
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+
+                                        
+                                        <div class="row">
+
+                                            <div class="col-12">
+                                                <div class="h4">Not Used</div>
+                                            </div>
+
+                                            {{-- custom variations --}}
+                                            @foreach ($custom_attribute as $item)
+                                            @php
+                                            $tmp_var = []; 
+
+                                                if (is_object($prodextra) && property_exists($prodextra, 'Cust_tag_group')){
+                                                $myvar = App\Models\ProductExtraInfo::where('Cust_tag_group',$prodextra->Cust_tag_group)->where('attribute_id',$item->id)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
+                                                // $tmp_var = [];  
+
+                                                foreach ($myvar as $key => $value) {
+                                                    array_push($tmp_var,getAttruibuteValueById($value)->attribute_value);
+                                                }
+                                            }
+                                            @endphp
+                                                @if ($tmp_var == null && $item->name != 'Color')
+                                                    <div class="col-md-4 col-12">
+                                                        <div class="form-group ">
+                                                            <label for="{{$item->name ?? '' }}" class="control-label">{{$item->name ?? '' }}</label>
+                                                            <input  class="form-control TAGGROUP" name="custom_attri_{{ $loop->iteration }}" type="text" id="{{$item->name ?? '' }}" value="{{ implode(",",$tmp_var) }}" >
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
                                         
 
                                              {{-- ` PRODUCT WEIGHT GROUP --}}
@@ -554,9 +625,10 @@
                                                         </label>
                                                         <br>
                                                         <input type="checkbox" data-open="weightboxbtn" id="weightbox" class="hiddenbxbtn">
+
                                                     </div>
                                                 </div>
-                                                <div class="row d-none" id="weightboxbtn">
+                                                <div class="row @if ($shipping->gross_weight != '' || $shipping->weight != '') @else d-none @endif" id="weightboxbtn">
                                                     <div class="col-md-4 col-4">
                                                         <div class="form-group ">
                                                             <label for="gross_weight" class="control-label">Gross Weight</label>
@@ -595,31 +667,33 @@
                                                             <div class="h6">Product Dimensions</div>
                                                         </label>
                                                         <br>
-                                                        <input type="checkbox" data-open="productdimensionsbox" id="productdimensionsbx" class="hiddenbxbtn">
+                                                        <input type="checkbox" data-open="productdimensionsbox" id="productdimensionsbx" class="hiddenbxbtn"
+                                                        @if ($shipping->length != '' || $shipping->width != '' || $shipping->height != '') checked @endif
+                                                        >
                                                     </div>
                                                 </div>
-                                                <div class="row d-none" id="productdimensionsbox">
+                                                <div class="row @if ($shipping->length != ''  || $shipping->width != '' || $shipping->height != '') @else d-none @endif" id="productdimensionsbox">
                                                     
-                                                    <div class="col-md-6 col-12">
+                                                    <div class="col-md-3 col-3">
                                                         <label class="Length">{{ __('Length')}}</label>
                                                         <div class="form-group">
                                                             <input class="form-control" name="length" type="nnumber" id="length" value="{{$shipping->length ?? ''}}" >
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6 col-12">
+                                                    <div class="col-md-3 col-3">
                                                         <label class="">{{ __('Width')}}</label>
                                                         <div class="form-group">
                                                             <input class="form-control" name="width" type="nnumber" id="width" value="{{$shipping->width ?? ''}}" >
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6 col-12">
+                                                    <div class="col-md-3 col-3">
                                                         <label class="">{{ __('Height')}}</label>
                                                          <div class="form-group">
                                                              <input class="form-control" name="height" type="nnumber" id="height" value="{{$shipping->height ?? ''}}" >
                                                          </div>
                                                      </div>
 
-                                                    <div class="col-md-6 col-12">
+                                                    <div class="col-md-3 col-3">
                                                         <label class="">{{ __('LWH UOM')}}</label>
                                                         {{-- DropDown --}}
                                                         {{-- mm/cms/inches/feet --}}
@@ -647,46 +721,48 @@
                                                             <div class="h6">Product Packing</div>
                                                         </label>
                                                         <br>
-                                                        <input type="checkbox" data-open="productpackingbox" id="productpackingbx" class="hiddenbxbtn">
+                                                        <input type="checkbox" data-open="productpackingbox" id="productpackingbx" class="hiddenbxbtn"
+                                                        @if ($carton_details->standard_carton != '' || $carton_details->carton_weight != '' || $carton_details->carton_length != ''||$carton_details->carton_width != '' || $carton_details->carton_height != '' ) checked @endif
+                                                        >
                                                     </div>
                                                 </div>
 
-                                                <div class="row d-none" id="productpackingbox">
-                                                    <div class="col-md-6 col-12">
+                                                <div class="row @if ($carton_details->standard_carton != '' || $carton_details->carton_weight != '' || $carton_details->carton_length != ''||$carton_details->carton_width != '' || $carton_details->carton_height != '' ) @else d-none @endif" id="productpackingbox">
+                                                    <div class="col-md-3 col-3">
                                                         <label class="">{{ __('Standard Carton Pcs')}}</label>
                                                          <div class="form-group">
                                                              <input class="form-control" name="standard_carton" type="text" id="standard_carton" value="{{$carton_details->standard_carton ?? ''}}" >
                                                          </div>
                                                      </div>
-                                                     <div class="col-md-6 col-12">
+                                                     <div class="col-md-3 col-3">
                                                          <label class="">{{ __('Carton Actual Weight')}}</label>
                                                          <div class="form-group">
                                                              <input class="form-control" name="carton_weight" type="number" id="carton_weight" value="{{$carton_details->carton_weight ?? ''}}" >
                                                          </div>
                                                      </div>
  
-                                                     <div class="col-md-6 col-12">
+                                                     <div class="col-md-3 col-3">
                                                          <label class="">{{ __('Carton Length')}}</label>
                                                          <div class="form-group">
                                                              <input class="form-control" name="carton_length" type="number" id="carton_length" value="{{$carton_details->carton_length ?? ''}}" >
                                                          </div>
                                                      </div>
  
-                                                     <div class="col-md-6 col-12">
+                                                     <div class="col-md-3 col-3">
                                                          <label class="">{{ __('Carton Width')}}</label>
                                                          <div class="form-group">
                                                              <input class="form-control" name="carton_width" type="number" id="carton_width" value="{{$carton_details->carton_width ?? ''}}" >
                                                          </div>
                                                      </div>
  
-                                                     <div class="col-md-6 col-12">
+                                                     <div class="col-md-3 col-3">
                                                          <label class="">{{ __('Carton Height')}}</label>
                                                          <div class="form-group">
                                                              <input class="form-control" name="carton_height" type="number" id="carton_height" value="{{$carton_details->carton_height ?? ''}}" >
                                                          </div>
                                                      </div>
  
-                                                     <div class="col-md-6 col-12">
+                                                     <div class="col-md-3 col-3">
                                                          <label class="">{{ __('Carton Dimension Unit')}}</label>
                                                          <div class="form-group">
                                                             {{-- <input class="form-control" name="Carton_Dimensions_unit" type="nnumber" id="Carton_Dimensions_unit" value="{{$carton_details->Carton_Dimensions_unit ?? ''}}" > --}}
@@ -702,7 +778,7 @@
                                                      </div>
  
                                                      
-                                                     <div class="col-md-6 col-12">
+                                                     <div class="col-md-3 col-3">
                                                          <label class="">{{ __('UOM')}}</label>
                                                          {{-- DropDown --}}
                                                          {{-- pcs/ sets --}}
@@ -726,29 +802,30 @@
                                                             <div class="h6">Shipping Details</div>
                                                         </label>
                                                         <br>
-                                                        <input type="checkbox" data-open="productshippingbox" id="productshippingbx" class="hiddenbxbtn">
+                                                        <input type="checkbox" data-open="productshippingbox" id="productshippingbx" class="hiddenbxbtn"
+                                                        @if ($prodextra->CBM != '' || $prodextra->production_time != '' || $prodextra->MBQ != ''||$prodextra->MBQ_unit != '' || $prodextra->remarks != '' ) checked @endif>
                                                     </div>
                                                 </div>
-                                                <div class="row d-none" id="productshippingbox">
-                                                    <div class="col-md-6 col-12">
+                                                <div class="row @if ($prodextra->CBM != '' || $prodextra->production_time != '' || $prodextra->MBQ != ''||$prodextra->MBQ_unit != '' || $prodextra->remarks != '' ) @else d-none @endif" id="productshippingbox">
+                                                    <div class="col-md-3 col-3">
                                                         <div class="form-group ">
                                                             <label for="CBM" class="control-label">CBM</label>
                                                             <input  class="form-control" name="CBM" type="text" id="CBM" value="{{$prodextra->CBM ?? '' }}" >
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6 col-12">
+                                                    <div class="col-md-3 col-3">
                                                         <div class="form-group ">
                                                             <label for="production_time" class="control-label">Production time (days)</label>
                                                             <input  class="form-control" name="production_time" type="number" id="production_time" value="{{$prodextra->production_time ?? '' }}" >
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6 col-12">
+                                                    <div class="col-md-3 col-3">
                                                         <div class="form-group ">
                                                             <label for="MBQ" class="control-label">MBQ</label>
                                                             <input  class="form-control" name="MBQ" type="text" id="MBQ" value="{{$prodextra->MBQ ?? '0' }}" >
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6 col-12">
+                                                    <div class="col-md-3 col-3">
                                                         <div class="form-group ">
                                                             <label for="MBQ_unit" class="control-label">MBQ_units</label>
                                                             <input  class="form-control" name="MBQ_unit" type="number" id="MBQ_unit" value="{{$prodextra->MBQ_unit ?? '0' }}" >
@@ -763,76 +840,9 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-12">
-                                                <div class="row mb-3">
-
-                                                    {{-- <div class="col-12">
-                                                        <div class="h4">
-                                                            Used
-                                                        </div>
-                                                    </div> --}}
-
-                                                    {{-- custom variations --}}
-                                                    @foreach ($custom_attribute as $item)
-                                                    
-                                                    @php
-                                                    $tmp_var = []; 
-
-                                                    if (is_object($prodextra) && property_exists($prodextra, 'Cust_tag_group')){
-                                                        $myvar = App\Models\ProductExtraInfo::where('Cust_tag_group',$prodextra->Cust_tag_group)->where('attribute_id',$item->id)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
-                                                        // $tmp_var = []; 
-                                                        
-
-                                                        foreach ($myvar as $key => $value) {
-                                                            array_push($tmp_var,getAttruibuteValueById($value)->attribute_value);
-                                                        }
-                                                    }
-                                                
-                                                    @endphp
                                             
-                                                        @if (!empty($tmp_var))
-                                                            <div class="col-md-4 col-12">
-                                                                <div class="form-group ">
-                                                                    <label for="{{$item->name ?? '' }}" class="control-label">{{$item->name ?? '' }}</label>
-                                                                    <input  class="form-control TAGGROUP" name="custom_attri_{{ $loop->iteration }}" type="text" id="{{$item->name ?? '' }}" value="{{ implode(",",$tmp_var) }}" >
-                                                                </div>
-                                                            </div>
-                                                        @endif
-                                                    @endforeach
-                                                </div>
-                                            </div>
                                         
 
-                                        <div class="row">
-
-                                            <div class="col-12">
-                                                <div class="h4">Not Used</div>
-                                            </div>
-
-                                            {{-- custom variations --}}
-                                            @foreach ($custom_attribute as $item)
-                                            @php
-                                            $tmp_var = []; 
-
-                                                if (is_object($prodextra) && property_exists($prodextra, 'Cust_tag_group')){
-                                                $myvar = App\Models\ProductExtraInfo::where('Cust_tag_group',$prodextra->Cust_tag_group)->where('attribute_id',$item->id)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
-                                                // $tmp_var = [];  
-
-                                                foreach ($myvar as $key => $value) {
-                                                    array_push($tmp_var,getAttruibuteValueById($value)->attribute_value);
-                                                }
-                                            }
-                                            @endphp
-                                                @if ($tmp_var == null && $item->name != 'Color')
-                                                    <div class="col-md-4 col-12">
-                                                        <div class="form-group ">
-                                                            <label for="{{$item->name ?? '' }}" class="control-label">{{$item->name ?? '' }}</label>
-                                                            <input  class="form-control TAGGROUP" name="custom_attri_{{ $loop->iteration }}" type="text" id="{{$item->name ?? '' }}" value="{{ implode(",",$tmp_var) }}" >
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            @endforeach
-                                        </div>
                                         
                                     </div>
                                 </div>
@@ -849,10 +859,11 @@
                                                             <div class="h6">Exclusive  </div>
                                                         </label>
                                                         <br>
-                                                        <input type="checkbox" data-open="productexclusivebox" id="productexclusivebx" class="hiddenbxbtn">
+                                                        <input type="checkbox" data-open="productexclusivebox" id="productexclusivebx" class="hiddenbxbtn"
+                                                        @if ($product->exclusive != '' || $prodextra->exclusive_buyer_name != '') checked @endif>
                                                     </div>
                                                 </div>
-                                                <div class="row d-none" id="productexclusivebox">
+                                                <div class="row @if ($product->exclusive != '' || $prodextra->exclusive_buyer_name != '') @else d-none @endif" id="productexclusivebox">
                                                     <div class="col-md-6 col-12">
                                                         <div class="form-check pl-0">
                                                             <label for="exclubtn" class="mr-3">
@@ -882,18 +893,19 @@
                                                     <div class="h6">Sample Details</div>
                                                 </label>
                                                 <br>
-                                                <input type="checkbox" data-open="productsamplebox" id="productsamplebx" class="hiddenbxbtn">
+                                                <input type="checkbox" data-open="productsamplebox" id="productsamplebx" class="hiddenbxbtn"
+                                                @if ($prodextra->sample_available != '' || $prodextra->sample_month != '') checked @endif>
                                             </div>
                                         </div>
 
-                                        <div class="row d-none" id="productsamplebox">
-                                            <div class="col-md-4 col-4">
+                                        <div class="row @if ($prodextra->sample_available != '' || $prodextra->sample_month != '') @else d-none @endif" id="productsamplebox">
+                                            <div class="col-md-3 col-3">
                                                 <div class="form-group ">
                                                     <label for="sample_available" class="control-label">Sample / Stock available</label>
                                                         <input  class="form-control" name="sample_available" type="text" id="sample_available" value="{{$prodextra->sample_available ?? ''}}" >
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-3 col-3">
                                                 <div class="form-group ">
                                                     <label for="sample_year" class="control-label">Sample Year</label>
                                                     {{-- <input  class="form-control" name="sample_year" type="text" id="sample_year" value="{{$prodextra->sample_year ?? ''}}" > --}}
@@ -910,7 +922,7 @@
                                                         </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-3 col-3">
                                                 <div class="form-group ">
                                                     <label for="sample_month" class="control-label">Sample Month</label>
                                                     {{-- <input  class="form-control" name="sample_month" type="text" id="sample_month" value="{{$prodextra->sample_month ?? ''}}" > --}}
@@ -941,7 +953,7 @@
 
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-3 col-3">
                                                 <div class="form-group ">
                                                     <label for="sampling_time" class="control-label">Sampling time</label>
                                                     <input  class="form-control" name="sampling_time" type="text" id="sampling_time" value="{{$prodextra->sampling_time ?? ''}}" >
@@ -959,35 +971,36 @@
                                                     <div class="h6">Sourced from Outside</div>
                                                 </label>
                                                 <br>
-                                                <input type="checkbox" data-open="productsourcedbox" id="productsourcedbx" class="hiddenbxbtn">
+                                                <input type="checkbox" data-open="productsourcedbox" id="productsourcedbx" class="hiddenbxbtn"
+                                                @if ($prodextra->vendor_sourced_from != '' || $prodextra->vendor_price != '' || $prodextra->product_cost_unit != '' || $prodextra->vendor_currency != '' || $prodextra->sourcing_year != '') checked @endif>
                                             </div>
                                         </div>
-                                        <div class="row d-none" id="productsourcedbox">                                                   
-                                            <div class="col-md-4 col-4">
+                                        <div class="row @if ($prodextra->vendor_sourced_from != '' || $prodextra->vendor_price != '' || $prodextra->product_cost_unit != '' || $prodextra->vendor_currency != '' || $prodextra->sourcing_year != '') @else d-none @endif" id="productsourcedbox">                                                   
+                                            <div class="col-md-3 col-3">
                                                 <div class="form-group ">
                                                     <label for="vendor_sourced_from" class="control-label">Vendor Sourced from</label>
                                                     <input  class="form-control" name="vendor_sourced_from" type="text" id="vendor_sourced_from" value="{{$prodextra->vendor_sourced_from ?? '' }}" >
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-3 col-3">
                                                 <div class="form-group ">
                                                     <label for="vendor_price" class="control-label">Vendor Price</label>
                                                     <input  class="form-control" name="vendor_price" type="text" id="vendor_price" value="{{$prodextra->vendor_price ?? '' }}" >
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-3 col-3">
                                                 <div class="form-group ">
                                                     <label for="product_cost_unit" class="control-label">Product Cost Unit</label>
                                                     <input  class="form-control" name="product_cost_unit" type="text" id="product_cost_unit" value="{{$prodextra->product_cost_unit ?? '' }}" >
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-3 col-3">
                                                 <div class="form-group ">
                                                     <label for="vendor_currency" class="control-label">Vendor Currency</label>
                                                     <input  class="form-control" name="vendor_currency" type="text" id="vendor_currency" value="{{$prodextra->vendor_currency ?? '' }}" >
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-3 col-3">
                                                 <div class="form-group ">
                                                     <label for="sourcing_year" class="control-label">Sourcing Year</label>
                                                     {{-- <input  class="form-control" name="sourcing_year" type="number" id="sourcing_year" value="{{$prodextra->sourcing_year ?? '' }}" > --}}
@@ -1004,7 +1017,7 @@
                                                     </select>
                                                 </div>
                                             </div>                                                   
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-3 col-3">
                                                 <div class="form-group ">
                                                     <label for="sourcing_month" class="control-label">Sourcing Month</label>
                                                     {{-- <input  class="form-control" name="sourcing_month" type="text" id="sourcing_month" value="{{$prodextra->sourcing_month ?? '' }}" > --}}
