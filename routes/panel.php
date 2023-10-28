@@ -37,6 +37,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\NewBulkController;
 use App\Http\Controllers\Panel\ProposalController;
 use App\Http\Controllers\Panel\UserShopItemController;
+use App\Http\Controllers\settingController;
 use App\Models\UserShopItem;
 
 /*
@@ -233,6 +234,15 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::get('/', [NotificationController::class,'index'])->name('index');
         Route::get('/read-all', [NotificationController::class,'seeAllNotification'])->name('readall');
     });
+
+
+    Route::group(['prefix' => 'settings', 'as' => 'settings.'], function () {
+        Route::get('/{user}', [settingController::class,'index'])->name('index');
+        Route::get('makedefaultTemplate/{user}{template}', [settingController::class,'makedefaultTemplate'])->name('make.default.Template');
+        
+    });
+
+
     Route::group(['namespace' => 'Admin\ConstantManagement','middleware' => 'can:manage_setting', 'prefix' => 'constant-management', 'as' => 'constant_management.'], function () {
         Route::group(['middleware' => 'can:manage_setting', 'prefix' => 'mail-sms-template', 'as' => 'mail_sms_template.'], function () {
             Route::get('/', [MailSmsTemplateController::class,'index'])->name('index');

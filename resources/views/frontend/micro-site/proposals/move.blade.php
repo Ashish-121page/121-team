@@ -22,14 +22,12 @@
     @endphp
     <!-- push external head elements to head -->
     @push('head')
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.css">
-        <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
-        <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"> 
-        {{-- modal --}}
+    <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"> 
+    {{-- Animated modal --}}
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.css">
 
-     <link rel="stylesheet" href="{{ asset('frontend/assets/css/normalize.min.css') }}">
-     <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}">
 
         <style>
             .app-sidebar , .header-top{
@@ -281,8 +279,15 @@
 
 
                  /* modal */
-                #btn-close-modal1{
+                /* #btn-close-modal1{
                     width:100%;
+                    text-align: center;
+                    cursor:pointer;
+                    color:#fff;
+                } */
+
+                #btn-close-modal2{
+                    width: 80%;
                     text-align: center;
                     cursor:pointer;
                     color:#fff;
@@ -550,11 +555,21 @@
                                                     <div class="">
                                                         <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">Back</a>
                                                     </div>
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-outline-primary">Save</button>
+                                                    </div>
                                                         <div class="d-flex">
                                                                 <div class="form-group">
-                                                                    <button type="submit" class="btn btn-outline-primary">Save</button>
+                                                                    {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
+                                                                    {{-- <a href="{{ url('proposal/offeroptions') }}" class="btn btn-sm btn-outline-primary">Next</a> --}}
+                                                                    <a class="btn btn-outline-primary" id="jaya2" href="#animatedModal2" role="button">Next</a>
                                                                 </div>
-                                                            @if ($proposal->status == 1 && $proposal->type == 0)
+
+                                                                {{-- commmented save and preview buttons --}}
+                                                                
+                                                                
+
+                                                            {{-- @if ($proposal->status == 1 && $proposal->type == 0) --}}
                                                                 {{-- <div class="">                                               
                                                                     @if ($customer_mob_no != null)
                                                                         <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
@@ -570,11 +585,11 @@
                                                                         <i class="far fa-envelope"></i>
                                                                     </a>
                                                                 </div> --}}
-                                                            @endif
+                                                            {{-- @endif --}}
 
                                                             {{--` Share Offer for Makeing Offer --}}
 
-                                                            @if ($proposal->status == 1 && $proposal->type == 1)
+                                                            {{-- @if ($proposal->status == 1 && $proposal->type == 1) --}}
                                                                 {{-- <div class="">                                               
                                                                     @if ($customer_mob_no != null)
                                                                         <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
@@ -590,11 +605,11 @@
                                                                         <i class="far fa-envelope"></i>
                                                                     </a>
                                                                 </div> --}}
-                                                            @endif
+                                                            {{-- @endif --}}
 
                                                         </div>
 
-                                                        @if ($proposal->type == 1)
+                                                        {{-- @if ($proposal->type == 1)
                                                             <button class="btn btn-outline-primary btn-sm copyLInk" type="button" data-link="{{ inject_subdomain('proposal/create', $slug_guest, false, false)}}?linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" >Copy LInk <i class="far fa-copy"></i> </button>
                                                         @endif  
 
@@ -606,7 +621,7 @@
                                                                     @endif
                                                                 </div>
                                                             </div>
-                                                        @endif
+                                                        @endif --}}
                                                 </div>
                                             </div>
 
@@ -706,6 +721,29 @@
                                                         </div>
                                                     </div>
 
+                                                    {{-- @if ($proposal->relate_to == $proposal->user_shop_id) --}}
+                                                        <div class="col-md-6 col-12">
+                                                            <div class="form-group">
+                                                                <label for="proposal_note" class="control-label">Offer Notes</label>
+                                                                <textarea  class="form-control" rows="7" name="proposal_note" id="proposal_note"
+                                                                placeholder="Enter Offer Notes">{{ $proposal->proposal_note }}</textarea>
+                                                            </div>
+                                                            {{-- <div>
+                                                                <input type="checkbox" id="enable_price_range" name="enable_price_range" value="1" @if($proposal->enable_price_range == 1 ) checked @endif>
+                                                                <label for="enable_price_range d-none">Enable Price Range</label>
+                                                            </div> --}}
+                                                        </div>
+                                                    {{-- @endif --}}
+
+
+                                                    {{-- <div class="col-md-6 col-12">
+                                                        <div class="form-group">
+                                                            <label for="pdf_view" class="form-label">PDF View</label>
+                                                            <a class="btn btn-outline-primary" id="jaya1" href="#animatedModal1" role="button">Download PDF</a>
+                                                        </div>
+                                                    </div> --}}
+
+
 
                                                     @if ($proposal->relate_to == $proposal->user_shop_id)   
                                                        <div class="row">
@@ -746,70 +784,66 @@
                                                     @endif
 
 
-                                                    @if ($proposal->relate_to == $proposal->user_shop_id)
-                                                        <div class="col-md-12 col-12">
-                                                            <div class="form-group">
-                                                                <label for="proposal_note" class="control-label">Offer Notes</label>
-                                                                <textarea  class="form-control" rows="7" name="proposal_note" id="proposal_note"
-                                                                placeholder="Enter Offer Notes">{{ $proposal->proposal_note }}</textarea>
-                                                            </div>
-                                                            {{-- <div>
-                                                                <input type="checkbox" id="enable_price_range" name="enable_price_range" value="1" @if($proposal->enable_price_range == 1 ) checked @endif>
-                                                                <label for="enable_price_range d-none">Enable Price Range</label>
-                                                            </div> --}}
-                                                        </div>
-                                                    @endif
+                                                    
                                                     
 
                                                 </div> {{-- End Of ROw --}}
 
-                                                <div class="row">
-                                                    <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 " style="margin-left: 100px; height:200px;">
-                                                        {{-- <div class="col-md-12 d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap"> 
-                                                            <button onclick="getPDF();" class="btn btn-outline-primary " type="button" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PDF</button>
-                                                        </div> --}}
-                                                        <div class="col-md-12"> 
-                                                            <button onclick="getPPT()" type="button" class="btn btn-outline-warning sdfgesd" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PPT</button>
-                                                        </div>
-                                                            <div class="col-md-12"> 
-                                                            <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i> Save as Excel</button>
+                                                {{-- download buttons --}}                                               
+                                                    {{-- <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between ">
+                                                        <div class="col-6">
+                                                            <div class="row mt-3" style="display: flex;
+                                                            align-items: center;">
+                                                                <p>Download PDF:</p>
+                                                                <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">
+                                                                <button onclick="getPDF();" class="btn btn-outline-primary " type="button" style="position: relative; right: 5rem;"><i class="fa fa-download">Download</i></button>
+                                                                </div>
                                                             </div>
-                                        
-                                                            {{-- @if ($proposal->type == 1)
-                                                                <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}&linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" target="_blank" class="btn btn-outline-primary" style="position: relative; right: 5rem;"> {{ _("Make Offer") }} </a>
-                                                            @endif --}}
-
-                                                            <div class="col-md-12"> 
-                                                                {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Open Modal</button>
-
-                                                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> --}}
-                                                                {{-- <div class="modal-dialog" role="document">
-                                                                    <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title" id="myModalLabel">Modal Title</h5>
-                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                        </button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                        <button type="button" class="btn btn-primary">Save changes</button>
-                                                                    </div>
-                                                                    </div>
-                                                                </div> --}}
-                                                                {{-- </div> --}}
-                                                                <a class="btn btn-outline-info" style="position: relative; right: 5rem;" id="jaya1" href="#animatedModal1" role="button">Change Style </a>
-                                                                {{-- <button class="btn btn-outline-info" style="position: relative; right: 5rem;" id="style_button" type="button"><i class="fa fa-download"></i> Change Style </button> --}}
+                                                            <div class="row mt-3" style="display: flex;
+                                                            align-items: center;">
+                                                                <p >Download PPT:</p>
+                                                                <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">       
+                                                                <button onclick="getPPT()" type="button" class="btn btn-outline-info" style="position: relative; right: 5rem;"><i class="fa fa-download"></i>Download</button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mt-3" style="display: flex;
+                                                            align-items: center;">
+                                                                <p style= "mt-5 !important"> Export Excel:</p>
+                                                                <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3 " style="margin-left: 100px">
+                                                                <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i>Download</button>
+                                                            </div> 
                                                             </div>
                                                         </div>
-                                                        
-                                                    </div>
+                                                    </div> --}}
                                                     
-                                                </div>
-
-                                            </div>
+                                                    {{-- buttons --}}
+                                                    {{-- <div class="col-md-8 ">                                    
+                                                    <div class="row d-flex justify-content-center justify-content-sm-between justify-content-md-between my-3">
+                                                        <button class="btn btn-outline-primary"  id="" type="button">Link</button>
+                                                        <button class="btn btn-outline-success"  id="" type="button">Copy</button>
+                                                        <button class="btn btn-outline-warning"  id="" type="button">W</button>
+                                                        <button class="btn btn-outline-info"  id="" type="button">E</button>
+                                                    </div>
+                                                </div> --}}
+                                               
+                                                    
+                                                
+                                                {{--<div class="row">
+                                                    <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">
+                                                        <div class="col-6">
+                                                            <div class="row mt-3">
+                                                                <button onclick="getPDF();" class="btn btn-outline-primary " type="button" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Download</button>
+                                                            </div>
+                                                            <div class="row mt-3"> 
+                                                            <button onclick="getPPT()" type="button" class="btn btn-outline-info" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Download</button>
+                                                            </div>
+                                                            <div class="row mt-3">
+                                                            <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i> Download</button>
+                                                            </div>   
+                                                        </div>                                                   
+                                                    </div>
+                                                </div>--}}
+                                                 
                                             
 
 
@@ -871,15 +905,22 @@
 
  
                                             <div class="col-md-12 ">
-                                                <div class="d-flex justify-content-between">
+                                                <div class="d-flex justify-content-between mt-5">
                                                     <div class="">
                                                         <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">Back</a>
                                                     </div>
-                                                        <div class="d-flex">
-                                                                <div class="form-group">
+                                                    <div class="form-group">
                                                                     <button type="submit" class="btn btn-outline-primary">Save</button>
                                                                 </div>
-                                                            @if ($proposal->status == 1 && $proposal->type == 0)
+                                                                <div class="d-flex">
+                                                                    <div class="form-group">
+                                                                        {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
+                                                                        <a class="btn btn-outline-primary" id="jaya2" href="#animatedModal2" role="button">Next</a>
+                                                                    </div>
+
+                                                            {{-- commented save and preview buttons --}}
+                                                                
+                                                            {{-- @if ($proposal->status == 1 && $proposal->type == 0) --}}
                                                                 {{-- <div class="">                                               
                                                                     @if ($customer_mob_no != null)
                                                                         <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
@@ -895,8 +936,8 @@
                                                                         <i class="far fa-envelope"></i>
                                                                     </a>
                                                                 </div> --}}
-                                                                @endif         
-                                                                @if ($proposal->status == 1 && $proposal->type == 1)
+                                                                {{-- @endif          --}}
+                                                                {{-- @if ($proposal->status == 1 && $proposal->type == 1) --}}
                                                                     {{-- <div class="">                                               
                                                                         @if ($customer_mob_no != null)
                                                                             <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
@@ -912,16 +953,16 @@
                                                                             <i class="far fa-envelope"></i>
                                                                         </a>
                                                                     </div> --}}
-                                                                @endif
-                                                        </div>
+                                                                {{-- @endif
+                                                        </div> --}}
 
 
-                                                        @if ($proposal->type == 1)
+                                                        {{-- @if ($proposal->type == 1)
                                                             <button class="btn btn-outline-primary btn-sm copyLInk" type="button" data-link="{{ inject_subdomain('proposal/create', $slug_guest, false, false)}}?linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" >Copy LInk <i class="far fa-copy"></i> </button>
-                                                        @endif  
+                                                        @endif   --}}
                                                         
                                                         
-                                                    @if ($proposal->status == 1 && $proposal->type == 0)
+                                                    {{-- @if ($proposal->status == 1 && $proposal->type == 0)
                                                         <div class="">
                                                             <div class="form-group mx-2">
                                                                 @if(proposalCustomerDetailsExists($proposal->id))
@@ -929,7 +970,7 @@
                                                                 @endif
                                                             </div>
                                                         </div>
-                                                    @endif
+                                                    @endif --}}
                                                 </div>
                                             </div>
                                         </form>
@@ -947,6 +988,17 @@
         Please Wait...
     </div>
     @include('frontend.micro-site.proposals.modal.updateprice')
+    {{-- @include('frontend.micro-site.proposals.modal.change_style') --}}
+    @if (request()->has('type') && request()->get('type') == 'send')
+        @include('frontend.micro-site.proposals.offeroptions')
+    @endif
+
+    
+    
+    
+
+    
+
     <!-- push external js -->
     @push('script')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
@@ -997,279 +1049,287 @@
                     });
                         
             });
-        </script>
-
-
-
-        
+        </script>  
+              
         <script>
             
-        var hike = $('#hike').val();
+            var hike = $('#hike').val();
 
-        function updateURLParam(key,val){
-            var url = window.location.href;
-            var reExp = new RegExp("[\?|\&]"+key + "=[0-9a-zA-Z\_\+\-\|\.\,\;]*");
+            function updateURLParam(key,val){
+                var url = window.location.href;
+                var reExp = new RegExp("[\?|\&]"+key + "=[0-9a-zA-Z\_\+\-\|\.\,\;]*");
 
-            if(reExp.test(url)) {
-                // update
-                var reExp = new RegExp("[\?&]" + key + "=([^&#]*)");
-                var delimiter = reExp.exec(url)[0].charAt(0);
-                url = url.replace(reExp, delimiter + key + "=" + val);
-            } else {
-                // add
-                var newParam = key + "=" + val;
-                if(!url.indexOf('?')){url += '?';}
-
-                if(url.indexOf('#') > -1){
-                    var urlparts = url.split('#');
-                    url = urlparts[0] +  "&" + newParam +  (urlparts[1] ?  "#" +urlparts[1] : '');
-                }else if(url.indexOf('&') > -1 || url.indexOf('?') > -1){
-                    url += "&" + newParam;
+                if(reExp.test(url)) {
+                    // update
+                    var reExp = new RegExp("[\?&]" + key + "=([^&#]*)");
+                    var delimiter = reExp.exec(url)[0].charAt(0);
+                    url = url.replace(reExp, delimiter + key + "=" + val);
                 } else {
-                    url += "?" + newParam;
+                    // add
+                    var newParam = key + "=" + val;
+                    if(!url.indexOf('?')){url += '?';}
+
+                    if(url.indexOf('#') > -1){
+                        var urlparts = url.split('#');
+                        url = urlparts[0] +  "&" + newParam +  (urlparts[1] ?  "#" +urlparts[1] : '');
+                    }else if(url.indexOf('&') > -1 || url.indexOf('?') > -1){
+                        url += "&" + newParam;
+                    } else {
+                        url += "?" + newParam;
+                    }
                 }
+                window.history.pushState(null, document.title, url);
+                return url;
+                    // window.history.pushState(null, document.title, url);
             }
-            window.history.pushState(null, document.title, url);
-            return url;
-                // window.history.pushState(null, document.title, url);
-        }
-        var checkUrlParameter = function checkUrlParameter(sParam) {
-            var sPageURL = window.location.search.substring(1),
-                sURLVariables = sPageURL.split('&'),
-                sParameterName,
-                i;
+            var checkUrlParameter = function checkUrlParameter(sParam) {
+                var sPageURL = window.location.search.substring(1),
+                    sURLVariables = sPageURL.split('&'),
+                    sParameterName,
+                    i;
 
-            for (i = 0; i < sURLVariables.length; i++) {
-                sParameterName = sURLVariables[i].split('=');
+                for (i = 0; i < sURLVariables.length; i++) {
+                    sParameterName = sURLVariables[i].split('=');
 
-                if (sParameterName[0] === sParam) {
-                    return true;
+                    if (sParameterName[0] === sParam) {
+                        return true;
+                    }
                 }
-            }
-            return false;
-        };
+                return false;
+            };
 
 
-        
-        $('#hikebtn').click(function() {
-            hike = $("#magrintochnage").val();
-            var route = "{{ route('pages.proposals.updatemargin') }}";
-                $.ajax({
-                    url: route,
-                    method: "get",
-                    data: {
-                        'proposal_id': {{ $proposal->id }},
-                        'hike': hike,
-                    },
-                    success: function(res){
-                        console.log(res);
-                        location.reload();
-                }
-            });
-        });
-          
-        $('.input-check').click(function(){
-         
-            if($(this).prop('checked')){
-                var route = "{{ route('panel.proposal_items.api.store') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}"+"&hike="+hike;
-                $.ajax({
-                    url: route,
-                    method: "get",
-                    success: function(res){
-                       
+            
+            $('#hikebtn').click(function() {
+                hike = $("#magrintochnage").val();
+                var route = "{{ route('pages.proposals.updatemargin') }}";
+                    $.ajax({
+                        url: route,
+                        method: "get",
+                        data: {
+                            'proposal_id': {{ $proposal->id }},
+                            'hike': hike,
+                        },
+                        success: function(res){
+                            console.log(res);
+                            location.reload();
                     }
                 });
-            }else{
-                var route = "{{ route('panel.proposal_items.api.remove') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}";
-                $.ajax({
-                    url: route,
-                    method: "get",
-                    success: function(res){
+            });
+            
+            $('.input-check').click(function(){
+            
+                if($(this).prop('checked')){
+                    var route = "{{ route('panel.proposal_items.api.store') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}"+"&hike="+hike;
+                    $.ajax({
+                        url: route,
+                        method: "get",
+                        success: function(res){
                         
-                    }
-                });
-            }
-        });
-
-        // Add Product To Pin
-        
-        $('.input-checkpin').click(function(){
-         
-            if($(this).prop('checked')){
-                var  id = $(this).val();
-                // var img = ;?
-                var route = "{{ route('panel.proposal_items.api.addpin') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}"+"&hike="+hike;
-                $.ajax({
-                    url: route,
-                    method: "get",
-                    success: function(res){
-                        console.log(res);
-                        $("img."+id).attr('src', "{{ asset('frontend/assets/svg/bookmark_added.svg')}}");
-                    }
-                });
-               
-            }else{
-                $("img."+id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg')}}");
-                var route = "{{ route('panel.proposal_items.api.removepin') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}";
-                $.ajax({
-                    url: route,
-                    method: "get",
-                    success: function(res){
-                        console.log(res);
-                        $("img."+id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg')}}");
-                    }
-                });
-            }
-        });
-
-
-
-
-        $('#ProposalForm').validate();
-            $('#category_id').change(function(){
-            var id = $(this).val();
-            if(id){
-                $.ajax({
-                    url: "{{route('panel.user_shop_items.get-category')}}",
-                    method: "get",
-                    datatype: "html",
-                    data: {
-                        id:id
-                    },
-                    success: function(res){
-                        $('#sub_category_id').html(res);
-                    }
-                })
-            }
-        }) 
-        $(document).ready(function() {
-                $('#suppliers').select2({
-                    placeholder : "All Suppliers",
-                });
-                $('#brands').select2({
-                    placeholder : "All Brands",
-                });
-                $('#size').select2({
-                    placeholder : "All Size",
-                });
-                $('#color').select2({
-                    placeholder : "All Color",
-                });
-                $("#materials").select2({
-                    placeholder: "All Materials"
-                })
-            var table = $('.table').DataTable({
-                responsive: true,
-                fixedColumns: true,
-                fixedHeader: true,
-                scrollX: false,
-                'aoColumnDefs': [{
-                    'bSortable': false,
-                    'aTargets': ['nosort']
-                }],
-                dom: "<'row'<'col-sm-2'l><'col-sm-7 text-center'B><'col-sm-3'f>>tipr",
-                buttons: [
-                    
-                ]
-
-            });
-        });
-
-        $(document).on('click','.nav-link',function(e){
-            var type =  $(this).data('type');
-            var url = "";
-            if(checkUrlParameter('type')){
-                url = updateURLParam('type',type);
-            }else{
-                url =  updateURLParam('type',type);
-            }
-            window.location.href = url;
-        });
-        $(document).on('click','.add-item',function(e){
-            e.preventDefault();
-            var url = $(this).attr('href');
-            var msg = $(this).data('msg') ?? "You won't be able to revert back!";
-            $.confirm({
-                draggable: true,
-                title: 'Are You Sure!',
-                content: msg,
-                type: 'red',
-                typeAnimated: true,
-                buttons: {
-                    tryAgain: {
-                        text: 'Add',
-                        btnClass: 'btn-success',
-                        action: function(){
-                                window.location.href = url;
                         }
-                    },
-                    close: function () {
-                    }
+                    });
+                }else{
+                    var route = "{{ route('panel.proposal_items.api.remove') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}";
+                    $.ajax({
+                        url: route,
+                        method: "get",
+                        success: function(res){
+                            
+                        }
+                    });
                 }
             });
-        });
-        $(document).on('click','.click-send',function(e){
-            e.preventDefault();
-            var url = $(this).attr('href');
-            var msg = $(this).data('msg') ?? "Send sms to check the proposal !";
-            $.confirm({
-                draggable: true,
-                title: 'Send sms to check the proposal!',
-                content: msg,
-                type: 'blue',
-                typeAnimated: true,
-                buttons: {
-                    tryAgain: {
-                        text: 'Confirm',
-                        btnClass: 'btn-blue',
-                        action: function(){
-                                window.location.href = url;
+
+            // Add Product To Pin
+            
+            $('.input-checkpin').click(function(){
+            
+                if($(this).prop('checked')){
+                    var  id = $(this).val();
+                    // var img = ;?
+                    var route = "{{ route('panel.proposal_items.api.addpin') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}"+"&hike="+hike;
+                    $.ajax({
+                        url: route,
+                        method: "get",
+                        success: function(res){
+                            console.log(res);
+                            $("img."+id).attr('src', "{{ asset('frontend/assets/svg/bookmark_added.svg')}}");
                         }
-                    },
-                    close: function () {
-                    }
+                    });
+                
+                }else{
+                    $("img."+id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg')}}");
+                    var route = "{{ route('panel.proposal_items.api.removepin') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}";
+                    $.ajax({
+                        url: route,
+                        method: "get",
+                        success: function(res){
+                            console.log(res);
+                            $("img."+id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg')}}");
+                        }
+                    });
                 }
             });
-        });
-        $(document).on('click','.remove-item',function(e){
-            e.preventDefault();
-            var url = $(this).attr('href');
-            // var msg = $(this).data('msg') ?? "You won't be able to revert back!";
-            $.confirm({
-                draggable: true,
-                title: 'Remove from offer ?',
-                content: '',
-                type: 'red',
-                typeAnimated: true,
-                buttons: {
-                    tryAgain: {
-                        text: 'Yes',
-                        btnClass: 'btn-red',
-                        action: function(){
-                                window.location.href = url;
+
+
+
+
+            $('#ProposalForm').validate();
+                $('#category_id').change(function(){
+                var id = $(this).val();
+                if(id){
+                    $.ajax({
+                        url: "{{route('panel.user_shop_items.get-category')}}",
+                        method: "get",
+                        datatype: "html",
+                        data: {
+                            id:id
+                        },
+                        success: function(res){
+                            $('#sub_category_id').html(res);
                         }
-                    },
-                    close: function () {
-                        test: "Cancel"
-                    }
+                    })
                 }
+            }) 
+            $(document).ready(function() {
+                    $('#suppliers').select2({
+                        placeholder : "All Suppliers",
+                    });
+                    $('#brands').select2({
+                        placeholder : "All Brands",
+                    });
+                    $('#size').select2({
+                        placeholder : "All Size",
+                    });
+                    $('#color').select2({
+                        placeholder : "All Color",
+                    });
+                    $("#materials").select2({
+                        placeholder: "All Materials"
+                    })
+                var table = $('.table').DataTable({
+                    responsive: true,
+                    fixedColumns: true,
+                    fixedHeader: true,
+                    scrollX: false,
+                    'aoColumnDefs': [{
+                        'bSortable': false,
+                        'aTargets': ['nosort']
+                    }],
+                    dom: "<'row'<'col-sm-2'l><'col-sm-7 text-center'B><'col-sm-3'f>>tipr",
+                    buttons: [
+                        
+                    ]
+
+                });
             });
-        });
 
-        $('.filterable-btn').on('click',function(){
-            // Get the current URLSearchParams object
-            const urlParams = new URLSearchParams(window.location.search);
+            $(document).on('click','.nav-link',function(e){
+                var type =  $(this).data('type');
+                var url = "";
+                if(checkUrlParameter('type')){
+                    url = updateURLParam('type',type);
+                }else{
+                    url =  updateURLParam('type',type);
+                }
+                window.location.href = url;
+            });
+            $(document).on('click','.add-item',function(e){
+                e.preventDefault();
+                var url = $(this).attr('href');
+                var msg = $(this).data('msg') ?? "You won't be able to revert back!";
+                $.confirm({
+                    draggable: true,
+                    title: 'Are You Sure!',
+                    content: msg,
+                    type: 'red',
+                    typeAnimated: true,
+                    buttons: {
+                        tryAgain: {
+                            text: 'Add',
+                            btnClass: 'btn-success',
+                            action: function(){
+                                    window.location.href = url;
+                            }
+                        },
+                        close: function () {
+                        }
+                    }
+                });
+            });
+            $(document).on('click','.click-send',function(e){
+                e.preventDefault();
+                var url = $(this).attr('href');
+                var msg = $(this).data('msg') ?? "Send sms to check the proposal !";
+                $.confirm({
+                    draggable: true,
+                    title: 'Send sms to check the proposal!',
+                    content: msg,
+                    type: 'blue',
+                    typeAnimated: true,
+                    buttons: {
+                        tryAgain: {
+                            text: 'Confirm',
+                            btnClass: 'btn-blue',
+                            action: function(){
+                                    window.location.href = url;
+                            }
+                        },
+                        close: function () {
+                        }
+                    }
+                });
+            });
+            $(document).on('click','.remove-item',function(e){
+                e.preventDefault();
+                var url = $(this).attr('href');
+                // var msg = $(this).data('msg') ?? "You won't be able to revert back!";
+                $.confirm({
+                    draggable: true,
+                    title: 'Remove from offer ?',
+                    content: '',
+                    type: 'red',
+                    typeAnimated: true,
+                    buttons: {
+                        tryAgain: {
+                            text: 'Yes',
+                            btnClass: 'btn-red',
+                            action: function(){
+                                    window.location.href = url;
+                            }
+                        },
+                        close: function () {
+                            test: "Cancel"
+                        }
+                    }
+                });
+            });
 
-            // Set the new parameter and its value
-            const newParamName = 'category_id';
-            const newParamValue = $(this).data('cid');
+            $('.filterable-btn').on('click',function(){
+                // Get the current URLSearchParams object
+                const urlParams = new URLSearchParams(window.location.search);
 
-            // Check if the new parameter already exists in the URL
-            if (urlParams.has(newParamName)) {
-            // Check if the current value is different from the new value
-            if (urlParams.get(newParamName) !== newParamValue) {
-                // Update the value of the existing parameter
-                urlParams.set(newParamName, newParamValue);
+                // Set the new parameter and its value
+                const newParamName = 'category_id';
+                const newParamValue = $(this).data('cid');
+
+                // Check if the new parameter already exists in the URL
+                if (urlParams.has(newParamName)) {
+                // Check if the current value is different from the new value
+                if (urlParams.get(newParamName) !== newParamValue) {
+                    // Update the value of the existing parameter
+                    urlParams.set(newParamName, newParamValue);
+
+                    // Replace the current URL with the modified URL
+                    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+                    window.history.replaceState({}, '', newUrl);
+
+                    // Refresh the page
+                    window.location.reload();
+                }
+                } else {
+                // Add a new parameter to the existing parameters
+                urlParams.append(newParamName, newParamValue);
 
                 // Replace the current URL with the modified URL
                 const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
@@ -1277,301 +1337,208 @@
 
                 // Refresh the page
                 window.location.reload();
-            }
-            } else {
-            // Add a new parameter to the existing parameters
-            urlParams.append(newParamName, newParamValue);
-
-            // Replace the current URL with the modified URL
-            const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-            window.history.replaceState({}, '', newUrl);
-
-            // Refresh the page
-            window.location.reload();
-            }
-
-
-            // var cid = $(this).data('cid');
-            // if(cid == 0){
-            //     $(".filterable-btn").removeClass('btn-info');
-            //     $(this).addClass('btn-info')
-            //     $('.filterable-items').removeClass('d-none');
-            // }else{
-            //     $('.filterable-items').addClass('d-none');
-            //     $(".filterable-btn").removeClass('btn-info');
-            //     $(this).addClass('btn-info')
-            //     $('.cid-'+cid).removeClass('d-none');
-            // }
-        });
-        $('#my_product').on('click',function(){
-            if ($(this).is(':checked')) {
-                $('#all_supplier_brand').addClass('d-none');
-            } else {
-                $('#all_supplier_brand').removeClass('d-none');
-            }
-        });
-
-        function readURL(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                $('.image-preview').attr('src', e.target.result);
-                $('.image-preview').hide();
-                $('.image-preview').fadeIn(650);
                 }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        $("#file-input").change(function() {
-            readURL(this,'.image-preview');
-        });
-
-        function readURLVS(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                $('.image-preview-vs').attr('src', e.target.result);
-                $('.image-preview-vs').hide();
-                $('.image-preview-vs').fadeIn(650);
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
 
 
-        $(".file-input-vs").change(function() {
-            readURLVS(this,);
-        });
-        
-        
-        $(".edit-price").click(function() {
-            var product_id =$(this).data('product');
-            $('.productId').val(product_id);
-            $('#pickedProductEdit').modal('show');
-        });
-
-        @if(request()->get('my_product') == 1) 
-            setTimeout(() => {
-            $('#my_product').trigger('click');
-            }, 500);
-        @endif
-
-         
-            $('#select-all').click(function(){
-                $(document).find('#ajax-loading').show();
-                var interval = 10;
-                if($('.input-check').is(':checked')){
-                    $('.input-check').prop('checked',false).change();
-                }else{
-                    $('.filterable-items').each(function(){
-                        if(!$(this).hasClass('d-none')){
-                            setTimeout(() => {
-                                $(this).find('.input-check').trigger('click');
-                            }, interval);
-                            interval += 150;
-                        }
-                        
-                        setTimeout(() => {
-                            $(document).find('#ajax-loading').hide();
-                        }, 9000);
-                    });
-                }
-                
-             
+                // var cid = $(this).data('cid');
+                // if(cid == 0){
+                //     $(".filterable-btn").removeClass('btn-info');
+                //     $(this).addClass('btn-info')
+                //     $('.filterable-items').removeClass('d-none');
+                // }else{
+                //     $('.filterable-items').addClass('d-none');
+                //     $(".filterable-btn").removeClass('btn-info');
+                //     $(this).addClass('btn-info')
+                //     $('.cid-'+cid).removeClass('d-none');
+                // }
             });
-            $('.unSelectAll').click(function(){
-                var interval = 10;
-                if($('.input-check').is(':checked')){
-                    $('.input-check').prop('checked',false).change();
-                }else{
-                    $('.filterable-items').each(function(){
-                        if(!$(this).hasClass('d-none')){
-                            setTimeout(() => {
-                                $(this).find('.input-check').trigger('click');
-                            }, interval);
-                            interval += 150;
-                        }
-                    });
+            $('#my_product').on('click',function(){
+                if ($(this).is(':checked')) {
+                    $('#all_supplier_brand').addClass('d-none');
+                } else {
+                    $('#all_supplier_brand').removeClass('d-none');
                 }
             });
 
-            // Update Sequence
-            $(function () {
-
-                $( "#sortable" ).sortable({
-                    items: "div.card-drag",
-                    cursor: 'move',
-                    opacity: 0.6,
-                    update: function() {
-                        sendOrderToServer();
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                    $('.image-preview').attr('src', e.target.result);
+                    $('.image-preview').hide();
+                    $('.image-preview').fadeIn(650);
                     }
-                });
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
 
-                function sendOrderToServer() {
-                var order = [];
-                $('div.card-drag').each(function(index,element) {
-                    order.push({
-                        id: $(this).attr('data-id'),
-                        position: index + 1
-                    });
-                });
-                console.log(order);
-                $.ajax({
-                    type: "POST", 
-                    dataType: "json", 
-                    // url: "{{ url('pages/update/sequence') }}"+'/'+"{{$proposal->id}}",
-                    url: "{{ route('pages.proposals.updateSequence',$proposal->id) }}",
-                    data: {
-                    order:order,
-                    _token: '{{csrf_token()}}'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                        console.log(response);
-                        } else {
-                        console.log(response);
-                        }
+            $("#file-input").change(function() {
+                readURL(this,'.image-preview');
+            });
+
+            function readURLVS(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                    $('.image-preview-vs').attr('src', e.target.result);
+                    $('.image-preview-vs').hide();
+                    $('.image-preview-vs').fadeIn(650);
                     }
-                });
+                    reader.readAsDataURL(input.files[0]);
                 }
+            }
+
+
+            $(".file-input-vs").change(function() {
+                readURLVS(this,);
+            });
+            
+            
+            $(".edit-price").click(function() {
+                var product_id =$(this).data('product');
+                $('.productId').val(product_id);
+                $('#pickedProductEdit').modal('show');
             });
 
-            $('#validateMargin').on('click', function(e){
-                if($('#hike').val() > 99){
-
-                    $('#hike').val(99);
-
-                    $.toast({
-                        heading: 'ERROR',
-                        text: "Margin must be less than 100",
-                        showHideTransition: 'slide',
-                        icon: 'error',
-                        loaderBg: '#f2a654',
-                        position: 'top-right'
-                    });
-
-                    e.preventDefault();
-
-                }
-            });
+            @if(request()->get('my_product') == 1) 
+                setTimeout(() => {
+                $('#my_product').trigger('click');
+                }, 500);
+            @endif
 
             
-            // custom Loder
+                $('#select-all').click(function(){
+                    $(document).find('#ajax-loading').show();
+                    var interval = 10;
+                    if($('.input-check').is(':checked')){
+                        $('.input-check').prop('checked',false).change();
+                    }else{
+                        $('.filterable-items').each(function(){
+                            if(!$(this).hasClass('d-none')){
+                                setTimeout(() => {
+                                    $(this).find('.input-check').trigger('click');
+                                }, interval);
+                                interval += 150;
+                            }
+                            
+                            setTimeout(() => {
+                                $(document).find('#ajax-loading').hide();
+                            }, 9000);
+                        });
+                    }
+                    
+                
+                });
+                $('.unSelectAll').click(function(){
+                    var interval = 10;
+                    if($('.input-check').is(':checked')){
+                        $('.input-check').prop('checked',false).change();
+                    }else{
+                        $('.filterable-items').each(function(){
+                            if(!$(this).hasClass('d-none')){
+                                setTimeout(() => {
+                                    $(this).find('.input-check').trigger('click');
+                                }, interval);
+                                interval += 150;
+                            }
+                        });
+                    }
+                });
 
-            window.addEventListener('load', () =>{
-                const cloader = $(".cloader")
-                cloader.addClass('loader-hidden');
-            })
+                // Update Sequence
+                $(function () {
+
+                    $( "#sortable" ).sortable({
+                        items: "div.card-drag",
+                        cursor: 'move',
+                        opacity: 0.6,
+                        update: function() {
+                            sendOrderToServer();
+                        }
+                    });
+
+                    function sendOrderToServer() {
+                    var order = [];
+                    $('div.card-drag').each(function(index,element) {
+                        order.push({
+                            id: $(this).attr('data-id'),
+                            position: index + 1
+                        });
+                    });
+                    console.log(order);
+                    $.ajax({
+                        type: "POST", 
+                        dataType: "json", 
+                        // url: "{{ url('pages/update/sequence') }}"+'/'+"{{$proposal->id}}",
+                        url: "{{ route('pages.proposals.updateSequence',$proposal->id) }}",
+                        data: {
+                        order:order,
+                        _token: '{{csrf_token()}}'
+                        },
+                        success: function(response) {
+                            if (response.status == "success") {
+                            console.log(response);
+                            } else {
+                            console.log(response);
+                            }
+                        }
+                    });
+                    }
+                });
+
+                $('#validateMargin').on('click', function(e){
+                    if($('#hike').val() > 99){
+
+                        $('#hike').val(99);
+
+                        $.toast({
+                            heading: 'ERROR',
+                            text: "Margin must be less than 100",
+                            showHideTransition: 'slide',
+                            icon: 'error',
+                            loaderBg: '#f2a654',
+                            position: 'top-right'
+                        });
+
+                        e.preventDefault();
+
+                    }
+                });
+
+                
+                // custom Loder
+
+                window.addEventListener('load', () =>{
+                    const cloader = $(".cloader")
+                    cloader.addClass('loader-hidden');
+                })
 
         </script>
 
 
         
-    @endpush
-    {{-- <script>
-        function getPDF(){
-            $('.sampleenquiry').addClass('d-none');
-            $(".headbx").addClass('d-none');
-            $(".noprint").addClass('d-none');
-            $(".deleteitem").addClass('d-none');
-            
-            if($('.pdf-margin').hasClass('d-none')){
-                $('.pdf-margin').removeClass('d-none');
-            }else{
-                $('.pdf-margin').addClass('d-none');
-            }
-            document.querySelector('meta[name=viewport]').setAttribute("content", "width=1200");
-
-            var HTML_Width = $(".canvas_div_pdf").width();
-            var HTML_Height = $(".canvas_div_pdf").height();
-            var top_left_margin = 15;
-            var PDF_Width = HTML_Width+(top_left_margin*2);
-            var PDF_Height = (PDF_Width*1.5)+(top_left_margin*2);
-            var canvas_image_width = HTML_Width;
-            var canvas_image_height = HTML_Height;
-            var totalPDFPages = Math.ceil(HTML_Height/PDF_Height)-1;
-
-            html2canvas($(".canvas_div_pdf")[0],{allowTaint:true}).then(function(canvas) {
-                canvas.getContext('2d');
-                
-                // console.log(canvas.height+"  "+canvas.width);
-
-                var imgData = canvas.toDataURL("image/jpeg", 1.0);
-                var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
-
-                // Added a blank page as first
-                // pdf.addPage(PDF_Width, PDF_Height);
-                
-                pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
-                
-                for (var i = 1; i <= totalPDFPages; i++) { 
-                    pdf.addPage(PDF_Width, PDF_Height);
-                    pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
-                }
-                // pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
-                
-                
-                // for (var i = 1; i <= totalPDFPages; i++) { 
-                //     pdf.addPage(PDF_Width, PDF_Height);
-                //     pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
-                // }
-                
-                $.ajax({
-                    type: "GET",
-                    url: "{{ route('pages.proposals.update.download', $proposal->id) }}",
-                    data: {
-                        update: 1, 
-                    },
-                    success: function (response) {
-                        // console.log(response);
-                    }
-                });
-
-
-                pdf.save("{{Illuminate\Support\Str::slug($proposal_slug) }}.pdf");
-
-                setTimeout(() => {
-                    $('.pdf-margin').addClass('d-none');
-                }, 1000);
-                document.querySelector('meta[name=viewport]').setAttribute("content", "width=device-width, initial-scale=1.0");
-            });
-
-
-            $('.sampleenquiry').removeClass('d-none');
-            $(".headbx").removeClass('d-none');
-            $(".noprint").removeClass('d-none');
-            $(".deleteitem").removeClass('d-none');
-        };
-    </script> --}}
-
+    
     <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
+    
+
     <script>
-         //demo 01
-        //  $("#jaya1").animatedModal(
-        //     {
-        //         animatedIn:'lightSpeedIn',
-        //         animatedOut:'bounceOutDown',
-        //         color:'#f3f3f3',
+        $("#jaya2").animatedModal({
+             animatedIn: 'lightSpeedIn',
+             animatedOut: 'lightSpeedOut',
+             color: 'fffff',
+             height: '80%',
+             width: '60%',
+             top: '10%',
+             left: '10%',
 
-        //     });
+         });
 
-        $('#jaya1').click(function(e) {
-        e.preventDefault(); // Prevent the default link behavior
-        $('#animatedModal1').modal('show'); // Open the modal
-        });
 
-        // $(document).ready(function() {
-        // $('#myModal').on('shown.bs.modal', function() {
-            // Do something when the modal is shown
-        });
 
-        // $('#myModal').on('hidden.bs.modal', function() {
-            // Do something when the modal is hidden
-        });
-        });
 
-    </script>
 
+        </script>
+
+@endpush
 
 @endsection

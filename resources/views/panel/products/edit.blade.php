@@ -179,30 +179,31 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-4 col-4 d-none">
                                                 <div class="form-group ">
                                                     <label for="allow_resellers" class="control-label mx-2">Allow Resellers  <span class="text-danger">*</span> </label>
-                                                    <input  class="form-control" name="allow_resellers" type="checkbox" id="allow_resellers" 
-                                                    @if (($prodextra->allow_resellers ?? 'no') == 'yes' || ($prodextra->allow_resellers ?? 'No') == 'Yes' ) checked @endif required>
+                                                    {{-- <input  class="form-control" name="allow_resellers" type="checkbox" id="allow_resellers" @if (($prodextra->allow_resellers ?? 'no') == 'yes' || ($prodextra->allow_resellers ?? 'No') == 'Yes' ) checked @endif required> --}}
+
+                                                    <input  class="form-control" value="no" name="allow_resellers" type="checkbox" id="allow_resellers" 
+                                                    checked required>
+                                                    
                                                 </div> 
                                             </div>
                                             
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-4 col-4 d-none">
                                                 <div class="form-group">
                                                     <label for="is_publish" class="control-label mx-2">Live / Active </label>
-                                                    <input class="form-control" name="is_publish" type="checkbox" id="is_publish" 
-                                                    @if (($product->is_publish ?? '1') == '1' ) checked @endif required>
+                                                    {{-- <input class="form-control" name="is_publish" type="checkbox" id="is_publish" @if (($product->is_publish ?? '1') == '1' ) checked @endif required> --}}
+                                                    <input class="form-control" name="is_publish" type="checkbox" id="is_publish" value="1" checked @endif required>
                                                 </div>
                                             </div>
                                             
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-4 col-4 d-none">
                                                 <div class="form-check form-switch">
                                                     <label class="control-label mx-2">Inventory</label>
-                                                    <input type="checkbox" name="manage_inventory" 
-                                                        @if (getinventoryByproductId($product->id) != null)
-                                                            @if (getinventoryByproductId($product->id)->status == 1) checked @endif
-                                                        @endif
-                                                    class="js-keepinventory" value="1" required>
+                                                    {{-- <input type="checkbox" name="manage_inventory"  @if (getinventoryByproductId($product->id) != null) @if (getinventoryByproductId($product->id)->status == 1) checked @endif @endif class="js-keepinventory" value="1" required> --}}
+
+                                                    <input type="checkbox" name="manage_inventory" class="js-keepinventory" value="1">
                                                 </div>
                                             </div>
 

@@ -39,9 +39,9 @@ class Microproposals extends Controller
     {
         try {
             sessionManager($request,'*');
-            // if (Auth::check() != 1) {
-            //     auth()->loginUsingId(155);
-            // }
+            if (Auth::check() != 1) {
+                auth()->loginUsingId(155);
+            }
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -141,16 +141,16 @@ class Microproposals extends Controller
         $manage_offer_verified = $temdata->manage_offer_verified ?? 0;
         
         
-        if ($manage_offer_guest == 0) {
-            if (auth()->id() == 155) {
-                return back()->with('error',"You Didn't Have Access to Make Offer");
-            }
-        }
-        if ($manage_offer_verified == 0) {
-            if (auth()->id() != 155 && auth()->id() != $user_shop->user_id) {
-                return back()->with('error',"You Didn't Have Access to Make Offer");
-            }
-        } 
+        // if ($manage_offer_guest == 0) {
+        //     if (auth()->id() == 155) {
+        //         return back()->with('error',"You Didn't Have Access to Make Offer");
+        //     }
+        // }
+        // if ($manage_offer_verified == 0) {
+        //     if (auth()->id() != 155 && auth()->id() != $user_shop->user_id) {
+        //         return back()->with('error',"You Didn't Have Access to Make Offer");
+        //     }
+        // } 
         
         
         // Show All Suppliers

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExportTemplates;
 use App\Models\UserShop;
 use App\User;
 use Illuminate\Http\Request;
@@ -9,6 +10,39 @@ use Illuminate\Http\Request;
 class settingController extends Controller
 {
 
+    public function index(Request $request , User $user) {
+        
+        
+        $templates = ExportTemplates::get();
+        
+        return view("panel.settings.index",compact('templates'));
+    }
+    
+    
+    public function makedefaultTemplate(Request $request,$user,$template) {
+
+        try {            
+            $templateRecord = ExportTemplates::where('id',$template)->first();
+            magicstring($templateRecord);
+
+            $templateRecord_all = ExportTemplates::where('user_id',auth()->id())->get();
+            foreach ($templateRecord_all as $key => $value) {
+                $value->default = 0;
+                $value->save();
+            }
+
+            $templateRecord->default = 1;
+            $templateRecord->save();
+
+            return back()->with('success','Successfull');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return back()->with('error','Error While Updating');
+        }
+    }
+
+
+    
     function Update(Request $request) {
         // magicstring($request->all());
         // return;
@@ -66,13 +100,6 @@ class settingController extends Controller
             throw $th;
             return back()->with("error","Cannot Update ".$th);
         }
-
-
-
-
-
     }
-
-
 
 }

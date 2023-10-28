@@ -52,6 +52,14 @@
                 @else
                 
                 @endif
+
+                <div class="nav-item  {{ activeClassIfRoutes(['panel.settings.index'] ,'active open' ) }}" style="position: absolute;bottom: 0px;margin: 10px 0;">
+                    <a href="{{ route('panel.settings.index',auth()->id()) }}" class="a-item" >
+                        <i class="ik ik-settings"></i>
+                        <span>{{ 'Settings' }}</span>
+                    </a>
+                </div>
+
             </nav>
         </div>
     </div>
