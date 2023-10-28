@@ -14,6 +14,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\ProductAttribute;
 use App\Models\AccessCatalogueRequest;
+use App\Models\ExportTemplates;
 use App\User;
 use App\Models\UserShopItem;
 use App\Models\UserShop;
@@ -152,10 +153,20 @@ class ProposalController extends Controller
         $product_color = Product::whereIn('id',$product_ids)->get()->pluck('color')->toArray();
         $product_size = Product::whereIn('id',$product_ids)->get()->pluck('size')->toArray();
         $product_desc = Product::whereIn('id',$product_ids)->get()->pluck('description')->toArray();
+
+        $pptTesmplate = '';
+        $usertemplates_ppt = ExportTemplates::where('user_id',$user_shop->user_id)->where('type','ppt')->where('default',1)->get();
+        $systemtemplates_ppt = ExportTemplates::where('user_id',null)->where('type','ppt')->get();
+
+        if (count($usertemplates_ppt) == 0) {
+            $pptTesmplate = $systemtemplates_ppt;
+        }else{
+            $pptTesmplate = $usertemplates_ppt;
+        }
+
         $cust_details = json_decode($proposal->customer_details,true);
 
-        
-        return view('frontend.micro-site.shop.proposal.index',compact('slug','products','user_shop','cust_details','proposal','proposal_slug','product_ids','product_title','product_model','product_color','product_size','product_desc','newimag'));
+        return view('frontend.micro-site.shop.proposal.index',compact('slug','products','user_shop','cust_details','proposal','proposal_slug','product_ids','product_title','product_model','product_color','product_size','product_desc','newimag','pptTesmplate'));
     }
 
     

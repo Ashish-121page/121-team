@@ -133,28 +133,13 @@ class SellerController extends Controller
     {        
 
 
+        $name = "Default Template";
 
-        // echo storage_path();
-        
-        // return;
-        
-        $zip = new ZipArchive;
-        $fileName = 'zipFile.zip';
-        if ($zip->open($fileName,ZipArchive::CREATE)) {
-            $files = FacadesFile::files(storage_path("app/public/instructions"));
-
-            foreach ($files as $key => $file) {
-                $nameinZip = basename($file);
-
-                $zip->addFile($file,$nameinZip);
-                
-            }
-
-            $zip->close();
-        }
-
-        return response()->download($fileName);
-
+        echo json_encode(
+            [
+                'name' => $name
+            ]
+        );
 
 
         

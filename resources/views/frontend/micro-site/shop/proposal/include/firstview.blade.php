@@ -62,7 +62,7 @@
                             </div>
 
                             {{-- @if($product->user_id == auth()->id()) --}}
-                                <span contenteditable="true">Model Code :# <span>{{ $product->model_code }}</span></span>
+                                <span contenteditable="true">Model Code :# <span class="product-model">{{ $product->model_code }}</span></span>
                             {{-- @else 
                                 <span>Ref ID :#{{ isset($usi) ? $usi->id : '' }}</span>
                             @endif    --}}
@@ -98,7 +98,7 @@
                                 
                             </div>
                             @if ($proposal_options->show_Description == 1)
-                                <span contenteditable="true">
+                                <span contenteditable="true" class="product-description">
                                     {!! $product->description ?? "No Description" !!}
                                 </span>
                             @endif

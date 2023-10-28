@@ -59,11 +59,11 @@
                     </small>
                 </div>
 
-                @if($product->user_id == auth()->id())
-                    <span contenteditable="true">Model Code :# <span>{{ $product->model_code }}</span></span>
-                @else 
+                {{-- @if($product->user_id == auth()->id()) --}}
+                <span contenteditable="true">Model Code :# <span class="product-model">{{ $product->model_code }}</span></span>
+                {{-- @else 
                     <span>Ref ID :#{{ isset($usi) ? $usi->id : '' }}</span>
-                @endif   
+                @endif    --}}
                 <div class="d-flex justify-content-start mt-1 ">
                     @php
                         $price = getProductProposalPriceByProposalId($proposal->id,$product->id) ?? $product->price;
@@ -81,19 +81,19 @@
                         array_push($ppt_price,( $currency_symbol." ".$price));
                     @endphp
 
-                    @if($proposal->enable_price_range == 1)
+                    {{-- @if($proposal->enable_price_range == 1)
                         <h6 class="text-dark small fst-italic mb-0 mt-1 w-100">
                         {{ format_price(($price)-($price*10/100)) }} - {{ format_price(($price)+ ($price*10/100)) }}</h6>
-                    @else
+                    @else --}}
                         <h6 class="text-dark small fst-italic mb-0 mt-1 w-100 product_price" contenteditable="true">
                             {{ $currency_symbol }}
                             {{ $price }}
-                        {{ format_price($price) }}
+                        {{-- {{ format_price($price) }} --}}
                     </h6>
-                    @endif
+                    {{-- @endif --}}
                 </div>
                 @if ($proposal_options->show_Description == 1)
-                    <span contenteditable="true">
+                <span contenteditable="true" class="product-description">
                         {!! $product->description ?? "No Description" !!}
                     </span>
                 @endif                    

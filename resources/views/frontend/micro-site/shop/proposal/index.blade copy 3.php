@@ -170,40 +170,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
             <div class="h6">Offer To: {{ $cust_details['customer_name'] }} </div>
         </div>
         <div class="">
-            
-            {{-- ` Addtional Options ` --}}
-            <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">
-                <div class=""> 
-                    <button type="button" class="btn btn-outline-warning sdfgesd" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PPT</button>
-                    <button onclick="getPDF();" class="btn btn-outline-primary " type="button" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PDF</button>
-
-                    <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i> Save as Excel</button>
-
-
-                    {{-- @if ($proposal->type == 1)
-                        <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}&linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" target="_blank" class="btn btn-outline-primary" style="position: relative; right: 5rem;"> {{ _("Make Offer") }} </a>
-                    @endif --}}
-                </div>
-                {{-- <div class="">
-                    <button class="btn btn-outline-primary" style="position: relative; right: 5rem;" form="checkourform"><i class="fa fa-ddownload"></i> Request Sample</button>
-                </div> --}}
-            </div>
-            {{-- <div class="d-flex gap-1 align-item-center noprint"> --}}
+            <div class="d-flex gap-1 align-item-center noprint">
                 {{-- <input type="number" placeholder="Enter Margin %" placeholder="&age" min="1" max="100" class="form-control hdfhj" id="magrintochnage"> --}}
-                {{-- <div class="d-flex gap-3">
+                <div class="d-flex gap-3">
                     <label for="magrintochnage" class="form-label">Margin: <span id="range_bar"> 0 </span>%</label>
                     <input type="range" min="0" max="100" step="10"  class="form-range hdfhj" style="width: 150px" value="0" id="magrintochnage">
                 </div>
                 <div class="mx-2">
                     <button type="button" id="changemarguin" class="btn btn-outline-primary">Add</button>   
                 </div>
-            </div> --}}
+            </div>
         </div>
-        {{-- <div class="">
+        <div class="">
             @if ($proposal->valid_upto != '')
                 <div class="h6">Valid Upto: {{ $proposal->valid_upto ?? '--' }} </div>
             @endif
-        </div>   --}}
+        </div>  
     </div>
     
             <div class="container mt-5 canvas_div_pdf">  
@@ -292,7 +274,23 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
             </div>
 
 
-           
+            {{-- ` Addtional Options ` --}}
+            <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">
+                <div class=""> 
+                    <button onclick="getPPT()" type="button" class="btn btn-outline-warning sdfgesd" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PPT</button>
+                    <button onclick="getPDF();" class="btn btn-outline-primary " type="button" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Save as PDF</button>
+
+                    <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i> Save as Excel</button>
+
+
+                    {{-- @if ($proposal->type == 1)
+                        <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}&linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" target="_blank" class="btn btn-outline-primary" style="position: relative; right: 5rem;"> {{ _("Make Offer") }} </a>
+                    @endif --}}
+                </div>
+                <div class="">
+                    <button class="btn btn-outline-primary" style="position: relative; right: 5rem;" form="checkourform"><i class="fa fa-ddownload"></i> Request Sample</button>
+                </div>
+            </div>
             
 </section>
 @endsection
@@ -517,85 +515,169 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
         $(".deleteitem").removeClass('d-none');
     };
 </script>
+<script>
+    function getPPT() {
+        let pptx = new PptxGenJS();
+        let passedArray = [];
+        let titleArray = [];
+        let descrArray = [];
+        let modelArray = [];
+        let priceArray = [];
+        let colorArray = [];
+        let sizeArray = [];        
+        let slides = [];
+        let extraImageArray = [];
+
+        @foreach ($product_ids as $item)
+            passedArray.push("{{ asset(getShopProductImage($item)->path ?? asset('frontend/assets/img/placeholder.png')) }}");
+        @endforeach
+
+        @foreach ($newimag as $item)
+            @foreach ($item as $item1)
+                extraImageArray.push("{{  asset($item1) }}");
+            @endforeach
+        @endforeach
+
+
+        passedArray.reverse();
+        extraImageArray.reverse();
+
+        console.log(extraImageArray);
+        
+        @foreach ($product_title as $item)
+            titleArray.push("{{ ($item) }}");
+        @endforeach
+
+        function removeTags(str) {
+            if ((str === null) || (str === ''))
+                return false;
+            else
+                str = str.toString();
+            return str.replace(/(<([^>]+)>)/ig, '');
+        }
+
+
+        @foreach ($product_desc as $item)
+            data = `{!! Str::limit($item,630) !!}`;
+            descrArray.push(removeTags(data));
+        @endforeach
+
+        @foreach ($product_model as $item)
+            modelArray.push("{{ $item }}");
+        @endforeach
+
+        @foreach ($product_color as $item)
+            colorArray.push("{{ $item }}");
+        @endforeach
+
+        @foreach ($product_size as $item)
+            sizeArray.push("{{ $item }}");
+        @endforeach
+
+        @foreach ($ppt_price as $item)
+            priceArray.push("{{ $item }}");
+        @endforeach
+       
+        let mynum = 0;
+
+        Array.from(passedArray).forEach((f,i) => {
+
+            console.log(mynum);
+            slides[i+1] = pptx.addSlide();
+            slides[i+1].addImage({
+                path: f,
+                x: 0.4,
+                y: 1.1,
+                w: 2,
+                h: 2
+            });
+             
+            slides[i+1].addImage({
+                path: extraImageArray[mynum+1],
+                x: 0.2,
+                y: 3.8,
+                w: 0.6,
+                h: 0.6
+            });
+
+            
+            
+            slides[i+1].addImage({
+                path: extraImageArray[mynum+2],
+                x: 1.0,
+                y: 3.8,
+                w: 0.6,
+                h: 0.6
+            });
+
+            slides[i+1].addImage({
+                path: extraImageArray[mynum+3],
+                x: 1.8,
+                y: 3.8,
+                w: 0.6,
+                h: 0.6
+            });
+            mynum = mynum + 4;
+
+
+            slides[i+1].addText(titleArray[i] , { x: 0.4, y: 0.2,h: "10%",w: "25%", color: "000000", fontSize: 18 });
+            // Decription Group
+            slides[i+1].addText("Description", { x: "30%", y: 0.2,h: "10%",w: "15%", color: "000000", fontSize: 18 });
+            slides[i+1].addText( descrArray[i], { x: "30%", y: "19%", w: "30%",h: "55%", color: "000000", fontSize: 12 });
+
+            // Model code Group
+            slides[i+1].addText("Model Code : ", { x: "65%", y: 0.2,h: "10%", w: "20%", color: "000000", fontSize: 15 });
+            slides[i+1].addText(modelArray[i], { x: "80%", y: 0.2,h: "10%", w: "20%", color: "000000", fontSize: 15 });
+
+            // Price Group
+            slides[i+1].addText("Price : ", { x: "65%", y: 1,h: "10%", w: "10%", color: "000000", fontSize: 15 });
+            slides[i+1].addText(priceArray[i], { x: "80%", y: 1,h: "10%", w: "20%", color: "000000", fontSize: 15 });
+            
+            // Color Group
+            slides[i+1].addText("Color : ", { x: "65%", y: 1.5,h: "10%", w: "10%", color: "000000", fontSize: 15 });
+            slides[i+1].addText(colorArray[i], { x: "80%", y: 1.5,h: "10%", w: "20%", color: "000000", fontSize: 15 });
+
+            // Size Group
+            slides[i+1].addText("Size : ", { x: "65%", y: 2,h: "10%", w: "10%", color: "000000", fontSize: 15 });
+            slides[i+1].addText(sizeArray[i], { x: "80%", y: 2,h: "10%", w: "20%", color: "000000", fontSize: 15 });
+
+            {{-- // Footer Group
+            slides[i+1].addText("Powered By ", { x: "80%", y:"91%",h: "10%", w: "15%", color: "000000", fontSize: 15 });
+            slides[i+1].addText("121.page", { x: "90.5%", y: "91%" ,h: "10%", w: "20%", color: "6666cc", fontSize: 15 });--}}
+
+
+    
+            
+            
+        })
+
+        pptx.author = '{{ UserShopNameByUserId($proposal->user_id) ?? "121.page" }}';
+        pptx.subject = 'Proposal {{ $cust_details['customer_name'] }}';
+        pptx.company = '121.page';
+        pptx.title = '{{ $cust_details['customer_name'] }}';
+
+
+        $.ajax({
+            type: "GET",
+            url: "{{ route('pages.proposals.update.download', $proposal->id) }}",
+            data: {
+                update: 2,
+            },
+            success: function (response) {
+                // console.log(response);                    
+            }
+        });
+
+        pptx.writeFile({ fileName: "{{ $cust_details['customer_name'] }} Proposal.pptx" });
+
+    }
+</script>
 
 <script>
     $(document).ready(function () {
-        $(".sdfgesd").click(function (e) { 
+        $("/").click(function (e) { 
             e.preventDefault();
-            let titleArray = [];
-            let descrArray = [];
-            let modelArray = [];
-            let priceArray = [];
-            let passedArray = []; // Images
-            let slides = [];
-            let mynum = 0;
-            let author = '{{ UserShopNameByUserId($proposal->user_id) ?? "121.page" }}';
-            let subject = 'Proposal {{ $cust_details['customer_name'] }}';
-            let company = '121.page';
-            let titlefile = '{{ $cust_details['customer_name'] }}';
-            let fileNamegiven =  "{{ $cust_details['customer_name'] }} Proposal.pptx";
             
-            let sizeArray = [];        
-            let colorArray = [];
-            let extraImageArray = [];
-
-
-            // ` Making Array Of Price 
-            document.querySelectorAll(".product_price").forEach(element => {
-                let price = element.innerHTML.replace(/^\s+|\s+$/gm,'');
-                price = price.replace('\n',' ');
-                priceArray.push(price);
-            });
-            
-            // ` Making Array Of product-name 
-            document.querySelectorAll(".product-name").forEach(element => {
-                let title = element.innerHTML.replace(/^\s+|\s+$/gm, '');
-                title = title.replace('\n', ' ');
-
-                titleArray.push(title);
-            });
-            
-            // ` Making Array Of product-description 
-            document.querySelectorAll(".product-description").forEach(element => {
-                let desc = element.innerHTML.replace(/^\s+|\s+$/gm, '');
-                desc = desc.replace('\n', ' ');
-
-                descrArray.push(desc);
-            });
-
-            // ` Making Array Of product-model 
-            document.querySelectorAll(".product-model").forEach(element => {
-                let model = element.innerHTML.replace(/^\s+|\s+$/gm, '');
-                model = model.replace('\n', ' ');
-
-                modelArray.push(model);
-            });
-            
-            // ` Making Array Of shop-image 
-            document.querySelectorAll(".shop-image > a > img").forEach(element => {
-                let img = element.src.replace(/^\s+|\s+$/gm, '');
-                img = img.replace('\n', ' ');
-                passedArray.push(img);
-            });
-
-
-
-            $.ajax({
-                type: "GET",
-                url: "{{ route('pages.proposals.update.download', $proposal->id) }}",
-                data: {
-                    update: 2,
-                },
-                success: function (response) {
-                    // console.log(response);                    
-                }
-            });
-            
-            {!! $pptTesmplate[0]->data !!}
-            
-            
-
-            console.log("Somethig Happend..");
         });
     });
 </script>

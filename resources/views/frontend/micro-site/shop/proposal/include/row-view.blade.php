@@ -20,7 +20,7 @@
 
                     <div class="card shop-list border-10 position-relative">
                         <div class="shop-image position-relative overflow-hidden rounded text-center">
-                            <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank">
+                            <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank" style="height: 40vh; width: 100%; object-fit: contain; gap:2; display: inherit">
                                 @if( getShopProductImage($product->id,'single') != null)
                                     <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" class="" style="height:225px;">
                                 @else
@@ -62,7 +62,7 @@
                             </div>
 
                             {{-- @if($product->user_id == auth()->id()) --}}
-                                <span contenteditable="true">Model Code :# <span>{{ $product->model_code }}</span></span>
+                            <span contenteditable="true">Model Code :# <span class="product-model">{{ $product->model_code }}</span></span>
                             {{-- @else 
                                 <span>Ref ID :#{{ isset($usi) ? $usi->id : '' }}</span>
                             @endif    --}}
@@ -98,7 +98,7 @@
                                 
                             </div>
                             @if ($proposal_options->show_Description == 1)
-                                <span contenteditable="true">
+                            <span contenteditable="true" class="product-description">
                                     {!! $product->description ?? "No Description" !!}
                                 </span>
                             @endif
@@ -108,8 +108,8 @@
                     
                 </div>
 
-                @if(++$key%12==0)
-                    <div class="col-12 pdf-margin d-none mx-5" style="margin-bottom: 300px">
+                @if(++$key%9==0)
+                    <div class="col-12 pdf-margin d-none " style="margin-bottom: 0px">
                     </div>
                     @if($cust_details['customer_name'] != '' || $proposal->proposal_note != null)
                     <div class="row justify-content-between mt-5 d-none pdf-margin">

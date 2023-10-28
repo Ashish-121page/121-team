@@ -2368,7 +2368,7 @@ class NewBulkController extends Controller
                 $products = Product::whereUserId($user_id->id)->get();
 
                 $products_array [] = array(
-                    'Id','Model_Code','Category','Sub_Category','Group ID','Image_main','image_name_front','image_name_back','image_name_side1','image_name_side2','image_name_poster','Additional Image Use ^^','Product name','Video URL','description','Search keywords','Brand Name','Base_currency','Selling Price_Unit','Customer_Price_without_GST','Shop_Price_VIP_Customer','Shop_Price_Reseller','mrpIncl tax','HSN Tax','HSN_Percnt','Allow_Resellers','Live / Active','Copyright/ Exclusive item','Exclusive Buyer Name','Theme / Collection Name','Season / Month','Theme / Collection Year','Sample / Stock available','Sample Year','Sample Month','Sampling time','CBM','Production time (days)','MBQ','MBQ_units','Remarks','Vendor Sourced from','Vendor price','Product Cost_Unit','Vendor currency','Sourcing Year','Sourcing month','Gross weight','Net weight','Weight_unit','Product length','Product width','Product height','Dimensions_unit','Carton length','Carton width','Carton height','Carton_Dimensions_unit','standard_carton_pcs','carton_weight_actual','unit','artwork_url',
+                    'Id','Model_Code','Category','Sub_Category','Group ID','Image_main','image_name_front','image_name_back','image_name_side1','image_name_side2','image_name_poster','Additional Image Use ^^','Product name','Video URL','description','Search keywords','Brand Name','Base_currency','Selling Price_Unit','Customer_Price_without_GST','Shop_Price_VIP_Customer','Shop_Price_Reseller','mrpIncl tax','HSN Tax','HSN_Percnt','Copyright/ Exclusive item','Exclusive Buyer Name','Theme / Collection Name','Season / Month','Theme / Collection Year','Sample Year','Sample Month','Sampling time','CBM','Production time (days)','MBQ','MBQ_units','Remarks','Vendor Sourced from','Vendor price','Product Cost_Unit','Vendor currency','Sourcing Year','Sourcing month','Gross weight','Net weight','Weight_unit','Product length','Product width','Product height','Dimensions_unit','Carton length','Carton width','Carton height','Carton_Dimensions_unit','standard_carton_pcs','carton_weight_actual','unit','artwork_url',
                 );
         
                 $custom_attribute = json_decode(auth()->user()->custom_attriute_columns);
@@ -2535,14 +2535,14 @@ class NewBulkController extends Controller
                         "mrp Incl tax"=>$product->mrp,
                         "HSN Tax"=>$product->hsn,
                         "HSN_Percnt"=>$product->hsn_percent,
-                        'allow_resellers' => (in_array(($extraInfoData->allow_resellers ?? 'No'),$allowed_array) ? 'Yes' : 'No') ?? 'No',
-                        'Publish (it will be 0 for unpublish or 1 for publish)' => (in_array($product->is_publish,$allowed_array) ? "Yes" : "No") ?? "No" ,
+                        // 'allow_resellers' => (in_array(($extraInfoData->allow_resellers ?? 'No'),$allowed_array) ? 'Yes' : 'No') ?? 'No',
+                        // 'Publish (it will be 0 for unpublish or 1 for publish)' => (in_array($product->is_publish,$allowed_array) ? "Yes" : "No") ?? "No" ,
                         'Exclusive' => (in_array($product->exclusive,$allowed_array) ? 'Yes' : 'No') ?? 'No',
                         'exclusive_buyer_name' => $extraInfoData->exclusive_buyer_name ?? '',
                         'collection_name' => $extraInfoData->collection_name ?? '',
                         'season_month' => $extraInfoData->season_month ?? '',
                         'season_year' => $extraInfoData->season_year ?? '',
-                        'sample_available' => (in_array(($extraInfoData->sample_available ?? 'No'),$allowed_array) ? "Yes" : 'No') ?? 'No',
+                        // 'sample_available' => (in_array(($extraInfoData->sample_available ?? 'No'),$allowed_array) ? "Yes" : 'No') ?? 'No',
                         'sample_year' => $extraInfoData->sample_year ?? '',
                         'sample_month' => $extraInfoData->sample_month ?? '',
                         'sampling_time' => $extraInfoData->sampling_time ?? '',
@@ -2649,43 +2649,43 @@ class NewBulkController extends Controller
             $mrpIncltaxIndex = 22;
             $HSNTaxIndex = 23;
             $HSN_PercntIndex = 24;
-            $Allow_ResellersIndex = 25;
-            $Live_ActiveINdex = 26;
-            $Copyright_Exclusive_itemIndex = 27;
-            $ExclusiveBuyerNameIndex = 28;
-            $ThemeCollectionNameIndex = 29;
-            $Season_MonthIndex = 30;
-            $ThemeCollectionYearIndex = 31;
-            $SampleStockavailable = 32;
-            $SampleYearIndex = 33;
-            $SampleMonthIndex = 34;
-            $SamplingtimeIndex = 35;
-            $CBMIndex = 36;
-            $ProductiontimeIndex = 37;
-            $MBQIndex = 38;
-            $MBQ_unitsIndex = 39;
-            $RemarksINdex = 40;
-            $VendorSourcedfromIndex = 41;
-            $VendorpriceIndex = 42;
-            $ProductCost_UnitIndex = 43;
-            $VendorcurrencyIndex = 44;
-            $SourcingYearIndex = 45;
-            $SourcingmonthIndex = 46;
-            $GrossweightIndex = 47;
-            $Netweightindex = 48;
-            $Weight_unitIndex = 49;
-            $ProductlengthIndex = 50;
-            $ProductwidthIndex = 51;
-            $ProductheightIndex = 52;
-            $Dimensions_unitIndex = 53;
-            $CartonlengthIndex = 54;
-            $CartonwidthIndex = 55;
-            $CartonheightIndex = 56;
-            $Carton_Dimensions_unitIndex = 57;
-            $standard_carton_pcsOIndex = 58;
-            $carton_weight_actualIndex = 59;
-            $unitIndex = 60;
-            $artwork_urlIndex = 61;
+            // $Allow_ResellersIndex = 25;
+            // $Live_ActiveINdex = 26;
+            $Copyright_Exclusive_itemIndex = 25;
+            $ExclusiveBuyerNameIndex = 26;
+            $ThemeCollectionNameIndex = 27;
+            $Season_MonthIndex = 28;
+            $ThemeCollectionYearIndex = 29;
+            // $SampleStockavailable = 32;
+            $SampleYearIndex = 30;
+            $SampleMonthIndex = 31;
+            $SamplingtimeIndex = 32;
+            $CBMIndex = 33;
+            $ProductiontimeIndex = 34;
+            $MBQIndex = 35;
+            $MBQ_unitsIndex = 36;
+            $RemarksINdex = 37;
+            $VendorSourcedfromIndex = 38;
+            $VendorpriceIndex = 39;
+            $ProductCost_UnitIndex = 40;
+            $VendorcurrencyIndex = 41;
+            $SourcingYearIndex = 42;
+            $SourcingmonthIndex = 43;
+            $GrossweightIndex = 44;
+            $Netweightindex = 45;
+            $Weight_unitIndex = 46;
+            $ProductlengthIndex = 47;
+            $ProductwidthIndex = 48;
+            $ProductheightIndex = 49;
+            $Dimensions_unitIndex = 50;
+            $CartonlengthIndex = 51;
+            $CartonwidthIndex = 52;
+            $CartonheightIndex = 53;
+            $Carton_Dimensions_unitIndex = 54;
+            $standard_carton_pcsOIndex = 55;
+            $carton_weight_actualIndex = 56;
+            $unitIndex = 57;
+            $artwork_urlIndex = 58;
 
             // * Start: Marging Both Array Custom And Default Attributes
             $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
@@ -2838,12 +2838,12 @@ class NewBulkController extends Controller
     
                 // Extra Info
                 ProductExtraInfo::where('product_id',$value[$ProductidIndex])->update([
-                    'allow_resellers' =>  $value[$Allow_ResellersIndex] ?? '0',
+                    // 'allow_resellers' =>  $value[$Allow_ResellersIndex] ?? '0',
                     'exclusive_buyer_name' => $value[$ExclusiveBuyerNameIndex] ?? '',
                     'collection_name' => $value[$ThemeCollectionNameIndex] ?? '',
                     'season_month' => $value[$Season_MonthIndex] ?? '',
                     'season_year' => $value[$ThemeCollectionYearIndex] ?? '',
-                    'sample_available' => $value[$SampleStockavailable] ?? '',
+                    // 'sample_available' => $value[$SampleStockavailable] ?? '',
                     'sample_year' => $value[$SampleYearIndex] ?? '',
                     'sample_month' => $value[$SampleMonthIndex] ?? '',
                     'sampling_time' => $value[$SamplingtimeIndex] ?? '',
@@ -2906,12 +2906,12 @@ class NewBulkController extends Controller
                                 }else{
                                     ProductExtraInfo::create([
                                         'product_id' => $value[$ProductidIndex],
-                                        'allow_resellers' =>  $value[$Allow_ResellersIndex] ?? 'No',
+                                        // 'allow_resellers' =>  $value[$Allow_ResellersIndex] ?? 'No',
                                         'exclusive_buyer_name' => $value[$ExclusiveBuyerNameIndex] ?? '',
                                         'collection_name' => $value[$ThemeCollectionNameIndex] ?? '',
                                         'season_month' => $value[$Season_MonthIndex] ?? '',
                                         'season_year' => $value[$ThemeCollectionYearIndex] ?? '',
-                                        'sample_available' => $value[$SampleStockavailable] ?? '',
+                                        // 'sample_available' => $value[$SampleStockavailable] ?? '',
                                         'sample_year' => $value[$SampleYearIndex] ?? '',
                                         'sample_month' => $value[$SampleMonthIndex] ?? '',
                                         'sampling_time' => $value[$SamplingtimeIndex] ?? '',
@@ -2940,12 +2940,12 @@ class NewBulkController extends Controller
                 }               
                 
                                             
-                if (in_array($value[$SampleStockavailable],$allowArray)) {
-                    $chk_inventory_exist = true;
-                }else{
-                    $chk_inventory_exist = 0;
-                }
-                $need_inventory = in_array($value[$SampleStockavailable],$allowArray) ? true : false ?? false;
+                // if (in_array($value[$SampleStockavailable],$allowArray)) {
+                //     $chk_inventory_exist = true;
+                // }else{
+                //     $chk_inventory_exist = 0;
+                // }
+                // $need_inventory = in_array($value[$SampleStockavailable],$allowArray) ? true : false ?? false;
 
     
                 // Product Info
@@ -2960,8 +2960,8 @@ class NewBulkController extends Controller
                     'description' => $value[$descriptionIndex] ?? '',
                     'carton_details' => $carton_details ?? '',
                     'shipping' => $shipping ?? '',
-                    'manage_inventory' => (in_array($value[$SampleStockavailable],$allowArray,true) ? 1 : 0 ) ?? 0,
-                    'is_publish' => (in_array($value[$Live_ActiveINdex],$allowArray,true) ? 1 : 0 ) ?? 0,
+                    // 'manage_inventory' => (in_array($value[$SampleStockavailable],$allowArray,true) ? 1 : 0 ) ?? 0,
+                    // 'is_publish' => (in_array($value[$Live_ActiveINdex],$allowArray,true) ? 1 : 0 ) ?? 0,
                     'price' =>  $value[$Customer_Price_without_GSTIndex] ?? '',
                     'min_sell_pr_without_gst' => $value[$Customer_Price_without_GSTIndex] ?? '',
                     'hsn' => $value[$HSNTaxIndex] ?? '',
@@ -2990,34 +2990,34 @@ class NewBulkController extends Controller
                 $chk_inventroy = Inventory::where('product_id',$value[$ProductidIndex])->where('user_id',auth()->id())->get();
     
 
-                if (in_array($value[$SampleStockavailable],$allowArray)) {
-                    if (count($chk_inventroy) == 0) {
-                        // magicstring($request->all());
-                        Inventory::create([
-                            'user_shop_item_id' => $usi->id,
-                            'product_id' => $value[$ProductidIndex],
-                            'product_sku' => $product_obj->sku,
-                            'user_id' => auth()->id(),
-                            'stock' => 0,
-                            'parent_id' => 0,
-                            'prent_stock' => 0,
-                        ]);
-                    }else{
-                        getinventoryByproductId($product_obj->id)->update(['status'=>1]);
-                    }
-                }else{
-                    if (count($chk_inventroy) != 0) {
-                        getinventoryByproductId($product_obj->id)->update(['status'=>0]);
-                    }
-                }
+                // if (in_array($value[$SampleStockavailable],$allowArray)) {
+                //     if (count($chk_inventroy) == 0) {
+                //         // magicstring($request->all());
+                //         Inventory::create([
+                //             'user_shop_item_id' => $usi->id,
+                //             'product_id' => $value[$ProductidIndex],
+                //             'product_sku' => $product_obj->sku,
+                //             'user_id' => auth()->id(),
+                //             'stock' => 0,
+                //             'parent_id' => 0,
+                //             'prent_stock' => 0,
+                //         ]);
+                //     }else{
+                //         getinventoryByproductId($product_obj->id)->update(['status'=>1]);
+                //     }
+                // }else{
+                //     if (count($chk_inventroy) != 0) {
+                //         getinventoryByproductId($product_obj->id)->update(['status'=>0]);
+                //     }
+                // }
 
-                if($usi){
-                    $usi->is_published = (in_array($value[$Live_ActiveINdex],$allowArray) ? 1 : 0 ) ?? 0;
-                    $usi->price = $value[$Customer_Price_without_GSTIndex];
-                    $usi->category_id = $categoryID;
-                    $usi->sub_category_id = $SubCategoryId;
-                    $usi->save();
-                }
+                // if($usi){
+                //     $usi->is_published = (in_array($value[$Live_ActiveINdex],$allowArray) ? 1 : 0 ) ?? 0;
+                //     $usi->price = $value[$Customer_Price_without_GSTIndex];
+                //     $usi->category_id = $categoryID;
+                //     $usi->sub_category_id = $SubCategoryId;
+                //     $usi->save();
+                // }
     
                 if($reseller_group_product){
                     $reseller_group_product->price = $value[$Shop_Price_ResellerIndex] ?? 0;

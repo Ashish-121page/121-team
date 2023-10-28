@@ -131,7 +131,7 @@
         @php
             // ` Current Progress
             $first = (auth()->user()->ekyc_status == 1) ? true : false;
-            $second = (count(App\Models\category::where('user_id',auth()->id())->get()) != 0) ? true : false;
+            $second = (count(App\Models\Category::where('user_id',auth()->id())->get()) != 0) ? true : false;
             $third = (count(App\Models\Product::where('user_id',auth()->id())->get()) != 0) ? true : false;
             $forth = (count(App\Models\Proposal::where('user_id',auth()->id())->get()) != 0) ? true : false;
             $fifth = false;

@@ -33,11 +33,6 @@
                 @endphp
             @endif
             <div class="top-menu d-flex align-items-center">
-
-                <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_id=".auth()->id() }}" class="a-item" >
-                    <i class="ik ik-settings"></i>
-                    <span>{{ 'Settings' }}</span>
-                </a>
                     <div class="dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="notiDropdown" role="button" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false"><i class="ik ik-bell"></i>
