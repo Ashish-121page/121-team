@@ -1425,8 +1425,6 @@
 
 
             $('.TAGGROUP').tagsinput('items');
-
-
             $(document).ready(function () {
                 $(".changegroup").change(function (e) { 
                     e.preventDefault();
@@ -1434,11 +1432,7 @@
                     let url = "http://{{ ENV('APP_URL') }}/panel/products/edit/"+key;
                     window.location.href = url;
                 });
-            });
-            
-            
-
-                        
+            });      
 
             var options = {
                   filebrowserImageBrowseUrl: "{{ url('/laravel-filemanager?type=Images') }}",
@@ -1495,18 +1489,11 @@
                 jackColor: '#fff'
             });
 
-
-            
             var hiddenbxbtn = document.querySelector('#weightbox');
             var switchery = new Switchery(hiddenbxbtn, {
                 color: '#6666CC',
                 jackColor: '#fff'
             });
-
-
-            
-
-
 
             var productdimensionsbx = document.querySelector('#productdimensionsbx');
             var switchery = new Switchery(productdimensionsbx, {
@@ -1645,27 +1632,20 @@
                 let newwindow = $(`[data-index="${stepindex+1}"]`);
                 activeIndex = stepindex+1;
 
-
-                
                 $(this).addClass('active');
                 $(".stepper").addClass('d-none');
                 $('.stepper-actions').find('.previous_btn').addClass('d-none');
                 
-            
-
                 if (activeIndex != 1) {
                     $('.stepper-actions').find('.previous_btn').removeClass('d-none');
                 }
-                
                 
                 if(activeIndex == steps){
                     $(".next_btn").addClass('d-none');
                 }
                 
                 $(".next_btn").removeClass('d-none');
-                newwindow.removeClass('d-none')
-
-            
+                newwindow.removeClass('d-none')            
             });
 
             $('.stepper-actions').on('click', '.previous_btn', function (e) {

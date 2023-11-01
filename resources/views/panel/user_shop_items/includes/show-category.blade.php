@@ -40,7 +40,7 @@
 
                     @foreach ($last_Records as $last_Record)
                         <div style="height: 100px; width: 100px;object-fit: contain">
-                            <img src="{{ asset(getShopProductImage($last_Record->id)->path) }}"  class="img-fluid p-1" style="border-radius: 10px;height: 100%; width: 100%;">
+                            <img src="{{ asset(getShopProductImage($last_Record->id)->path ?? '')  ?? ''}}"  class="img-fluid p-1" style="border-radius: 10px;height: 100%; width: 100%;">
                         </div>    
                     @endforeach                    
                     
