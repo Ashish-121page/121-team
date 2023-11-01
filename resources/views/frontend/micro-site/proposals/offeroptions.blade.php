@@ -1,3 +1,4 @@
+
     @push('head')
     <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"> 
@@ -112,4 +113,6 @@
 
 
     </script>
+    
+    
     @endpush

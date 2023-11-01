@@ -1,12 +1,23 @@
+
+
 @if (request()->has('products') || request()->has('productsgrid'))
 
     {{-- For Products --}}
-    <div class="top-menu d-flex align-items-center " id="product-action">
-        <button class="btn btn-sm btn-outline-primary mx-1">Export</button>
-        <button class="btn btn-sm btn-outline-danger mx-1">Delete</button>
-        <a href="javascript:void(0);" data-toggle="modal" data-target="#updateQR" class="btn btn-sm btn-outline-primary mx-1" title="Upload QR Code">
-            Get QR 
-        </a>
+    <div class="top-menu" style=" position:sticky; overflow:hidden!important;">
+    
+        <div class="container-fluid">
+        
+        <div class="top-menu d-flex align-items-center " id="product-action" style="position: sticky;top: 0; background-color: white; z-index: 100;">
+            <button class="btn btn-sm btn-outline-primary mx-1" id="exportproductbtn">Export</button>
+            {{-- <button class="btn btn-sm btn-outline-danger mx-1 " id="delete_all_dummy">All Delete</button> --}}
+            <button class="btn btn-sm btn-outline-danger mx-1 " id="delproduct_dummy"> Delete Selected</button>
+            {{-- <a href="javascript:void(0);" data-toggle="modal" data-target="#updateQR" class="btn btn-sm btn-outline-primary mx-1" title="Upload QR Code">
+                Get QR 
+            </a> --}}
+            <button  id="printQrbtn" type="button" class="btn btn-outline-primary ">Get QR</button>
+        </div>
+        </div>
+
     </div>
     
 @elseif(request()->has('assetsafe'))
@@ -17,7 +28,7 @@
 
     {{-- For Propoerties --}}
     <div class="top-menu d-flex align-items-center " id="product-action">
-        <button class="btn btn-sm btn-outline-primary mx-1">Edit</button>
+        {{-- <button class="btn btn-sm btn-outline-primary mx-1">Edit</button> --}}
         <button class="btn btn-sm btn-outline-danger mx-1">Delete</button>
     </div>
     

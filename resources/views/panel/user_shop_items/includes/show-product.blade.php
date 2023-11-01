@@ -22,7 +22,7 @@
                             {{-- Delete All Button --}}
                             <input type="submit" name="delete_all" id="delete_all" value="Delete All Products" class="btn btn-outline-primary d-none"> 
                         @endif
-                        <a href="{{ asset('instructions/instructions.pdf') }}" download="instructions.pdf" class="btn btn-outline-primary m-1">Download Instruction</a>
+                        {{-- <a href="{{ asset('instructions/instructions.pdf') }}" download="instructions.pdf" class="btn btn-outline-primary m-1">Download Instruction</a> --}}
                         <input type="text" placeholder="Type and Enter" id="searchValue" name="search" value="{{ request()->get('search') }}"  class="form-control">
                         <div class="d-flex ml-2">
                             {{-- <button type="submit" id="filterBtn" class="btn btn-icon btn-outline-warning " title="submit"><i class="fa fa-filter" aria-hidden="true"></i></button> --}}
@@ -207,11 +207,12 @@
                                         </div> --}}
 
                                         <label class="custom-chk prdct-checked" data-select-all="boards">
-                                            <input type="checkbox" name="delproducts[]" class="input-check d-none" value="{{ $scoped_product->sku }}" >
+                                            <input type="checkbox" name="delproducts[]" class="input-check d-none" value="{{ $scoped_product->sku }}" data-record="{{ $scoped_product->id }}">
                                             <span class="checkmark mr-5 mt-5"></span>
                                         </label>
                                     @endif
                                 </div>
+                                
                                 {{-- <div>
                                     <b>{{$scoped_product->category->name ?? " *Dump Product* "}}</b>
                                 </div> --}}
@@ -286,3 +287,7 @@
 <div>
     {{ $scoped_products->appends(request()->query())->links() }} 
 </div>
+
+<form method="get" action="{{ route('panel.bulk.product.bulk-export',auth()->id()) }}" id="products_exportform">
+    <input type="hidden" name="products" id="products_export" value="">
+</form>

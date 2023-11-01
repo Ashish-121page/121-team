@@ -226,6 +226,11 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
             Route::post('bulk/delete/{user_id}', [CategoryController::class,'bulkdelete'])->name('bulk.delete');
 
+            Route::get('update/Ajax/',[CategoryController::class,'updateAjax'])->name('update.ajax');
+
+            Route::post('rename/{user}',[CategoryController::class,'renamecat'])->name('rename');
+
+
         });
 
       

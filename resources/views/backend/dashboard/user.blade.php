@@ -157,9 +157,8 @@
                         </div>
 
                         {{-- Step 2 --}}
-
-                        <div class="col bg-white shadow m-1">
-                            <a href="@if ($first && $second) #complted @elseif($first) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }} @else #pending @endif">
+                        <div class="col bg-white shadow m-1"  @if (!$second) title="Complete step 1" @endif>
+                            <a href="@if ($first && $second) #complted @elseif($first) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }} @else #pending @endif" @if(!$first) style="cursor: not-allowed !important" @endif>
                                 <div class="circle text-white
                                 @if ($first && $second) bg-success @elseif($first) bg-primary @else bg-secondary @endif
                                 ">
@@ -172,12 +171,10 @@
                             </a>
                         </div>
 
-
                         {{-- Step 3  --}}
-
-                        <div class="col bg-white shadow m-1">
+                        <div class="col bg-white shadow m-1"  @if (!$third) title="Complete step 2" @endif>
                             
-                            <a href="@if ($first && $second && $third) #completed @elseif($first && $second ) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true @else #pending @endif">
+                            <a href="@if ($first && $second && $third) #completed @elseif($first && $second ) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true @else #pending @endif" @if(!$second) style="cursor: not-allowed !important" @endif>
 
                                 <div class="circle @if ($first && $second && $third) bg-success @elseif($first && $second) bg-primary @else bg-secondary @endif text-white">
                                     
@@ -191,8 +188,8 @@
                         </div>
 
                         {{-- Step 4  --}}
-                        <div class="col bg-white shadow m-1">
-                            <a href="@if ($first && $second && $third && $forth) #completed @elseif($first && $second && $third) #fourthlink @else #pending @endif ">
+                        <div class="col bg-white shadow m-1"  @if (!$forth) title="Complete step 3" @endif>
+                            <a href="@if ($first && $second && $third && $forth) #completed @elseif($first && $second && $third) #fourthlink @else #pending @endif " @if(!$third) style="cursor: not-allowed !important" @endif>
                                 <div class="circle @if ($first && $second && $third && $forth) bg-success @elseif($first && $second && $third) bg-primary @else bg-secondary @endif text-white">
                                     <span>
                                         @if ($first && $second && $third && $forth) <i class="fas fa-check-circle"></i> @else 4 @endif
@@ -206,22 +203,22 @@
                         </div>
 
                         {{-- Step 5  --}}
-                        <div class="col  shadow m-1">
-                        @if ($first && $second && $third && $forth && $fifth) 
-                            <a href="#completed">
-                        @elseif($first && $second && $third && $forth) 
-                            <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank">
-                        @else 
-                            <a href="#pending">
-                        @endif
-                                <div class="circle @if ($first && $second && $third && $forth && $fifth) bg-success @elseif($first && $second && $third && $forth) bg-primary @else bg-secondary @endif text-white">
-                                    <span>
-                                        @if ($first && $second && $third && $forth && $fifth) <i class="fas fa-check-circle"></i> @else 5 @endif
-                                    </span>
-                                </div>
-                                <div class="h6 my-2"><b>Set Template</b></div>
-                                <p>Share your templates for customising your offer</p>
-                           </a>
+                        <div class="col bg-white shadow m-1"  @if (!$fifth) title="Complete step 4" @endif>
+                            @if ($first && $second && $third && $forth && $fifth) 
+                                <a href="#completed">
+                            @elseif($first && $second && $third && $forth) 
+                                <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank">
+                            @else 
+                                <a href="#pending" @if(!$forth) style="cursor: not-allowed !important" @endif>
+                            @endif
+                                    <div class="circle @if ($first && $second && $third && $forth && $fifth) bg-success @elseif($first && $second && $third && $forth) bg-primary @else bg-secondary @endif text-white">
+                                        <span>
+                                            @if ($first && $second && $third && $forth && $fifth) <i class="fas fa-check-circle"></i> @else 5 @endif
+                                        </span>
+                                    </div>
+                                    <div class="h6 my-2"><b>Set Template</b></div>
+                                    <p>Share your templates for customising your offer</p>
+                            </a>
                         </div>
 
                     </div>

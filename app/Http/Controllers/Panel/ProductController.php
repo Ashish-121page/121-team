@@ -288,9 +288,12 @@ class ProductController extends Controller
             $col_list = (object) array_merge((array)$delfault_cols,$new_custom_attribute);
 
             $ExistingTemplates = Usertemplates::where('user_id',$user->id)->get();
+            $available_groups = ProductExtraInfo::where('user_id',$user->id)->groupBy('Cust_tag_group')->pluck('Cust_tag_group');
+            $available_model_code = Product::where('user_id',$user->id)->groupBy('model_code')->pluck('model_code');         
+            
 
 
-            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates'));
+            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups'));
 
         }catch(\Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage());

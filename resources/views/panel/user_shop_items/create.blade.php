@@ -86,6 +86,9 @@
     @push('head')
    
     <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/assets/css/normalize.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}">
+
     <style>
         .error{
             color:red;
@@ -181,6 +184,9 @@
             .skeltonbtn a{
                 padding: 40%;
             }
+            /* .card-body{
+                overflow: hidden;
+            } */
 
 
     </style>
@@ -216,22 +222,22 @@
                     <div class="row">
                         <div class="col-md-6 col-12 my-2">
                             <div class="one" style="display: flex;align-items: center;justify-content: flex-start;">
-                                <a href="?type={{ request()->get('type') }}&type_id={{ request()->get('type_id') }}"
+                                <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}"
                                     class="btn btn-outline-primary  mx-1 
                                     @if (!request()->has('products') && !request()->has('assetsafe') && !request()->has('properties') && !request()->has('productsgrid')) active @endif
                                     ">
                                     Categories
                                 </a>
-                                <a href="?type={{ request()->get('type') }}&type_id={{ request()->get('type_id') }}&productsgrid=true"
+                                <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&productsgrid=true"
                                     class="btn btn-outline-primary mx-1 @if (request()->has('products') OR request()->has('productsgrid')) active @endif">
                                     Products
                                 </a>
-                                <a href="?type={{ request()->get('type') }}&type_id={{ request()->get('type_id') }}&properties=true"
+                                <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&properties=true"
                                     class="btn btn-outline-primary mx-1 @if (request()->has('properties')) active @endif">
                                     Properties
                                 </a>
 
-                                <a href="?type={{ request()->get('type') }}&type_id={{ request()->get('type_id') }}&assetsafe=true"
+                                <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&assetsafe=true"
                                     class="btn btn-outline-primary mx-1 @if (request()->has('assetsafe')) active @endif">
                                     Assets Safe
                                 </a>
@@ -250,6 +256,7 @@
 
                     {{-- ` This Menu Only Visible when Checkbox Is Checked  --}}
                     <div class="row d-none" id="quickaction">
+                        {{-- <div class="row d-none" id="quickaction" style="position:sticky!important; overflow:hidden;"> --}}
                         <div class="col-12 d-flex justify-content-center">
                             @include('panel.user_shop_items.includes.QuickActionMenu')
                         </div>
@@ -276,7 +283,7 @@
     </div>
     <form class="" action="{{ route('panel.user_shop_items.create',['type' => request()->get('type'),'type_id' => request()->get('type_id')]) }}" id="filterRecordsForm" method="GET">
         <input type="hidden" name="type" value="{{ request()->get('type') }}">
-        <input type="hidden" name="type_id" value="{{ request()->get('type_id') }}">
+        <input type="hidden" name="type_ide" value="{{ encrypt(request()->get('type_id')) }}">
         <input type="hidden" value="{{ request()->get('lenght') }}" name="length" id="lengthInput">
         <input type="hidden" name="search" value="" id="searchField">
         <input type="hidden" name="category_id" value="" id="categoryId">
@@ -325,13 +332,12 @@
                 </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('panel.products.update.qr') }}" method="get">
+                    <form action="{{ route('panel.products.update.qr') }}" method="get" id="qrform">
                     @csrf
                     <div class="form-group" id="productsDropdown">
-                        <select name="product_ids[]" class="form-control select2" id="" multiple>
+                        <select name="product_ids[]" class="form-control select2"  id="needqr" multiple>
                             @foreach ($qr_products as $qr_product)
                                 <option value="{{ $qr_product->id }}">
-                                    {{-- {{ getReferenceCodeByUser(auth()->id(),$qr_product->id).' : '.$qr_product->title.' , '.$qr_product->color.' , '.$qr_product->size  }} --}}
                                     {{ "Model Code: ".$qr_product->model_code.' : '.$qr_product->title.' , '.$qr_product->color.' , '.$qr_product->size  }}
                                 </option>
                             @endforeach
@@ -349,337 +355,395 @@
             </div>
         </div>
     </div>
+
+    
+    
     <!-- push external js -->
     @push('script')
-     <script src="{{ asset('backend/plugins/jquery.repeater/jquery.repeater.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-    <script src="{{asset('backend/plugins/mohithg-switchery/dist/switchery.min.js') }}"></script>
-    <script src="{{asset('backend/js/form-advanced.js') }}"></script>
-    <script src="{{ asset('backend/js/index-page.js') }}"></script>
-    <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
-    <script>
         
-        function html_table_to_excel(type)
-        {
-            var table_core = $("#table").clone();
-            var clonedTable = $("#table").clone();
-            clonedTable.find('[class*="no-export"]').remove();
-            clonedTable.find('[class*="d-none"]').remove();
-            $("#table").html(clonedTable.html());
-            var data = document.getElementById('table');
+        <script src="{{ asset('backend/plugins/jquery.repeater/jquery.repeater.min.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+        <script src="{{asset('backend/plugins/mohithg-switchery/dist/switchery.min.js') }}"></script>
+        <script src="{{asset('backend/js/form-advanced.js') }}"></script>
+        <script src="{{ asset('backend/js/index-page.js') }}"></script>
 
-            var file = XLSX.utils.table_to_book(data, {sheet: "sheet1"});
-            XLSX.write(file, { bookType: type, bookSST: true, type: 'base64' });
-            XLSX.writeFile(file, 'ProductAttributeFile.' + type);
-            $("#table").html(table_core.html());
+        <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
+        <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+        <script>
             
-        }
+            function html_table_to_excel(type)
+            {
+                var table_core = $("#table").clone();
+                var clonedTable = $("#table").clone();
+                clonedTable.find('[class*="no-export"]').remove();
+                clonedTable.find('[class*="d-none"]').remove();
+                $("#table").html(clonedTable.html());
+                var data = document.getElementById('table');
 
-        $(document).on('click','#export_button',function(){
-            html_table_to_excel('xlsx');
-        })
-       
-
-        $('#reset').click(function(){
-            var url = $(this).data('url');
-            getData(url);
-            window.history.pushState("", "", url);
-            $('#TableForm').trigger("reset");
-            //   $('#fieldId').select2('val',"");               // if you use any select2 in filtering uncomment this code
-           // $('#fieldId').trigger('change');                  // if you use any select2 in filtering uncomment this code
-        });
-
-       
-    </script>
-    <script>
-        // Add Product To Pin
-        
-        $('.input-checkpin').click(function(){
-            var  id = $(this).val();
-            if($(this).prop('checked')){
-                // var img = ;?
-                var route = "{{ route('panel.user_shop_items.api.addpinonsie') }}"+"?product_id="+$(this).val()+'&user_id='+"{{ $access_id }}";
-                $.ajax({
-                    url: route,
-                    method: "get",
-                    success: function(res){
-                        $("#input-checkpinimg_"+id).attr('src', "{{ asset('frontend/assets/svg/bookmark_added.svg')}}");
-                    }
-                });
+                var file = XLSX.utils.table_to_book(data, {sheet: "sheet1"});
+                XLSX.write(file, { bookType: type, bookSST: true, type: 'base64' });
+                XLSX.writeFile(file, 'ProductAttributeFile.' + type);
+                $("#table").html(table_core.html());
                 
-            }else{
-                var route = "{{ route('panel.user_shop_items.api.removepinonsie') }}"+"?product_id="+$(this).val()+'&user_id='+"{{ $access_id }}";
-                $.ajax({
-                    url: route,
-                    method: "get",
-                    success: function(res){
-                        $("#input-checkpinimg_"+id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg')}}");
-                    }
-                });
             }
-        });
-        $('#hike').on('change',function(){
-            var hike = $(this).val();
-            $('.bulkHike').val(hike);
-        })
-        $('#filterBtn').on('click',function(e){
-            e.preventDefault();
-            var search = $('#searchValue').val();
-            var length = $('#lengthField').val(); 
-            $('#lengthInput').val(length);
-            $('#searchField').val(search);
-            $('#filterRecordsForm').submit();
-        })
-        $('#searchValue').keypress(function(event) {
-            if (event.keyCode == 13) {
-                event.preventDefault();
+
+            $(document).on('click','#export_button',function(){
+                html_table_to_excel('xlsx');
+            })
+        
+
+            $('#reset').click(function(){
+                var url = $(this).data('url');
+                getData(url);
+                window.history.pushState("", "", url);
+                $('#TableForm').trigger("reset");
+                //   $('#fieldId').select2('val',"");               // if you use any select2 in filtering uncomment this code
+            // $('#fieldId').trigger('change');                  // if you use any select2 in filtering uncomment this code
+            });
+
+        
+        </script>
+        <script>
+            // Add Product To Pin
+            
+            $('.input-checkpin').click(function(){
+                var  id = $(this).val();
+                if($(this).prop('checked')){
+                    // var img = ;?
+                    var route = "{{ route('panel.user_shop_items.api.addpinonsie') }}"+"?product_id="+$(this).val()+'&user_id='+"{{ $access_id }}";
+                    $.ajax({
+                        url: route,
+                        method: "get",
+                        success: function(res){
+                            $("#input-checkpinimg_"+id).attr('src', "{{ asset('frontend/assets/svg/bookmark_added.svg')}}");
+                        }
+                    });
+                    
+                }else{
+                    var route = "{{ route('panel.user_shop_items.api.removepinonsie') }}"+"?product_id="+$(this).val()+'&user_id='+"{{ $access_id }}";
+                    $.ajax({
+                        url: route,
+                        method: "get",
+                        success: function(res){
+                            $("#input-checkpinimg_"+id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg')}}");
+                        }
+                    });
+                }
+            });
+            $('#hike').on('change',function(){
+                var hike = $(this).val();
+                $('.bulkHike').val(hike);
+            })
+            $('#filterBtn').on('click',function(e){
+                e.preventDefault();
                 var search = $('#searchValue').val();
                 var length = $('#lengthField').val(); 
                 $('#lengthInput').val(length);
                 $('#searchField').val(search);
                 $('#filterRecordsForm').submit();
-            }
-        });
-        $('.bulkHike').val($('#hike').val());
-        $(document).ready(function(){
-            $('.addProductBtn').on('click',function(){
-                var pid = $(this).data('pid');
-                var category_id = $(this).data('category_id');
-                var sub_category_id = $(this).data('sub_category_id');
-                var price = $(this).data('price');
-                var hike = $('#hike').val();
-                $('.priceInput').val(price);
-                $('.productID').val(pid);
-                $("#category_id").attr('disabled', 'disabled');
-                $("#category_id").val(category_id).change();
-                $("#category_id").removeAttr('disabled', 'disabled');
-                $("#sub_category_id").attr('disabled', 'disabled');
-                $("#sub_cate_loader").show();
-                setTimeout(() => {
-                    $(document).find("#sub_category_id").val(sub_category_id).change();
-                    $("#sub_category_id").removeAttr('disabled', 'disabled');
-                    $("#sub_cate_loader").hide();
-                }, 1500);
-                $('#addProductModal').modal('show');
+            })
+            $('#searchValue').keypress(function(event) {
+                if (event.keyCode == 13) {
+                    event.preventDefault();
+                    var search = $('#searchValue').val();
+                    var length = $('#lengthField').val(); 
+                    $('#lengthInput').val(length);
+                    $('#searchField').val(search);
+                    $('#filterRecordsForm').submit();
+                }
             });
-            $('#allProducts').on('click',function(){
-                $('#productsDropdown').toggle('');
-            });
-        })
-        $('#UserShopItemForm').validate();
-            $('.repeatergruop_price').repeater({
-                initEmpty: false,
-                defaultValues: {
-                    'text-input': 'foo'
-                },
-                show: function() {
-                    $(this).slideDown();
-                    $(".select2").select2();
-                },
-                hide: function(deleteElement) {
-                    if (confirm('Are you sure you want to delete this element?')) {
-                        $(this).slideUp(deleteElement);
+            $('.bulkHike').val($('#hike').val());
+            $(document).ready(function(){
+                $('.addProductBtn').on('click',function(){
+                    var pid = $(this).data('pid');
+                    var category_id = $(this).data('category_id');
+                    var sub_category_id = $(this).data('sub_category_id');
+                    var price = $(this).data('price');
+                    var hike = $('#hike').val();
+                    $('.priceInput').val(price);
+                    $('.productID').val(pid);
+                    $("#category_id").attr('disabled', 'disabled');
+                    $("#category_id").val(category_id).change();
+                    $("#category_id").removeAttr('disabled', 'disabled');
+                    $("#sub_category_id").attr('disabled', 'disabled');
+                    $("#sub_cate_loader").show();
+                    setTimeout(() => {
+                        $(document).find("#sub_category_id").val(sub_category_id).change();
+                        $("#sub_category_id").removeAttr('disabled', 'disabled');
+                        $("#sub_cate_loader").hide();
+                    }, 1500);
+                    $('#addProductModal').modal('show');
+                });
+                $('#allProducts').on('click',function(){
+                    $('#productsDropdown').toggle('');
+                });
+            })
+            $('#UserShopItemForm').validate();
+                $('.repeatergruop_price').repeater({
+                    initEmpty: false,
+                    defaultValues: {
+                        'text-input': 'foo'
+                    },
+                    show: function() {
+                        $(this).slideDown();
+                        $(".select2").select2();
+                    },
+                    hide: function(deleteElement) {
+                        if (confirm('Are you sure you want to delete this element?')) {
+                            $(this).slideUp(deleteElement);
+                        }
+                    },
+                    ready: function(setIndexes) {},
+                    isFirstItemUndeletable: true
+                });  
+                $(document).ready(function() {
+                    user_id = "{{ $user_id }}";
+                    $("#price_checkbox").click(function(event) {
+                        if ($(this).is(":checked")){
+                            $(".price_group").removeClass('d-none');
+                            $("#group_id").attr("required", true);
+                            $("#stock").attr("required", true);
+                        }
+                        else{
+                            $(".price_group").addClass('d-none');
+                            $("#group_id").attr("required", true);
+                            $("#stock").attr("required", true);
+                        }
+                    
+                    });
+                    
+                }); 
+                $('#category_id').change(function(){
+                    var id = $(this).val();
+                    if(id){
+                        $.ajax({
+                            url: "{{route('panel.user_shop_items.get-category')}}",
+                            method: "get",
+                            datatype: "html",
+                            data: {
+                                id:id
+                            },
+                            success: function(res){
+                                console.log(res);
+                                $('#sub_category_id').html(res);
+                            }
+                        })
                     }
-                },
-                ready: function(setIndexes) {},
-                isFirstItemUndeletable: true
-            });  
-            $(document).ready(function() {
-                user_id = "{{ $user_id }}";
-                $("#price_checkbox").click(function(event) {
-                    if ($(this).is(":checked")){
-                         $(".price_group").removeClass('d-none');
-                        $("#group_id").attr("required", true);
-                        $("#stock").attr("required", true);
+                });
+                                    
+            
+                $('#select-all').click(function(){
+                    if($('.input-check').is(':checked')){
+                        $('.input-check').prop('checked',false);
+                    }else{
+                        $('.filterable-items').each(function(){
+                            if(!$(this).hasClass('d-none')){
+                                $(this).find('.input-check').prop('checked',true);
+                            }
+                        });
                     }
-                    else{
-                         $(".price_group").addClass('d-none');
-                        $("#group_id").attr("required", true);
-                        $("#stock").attr("required", true);
+                });
+                $('.unSelectAll').click(function(){
+                    if($('.input-check').is(':checked')){
+                        $('.input-check').prop('checked',false);
+                    }else{
+                        $('.filterable-items').each(function(){
+                            if(!$(this).hasClass('d-none')){
+                                $(this).find('.input-check').prop('checked',false);
+                            }
+                        });
                     }
-                   
+                });
+                $('.categoryFilter').click(function(e){
+                e.preventDefault();
+            
+                    var categoryId = $(this).data('category_id');
+                    $('#categoryId').val(categoryId);
+                    var length = $('#lengthField').val();
+                    $('#lengthInput').val(length);
+                    $('#filterRecordsForm').submit();
+                });    
+                
+                $('.lengthSearch').on('click',function(){
+                    var length = $('#lengthField').val();
+                    $('#lengthInput').val(length);
+                    $('#filterRecordsForm').submit();
+                })
+                function replaceUrlParam(paramName, paramValue) {
+                    var url = window.location.href;
+                    if (paramValue == null) {
+                        paramValue = '';
+                    }
+                    var pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
+                    if (url.search(pattern) >= 0) {
+                        return url.replace(pattern, '$1' + paramValue + '$2');
+                    }
+                    url = url.replace(/[?#]$/, '');
+                    return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
+                }
+                $('#lengthField').on('change',function(){
+                    var value = $(this).val();
+                    window.history.pushState({}, '', replaceUrlParam('length', value));
+                    var length = $('#lengthField').val();
+                    $('#lengthInput').val(length);
+                    $('#filterRecordsForm').submit();
+                })
+                $('.validateMargin').on('click', function(e){
+                    if($('#hike').val() > 99){
+                        $('#hike').val(99);
+                        $.toast({
+                            heading: 'ERROR',
+                            text: "Margin must be less than 100",
+                            showHideTransition: 'slide',
+                            icon: 'error',
+                            loaderBg: '#f2a654',
+                            position: 'top-right'
+                        });
+                        e.preventDefault();
+                    }
                 });
                 
-            }); 
-            $('#category_id').change(function(){
-                var id = $(this).val();
-                if(id){
-                    $.ajax({
-                        url: "{{route('panel.user_shop_items.get-category')}}",
-                        method: "get",
-                        datatype: "html",
-                        data: {
-                            id:id
-                        },
-                        success: function(res){
-                            console.log(res);
-                            $('#sub_category_id').html(res);
+            $(document).on('click','#delete_all_dummy',function(e){
+            e.preventDefault();
+            var msg = $(this).data('msg') ?? "All Product will be Deleted, And You won't be able to revert back!";
+            $.confirm({
+                draggable: true,
+                title: 'Are You Sure!',
+                content: msg,
+                type: 'red',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: 'Confirm',
+                        btnClass: 'btn-red',
+                        action: function(){
+                            $("#delete_all").click();
                         }
-                    })
+                    },
+                    close: function () {
+                    }
                 }
+                });
             });
-                                  
-           
-            $('#select-all').click(function(){
-                if($('.input-check').is(':checked')){
-                    $('.input-check').prop('checked',false);
-                }else{
-                    $('.filterable-items').each(function(){
-                        if(!$(this).hasClass('d-none')){
-                            $(this).find('.input-check').prop('checked',true);
+
+            $(document).on('click','#delproduct_dummy',function(e){
+            e.preventDefault();
+            var msg = $(this).data('msg') ?? "You won't be able to revert back!";
+            $.confirm({
+                draggable: true,
+                title: 'Are You Sure!',
+                content: msg,
+                type: 'red',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: 'Confirm',
+                        btnClass: 'btn-red',
+                        action: function(){
+                            $("#delproduct").click();
                         }
-                    });
+                    },
+                    close: function () {
+                    }
                 }
+                });
             });
-            $('.unSelectAll').click(function(){
-                if($('.input-check').is(':checked')){
-                    $('.input-check').prop('checked',false);
-                }else{
-                    $('.filterable-items').each(function(){
-                        if(!$(this).hasClass('d-none')){
-                            $(this).find('.input-check').prop('checked',false);
-                        }
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                // product-action
+                function myfunc() {
+                    if ($(".input-check:checked").length > 0) {
+                        // any one is checked
+                        $("#quickaction").removeClass('d-none');
+                        getValues()
+                    } else {
+                        $("#quickaction").addClass('d-none');
+                    }
+                }
+
+                function getValues(){
+                    let selected = []
+                    let record = document.querySelectorAll(".input-check:checked");
+                    record.forEach(element => {
+                        selected.push(element.dataset.record);
                     });
+
+                    return selected;
                 }
-            });
-            $('.categoryFilter').click(function(e){
-               e.preventDefault();
-         
-                var categoryId = $(this).data('category_id');
-                $('#categoryId').val(categoryId);
-                var length = $('#lengthField').val();
-                $('#lengthInput').val(length);
-                $('#filterRecordsForm').submit();
-            });    
-            
-            $('.lengthSearch').on('click',function(){
-                var length = $('#lengthField').val();
-                $('#lengthInput').val(length);
-                $('#filterRecordsForm').submit();
-            })
-            function replaceUrlParam(paramName, paramValue) {
-                var url = window.location.href;
-                if (paramValue == null) {
-                    paramValue = '';
-                }
-                var pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
-                if (url.search(pattern) >= 0) {
-                    return url.replace(pattern, '$1' + paramValue + '$2');
-                }
-                url = url.replace(/[?#]$/, '');
-                return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
-            }
-            $('#lengthField').on('change',function(){
-                var value = $(this).val();
-                window.history.pushState({}, '', replaceUrlParam('length', value));
-                var length = $('#lengthField').val();
-                $('#lengthInput').val(length);
-                $('#filterRecordsForm').submit();
-            })
-            $('.validateMargin').on('click', function(e){
-                if($('#hike').val() > 99){
-                    $('#hike').val(99);
-                    $.toast({
-                        heading: 'ERROR',
-                        text: "Margin must be less than 100",
-                        showHideTransition: 'slide',
-                        icon: 'error',
-                        loaderBg: '#f2a654',
-                        position: 'top-right'
-                    });
+
+                $("#printQrbtn").click(function (e) { 
                     e.preventDefault();
-                }
-            });
-            
-        $(document).on('click','#delete_all_dummy',function(e){
-        e.preventDefault();
-        var msg = $(this).data('msg') ?? "All Product will be Deleted, And You won't be able to revert back!";
-        $.confirm({
-            draggable: true,
-            title: 'Are You Sure!',
-            content: msg,
-            type: 'red',
-            typeAnimated: true,
-            buttons: {
-                tryAgain: {
-                    text: 'Confirm',
-                    btnClass: 'btn-red',
-                    action: function(){
-                        $("#delete_all").click();
+                    $("#needqr").val(getValues());
+                    $("#qrform").submit()
+                    
+                });
+
+
+                $("#exportproductbtn").click(function (){
+                    $("#products_export").val(getValues());
+                    $("#products_exportform").submit();
+                })
+
+
+                $(".input-check").change(function (e) { 
+                    myfunc()
+                });
+
+
+                $("#checkallinp").change(function (e) { 
+                    $('.input-check').click();                
+                });
+
+
+                $("#deletecatbtn").click(function (e) { 
+                    e.preventDefault();
+                    let forminput = $('#delete_ids');
+                    let form = $('#categoryDeleteForm');
+                    let arr = [];
+
+                    if ($(".input-check:checked").length > 0) {
+                        $.each($(".input-check:checked"), function (indexInArray, valueOfElement) { 
+                            arr.push(valueOfElement.value);  
+                        });
+                        console.log(arr);
+                        forminput.val(arr)
+                        form.submit()
                     }
-                },
-                close: function () {
-                }
-            }
+                });
+                
+                
+                
             });
-        });
-        $(document).on('click','#delproduct_dummy',function(e){
-        e.preventDefault();
-        var msg = $(this).data('msg') ?? "You won't be able to revert back!";
-        $.confirm({
-            draggable: true,
-            title: 'Are You Sure!',
-            content: msg,
-            type: 'red',
-            typeAnimated: true,
-            buttons: {
-                tryAgain: {
-                    text: 'Confirm',
-                    btnClass: 'btn-red',
-                    action: function(){
-                        $("#delproduct").click();
-                    }
-                },
-                close: function () {
-                }
-            }
-            });
-        });
-    </script>
+        </script>
+        <script>
+            $("#demo01").animatedModal({
+                animatedIn: 'lightSpeedIn',
+                animatedOut: 'bounceOutDown',
+                color: '#F6F7FB',
+                width: "30%",
+                height: "30%",
+                transform: "translate(3%, -47%)",
+                top: "70%",
+                left: "70%",
+                overflow: 'none',
 
-    <script>
-        $(document).ready(function () {
-            // product-action
-            function myfunc() {
-                if ($(".input-check:checked").length > 0) {
-                    // any one is checked
-                    $("#quickaction").removeClass('d-none');
-                } else {
-                    $("#quickaction").addClass('d-none');
-                }
-            }
-
-            $(".input-check").change(function (e) { 
-                myfunc()
             });
 
-
-            $("#checkallinp").change(function (e) { 
-                $('.input-check').click();                
-            });
-
-
-            $("#deletecatbtn").click(function (e) { 
+            $(".opencateedit").click(function (e) { 
                 e.preventDefault();
-                let forminput = $('#delete_ids');
-                let form = $('#categoryDeleteForm');
-                let arr = [];
+                
+                $("#catid").val($(this).data('catidchange'));
+                $("#old_name").val($(this).data('catname'))
 
-                if ($(".input-check:checked").length > 0) {
-                    $.each($(".input-check:checked"), function (indexInArray, valueOfElement) { 
-                        arr.push(valueOfElement.value);  
-                    });
-                    console.log(arr);
-                    forminput.val(arr)
-                    form.submit()
-                }
+                
+                $("#demo01").click()
             });
-            
-            
-            
-        });
-    </script>
+            // $("#demo01").click()
+
+        </script>
 
     @endpush
 @endsection

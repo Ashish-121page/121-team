@@ -133,20 +133,20 @@ class SellerController extends Controller
     {        
 
 
-        $name = "Default Template";
+        // $name = "Default Template";
 
-        echo json_encode(
-            [
-                'name' => $name
-            ]
-        );
+        // echo json_encode(
+        //     [
+        //         'name' => $name
+        //     ]
+        // );
 
 
         
 
         // echo "Test Function <br><br><br>";
         // $user = auth()->user();
-        // magicstring(session()->all());
+        magicstring(session()->all());
 
 
 

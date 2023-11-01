@@ -30,6 +30,11 @@
         <div class="row justify-content-center">
             @include('backend.include.message')
     
+            <div class="col-12">
+                <a href="{{ route('panel.constant_management.category.index',13,2,12) }}" class="btn btn-outline-secondary">
+                    Back
+                </a>
+            </div>
             <div class="col-md-8 col-12">
                 <div class="card ">
                     <div class="card-header">
@@ -56,10 +61,10 @@
                             
                                 <div class="col-md-12 col-12"> 
                                     <div class="form-group mb-0">
-                                        <label for="input">{{ __('Sub Categories')}}</label>
+                                        <label for="input">{{ __('Sub Categories')}} <span class="text-danger">*</span> </label>
                                     </div>
                                     <div class="form-group">
-                                        <input style="width: 100%" name="value[]" type="text" id="tags" class="form-control" value="">
+                                        <input style="width: 100%" name="value[]" type="text" id="tags" class="form-control" value="" required>
                                     </div>
                                     
                                 </div>

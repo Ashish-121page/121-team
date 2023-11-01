@@ -16,6 +16,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\UserShopItem;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -39,13 +40,27 @@ class CategoryController extends Controller
                 $sub_category = Category::where('level',3)->get();
 
             }else{
-                $category = Category::where('user_id',auth()->id())->where('level',2)->get();
-                $sub_category = Category::where('user_id',auth()->id())->where('level',3)->get();
+                $category_own = Category::where('category_type_id',13)
+                            ->where('level',2)
+                            // ->where('user_id',null)
+                            ->where('user_id',auth()->id())
+                            ->get()->toArray();
+
+
+                $category_global = Category::where('category_type_id',13)
+                            ->where('level',2)
+                            ->where('user_id',null)
+                            ->get()->toArray();
+
+                $category =  array_merge($category_own,$category_global);
             }
 
 
+            // magicstring($category);
+            // return;
 
-            return view('backend.constant-management.category.index', compact('category','industries','sub_category'));
+
+            return view('backend.constant-management.category.index', compact('category','industries'));
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
@@ -497,6 +512,98 @@ class CategoryController extends Controller
 
 
     }
+
+
+    // ` Perform Ajax Update Only
+    function updateAjax(Request $request) {
+
+        try {
+            
+            if ($request->task == 'update_name' && $request->value != '') {
+                $category_own = Category::whereId($request->id)->where('user_id',auth()->id())->first();
+                // $category_system = Category::whereId($request->id)->where('user_id',auth()->id())->first();
+                $category = $category_own;
+                if (AuthRole() == 'Admin') {
+                    $category = Category::whereId($request->id)->first();
+                }
+                $category->name = $request->value;
+                
+                $category->save();
+                $response = ['response','Success','msg','Name of the Records are Updated Successfully'];
+                return json_encode($response);
+            }
+
+            if ($request->task == 'add_new') {
+                $count = 0;
+                $category_own = Category::whereId($request->id)->where('user_id',auth()->id())->first();
+                $category_system = Category::whereId($request->id)->where('user_id',null)->first();
+
+                if ($category_system != null) {
+                    $category = $category_system;
+                }else{
+                    $category = $category_own;
+                }
+
+                foreach ($request->value as $key => $value) {
+                    $category_own = Category::where('name',$value)->where('parent_id',$category->id)->get();
+
+                    if (count($category_own) != 0 && $value == '') {
+                        //` This Command Will Skip This Element if Already Exist, and Value is Blank..
+                        continue;
+                    }
+
+                    Category::create([
+                        'name' => $value,
+                        'category_type_id' => $category->category_type_id,
+                        'level' => 3,
+                        'parent_id' => $category->id,
+                        'user_id' => $request->user_id ?? auth()->id(),
+                        'type' => 0,
+                        'icon' => null
+                    ]);
+                    $count++;
+                }
+
+
+                $response = ["response"=>"Success","msg"=>"$count New Records are Created Successfully"];
+                return json_encode($response);
+                
+                return $request->all();
+            }
+
+
+            
+            
+        } catch (\Throwable $th) {
+            //throw $th;
+            $response = ['response','error','msg','Unable to perform Action Right Now.'];
+            return json_encode($response);
+        }
+
+        
+        
+    }
+    
+
+    function renamecat(Request $request, User $user){
+        try {
+            $record = Category::whereId($request->catid)->where('user_id',$user->id)->first();
+
+            if ($record == null) {
+                return back()->with('error',"Category Not Found");
+            }
+    
+            $record->name = $request->new_name;
+            $record->save();
+            
+            return back()->with('success',"Updated SuccessFully.");
+        } catch (\Throwable $th) {
+            //throw $th;
+            return back()->with('error',"Unable to Update Right Now try again Later.");
+        }
+
+    }
+    
 
 
 

@@ -1,4 +1,4 @@
-<div class="app-sidebar colored d-none" >
+<div class="app-sidebar colored">
     <div class="sidebar-header">
         <a class="header-brand" href="{{route('panel.dashboard')}}">
             <div class="logo-img">
@@ -23,7 +23,7 @@
             <nav id="search-menu-navigation" class="navigation-main">
 
             </nav>
-            <nav id="main-menu-navigation" class="navigation-main">    
+            <nav id="main-menu-navigation" class="navigation-main">
 
                 {{--! Not Visible to User Role only --}}
                 @if (AuthRole() != 'User')
@@ -53,7 +53,7 @@
                 
                 @endif
 
-                <div class="nav-item  {{ activeClassIfRoutes(['panel.settings.index'] ,'active open' ) }}" style="position: absolute;bottom: 80px;margin: 10px 0;">
+                <div class="nav-item  {{ activeClassIfRoutes(['panel.settings.index'] ,'active open' ) }}" style="position: absolute;bottom: 0px;margin: 10px 0;">
                     <a href="{{ route('panel.settings.index',encrypt(auth()->id())) }}" class="a-item" >
                         <i class="ik ik-settings"></i>
                         <span>{{ 'Settings' }}</span>

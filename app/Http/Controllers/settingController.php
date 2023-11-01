@@ -10,7 +10,10 @@ use Illuminate\Http\Request;
 class settingController extends Controller
 {
 
-    public function index(Request $request , User $user) {
+
+    public function index(Request $request,$user) {
+
+        $user = User::whereId(decrypt($user))->first();
         
         
         $templates = ExportTemplates::get();

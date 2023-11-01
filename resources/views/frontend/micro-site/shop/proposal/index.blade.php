@@ -595,7 +595,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
             
             
 
-            console.log("Somethig Happend..");
+            console.log("Somethig Happened..");
         });
     });
 </script>

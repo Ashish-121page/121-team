@@ -77,7 +77,7 @@
                     @endphp
                     
                     @foreach ($record as $item)
-                        <a href="?type={{ request()->get('type') }}&type_id={{ request()->get('type_id') }}&products=true&category_id={{request()->get('category_id') }}&sub_category_id={{ $item->id}}" class="btn btn-outline-info @if (request()->has('sub_category_id') && request()->get('sub_category_id') == $item->id) active @endif">{{ $item->name }}</a>
+                        <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{request()->get('category_id') }}&sub_category_id={{ $item->id}}" class="btn btn-outline-info @if (request()->has('sub_category_id') && request()->get('sub_category_id') == $item->id) active @endif">{{ $item->name }}</a>
                     @endforeach
                    
                 </div>
