@@ -226,7 +226,7 @@
                 </div>
             </div>
         @else
-            <div class="col-xl-8 col-lg-8 col-md-12 col-12 statistics_count">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-12 statistics_count">
                 <div class="card">
                     <div class="card-header">
                         <h3>Overview</h3>
@@ -298,7 +298,7 @@
                         <div class="row">
                             
                             @foreach ($statistics_1 as $statistic_1)
-                                <a class="col-xl-4 col-md-12 p-2" href="{{ $statistic_1['link'] }}">
+                                <a class="col-xl-3 col-md-12 p-2" href="{{ $statistic_1['link'] }}">
                                     <div class="card proj-t-card mb-1">
                                         <div class="card-body">
                                             <div class="row align-items-center mb-30">
@@ -326,7 +326,7 @@
                             @endforeach
                             
                             @foreach ($statistics_2 as $statistic_2)
-                                <a class="col-xl-4 col-md-6 p-2" href="{{ $statistic_2['link'] }}">
+                                <a class="col-xl-3 col-md-6 p-2" href="{{ $statistic_2['link'] }}">
                                     <div class="card ticket-card mb-1">
                                         <div class="card-body">
                                             <p class="mb-30 bg-{{ $statistic_2['color'] }} lbl-card"><i class="fas fa-folder-open"></i> {{ $statistic_2['title'] }}</p>
@@ -340,7 +340,7 @@
                             @endforeach
 
                             @foreach ($statistics_3 as $statistic_3)
-                                <a class="col-xl-4 col-md-6 p-2" href="{{ $statistic_3['link'] }}">
+                                <a class="col-xl-3 col-md-6 p-2" href="{{ $statistic_3['link'] }}">
                                     <div class="card prod-p-card card-{{ $statistic_3['color'] }}">
                                         <div class="card-body">
                                             <div class="row align-items-center mb-30">
