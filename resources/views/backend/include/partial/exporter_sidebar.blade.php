@@ -17,7 +17,7 @@
 
 
 <div class="nav-item {{ activeClassIfRoutes(['panel.user_shop_items.create'] ,'active open' ) }}">
-    <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_id=".auth()->id() }}" class="a-item" >
+    <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" >
         <i class="ik ik-upload"></i>
         <span>{{ 'Products' }}</span>
     </a>
@@ -31,14 +31,14 @@
 </div>
 
 <div class="nav-item {{ activeClassIfRoutes(['panel.proposals.index'] ,'active open' ) }}">
-    <a href="{{ route('panel.proposals.index')."?type=direct&type_id=".auth()->id() }}" class="a-item" >
+    <a href="{{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" >
         <i class="ik ik-tag"></i>
         <span>{{ 'Offer' }}</span>
     </a>
 </div>
 
 <div class="nav-item">
-    <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_id=".auth()->id() }}" class="a-item" >
+    <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" >
         <i class="ik ik-archive"></i>
         <span>{{ 'Quotes' }}</span>
     </a>

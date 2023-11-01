@@ -1,174 +1,97 @@
 <div class="col-md-12">
   
-    {{-- First Pane --}}
-    @if (!request()->has('parent_id'))
-        <div class="card">
-            <div class="card-header align-items-center d-flex justify-content-between">
-                <h3>
-                    Manage Category
-                </h3>
-            </div>
-            <div class="card-body ">
-                <div class="table-responsive">
-                    <table id="category_table" class="table">
-                        <thead>
-                            <tr>
-                                <th class="text-center">#</th>
-                                {{-- @if (AuthRole() == 'Admin') --}}
-                                    <th>Industry</th>
-                                {{-- @endif --}}
 
-                                <th>Category</th>
-                                <th>Sub Category Count</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            @if($category->count() > 0)
-                                    @foreach($category as $item)
+    <div class="row">
+        <div class="col-md-12 col-12">
+          <div class="accordion" id="accordionExample">
+  
+                @if(count($category) > 0)
+                    @foreach($category as $key=> $item)
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="btn shadow-none collapsed collapseicon bg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{$key}}" aria-expanded="false" aria-controls="collapse{{$key}}" style="width: 100%;text-align: left;border-bottom: 2px solid #6666cc;">
+                                    
+                                    <i class="fas fa-angle-right iconchange" ></i>
+                                    {{ $item['name'] }} {{ $item['type'] == 1 ? "" : "(Self)" }}
+                                </button>
+                            </h2>
+                            <div id="collapse{{$key}}" class="accordion-collapse accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    
+                                    <div class="row" id="appendbox-{{$key}}">
 
-                                        <tr>
-                                            <td class="text-center">{{ $loop->iteration }}</td>
-                                            {{-- @if (AuthRole() == 'Admin') --}}
-                                                <td>
-                                                    {{ App\Models\Category::whereId($item->parent_id)->first()->name ?? 'Unknown ' }}
-                                                </td>
-                                            {{-- @endif --}}
-                                            
-                                            <td>
-                                                {{ $item->name }} {{ $item->type == 1 ? "" : "(Self)" }}
-                                            </td>
-
-                                            <td>
-                                                {{ count(App\Models\Category::where('parent_id',$item->id)->get()) ?? '0' }}
-                                            </td>
-
-
-                                            <td>
-                                                <div class="dropdown open">
-                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="actioncat" data-bs-toggle="dropdown" aria-haspopup="true"
-                                                            aria-expanded="false">
-                                                                Action
-                                                            </button>
-                                                    <div class="dropdown-menu" aria-labelledby="actioncat">
-
-                                                        @if($item->user_id == auth()->id() || AuthRole() == "Admin")
-                                                            <a href="{{ route('panel.constant_management.category.edit', $item->id)  }}" title="Edit Lead Contact" class="btn btn-sm dropdown-item">Edit</a>
-                                                        @endif 
-                                                        @if(AuthRole() == "Admin")
-                                                            <a href="{{ route('panel.constant_management.category.delete', $item->id)  }}" title="Delete Category" class="btn btn-sm delete-item dropdown-item">Delete</a>
-                                                        @endif
-                                                        <a href="?parent_id={{$item->id }}" title="View Sub Categoryes" class="btn btn-sm dropdown-item">Show</a>
-                                                    </div>
+                                          {{-- Adding A New Item --}}
+                                          <div class="col-3 d-flex align-items-center">
+                                            <div class="d-flex justify-content-between gap-2">
+                                                <div class="">
+                                                    <span class="btn btn-outline-primary additems" data-parentdata="appendbox-{{$key}}">
+                                                        <i class="fas fa-plus"></i> Add New Item
+                                                    </span>
+                                                    <span class="btn btn-outline-primary savebtn d-none" data-parentdata="appendbox-{{$key}}" data-parent-id="{{ $item['id'] }}">
+                                                        Save
+                                                    </span>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                            </div>
+                                        </div>
+                                        
+                                    {{-- ` Getting Sub Categories --}}
+                                    @php
+                                        $subcategories = App\Models\Category::where('parent_id',$item['id'])->get();
+                                    @endphp
+                                    @forelse ($subcategories as $index => $subcategory)
+                                        <div class="col-3 my-2">
+                                            <div class="justify-content-between gap-2 d-none" id="pbox_edit-{{$key}}-{{ $index }}">
+                                                <input type="text" name="changeme" value="{{ $subcategory->name }}" class="form-control w-70" placeholder="Enter New Value" id="edit_box_{{$key}}-{{ $index }}">
 
+                                                <div class="w-25">
 
-                                    @endforeach
-                            @else
-                                <div class="text-center">
-                                    There is no Custom Category
-                                </div>
-                            @endif
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    @endif
-    
-    
-    {{-- second Pane --}}
-    @if (request()->has('parent_id'))
-        <div class="card">
-            <div class="card-header align-items-center d-flex justify-content-between">
-                <h3>
-                    Manage Category
-                </h3>
-            </div>
-            <div class="card-body ">
-                <div class="table-responsive">
-                    <table id="category_table" class="table">
-                        <thead>
-                            <tr>
-                                <th class="text-center">#</th>
-                                @if (AuthRole() == 'Admin')
-                                    <th>Industry</th>
-                                @endif
-
-                                <th>Category</th>
-                                <th>Sub Category</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            @if($sub_category->count() > 0)
-                                    @foreach($sub_category as $item)
-
-                                        @if ($item->parent_id != request()->get('parent_id'))
-                                            @continue
-                                        @endif
-
-                                        @php
-                                            if ($item->level == 3) {
-                                                // sub-category
-                                                $sub_category_parent = $item->parent_id;
-                                                $category_parent = App\Models\Category::whereId($sub_category_parent)->first();
-                                                $industry = App\Models\Category::whereId($category_parent->parent_id)->first();
-                                            }
-                                        @endphp
-
-                                        <tr>
-                                            <td class="text-center">{{ $loop->iteration }}</td>
-                                            @if (AuthRole() == 'Admin')
-                                                <td>
-                                                    {{ $industry->name ?? 'Unknown ' }}
-                                                </td>
-                                            @endif
-                                            
-                                            <td>
-                                                {{ App\Models\Category::whereId($item->parent_id)->first()->name  }}
-                                            </td>
-                                            <td>
-                                                {{ $item->name }} {{ $item->type == 1 ? "" : "(Self)" }}
-                                            </td>
-                                            <td>
-                                                <div class="dropdown open">
-                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="actioncat" data-bs-toggle="dropdown" aria-haspopup="true"
-                                                            aria-expanded="false">
-                                                                Action
-                                                            </button>
-                                                    <div class="dropdown-menu" aria-labelledby="actioncat">
-
-                                                        @if($item->user_id == auth()->id() || AuthRole() == "Admin")
-                                                            <a href="{{ route('panel.constant_management.category.edit', $item->id)  }}" title="Edit Lead Contact" class="btn btn-sm dropdown-item">Edit</a>
-                                                        @endif 
-                                                        @if(AuthRole() == "Admin")
-                                                            <a href="{{ route('panel.constant_management.category.delete', $item->id)  }}" title="Delete Category" class="btn btn-sm delete-item dropdown-item">Delete</a>
-                                                        @endif
-                                                        
-                                                    </div>
+                                                    <button class="btn btn-outline-primary shadow-none btn-icon updatechange" type="button" data-input-parent="edit_box_{{$key}}-{{ $index }}" data-typevalue="{{ $subcategory->id }}" >
+                                                        <i class="fas fa-check-circle"></i>
+                                                    </button>
+                                                    
+                                                    <button class="btn btn-outline-danger shadow-none btn-icon discardchange" data-box-parent="pbox_edit-{{$key}}-{{ $index }}" data-box-text="pbox_show-{{$key}}-{{$index}}" type="button">
+                                                        <i class="fas fa-times-circle"></i>
+                                                    </button>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                            </div>
 
+                                            <div class="d-flex justify-content-between gap-2" id="pbox_show-{{$key}}-{{$index}}">
+                                                <div class="w-70">
+                                                    <span id="text-represent-{{$key}}-{{$index}}">{{ $subcategory->name }}</span>
+                                                </div>
+                                                <div class="w-25">
+                                                    <button class="btn btn-outline-primary shadow-none btn-icon editchange" type="button" data-box-parent="pbox_show-{{$key}}-{{$index}}" data-box-edit="pbox_edit-{{$key}}-{{ $index }}">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                    </button>
+                                                    <a href="{{ route('panel.constant_management.category.delete',$subcategory->id) }}"  class="btn btn-outline-danger shadow-none btn-icon">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div class="col-3">
+                                            There's Nothing To Show Here...
+                                        </div>
+                                    @endforelse
 
-                                    @endforeach
-                            @else
-                                <div class="text-center">
-                                    There is no Custom Category
+                                    </div>
                                 </div>
-                            @endif
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="text-center">
+                        There is no Custom Category
+                    </div>
+                @endif
+            
+          </div>
         </div>
-    @endif
 
 
 
+      </div>
+
+    
 </div>

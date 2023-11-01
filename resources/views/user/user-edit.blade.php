@@ -477,7 +477,7 @@
              }
 
             function checkall() {
-                var arr_yes = ['mycustomeryes','Filemanageryes','addandedityes','bulkuploadyes','pricegroupyes','mysupplieryes','managegroupyes','manangebrandsyes'];
+                var arr_yes = ['mycustomeryes','Filemanageryes','addandedityes','bulkuploadyes','pricegroupyes','mysupplieryes','managegroupyes','manangebrandsyes','offersyes'];
 
                 
                 $.each(arr_yes, function (indexInArray, valueOfElement) { 
@@ -490,7 +490,7 @@
 
             
             function decheckall() {
-                var arr_no = ['mycustomerno','Filemanagerno','addandeditno','bulkuploadno','pricegroupno','mysupplierno','managegroupno','manangebrandsno'];
+                var arr_no = ['mycustomerno','Filemanagerno','addandeditno','bulkuploadno','pricegroupno','mysupplierno','managegroupno','manangebrandsno','offersno'];
 
                 $.each(arr_no, function (indexInArray, valueOfElement) { 
                     var checkbx = $('#'+valueOfElement);
@@ -500,8 +500,8 @@
             
             $("#usersupplier").click(function (e) { 
                 e.preventDefault();
-                var arr_supplier = ['mycustomeryes','Filemanageryes','addandedityes','offersyes'];
-                var arr_dealer = ['mysupplierno','manangebrandsno','pricegroupno','managegroupno','bulkuploadno'];
+                var arr_supplier = ['mycustomeryes','Filemanageryes','addandedityes','offersyes','bulkuploadyes','managegroupyes'];
+                var arr_dealer = ['mysupplierno','manangebrandsno','pricegroupno'];
 
 
                 $.each(arr_supplier, function (indexInArray, valueOfElement) { 

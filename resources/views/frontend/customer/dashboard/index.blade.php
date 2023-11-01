@@ -306,7 +306,7 @@
 
                             {{-- @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id")) --}}
 
-                            @if ($acc_permissions->addandedit == 'yes' || $acc_permissions->addandedit == 'Yes')
+                            {{-- @if ($acc_permissions->addandedit == 'yes' || $acc_permissions->addandedit == 'Yes')
                                 @if ($Team_proadd)
                                     <li class="nav-item mt-2">
                                         <a data-active="diaplay" class="nav-link active-swicher rounded" id="diaplay-details" href="{{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ $user->id }}" >
@@ -316,7 +316,7 @@
                                         </a><!--end nav link-->
                                     </li><!--end nav item-->
                                 @endif
-                            @endif
+                            @endif --}}
                             {{-- @endif --}}
 
                             @if ($Team_profile)
@@ -332,7 +332,6 @@
                             @endif
 
                             {{-- @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id")) --}}
-                            @if(getUserProgressStatistics(auth()->id()) == 100)
 
                             @if($acc_permissions->Filemanager == "yes")
                                 @if ($Team_setting)
@@ -344,7 +343,6 @@
                                         </a><!--end nav link-->
                                     </li><!--end nav item-->
                                 @endif
-                            @endif
                             @endif
 
                             {{-- @endif --}}
@@ -382,6 +380,8 @@
                                     @if (auth()->user()->status == 1)
                                         <a type="submit" href="{{ route('panel.dashboard') }}" class="btn btn-outline-primary d-block">Open Seller Tools </a>
                                     @endif
+                                @else
+                                    <a href="{{ url('start') }}" class="btn btn-outline-primary d-block" style="color: white;">Book 7 mins Demo</a>
                                 @endif
                             {{-- @endif --}}
                         </div>
@@ -544,7 +544,6 @@
                                             </div>
                                         </div>
                                     @endif
-                                    @if(getUserProgressStatistics(auth()->id()) == 100)
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="card">
                                             <div class="card-body">
@@ -563,7 +562,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    @endif
 
                                     @if(getUserProgressStatistics(auth()->id()) == 100)
                                         <div class="col-12 border border-danger mt-4">
@@ -715,7 +713,6 @@
 
                                     <!-- statistics -->
                                     <div class="col-xl-6 col-md-12 mt-3">
-
                                         <div class="card table-card-right">
                                             <div class="card-header">
                                                 <h4>{{ __('Statistics')}}</h4>
@@ -790,7 +787,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    @endif
 
                                     @endif
 
@@ -883,7 +879,6 @@
 
 
                         </div><!--end teb pane-->
-                        
                         @if($Team_setting)
                             {{-- Settings Tab --}}
                             <div class="tab-pane fade bg-white shadow rounded p-4 @if(request()->has('active') && request()->get('active') == "settings") active show @endif" id="settings" role="tabpanel" aria-labelledby="order-history">
@@ -1129,7 +1124,6 @@
 
                             </div><!--end teb pane-->
                         @endif
-                        
                         <div class="tab-pane fade bg-white shadow rounded p-4 @if(request()->has('active') && request()->get('active') == "enquiry") active show @endif" id="enquirys" role="tabpanel" aria-labelledby="enquiry-history">
                             <div class="d-flex justify-content-between">
                                 <h5 class="mt-1">My Enquiry</h5>

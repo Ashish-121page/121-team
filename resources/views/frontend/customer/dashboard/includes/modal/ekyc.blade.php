@@ -29,7 +29,11 @@
                         <label for="document_type">Document Type<span class="text-danger">*</span></label>
                         <select class="form-control" name="document_type" required >
                             <option value="" readonly>Select Type</option>
+
+                            <option @if(isset($kyc_data) && $kyc_data->document_type == "IEC Certificate") selected @endif value="IEC Certificate" readonly>IEC Certificate</option>
+                            
                             <option @if(isset($kyc_data) && $kyc_data->document_type == "GST Certificate") selected @endif value="GST Certificate" readonly>GST Certificate</option>
+
                             <option @if(isset($kyc_data) && $kyc_data->document_type == "Brand Trademark certificate") selected @endif value="Brand Trademark certificate" readonly>Brand Trademark certificate</option>
                             {{-- <option @if(isset($kyc_data) && $kyc_data->document_type == "Pan Card") selected @endif value="Pan Card" readonly>PAN CARD</option>
                             <option @if(isset($kyc_data) && $kyc_data->document_type == "Aadhar Card") selected @endif value="Aadhar Card" readonly>AADHAR CARD</option> --}}
@@ -59,8 +63,9 @@
                     <label class="mt-2" for="acc_type">Based on your nature of business, you are:</label>
                     <select name="acc_type" id="acc_type" class="form-control">
                       <option {{ $chk = ($user->account_type == 'customer') ?  "selected" : "" ; }} value="customer">Customer</option>
+                      <option {{ $chk = ($user->account_type == 'exporter') ?  "selected" : "" ; }} value="exporter">Exporter</option>
                       <option {{ $chk = ($user->account_type == 'supplier') ?  "selected" : "" ; }} value="supplier">Manufacturer / Stockist</option>
-                      <option {{ $chk = ($user->account_type == 'reseller ') ?  "selected" : "" ; }} value="reseller">Reseller</option>
+                      <option {{ $chk = ($user->account_type == 'reseller') ?  "selected" : "" ; }} value="reseller">Reseller</option>
                     </select>
 
 

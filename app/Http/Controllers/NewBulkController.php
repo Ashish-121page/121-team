@@ -2362,233 +2362,238 @@ class NewBulkController extends Controller
     // Export Product Data
     function exportData(Request $request,User $user_id){
         try {
-            {
-                
-                // $products = Product::whereUserId($user_id->id)->take('120')->get();
+        {
+            // $products = Product::whereUserId($user_id->id)->take('120')->get();
+            if ($request->has('products')) {
+                $ids = explode(',',$request->products);
+                $products_sku = Product::whereIn('id',$ids)->whereUserId($user_id->id)->pluck('sku');
+                $products = Product::whereIn('sku',$products_sku)->get();
+            }else{
                 $products = Product::whereUserId($user_id->id)->get();
+            }
 
-                $products_array [] = array(
-                    'Id','Model_Code','Category','Sub_Category','Group ID','Image_main','image_name_front','image_name_back','image_name_side1','image_name_side2','image_name_poster','Additional Image Use ^^','Product name','Video URL','description','Search keywords','Brand Name','Base_currency','Selling Price_Unit','Customer_Price_without_GST','Shop_Price_VIP_Customer','Shop_Price_Reseller','mrpIncl tax','HSN Tax','HSN_Percnt','Copyright/ Exclusive item','Exclusive Buyer Name','Theme / Collection Name','Season / Month','Theme / Collection Year','Sample Year','Sample Month','Sampling time','CBM','Production time (days)','MBQ','MBQ_units','Remarks','Vendor Sourced from','Vendor price','Product Cost_Unit','Vendor currency','Sourcing Year','Sourcing month','Gross weight','Net weight','Weight_unit','Product length','Product width','Product height','Dimensions_unit','Carton length','Carton width','Carton height','Carton_Dimensions_unit','standard_carton_pcs','carton_weight_actual','unit','artwork_url',
-                );
-        
-                $custom_attribute = json_decode(auth()->user()->custom_attriute_columns);
-                // $products_array = $products_array[0],$custom_attribute);
-                foreach ($custom_attribute as $key => $value) {
-                    array_push($products_array[0],$value);
-                }
-        
-                unset($custom_attribute[0],$custom_attribute[1],$custom_attribute[2]);
-                
-        
-                // magicstring($products_array);
-                
-                // return;
-        
-                $reseller_group = Group::whereUserId(auth()->id())->where('name',"Reseller")->first();
-                $vip_group = Group::whereUserId(auth()->id())->where('name',"VIP")->first();
-                foreach($products as $pkey => $product)
-                {
-                    $additional_images_tmp = [];
-                    $additional_images = [];
-                    $usi = UserShopItem::whereUserId(auth()->id())->where('product_id',$product->id)->latest()->first();
-                     $reseller_group_product = GroupProduct::where('group_id',$reseller_group->id??0)->where('product_id',$product->id)->latest()->first();
-        
-                    $vip_group_product = GroupProduct::where('group_id',$vip_group->id??0)->where('product_id',$product->id)->latest()->first();
-                    
-                    if ( $product->shipping != null) {
-                        $dimensions = json_decode($product->shipping);
-                        $height = $dimensions->height ?? null;
-                        $weight = $dimensions->weight ?? null;
-                        $width = $dimensions->width ?? null;
-                        $unit = $dimensions->unit ?? null;
-                        $length = $dimensions->length ?? null;
-                        $length_unit = $dimensions->length_unit ?? null;
-                        $gross_weight = $dimensions->gross_weight ?? null;
-                    } else {
-                        $dimensions = null ;
-                        $height = null ;
-                        $weight = null ;
-                        $width = null ;
-                        $unit = null ;
-                        $length = null ;
-                        $length_unit = null ;
-                        $gross_weight = null ;
-                    }
-                    if ( $product->carton_details != null) {
-                        $carton_details = json_decode($product->carton_details);
-                        $standard_carton = $carton_details->standard_carton ?? null;
-                        $carton_weight = $carton_details->carton_weight ?? null;
-                        $carton_unit = $carton_details->carton_unit ?? null;
-                        $carton_length = $carton_details->carton_length ?? null;
-                        $carton_width = $carton_details->carton_width ?? null;
-                        $carton_height = $carton_details->carton_height ?? null;                        
-                        $Carton_Dimensions_unit = $carton_details->Carton_Dimensions_unit ?? null;
-                    } else {
-                        $carton_details = null ;
-                        $standard_carton = null ;
-                        $carton_weight = null ;
-                        $carton_unit = null ;
-                        $carton_length = null;
-                        $carton_width =  null;
-                        $carton_height = null;
-                        $Carton_Dimensions_unit = null;
-                    }
-                    if($product->is_publish == 0){
-                        $usi->update([
-                            'is_published' => 0
-                        ]);
-                    }
-                    
-                    foreach ($product->medias as $key => $value) {
-                        if ($key > 5) {
-                            array_push($additional_images_tmp,$value->file_name);
-                        }
-                    }
-        
-                    $additional_images = implode("^^",$additional_images_tmp);
-
-                    // $common_attribute = ['Colour','Size','Material'];
-                    $color_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',1)->groupBy('attribute_value_id')->pluck('attribute_value_id');
-
-                    $size_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',2)->groupBy('attribute_value_id')->pluck('attribute_value_id');
-
-                    $material_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',3)->groupBy('attribute_value_id')->pluck('attribute_value_id');
-                    
-                    $extraInfoData = ProductExtraInfo::where('product_id',$product->id)->first();
-        
-                    $color_Val = [];
-                    if ($color_array != null) {
-                        foreach ($color_array as $key => $value) {
-                            $color_Val[$key] = getAttruibuteValueById($value)->attribute_value;
-                        }
-                    }else{
-                        $color_Val = '';
-                    }
-        
-                    $size_Val = [];
-                    if ($size_array != null) {
-                        foreach ($size_array as $key => $value) {
-
-                            $size_Val[$key] = getAttruibuteValueById($value)->attribute_value;
-                            
-                        }
-                    }else{
-                        $size_Val = '';
-                    }
-        
-                    $material_Val = [];
-                    if ($material_array != null) {
-                        foreach ($material_array as $key => $value) {
-                            $material_Val[$key] = getAttruibuteValueById($value)->attribute_value;
-                        }
-                    }else{
-                        $material_Val = '';
-                    }   
-
-
-                    $PRODUCT_ATTRIBUTE_ARRAY = [];
-                    if ($custom_attribute != null) {
-                        foreach ($custom_attribute as $attributes) {
-                            $id = getAttributeIdByName($attributes,auth()->id());
-                            
-                            $attribute_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$id)->groupBy('attribute_value_id')->pluck('attribute_value_id');
+            $products_array [] = array(
+                'Id','Model_Code','Category','Sub_Category','Group ID','Image_main','image_name_front','image_name_back','image_name_side1','image_name_side2','image_name_poster','Additional Image Use ^^','Product name','Video URL','description','Search keywords','Brand Name','Base_currency','Selling Price_Unit','Customer_Price_without_GST','Shop_Price_VIP_Customer','Shop_Price_Reseller','mrpIncl tax','HSN Tax','HSN_Percnt','Copyright/ Exclusive item','Exclusive Buyer Name','Theme / Collection Name','Season / Month','Theme / Collection Year','Sample Year','Sample Month','Sampling time','CBM','Production time (days)','MBQ','MBQ_units','Remarks','Vendor Sourced from','Vendor price','Product Cost_Unit','Vendor currency','Sourcing Year','Sourcing month','Gross weight','Net weight','Weight_unit','Product length','Product width','Product height','Dimensions_unit','Carton length','Carton width','Carton height','Carton_Dimensions_unit','standard_carton_pcs','carton_weight_actual','unit','artwork_url',
+            );
+    
+            $custom_attribute = json_decode(auth()->user()->custom_attriute_columns);
+            // $products_array = $products_array[0],$custom_attribute);
+            foreach ($custom_attribute as $key => $value) {
+                array_push($products_array[0],$value);
+            }
+    
+            unset($custom_attribute[0],$custom_attribute[1],$custom_attribute[2]);
             
-                            $ashu = [];
-                            if ($attribute_array != null) {
-                                foreach ($attribute_array as $key => $value) {
-                                    $ashu[$key] = getAttruibuteValueById($value)->attribute_value;
-                                }
-                            }else{
-                                $ashu = '';
-                            }
-                            
-                            $PRODUCT_ATTRIBUTE_ARRAY[$attributes] = implode("^^",$ashu);
-                        }
-                    }
-
-
-                    $allowed_array = ['Yes','YES','yes',1,true,'Hn'];
-                    
-                    $products_array[] = array(
-                        'Id' => $product->id,
-                        "Model Code"=> $product->model_code,
-                        "Global Category"=> $product->category->name ?? "",
-                        "Global Sub-category"=>$product->subcategory->name ?? "",
-                        'Cust_tag_group' =>$extraInfoData->Cust_tag_group ?? '',
-                        "Image_main"=> isset($product->medias[0]) ? ($product->medias[0]->file_name ?? "") : null,
-                        "image_name_front"=>isset($product->medias[1]) ? ($product->medias[1]->file_name ?? ""): null,
-                        "image_name_back"=>isset($product->medias[2]) ? ($product->medias[2]->file_name ?? ""): null,
-                        "image_name_side1"=>isset($product->medias[3]) ? ($product->medias[3]->file_name ?? ""): null,
-                        "image_name_side2"=>isset($product->medias[4]) ? ($product->medias[4]->file_name ?? ""): null,
-                        "image_name_poster"=>isset($product->medias[5]) ? ($product->medias[5]->file_name ?? ""): null,
-                        "Additional Image Use ^^" => $additional_images,
-                        "Product Name"=> $product->title ?? "",
-                        "Video URL"=>$product->video_url ?? '',
-                        'Description' =>$product->description ?? '',
-                        'search_keywords' => $product->search_keywords ?? '',
-                        'brand_name' => $extraInfoData->brand_name ?? '',
-                        'Base_currency' => $product->base_currency ?? 'INR',
-                        'Selling Price_Unit' => $product->selling_price_unit ?? '',
-                        "Customer_Price_without_GST"=> $usi->price ?? "",
-                        "Shop_Price_VIP_Customer"=> $vip_group_product->price ?? "",
-                        "Shop_Price_Reseller"=> $reseller_group_product->price ?? "",
-                        "mrp Incl tax"=>$product->mrp,
-                        "HSN Tax"=>$product->hsn,
-                        "HSN_Percnt"=>$product->hsn_percent,
-                        // 'allow_resellers' => (in_array(($extraInfoData->allow_resellers ?? 'No'),$allowed_array) ? 'Yes' : 'No') ?? 'No',
-                        // 'Publish (it will be 0 for unpublish or 1 for publish)' => (in_array($product->is_publish,$allowed_array) ? "Yes" : "No") ?? "No" ,
-                        'Exclusive' => (in_array($product->exclusive,$allowed_array) ? 'Yes' : 'No') ?? 'No',
-                        'exclusive_buyer_name' => $extraInfoData->exclusive_buyer_name ?? '',
-                        'collection_name' => $extraInfoData->collection_name ?? '',
-                        'season_month' => $extraInfoData->season_month ?? '',
-                        'season_year' => $extraInfoData->season_year ?? '',
-                        // 'sample_available' => (in_array(($extraInfoData->sample_available ?? 'No'),$allowed_array) ? "Yes" : 'No') ?? 'No',
-                        'sample_year' => $extraInfoData->sample_year ?? '',
-                        'sample_month' => $extraInfoData->sample_month ?? '',
-                        'sampling_time' => $extraInfoData->sampling_time ?? '',
-                        'CBM' => $extraInfoData->CBM ?? '',
-                        'production_time' => $extraInfoData->production_time ?? '',
-                        'MBQ' => $extraInfoData->MBQ ?? '',
-                        'MBQ_unit' => $extraInfoData->MBQ_unit ?? '',
-                        'remarks' => $extraInfoData->remarks ?? '',
-                        'vendor_sourced_from' => $extraInfoData->vendor_sourced_from ?? '',
-                        'vendor_price' => $extraInfoData->vendor_price ?? '',
-                        'product_cost_unit' => $extraInfoData->product_cost_unit ?? '',
-                        'vendor_currency' => $extraInfoData->vendor_currency ?? '',
-                        'sourcing_year' => $extraInfoData->sourcing_year ?? '',
-                        'sourcing_month' => $extraInfoData->sourcing_month ?? '',
-                        'Gross weight' => $gross_weight,
-                        'Net weight' =>$weight,
-                        'weight_unit' =>$unit,
-                        'Product length' =>$length,
-                        'Product width' =>$width,
-                        'Product height' =>$height,
-                        'Dimensions_unit' =>$length_unit,
-                        'Carton length' => $carton_length,
-                        'Carton width' => $carton_width,
-                        'Carton height' => $carton_height,
-                        'Carton_Dimensions_unit' => $Carton_Dimensions_unit,
-                        'standard_carton_pcs' =>$standard_carton,
-                        'carton_weight_actual' =>$carton_weight,
-                        'unit' =>$carton_unit,
-                        'artwork_url' => $product->artwork_url,
-                        'Color' => implode("^^",$color_Val) ?? '',
-                        'Size' => implode("^^",$size_Val) ?? '',
-                        "Material" => implode("^^",$material_Val) ?? '',
-                    );
-        
-                    
-                    foreach ($PRODUCT_ATTRIBUTE_ARRAY as $index => $value) {
-                        array_push($products_array[$pkey+1],$value);                
-                    }                    
+    
+            // magicstring($products_array);
+            
+            // return;
+    
+            $reseller_group = Group::whereUserId(auth()->id())->where('name',"Reseller")->first();
+            $vip_group = Group::whereUserId(auth()->id())->where('name',"VIP")->first();
+            foreach($products as $pkey => $product)
+            {
+                $additional_images_tmp = [];
+                $additional_images = [];
+                $usi = UserShopItem::whereUserId(auth()->id())->where('product_id',$product->id)->latest()->first();
+                    $reseller_group_product = GroupProduct::where('group_id',$reseller_group->id??0)->where('product_id',$product->id)->latest()->first();
+    
+                $vip_group_product = GroupProduct::where('group_id',$vip_group->id??0)->where('product_id',$product->id)->latest()->first();
+                
+                if ( $product->shipping != null) {
+                    $dimensions = json_decode($product->shipping);
+                    $height = $dimensions->height ?? null;
+                    $weight = $dimensions->weight ?? null;
+                    $width = $dimensions->width ?? null;
+                    $unit = $dimensions->unit ?? null;
+                    $length = $dimensions->length ?? null;
+                    $length_unit = $dimensions->length_unit ?? null;
+                    $gross_weight = $dimensions->gross_weight ?? null;
+                } else {
+                    $dimensions = null ;
+                    $height = null ;
+                    $weight = null ;
+                    $width = null ;
+                    $unit = null ;
+                    $length = null ;
+                    $length_unit = null ;
+                    $gross_weight = null ;
+                }
+                if ( $product->carton_details != null) {
+                    $carton_details = json_decode($product->carton_details);
+                    $standard_carton = $carton_details->standard_carton ?? null;
+                    $carton_weight = $carton_details->carton_weight ?? null;
+                    $carton_unit = $carton_details->carton_unit ?? null;
+                    $carton_length = $carton_details->carton_length ?? null;
+                    $carton_width = $carton_details->carton_width ?? null;
+                    $carton_height = $carton_details->carton_height ?? null;                        
+                    $Carton_Dimensions_unit = $carton_details->Carton_Dimensions_unit ?? null;
+                } else {
+                    $carton_details = null ;
+                    $standard_carton = null ;
+                    $carton_weight = null ;
+                    $carton_unit = null ;
+                    $carton_length = null;
+                    $carton_width =  null;
+                    $carton_height = null;
+                    $Carton_Dimensions_unit = null;
+                }
+                if($product->is_publish == 0){
+                    $usi->update([
+                        'is_published' => 0
+                    ]);
                 }
                 
+                foreach ($product->medias as $key => $value) {
+                    if ($key > 5) {
+                        array_push($additional_images_tmp,$value->file_name);
+                    }
+                }
+    
+                $additional_images = implode("^^",$additional_images_tmp);
+
+                // $common_attribute = ['Colour','Size','Material'];
+                $color_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',1)->groupBy('attribute_value_id')->pluck('attribute_value_id');
+
+                $size_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',2)->groupBy('attribute_value_id')->pluck('attribute_value_id');
+
+                $material_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',3)->groupBy('attribute_value_id')->pluck('attribute_value_id');
                 
+                $extraInfoData = ProductExtraInfo::where('product_id',$product->id)->first();
+    
+                $color_Val = [];
+                if ($color_array != null) {
+                    foreach ($color_array as $key => $value) {
+                        $color_Val[$key] = getAttruibuteValueById($value)->attribute_value;
+                    }
+                }else{
+                    $color_Val = '';
+                }
+    
+                $size_Val = [];
+                if ($size_array != null) {
+                    foreach ($size_array as $key => $value) {
+
+                        $size_Val[$key] = getAttruibuteValueById($value)->attribute_value;
+                        
+                    }
+                }else{
+                    $size_Val = '';
+                }
+    
+                $material_Val = [];
+                if ($material_array != null) {
+                    foreach ($material_array as $key => $value) {
+                        $material_Val[$key] = getAttruibuteValueById($value)->attribute_value;
+                    }
+                }else{
+                    $material_Val = '';
+                }   
+
+
+                $PRODUCT_ATTRIBUTE_ARRAY = [];
+                if ($custom_attribute != null) {
+                    foreach ($custom_attribute as $attributes) {
+                        $id = getAttributeIdByName($attributes,auth()->id());
+                        
+                        $attribute_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$id)->groupBy('attribute_value_id')->pluck('attribute_value_id');
+        
+                        $ashu = [];
+                        if ($attribute_array != null) {
+                            foreach ($attribute_array as $key => $value) {
+                                $ashu[$key] = getAttruibuteValueById($value)->attribute_value;
+                            }
+                        }else{
+                            $ashu = '';
+                        }
+                        
+                        $PRODUCT_ATTRIBUTE_ARRAY[$attributes] = implode("^^",$ashu);
+                    }
+                }
+
+
+                $allowed_array = ['Yes','YES','yes',1,true,'Hn'];
                 
-                // magicstring(array_keys($products_array[1]));
+                $products_array[] = array(
+                    'Id' => $product->id,
+                    "Model Code"=> $product->model_code,
+                    "Global Category"=> $product->category->name ?? "",
+                    "Global Sub-category"=>$product->subcategory->name ?? "",
+                    'Cust_tag_group' =>$extraInfoData->Cust_tag_group ?? '',
+                    "Image_main"=> isset($product->medias[0]) ? ($product->medias[0]->file_name ?? "") : null,
+                    "image_name_front"=>isset($product->medias[1]) ? ($product->medias[1]->file_name ?? ""): null,
+                    "image_name_back"=>isset($product->medias[2]) ? ($product->medias[2]->file_name ?? ""): null,
+                    "image_name_side1"=>isset($product->medias[3]) ? ($product->medias[3]->file_name ?? ""): null,
+                    "image_name_side2"=>isset($product->medias[4]) ? ($product->medias[4]->file_name ?? ""): null,
+                    "image_name_poster"=>isset($product->medias[5]) ? ($product->medias[5]->file_name ?? ""): null,
+                    "Additional Image Use ^^" => $additional_images,
+                    "Product Name"=> $product->title ?? "",
+                    "Video URL"=>$product->video_url ?? '',
+                    'Description' =>$product->description ?? '',
+                    'search_keywords' => $product->search_keywords ?? '',
+                    'brand_name' => $extraInfoData->brand_name ?? '',
+                    'Base_currency' => $product->base_currency ?? 'INR',
+                    'Selling Price_Unit' => $product->selling_price_unit ?? '',
+                    "Customer_Price_without_GST"=> $usi->price ?? "",
+                    "Shop_Price_VIP_Customer"=> $vip_group_product->price ?? "",
+                    "Shop_Price_Reseller"=> $reseller_group_product->price ?? "",
+                    "mrp Incl tax"=>$product->mrp,
+                    "HSN Tax"=>$product->hsn,
+                    "HSN_Percnt"=>$product->hsn_percent,
+                    // 'allow_resellers' => (in_array(($extraInfoData->allow_resellers ?? 'No'),$allowed_array) ? 'Yes' : 'No') ?? 'No',
+                    // 'Publish (it will be 0 for unpublish or 1 for publish)' => (in_array($product->is_publish,$allowed_array) ? "Yes" : "No") ?? "No" ,
+                    'Exclusive' => (in_array($product->exclusive,$allowed_array) ? 'Yes' : 'No') ?? 'No',
+                    'exclusive_buyer_name' => $extraInfoData->exclusive_buyer_name ?? '',
+                    'collection_name' => $extraInfoData->collection_name ?? '',
+                    'season_month' => $extraInfoData->season_month ?? '',
+                    'season_year' => $extraInfoData->season_year ?? '',
+                    // 'sample_available' => (in_array(($extraInfoData->sample_available ?? 'No'),$allowed_array) ? "Yes" : 'No') ?? 'No',
+                    'sample_year' => $extraInfoData->sample_year ?? '',
+                    'sample_month' => $extraInfoData->sample_month ?? '',
+                    'sampling_time' => $extraInfoData->sampling_time ?? '',
+                    'CBM' => $extraInfoData->CBM ?? '',
+                    'production_time' => $extraInfoData->production_time ?? '',
+                    'MBQ' => $extraInfoData->MBQ ?? '',
+                    'MBQ_unit' => $extraInfoData->MBQ_unit ?? '',
+                    'remarks' => $extraInfoData->remarks ?? '',
+                    'vendor_sourced_from' => $extraInfoData->vendor_sourced_from ?? '',
+                    'vendor_price' => $extraInfoData->vendor_price ?? '',
+                    'product_cost_unit' => $extraInfoData->product_cost_unit ?? '',
+                    'vendor_currency' => $extraInfoData->vendor_currency ?? '',
+                    'sourcing_year' => $extraInfoData->sourcing_year ?? '',
+                    'sourcing_month' => $extraInfoData->sourcing_month ?? '',
+                    'Gross weight' => $gross_weight,
+                    'Net weight' =>$weight,
+                    'weight_unit' =>$unit,
+                    'Product length' =>$length,
+                    'Product width' =>$width,
+                    'Product height' =>$height,
+                    'Dimensions_unit' =>$length_unit,
+                    'Carton length' => $carton_length,
+                    'Carton width' => $carton_width,
+                    'Carton height' => $carton_height,
+                    'Carton_Dimensions_unit' => $Carton_Dimensions_unit,
+                    'standard_carton_pcs' =>$standard_carton,
+                    'carton_weight_actual' =>$carton_weight,
+                    'unit' =>$carton_unit,
+                    'artwork_url' => $product->artwork_url,
+                    'Color' => implode("^^",$color_Val) ?? '',
+                    'Size' => implode("^^",$size_Val) ?? '',
+                    "Material" => implode("^^",$material_Val) ?? '',
+                );
+    
                 
-                $this->productBulkExport($products_array);
-                // return back()->with('success',' Export Excel File Successfully');
+                foreach ($PRODUCT_ATTRIBUTE_ARRAY as $index => $value) {
+                    array_push($products_array[$pkey+1],$value);                
+                }                    
+            }
+            
+            
+            
+            // magicstring(array_keys($products_array[1]));
+            
+            $this->productBulkExport($products_array);
+            // return back()->with('success',' Export Excel File Successfully');
             }
         } catch (\Throwable $th) {
             throw $th;
