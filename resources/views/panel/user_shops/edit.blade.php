@@ -909,13 +909,13 @@
                                                         <input type="tel" maxlength="4" minlength="4" placeholder="Enter Exclusive Passcode" class="form-control" name="exclsive_pass" id="exclsive_pass" value="{{ $user->exclusive_pass }}" required>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6 col-12 mt-3 d-none">
+                                                {{-- <div class="col-md-6 col-12 mt-3 d-none">
                                                     <div class="form-group">
                                                         <label for="offers_passcode" class="control-label">{{ __('Default offers passcode')}}<span class="text-danger">*</span></label>
-                                                        <input type="tel" maxlength="4" minlength="4" placeholder="Enter Offers Passcode" class="form-control" name="offers_passcode" id="offers_passcode" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->offers_passcode ?? '' }}@endif" required>
+                                                        <input type="tel" maxlength="4" minlength="4" placeholder="Enter Offers Passcode" class="form-control" name="offers_passcode" id="offers_passcode" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->offers_passcode ?? '' }}@endif">
                                                     </div>  
                                                 </div>
-                                                {{-- <div class="col-md-6 col-12 mt-3">
+                                                <div class="col-md-6 col-12 mt-3">
                                                     <div class="form-group">
                                                         <label for="reseller_pass" class="control-label">{{ __('Reseller Passcode')}}<span class="text-danger">*</span></label>
                                                         <input type="text" placeholder="Enter Reseller Passcode" class="form-control" name="reseller_pass" id="reseller_pass" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->reseller_pass ?? '' }}@endif" required>
@@ -927,7 +927,7 @@
                                                         <input type="text" placeholder="Enter VIP Passcode" class="form-control" name="vip_pass" id="vip_pass" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->vip_pass ?? '' }}@endif"  required>
                                                     </div>  
                                                 </div> --}}
-                                            </div>
+                                            </div>  
                                             <button type="submit" class="btn btn-success mt-3"> Update Code</button>
                                         </form>
                                     </div>

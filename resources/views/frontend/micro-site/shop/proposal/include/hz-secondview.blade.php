@@ -70,6 +70,30 @@
                 {{-- @else  --}}
                     {{-- <span>Ref ID :#{{ isset($usi) ? $usi->id : '' }}</span>
                 @endif    --}}
+
+                        @if ($selectedProp != [] && $selectedProp != null)
+                            @foreach ($selectedProp as $item)
+                                @php
+                                    $ids_attri = getParentAttruibuteValuesByIds($item,[$product->id]);
+                                    $attri_count = count($ids_attri);
+                                @endphp
+                                
+                                @if ($attri_count != 0)
+                                    <span class="d-block" contenteditable="true">
+                                            {{ getAttruibuteById($item)->name }} : 
+
+                                        @foreach ($ids_attri as $key => $value)
+                                            {{ getAttruibuteValueById($value)->attribute_value }}
+                                            @if ($attri_count != 1 && $key < $attri_count-1 )
+                                                , 
+                                            @endif
+                                        @endforeach
+                                    </span>
+                                @endif
+                            @endforeach
+                        @endif
+
+
                 <div class="d-flex justify-content-between mt-1 ">
     
                     @php

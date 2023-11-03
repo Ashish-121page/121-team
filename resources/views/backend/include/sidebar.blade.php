@@ -1,4 +1,4 @@
-<div class="app-sidebar colored d-none" >
+<div class="app-sidebar colored @if(AuthRole() != 'Admin')  d-none @endif" >
     <div class="sidebar-header">
         <a class="header-brand" href="{{route('panel.dashboard')}}">
             <div class="logo-img">

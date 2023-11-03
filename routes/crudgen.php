@@ -140,6 +140,8 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
         Route::get('delete/product/image/{id}', ['uses' => 'ProductController@deleteImage', 'as' => 'deleteImage']);
         Route::get('/upload/qr/code', ['uses' => 'ProductController@updateProductSku', 'as' => 'update.qr']);
 
+        Route::get('/delete/sku/{productid}/{attribute_value_id}', ['uses' => 'ProductController@deleteSKu', 'as' => 'delete.sku']);
+
         Route::get('edit/template/{template}', ['uses' => 'ProductController@edittemplate', 'as' => 'edit.template']);
         Route::post('update/template/{template}', ['uses' => 'ProductController@updatetemplate', 'as' => 'update.template']);
         Route::get('download/template/{template}', ['uses' => 'ProductController@downloadtemplate', 'as' => 'download.template']);
@@ -407,8 +409,8 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
     }); 
 
 Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefix' => 'panel/filemanager','as' =>'panel.filemanager.'], function () {
-        Route::get('', ['uses' => 'FileManager@index', 'as' => 'index']);
+    Route::get('', ['uses' => 'FileManager@index', 'as' => 'index']);
+    Route::get('/new', ['uses' => 'FileManager@newview', 'as' => 'new.view']);
+    
+    
 }); 
-    
-    
-

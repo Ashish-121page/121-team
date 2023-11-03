@@ -3,7 +3,7 @@
 @if (request()->has('products') || request()->has('productsgrid'))
 
     {{-- For Products --}}
-    <div class="top-menu" style=" position:sticky; overflow:hidden!important;">
+    <div class="top-menu" style=" position:sticky;">
     
         <div class="container-fluid">
         
@@ -36,7 +36,7 @@
 
     {{-- For Category --}}
     <div class="top-menu d-flex align-items-center " id="product-action">
-        <button class="btn btn-sm btn-outline-primary mx-1">Edit</button>
+        <button class="btn btn-sm btn-outline-primary mx-1" id="export-categrory">Export</button>
         <button class="btn btn-sm btn-outline-danger mx-1" id="deletecatbtn">Delete</button>
         {{-- <a href="{{ route('panel.constant_management.category.delete', $item->id)  }}" title="Delete Category" class="btn btn-sm delete-item dropdown-item">Delete</a> --}}
     </div>

@@ -474,10 +474,12 @@ class Microproposals extends Controller
         $currency_record = UserCurrency::where('user_id',$user_shop->user_id)->get();
 
         
-        return view('frontend.micro-site.proposals.move',compact('added_products','excape_items','proposal','slug','user','my_resellers','offerPasscode','aval_atrribute','currency_record'));
+        return view('frontend.micro-site.proposals.move',compact('added_products','excape_items','proposal','slug','user','my_resellers','offerPasscode','aval_atrribute','currency_record','user_key'));
 
 
     }
+
+    
 
     public function updatePrice(Request $request,Proposal $proposal)
     {
@@ -554,9 +556,8 @@ class Microproposals extends Controller
             'customer_name'     => 'required',
             'user_shop_id'     => 'required'
         ]);
-
         
-
+        
 
         if($request->customer_mob_no != null){
             $this->validate($request, [
@@ -626,7 +627,9 @@ class Microproposals extends Controller
                 $request['type'] = $request->get('offer_type') ?? 0;
                                 
                 $proposal = $proposal->update($request->all());
+                // magicstring($currency_record);    
                 // magicstring($request->all());    
+                // return;
                 
                 return back()->with('success','Preview offer and share.');
             }

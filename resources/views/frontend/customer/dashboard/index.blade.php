@@ -321,13 +321,13 @@
 
                             @if ($Team_profile)
 
-                                <li class="nav-item mt-2">
+                                {{-- <li class="nav-item mt-2">
                                     <a data-active="account" class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('active') == "account") active @endif" id="account-details" data-bs-toggle="pill" href="#account" role="tab" aria-controls="account" aria-selected="false">
                                         <div class="text-start py-1 px-3">
                                             <h6 class="mb-0"><i class="uil uil-user h5 align-middle me-2 mb-0"></i>  My Profile</h6>
                                         </div>
-                                    </a><!--end nav link-->
-                                </li><!--end nav item-->
+                                    </a>
+                                </li> --}}
 
                             @endif
 
@@ -409,7 +409,7 @@
                                 @if(getUserProgressStatistics(auth()->id()) != 100)
                                     <div class="row">
                                         <div class="col-12">
-                                            <img src="{{ asset('frontend/assets/img/dashboard_banner.svg') }}" alt="Image" class="img-fluid w-100 rounded">
+                                            {{-- <img src="{{ asset('frontend/assets/img/dashboard_banner.svg') }}" alt="Image" class="img-fluid w-100 rounded"> --}}
                                         </div>
                                     </div>
                                 @endif
@@ -544,13 +544,13 @@
                                             </div>
                                         </div>
                                     @endif
-                                    <div class="col-lg-6 col-md-6 col-12">
+                                    {{-- <div class="col-lg-6 col-md-6 col-12">
                                         <div class="card">
-                                            <div class="card-body">
+                                            <div class="card-body"> --}}
                                                 {{-- <h5 class="">
                                                     Create Offer
                                                 </h5> --}}
-                                                <div class="text-center mx-auto justify-content-center">
+                                                {{-- <div class="text-center mx-auto justify-content-center">
                                                     <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Make Offer</a>
                                                     @if(getUserProgressStatistics(auth()->id()) == 100)
                                                         <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Scan QR</a>
@@ -561,7 +561,7 @@
                                                 
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     @if(getUserProgressStatistics(auth()->id()) == 100)
                                         <div class="col-12 border border-danger mt-4">
@@ -1408,7 +1408,7 @@
 
                         <div class="tab-pane fade bg-white shadow rounded p-4 @if(request()->has('active') && request()->get('active') == "support-ticket") active show @endif" id="support-ticket" role="tabpanel" aria-labelledby="support-ticket">
                             <div class="d-flex justify-content-between mb-2">
-                                <h5 class="mt-1">Support Ticketssss</h5>
+                                <h5 class="mt-1">Support Tickets</h5>
                                 <a href="javascript:void(0);"  class="btn btn-primary raiseTicket">Raise a Ticket</a>
                             </div>
                            <div class="border-bottom"></div>

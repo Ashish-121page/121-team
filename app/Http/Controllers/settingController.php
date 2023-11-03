@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ExportTemplates;
+use App\Models\Media;
 use App\Models\UserShop;
 use App\User;
 use Illuminate\Http\Request;
@@ -42,6 +43,56 @@ class settingController extends Controller
             //throw $th;
             return back()->with('error','Error While Updating');
         }
+    }
+
+    function uploadbanner(Request $request){
+
+       try {
+            magicstring($request->all());
+            $user_id = decrypt($request->user_id);
+
+            $chk = Media::where('type_id',$user_id)->where('type','OfferBanner')->get();
+            
+            if ($chk->count() == 0) {
+                if($request->hasFile("offer_logo")){
+                    $offer_logo = $this->uploadFile($request->file("offer_logo"), "user")->getFilePath();
+                    $filename = $request->file('offer_logo')->getClientOriginalName();
+                    $extension = pathinfo($filename, PATHINFO_EXTENSION);
+
+                    if($filename != null){
+                        Media::create([
+                            'type' => 'OfferBanner',
+                            'type_id' => $user_id,
+                            'file_name' => $filename,
+                            'path' => $offer_logo,
+                            'extension' => $extension,
+                            'file_type' => "Image",
+                            'tag' => "vcard",
+                        ]);
+                    }
+                }
+                    return back()->with('success','File Uploaded');
+
+            }else{
+                if($request->hasFile("offer_logo")){
+                    $offer_logo = $this->uploadFile($request->file("offer_logo"), "user")->getFilePath();
+                    $filename = $request->file('offer_logo')->getClientOriginalName();
+                    $extension = pathinfo($filename, PATHINFO_EXTENSION);
+
+                    if($filename != null){
+                    $chk[0]->path = $offer_logo;
+                    $chk[0]->save();
+                    }
+                }
+                return back()->with('success','File Updated');
+            }
+        }catch (\Throwable $th) {
+            //throw $th;
+            return back()->with('error','Error While Updating');
+        }
+        
+        
+
     }
 
 

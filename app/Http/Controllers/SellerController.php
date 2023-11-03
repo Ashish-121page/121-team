@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File as FacadesFile;
+use Illuminate\Support\Facades\Storage;
 use League\CommonMark\Extension\Table\Table;
 use ZipArchive;
 
@@ -133,40 +134,45 @@ class SellerController extends Controller
     {        
 
 
-        // $name = "Default Template";
-
-        // echo json_encode(
-        //     [
-        //         'name' => $name
-        //     ]
-        // );
+        $folderPath = 'public/files/2'; // Replace 'your-folder-path' with the actual folder path
 
 
-        
+        echo $folderPath.newline();
 
-        // echo "Test Function <br><br><br>";
-        // $user = auth()->user();
-        magicstring(session()->all());
+        if (Storage::exists($folderPath)) {
+            $files = Storage::files($folderPath);
+            
+            foreach ($files as $file) {
+                echo "Name of The File: " . basename($file) . newline(2);
+
+                echo "Size of The File: " . number_format(Storage::size($file)/ (1024 * 1024),2)  . 'MB' . newline(2);
+                
+                echo "Last Modified Date of The File: " . date("Y-m-d H:i:s",Storage::lastModified($file)) . newline(2);
+                
+                echo "Extension of The File: " . pathinfo($file, PATHINFO_EXTENSION) . newline(2);
+
+                echo "TYpe of The File: " . Storage::mimeType($file) . newline(2);
+
+            }
+        } else {
+            echo "The specified folder does not exist.";
+        }
 
 
+        echo public_path();
 
-        // $costPrice = 500;
-        // $exchangePrice = 0;
+    // $folderPath = public_path('public/files/2'); // Replace 'your-folder-path' with the actual folder path
 
-        // echo "Old exchange Price Is $exchangePrice".newline();
-        // echo "Old Cost Price Is $costPrice".newline(3);
-
-        // $doller = 85;
-        // $homecr = 1;
-
-        // $diffrence = $homecr / $doller;
-
-        
-        // $exchangePrice = $costPrice*$diffrence  ;
-
-        // echo "New exchange Price Is $exchangePrice".newline();
-        // echo "New Cost Price Is $costPrice".newline(3);
-        
+    //     if (FacadesFile::isDirectory($folderPath)) {
+    //         $files = FacadesFile::files($folderPath);
+            
+    //         foreach ($files as $file) {
+    //             // $file is an instance of SplFileInfo
+    //             echo $file->getFilename() . "<br>";
+    //         }
+    //     } else {
+    //         echo "The specified folder does not exist.";
+    //     }
 
 
         

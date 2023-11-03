@@ -798,23 +798,6 @@
 	<a href="#" onclick="topFunction()" id="back-to-top" class="back-to-top fs-5"><i data-feather="arrow-up" class="fea icon-sm icons align-middle"></i></a>
 	<!-- Back to top -->
 
-	<!-- javascript -->
-	<!-- JAVASCRIPT -->
-	{{-- <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-	<!-- SLIDER -->
-	<script src="assets/libs/tiny-slider/min/tiny-slider.js"></script>
-	<!-- Parallax -->
-	<script src="assets/libs/jarallax/jarallax.min.js "></script>
-	<!-- Lightbox -->
-	<script src="assets/libs/tobii/js/tobii.min.js"></script>
-	<!-- Animation -->
-	<script src="assets/libs/wow.js/wow.min.js"></script>
-	<!-- Main Js -->
-	<script src="assets/libs/feather-icons/feather.min.js"></script>
-	<script src="assets/js/plugins.init.js"></script><!--Note: All init (custom) js like tiny slider, counter, countdown, lightbox, gallery, swiper slider etc.-->
-	<script src="assets/js/app.js"></script><!--Note: All important javascript like page loader, menu, sticky menu, menu-toggler, one page menu etc. --> --}}
-	@include('frontend.include.script')
-
 	
 
 	

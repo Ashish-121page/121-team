@@ -358,7 +358,17 @@
                                             <div class="col-md-4 col-4">
                                                 <div class="form-group ">
                                                     <label for="base_currency" class="control-label">Base currency </label>
-                                                    <input  class="form-control" name="base_currency" type="text" id="base_currency" value="{{$product->base_currency}}" >
+                                                    {{-- <input  class="form-control" name="base_currency" type="text" id="base_currency" value="{{$product->base_currency}}" > --}}
+                                                    @php
+                                                        $currencies = App\Models\UserCurrency::where('user_id',auth()->id())->get();
+                                                    @endphp
+                                                    <select name="base_currency" id="base_currency" class="select2">
+                                                        @forelse ($currencies as $item)
+                                                            <option value="{{ $item->currency }}">{{ $item->currency }}</option>
+                                                        @empty
+                                                            <option value="INR">INR</option>
+                                                        @endforelse
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="col-md-4 col-4">
@@ -380,13 +390,13 @@
                                             @endphp
 
                                             
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-4 col-4 d-none">
                                                 <div class="form-group ">
                                                     <label for="vip_group" class="control-label">VIP Customer Price, without GST  </label>
                                                     <input  class="form-control" name="vip_group" type="number" id="vip_group" value="{{ getPriceByGroupIdProductId($vip_group->id,$product->id,0) ?? '0' }}" >
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 col-4">
+                                            <div class="col-md-4 col-4 d-none">
                                                 <div class="form-group ">
                                                     <label for="reseller_group" class="control-label">Reseller Price, without GST </label>
                                                     <input  class="form-control" name="reseller_group" type="number" id="reseller_group"  value="{{ getPriceByGroupIdProductId($reseller_group->id,$product->id,0) ?? '0' }}" >
@@ -805,33 +815,44 @@
 
                                         <div class="row">
 
-                                            <div class="col-12">
-                                                <div class="h4">Not Used</div>
-                                            </div>
-
-                                            {{-- custom variations --}}
-                                            @foreach ($custom_attribute as $item)
-                                            @php
-                                            $tmp_var = []; 
-
-                                                if (is_object($prodextra) && property_exists($prodextra, 'Cust_tag_group')){
-                                                $myvar = App\Models\ProductExtraInfo::where('Cust_tag_group',$prodextra->Cust_tag_group)->where('attribute_id',$item->id)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
-                                                // $tmp_var = [];  
-
-                                                foreach ($myvar as $key => $value) {
-                                                    array_push($tmp_var,getAttruibuteValueById($value)->attribute_value);
-                                                }
-                                            }
-                                            @endphp
-                                                @if ($tmp_var == null && $item->name != 'Color')
-                                                    <div class="col-md-4 col-12">
-                                                        <div class="form-group ">
-                                                            <label for="{{$item->name ?? '' }}" class="control-label">{{$item->name ?? '' }}</label>
-                                                            <input  class="form-control TAGGROUP" name="custom_attri_{{ $loop->iteration }}" type="text" id="{{$item->name ?? '' }}" value="{{ implode(",",$tmp_var) }}" >
-                                                        </div>
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5>Properties</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row">                
+                                                        @foreach ($user_custom_col_list as $key => $item)
+                                                            {{-- ` Getting Product Property Values --}}
+                                                            @php
+                                                                $system = App\Models\ProductAttribute::where('name',$item)->where('user_id',null)->first();
+                                                                $own = App\Models\ProductAttribute::where('name',$item)->where('user_id',auth()->id())->first();
+                                                                if ($system != null) {
+                                                                    $records = $system;
+                                                                }else{
+                                                                    $records = $own;
+                                                                }
+                                                                $records = App\Models\ProductAttributeValue::where('parent_id',$records->id)->get();
+                                                            @endphp
+                                                            
+                                                            <div class="col-md-6 col-12">
+                                                                <div class="form-group">
+                                                                    <label for="properties_{{$key}}">{{ $item }}</label>
+                                                                    {{-- <select name="{{$item}}[]" id="properties_{{$key}}" class="select2" multiple> --}}
+                                                                    <select name="properties[]" id="properties_{{$key}}" class="select2" multiple>
+                                                                        <option value="">Select One</option>
+                                                                        @foreach ($records as $record)
+                                                                            <option value="{{ $record->id }}" @if (in_array($record->id,$attribute_value_id))
+                                                                                selected
+                                                                            @endif >{{ $record->attribute_value }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                            
+                                                        @endforeach
                                                     </div>
-                                                @endif
-                                            @endforeach
+                                                </div>
+                                            </div>
                                         </div>
                                         
                                     </div>
@@ -841,7 +862,7 @@
 
                             <div class="stepper d-none" data-index="5">
                                 <div class="card ">
-                                    <div class="col-12">
+                                    <div class="col-12 d-none">
                                                 <div class="row mb-3">
                                                     <div class="col-12">
                                                         <hr class="text-primary">
@@ -1304,12 +1325,15 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                        
-{{--                                     
-                                </div>
+                                {{-- </div>
 
                             </div> --}}
                             
+
+
+
+
+
                            
                             <div class="alert alert-info d-none">
                                 <p class="mb-0">Changing any field will result in unpublishing SKUs from all linked sellers.</p>
@@ -1411,6 +1435,52 @@
 
 
         </div>
+
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-10 col-12">
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Varients</th>
+                            <th scope="col">Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+
+                            @foreach ($productVarients as $item)
+                            @php
+                                $ashudata = App\Models\ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',$item)->groupBy('attribute_value_id')->get();
+                            @endphp
+
+                            @foreach ($ashudata as $item1)
+                                <tr>
+                                    <td>
+                                        {{ $loop->iteration }}
+                                    </td>
+                                    <td>{{ getAttruibuteValueById($item1->attribute_value_id)->attribute_value }} ( {{ getAttruibuteById($item)->name }} ) </td>
+                                    <td>
+                                        <a href="{{ route('panel.products.delete.sku',[encrypt($item1->product_id),encrypt($item1->attribute_value_id)]) }}" class="btn btn-outline-danger">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+
+                            
+                            
+                            
+                            @endforeach
+                            
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
     </div>
      @include('panel.products.include.varient',['product_id'=>$product->id])
     <!-- push external js -->
@@ -1425,8 +1495,6 @@
 
 
             $('.TAGGROUP').tagsinput('items');
-
-
             $(document).ready(function () {
                 $(".changegroup").change(function (e) { 
                     e.preventDefault();
@@ -1434,11 +1502,7 @@
                     let url = "http://{{ ENV('APP_URL') }}/panel/products/edit/"+key;
                     window.location.href = url;
                 });
-            });
-            
-            
-
-                        
+            });      
 
             var options = {
                   filebrowserImageBrowseUrl: "{{ url('/laravel-filemanager?type=Images') }}",
@@ -1495,18 +1559,11 @@
                 jackColor: '#fff'
             });
 
-
-            
             var hiddenbxbtn = document.querySelector('#weightbox');
             var switchery = new Switchery(hiddenbxbtn, {
                 color: '#6666CC',
                 jackColor: '#fff'
             });
-
-
-            
-
-
 
             var productdimensionsbx = document.querySelector('#productdimensionsbx');
             var switchery = new Switchery(productdimensionsbx, {
@@ -1645,27 +1702,20 @@
                 let newwindow = $(`[data-index="${stepindex+1}"]`);
                 activeIndex = stepindex+1;
 
-
-                
                 $(this).addClass('active');
                 $(".stepper").addClass('d-none');
                 $('.stepper-actions').find('.previous_btn').addClass('d-none');
                 
-            
-
                 if (activeIndex != 1) {
                     $('.stepper-actions').find('.previous_btn').removeClass('d-none');
                 }
-                
                 
                 if(activeIndex == steps){
                     $(".next_btn").addClass('d-none');
                 }
                 
                 $(".next_btn").removeClass('d-none');
-                newwindow.removeClass('d-none')
-
-            
+                newwindow.removeClass('d-none')            
             });
 
             $('.stepper-actions').on('click', '.previous_btn', function (e) {
