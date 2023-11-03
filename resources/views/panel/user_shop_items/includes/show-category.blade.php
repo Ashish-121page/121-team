@@ -121,7 +121,17 @@
     </form>
 
     
-    
+
+
+    <form id="export_category_product" action="{{ route('panel.bulk.product.bulk-export',auth()->id()) }}">
+
+        <div class="form-control">
+            <input type="hidden" name="choose_cat_ids" id="choose_cat_ids" value="">
+        </div>
+
+    </form>
+
+
 </div>
-<a class="btn btn-outline-primary d-none" id="demo01" href="#animatedModal" role="button">Internal Details</a>
+<a class="btn btn-outline-primary d-none" id="demo01" href="#animatedModal" role="button"></a>
 @include('panel.user_shop_items.modal.edit-category')

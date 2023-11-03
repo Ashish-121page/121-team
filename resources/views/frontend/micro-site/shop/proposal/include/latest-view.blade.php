@@ -64,6 +64,30 @@
                 {{-- @else  --}}
                     {{-- <span>Ref ID :#{{ isset($usi) ? $usi->id : '' }}</span>
                 @endif    --}}
+
+                        @if ($selectedProp != [] && $selectedProp != null)
+                            @foreach ($selectedProp as $item)
+                                @php
+                                    $ids_attri = getParentAttruibuteValuesByIds($item,[$product->id]);
+                                    $attri_count = count($ids_attri);
+                                @endphp
+                                
+                                @if ($attri_count != 0)
+                                    <span class="d-block" contenteditable="true">
+                                            {{ getAttruibuteById($item)->name }} : 
+
+                                        @foreach ($ids_attri as $key => $value)
+                                            {{ getAttruibuteValueById($value)->attribute_value }}
+                                            @if ($attri_count != 1 && $key < $attri_count-1 )
+                                                , 
+                                            @endif
+                                        @endforeach
+                                    </span>
+                                @endif
+                            @endforeach
+                        @endif
+
+
                 <div class="d-flex justify-content-start mt-1 ">
                     @php
                         $price = getProductProposalPriceByProposalId($proposal->id,$product->id) ?? $product->price;
@@ -106,7 +130,7 @@
 
                     </div>
                     @if($cust_details['customer_name'] != '' || $proposal->proposal_note != null)
-                        <div class="row justify-content-between d-none pdf-margin">
+                        <div class="row justify-content-between pdf-margin">
                             <div class="col-12 col-md-12 col-lg-6">
                                 <div style="position: relative;width: fit-content">
                                     <input type="file" id="offericon" class="visually-hidden">
@@ -116,12 +140,12 @@
                                     <img src="{{ asset($proposal->client_logo) }}" alt="Client Logo" id="offerLogo" style="height: 150px;width: 250px;object-fit: contain;">
                                 </div>
 
-                                <div class="ms-3">
+                                {{-- <div class="ms-3">
                                     <h4 contenteditable="true">{{ $cust_details['customer_name'] }}</h4>
                                     @if ($proposal_options->Show_notes == 1)
                                         <p contenteditable="true" style="border: 1px solid grey; border-radius: 5px">{{ nl2br($proposal->proposal_note )?? '' }}</p>
                                     @endif
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="col-12 col-md-6 col-lg-6 d-flex justify-content-lg-end">
                                     <div style="position: relative;width: fit-content   ">

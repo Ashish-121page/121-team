@@ -96,6 +96,8 @@ class ProposalController extends Controller
 
     public function shopProposalIndex(Request $request, $proposal_slug)
     {
+
+        
         $slug = $request->subdomain;
         $user_shop = UserShop::whereSlug($slug)->first();
         $proposal = Proposal::where('slug',$proposal_slug)->first();
@@ -155,7 +157,8 @@ class ProposalController extends Controller
         $product_desc = Product::whereIn('id',$product_ids)->get()->pluck('description')->toArray();
 
         $pptTesmplate = '';
-        $usertemplates_ppt = ExportTemplates::where('user_id',$user_shop->user_id)->where('type','ppt')->where('default',1)->get();
+
+        $usertemplates_ppt = ExportTemplates::where('user_id',$proposal->user_id)->where('type','ppt')->where('default',1)->get();
         $systemtemplates_ppt = ExportTemplates::where('user_id',null)->where('type','ppt')->get();
 
         if (count($usertemplates_ppt) == 0) {
@@ -166,7 +169,20 @@ class ProposalController extends Controller
 
         $cust_details = json_decode($proposal->customer_details,true);
 
-        return view('frontend.micro-site.shop.proposal.index',compact('slug','products','user_shop','cust_details','proposal','proposal_slug','product_ids','product_title','product_model','product_color','product_size','product_desc','newimag','pptTesmplate'));
+        // $selectedoption = $request->input('chooseprop');
+
+        if ($request->has('optionsforoffer') && $request->get('optionsforoffer') != null) {
+            $selectedProp = [];
+            $selectedProp = $request->get('optionsforoffer');
+        }else{
+            $selectedProp = [];
+        }
+
+        // magicstring($pptTesmplate);
+        
+        // return;
+
+        return view('frontend.micro-site.shop.proposal.index',compact('slug','products','user_shop','cust_details','proposal','proposal_slug','product_ids','product_title','product_model','product_color','product_size','product_desc','newimag','pptTesmplate','selectedProp'));
     }
 
     
@@ -500,7 +516,7 @@ class ProposalController extends Controller
             // if($request->get('type')){
             //     $article->where('category_id','=',$request->type);
             // }
-            $article->groupBy('proposal_id');
+            $article->groupBy('proposal_id')->sortBy('id','ASC');
 
             $article= $article->paginate($length);
             if ($request->ajax()) {

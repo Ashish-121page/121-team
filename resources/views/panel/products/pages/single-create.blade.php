@@ -1,4 +1,4 @@
-<div class="row show_single_prouduct">
+<div class="row show_single_prouduct d-none">
     <div class="col-md-12 mx-auto">
             @include('backend.include.message')
         <form action="{{ route('panel.products.store') }}" method="post" enctype="multipart/form-data" id="ProductForm" class="product_form">
@@ -61,8 +61,8 @@
                         <div class="row">
                             <div class="col-md-6 col-12"> 
                                 <div class="form-group {{ $errors->has('group_id') ? 'has-error' : ''}}">
-                                    <label for="group_id" class="control-label">Group Id<span class="text-danger">*</span> </label>
-                                    <input required class="form-control" name="group_id" type="text" id="group_id" value="{{old('group_id')}}" placeholder="Enter Group Name"  list="available_group" autocomplete="off">
+                                    <label for="group_id" class="control-label">Group Id </label>
+                                    <input class="form-control" name="group_id" type="text" id="group_id" value="{{old('group_id')}}" placeholder="Enter Group Name"  list="available_group" autocomplete="off">
                                     
                                     @if ($available_groups != null)
                                         <datalist id="available_group">
@@ -289,7 +289,17 @@
                         <div class="row">
                             <div class="col-md-4 col-6 mt-2"> 
                                 <label class="">{{ __('Base Currency')}}</label>
-                                    <input class="form-control" name="base_currency" type="text" id="base_currency" value="{{ old('base_currency') }}" >
+                                {{-- <input class="form-control" name="base_currency" type="text" id="base_currency" value="{{ old('base_currency') }}" > --}}
+                                @php
+                                    $currencies = App\Models\UserCurrency::where('user_id',auth()->id())->get();
+                                @endphp
+                                <select name="base_currency" id="base_currency" class="select2">
+                                    @forelse ($currencies as $item)
+                                        <option value="{{ $item->currency }}">{{ $item->currency }}</option>
+                                    @empty
+                                        <option value="INR">INR</option>
+                                    @endforelse
+                                </select>
                             </div>
 
                             <div class="col-md-4 col-6 mt-2"> 
@@ -304,14 +314,14 @@
                                 </div>
                             </div>
                             
-                            <div class="col-md-4 col-6 mt-2"> 
+                            <div class="col-md-4 col-6 mt-2 d-none"> 
                                 <div class="form-group {{ $errors->has('vip_price') ? 'has-error' : ''}}">
                                     <label for="vip_price" class="control-label">VIP Customer Price, without GST</label>
                                     <input class="form-control" name="vip_price" type="number" id="vip_price" value="{{ old('vip_price') }}" >
                                 </div>
                             </div>
                             
-                            <div class="col-md-4 col-6 mt-2"> 
+                            <div class="col-md-4 col-6 mt-2 d-none"> 
                                 <div class="form-group {{ $errors->has('reseller_price') ? 'has-error' : ''}}">
                                     <label for="reseller_price" class="control-label"> Reseller Price, without GST </label>
                                     <input class="form-control" name="reseller_price" type="number" id="reseller_price" value="{{ old('reseller_price') }}" >
@@ -637,7 +647,7 @@
             
             <div class="stepper d-none" data-index="5">
                 <div class="card ">
-                    <div class="col-12">
+                    <div class="col-12 d-none">
                         <div class="row mb-3">
                             <div class="col-12">
                                 <hr class="text-primary">

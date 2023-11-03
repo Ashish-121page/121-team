@@ -849,7 +849,7 @@ class ProductController extends Controller
         // $request['properties_varient'] = ['Material','Colour','Size'];
         
         // magicstring($request->all());
-        
+
         try {
             $allowed_array = ['yes',"Yes","YES",'1'];
             $count = 0;
@@ -860,6 +860,8 @@ class ProductController extends Controller
             $loop1 = [];
             $loop2 = [];
             $loop3 = [];
+            $product_id = '';
+
 
             
             if ($request->properties_varient != null && $request->properties_varient != []) {
@@ -916,8 +918,6 @@ class ProductController extends Controller
 
             $custom_attriute_columns = json_decode($user->custom_attriute_columns);
 
-            magicstring($request->all());
-            // return;
             if($loop1 != [] && $loop2 != [] && $loop3 != []) {
                 $Productids_array = [];
                 foreach ($loop1 as $key1 => $first) {
@@ -978,6 +978,7 @@ class ProductController extends Controller
 
                             $product_obj = Product::create($product_obj);
 
+                            $product_id = $product_obj->id;
                             $parentAttribute = ProductAttributeValue::whereId($third)->first();
                             
                             $product_extra_info_obj_user = [
@@ -1229,6 +1230,7 @@ class ProductController extends Controller
                         ];
 
                         $product_obj = Product::create($product_obj);
+                        $product_id = $product_obj->id;
 
                         $parentAttribute = ProductAttributeValue::whereId($third)->first();
                         
@@ -1441,6 +1443,8 @@ class ProductController extends Controller
 
                     $product_obj = Product::create($product_obj);
 
+                    $product_id = $product_obj->id;
+
                     $parentAttribute = ProductAttributeValue::whereId($third)->first();
                     
                     $product_extra_info_obj_user = [
@@ -1618,7 +1622,7 @@ class ProductController extends Controller
         
                         $product_obj = Product::create($product_obj);
         
-                        
+                        $product_id = $product_obj->id;
 
                         $product_extra_info_obj_user = [
                             'product_id' => $product_obj->id,
@@ -1699,43 +1703,55 @@ class ProductController extends Controller
                 
 
 
-                $usi = UserShopItem::create([
-                    'user_id'=> $user->id,
-                    'category_id'=> $request->category_id,
-                    'sub_category_id'=> $request->category_id,
-                    'product_id'=> $product_obj->id,
-                    'user_shop_id'=> $user_shop->id,
-                    'parent_shop_id'=> 0,
-                    'is_published'=> 1,
-                    'price'=> $price,
-                    'images' => count($arr_images) > 0 ? implode(',',$arr_images) : null,
-                ]);
-        
-                if($reseller_group){
-                    // create Reseller Group record
-                    $g_p =  GroupProduct::create([
-                        'group_id'=>$reseller_group->id,
-                        'product_id'=>$product_obj->id,
-                        'price'=> $request->reseller_price ?? 0,
+                    $usi = UserShopItem::create([
+                        'user_id'=> $user->id,
+                        'category_id'=> $request->category_id,
+                        'sub_category_id'=> $request->category_id,
+                        'product_id'=> $product_obj->id,
+                        'user_shop_id'=> $user_shop->id,
+                        'parent_shop_id'=> 0,
+                        'is_published'=> 1,
+                        'price'=> $price,
+                        'images' => count($arr_images) > 0 ? implode(',',$arr_images) : null,
                     ]);
-                }
             
-                if($vip_group){
-                    // create Vip Group record
-                    GroupProduct::create([
-                        'group_id'=>$vip_group->id,
-                        'product_id'=>$product_obj->id,
-                        'price'=> $request->vip_price ?? 0,
-                    ]);
+                    if($reseller_group){
+                        // create Reseller Group record
+                        $g_p =  GroupProduct::create([
+                            'group_id'=>$reseller_group->id,
+                            'product_id'=>$product_obj->id,
+                            'price'=> $request->reseller_price ?? 0,
+                        ]);
+                    }
+                
+                    if($vip_group){
+                        // create Vip Group record
+                        GroupProduct::create([
+                            'group_id'=>$vip_group->id,
+                            'product_id'=>$product_obj->id,
+                            'price'=> $request->vip_price ?? 0,
+                        ]);
+                    }
+
+
+                    }
                 }
+
                 
             }
 
 
-
+    
+            // echo $product_id;
+            // return;
 
             $msg =  "Product Crated with Varient $count";
-            return back()->with('success',$msg);
+            // return back()->with('success',$msg);
+
+
+
+
+            return redirect(route('panel.check.display'))->with('success',$msg);
             magicstring($request->all());
              
 
@@ -1910,9 +1926,17 @@ class ProductController extends Controller
 
             $groupIds_all = ProductExtraInfo::where('group_id',$product->sku)->groupBy('Cust_tag_group')->orderBy('id','ASC')->pluck('Cust_tag_group','product_id');
 
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all'));
+            $user = User::whereId($product->user_id)->first();
+            $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
 
-        }catch(Exception $e){            
+
+            $productVarients = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_id')->pluck('attribute_id');
+
+            $attribute_value_id = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
+
+            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id'));
+
+        }catch(\Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -2005,6 +2029,7 @@ class ProductController extends Controller
 
     public function update(Request $request,Product $product)
     {
+
         $this->validate($request, [
             'brand_id'     => 'required',
             'user_id'     => 'required',
@@ -2033,9 +2058,6 @@ class ProductController extends Controller
             }
 
             
-
-
-
             $usi = UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->first();
             $chk_inventroy = Inventory::where('product_id',$product->id)->where('user_id',auth()->id())->get();
 
@@ -2144,73 +2166,33 @@ class ProductController extends Controller
                     'brand_name' => $request->get('brand_name') ?? '',
                 ]);
 
+                
+                
+                // @ This Part Will Create New Product Extra Info Records
+                $to_clone = ProductExtraInfo::where('group_id',$product->sku)->where('user_id',$request->user_id)->orderBy('created_at', 'desc')->first();
+                $groupId = $product->sku;
+                
+                foreach ($request->properties as $key => $value) {
+                    // checking Product Attribute Exist Or Not in Records
+                    $chkwds = ProductExtraInfo::where('group_id',$product->sku)->where('attribute_value_id',$value)->where('user_id',$request->user_id)->get();
+                    if ($chkwds->count() == 0) {
+                        echo "Property Does Not Exist".newline();
+                        // Getting Records of Attribute
+                        $attribute_record = getAttruibuteValueById($value);
+                        // $clonedProduct = $product->replicate();
+                        // $clonedProduct->created_at = Carbon::now();
+                        // $clonedProduct->save();
 
-                $custom_attribute = ProductAttribute::where('user_id',null)->orwhere('user_id',$product->user_id)->get();
-
-                // foreach ($custom_attribute as $key => $value) {
-                //     $count = $key+1;
-                //     echo "You are Working on $value->name Attribute".newline();
-
-                //     $result = $request->get("custom_attri_$count");
-
-                //     if ($request->get("custom_attri_$count") != null) {
-                        
-                //         echo "The value of custom_attri_$count".newline();
-                //         magicstring($result);
-                        
-                //         $received_values = explode(",",$result);
-
-                //         magicstring($received_values);
-
-                //         foreach ($received_values as $receiveKey => $receive_value) {                            
-                //             $productattriid = ProductAttributeValue::where('parent_id',$value->id)->where('attribute_value',$receive_value)->first();
-
-                //             $chk = ProductExtraInfo::where('attribute_id',$value->id)->where('attribute_value_id',$productattriid->id)->where('group_id',$product->sku)->first();
-
-                //             if ($chk == null) {
-                //                 echo "$receive_value is not Exist in Record".newline();
-
-                //                 $newitem = [
-                //                     'allow_resellers' =>(in_array($request->allow_resellers,$allow_array) ? 'yes' : 'no') ?? 'no',
-                //                     'exclusive_buyer_name' => $request->get('exclusive_buyer_name') ?? '',
-                //                     'collection_name' => $request->get('collection_name') ?? '',
-                //                     'season_month' => $request->get('season_month') ?? '',
-                //                     'season_year' => $request->get('season_year') ?? '',
-                //                     'sample_available' => $request->get('sample_available') ?? '',
-                //                     'sample_year' => $request->get('sample_year') ?? '',
-                //                     'sample_month' => $request->get('sample_month') ?? '',
-                //                     'sampling_time' => $request->get('sampling_time') ?? '',
-                //                     'CBM'=> $request->get('CBM') ?? '',
-                //                     'production_time'=> $request->get('production_time') ?? '',
-                //                     'MBQ' => $request->get('MBQ') ?? '',
-                //                     'MBQ_unit' => $request->get('MBQ_unit') ?? '',
-                //                     'remarks' => $request->get('remarks') ?? '',
-                //                     'vendor_sourced_from' => $request->get('vendor_sourced_from') ?? '',
-                //                     'vendor_price' => $request->get('vendor_price') ?? '',
-                //                     'product_cost_unit' => $request->get('product_cost_unit') ?? '',
-                //                     'vendor_currency' => $request->get('vendor_currency') ?? '',
-                //                     'sourcing_year' => $request->get('sourcing_year') ?? '',
-                //                     'sourcing_month' => $request->get('sourcing_month') ?? '',
-                //                     'production_type' => $request->get('production_type') ?? '',
-                //                     'group_id' => $request->get('group_id') ?? '',
-                //                     'Cust_tag_group'=> $request->get('Cust_tag_group') ?? '',
-                //                     'brand_name' => $request->get('brand_name') ?? '',
-                //                     'attribute_id' => $value->id,
-                //                     'attribute_value_id' => $productattriid->id
-                //                 ];
-
-                //                 magicstring($newitem);
-
-
-                //             }
-                //         }
-
-
-                //     }
-                // }
-
-
-
+                        $newproduct = $to_clone->replicate();
+                        $newproduct->product_id = $product->id;
+                        $newproduct->created_at = Carbon::now();
+                        $newproduct->attribute_value_id = $attribute_record->id;
+                        $newproduct->attribute_id = $attribute_record->parent_id;
+                        $newproduct->group_id = $groupId;
+                        $newproduct->save();
+                    }
+                }
+                
                 $vip_group = getPriceGroupByGroupName(auth()->id(),"VIP");
                 $reseller_group = getPriceGroupByGroupName(auth()->id(),"Reseller");
 
@@ -2316,19 +2298,31 @@ class ProductController extends Controller
         $image->delete();
         return back()->with('success','Image Deleted Successfully!');
     }
-}
 
-if (!function_exists('yearDropdown'))
-{
-    function yearDropdown($startYear, $endYear, $id = 'year')
-    {
-        echo "<select id='$id' name='$id'>";
 
-        for ($i = $startYear; $i <= $endYear; $i++) {
-            echo "<option value='$i'>$i</option>";
+    public function deleteSKu(Request $request,$productid,$attribute_value_id) {
+        
+        try {
+            $product = Product::whereId(decrypt($productid))->first();
+            $productextra = ProductExtraInfo::where('product_id',decrypt($productid))->where('attribute_value_id',decrypt($attribute_value_id))->get();
+
+            $count = 0;
+            foreach ($productextra as $key => $value) {
+                $value->delete();
+                $count++;
+            }
+
+
+
+            return back()->with("success","$count Property of the Product Deleted Successfully!!");
+            
+        } catch (\Throwable $th) {
+            throw $th;
+            // return back()->with('error',"Oops There was and Error.");
         }
-
-        echo "</select>";
     }
+    
+    
+    
 }
 

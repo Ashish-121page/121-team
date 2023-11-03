@@ -181,12 +181,13 @@
             .skeltonbtn:hover{
                 background-color: #6666cc;
             }
-            .skeltonbtn a{
-                padding: 40%;
+            .card-body1{
+                 -ms-flex:1 1 auto;
+                    flex:1 1 auto;
+                    padding:1.25rem;
+                    max-height: 490px;
+                    overflow-y: auto;
             }
-            /* .card-body{
-                overflow: hidden;
-            } */
 
 
     </style>
@@ -627,28 +628,68 @@
                 });
             });
 
-            $(document).on('click','#delproduct_dummy',function(e){
-            e.preventDefault();
-            var msg = $(this).data('msg') ?? "You won't be able to revert back!";
-            $.confirm({
-                draggable: true,
-                title: 'Are You Sure!',
-                content: msg,
-                type: 'red',
-                typeAnimated: true,
-                buttons: {
-                    tryAgain: {
-                        text: 'Confirm',
-                        btnClass: 'btn-red',
-                        action: function(){
-                            $("#delproduct").click();
+            // $(document).on('click','#delproduct_dummy',function(e){
+            //     e.preventDefault();
+            //     var msg = $(this).data('msg') ?? "You won't be able to revert back!";
+            //     $.confirm({
+            //         draggable: true,
+            //         title: 'Are You Sure!',
+            //         content: msg,
+            //         type: 'red',
+            //         typeAnimated: true,
+            //         buttons: {
+            //             tryAgain: {
+            //                 text: 'Confirm',
+            //                 btnClass: 'btn-red',
+            //                 action: function(){
+            //                     $("#delproduct").click();
+            //                 }
+            //             },
+            //             close: function () {
+            //             }
+            //         }
+            //     });
+            // });
+
+            $("#delproduct_dummy").click()    
+            $("#delproduct_dummy").click(function (e) { 
+                e.preventDefault();
+                let selected = $(".input-check:checked").length;
+                
+                var msg = `
+                <span class="text-danger">You are about to delete ${selected} products</span> <br/>
+                <span>This action cannot be undone. To confirm type <b>DELETE</b></span>
+                <input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Delete'>`;
+
+                $.confirm({
+                    draggable: true,
+                    title: `Delete ${selected} products`,
+                    content: msg,
+                    type: 'blue',
+                    typeAnimated: true,
+                    buttons: {
+                        tryAgain: {
+                            text: 'DELETE',
+                            btnClass: 'btn-danger',
+                            action: function(){
+                                let margin = $('#margin').val();
+                                if (margin == 'DELETE') {
+                                    $("#delproduct").click();
+                                } else {
+                                    $.alert('Type DELETE to Proceed');
+                                }
+
+                                
+                            }
+                        },
+                        close: function () {
+
                         }
-                    },
-                    close: function () {
                     }
-                }
                 });
             });
+
+
         </script>
 
         <script>
@@ -697,6 +738,26 @@
                     $('.input-check').click();                
                 });
 
+                $("#export-categrory").click(function (e) { 
+                    e.preventDefault();
+                    
+                    let forminput = $('#choose_cat_ids');
+                    let form = $('#export_category_product');
+                    let arr = [];
+
+                    if ($(".input-check:checked").length > 0) {
+                        $.each($(".input-check:checked"), function (indexInArray, valueOfElement) { 
+                            arr.push(valueOfElement.value);  
+                        });
+                        console.log(arr);
+                        forminput.val(arr)
+                        form.submit()
+                    }
+                    
+
+                });
+                
+                
 
                 $("#deletecatbtn").click(function (e) { 
                     e.preventDefault();

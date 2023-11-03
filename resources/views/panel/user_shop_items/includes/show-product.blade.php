@@ -1,6 +1,6 @@
 {{-- @ Old Style Product View --}}
 
-<div class="card-body">
+<div class="card-body1">
     @if (request()->get('type_id') == auth()->id())
         <form action="{{ route('panel.user_shop_items.removebulk') }}" method="post" id="removebulkform" >
     @else
@@ -75,9 +75,16 @@
         @endif
         <div class="row mt-4">
 
-            <div class="col-lg-3 col-md-4 filterable-items mb-4 border border-primary d-flex justify-content-center align-items-center skeltonbtn" style="font-size: 2vh">
-                <a href="{{ route('panel.products.create') }}?action=nonbranded">
-                    + Add Product
+            {{-- <div class="col-lg-3 col-md-4 filterable-items mb-4 border border-primary d-flex justify-content-center align-items-center skeltonbtn" style="font-size: 2vh; padding-right: 0px!important; padding-left: 0px!important;">
+                
+                <a href="{{ route('panel.products.create') }}?action=nonbranded" class="text-danger btn btn-outline-primary" style="display: block;height: 100%;width: 100%;position: absolute;left: 0;text-align: center;">
+                    <span style="height: 100%;display: flex;width: 100%;justify-content: center;align-items: center;">+ Add Product</span>
+                </a>
+            </div> --}}
+
+            <div class="col-lg-3 col-md-4 filterable-items mb-4 border border-primary d-flex justify-content-center align-items-center skeltonbtn" style="font-size: 2vh; width: 25rem;  min-height: 13.5rem; ">
+                <a href="{{ route('panel.products.create') }}?action=nonbranded" class="text-danger " style="display: block;height: 100%;width: 100%;position: absolute ;text-align: center;">
+                    <span style="height: 100%;display: flex;width: 100%;justify-content: center;align-items: center;">+ Add Product</span> 
                 </a>
             </div>
 

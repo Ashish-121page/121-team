@@ -2364,10 +2364,19 @@ class NewBulkController extends Controller
         try {
         {
             // $products = Product::whereUserId($user_id->id)->take('120')->get();
+
+
+
             if ($request->has('products')) {
                 $ids = explode(',',$request->products);
                 $products_sku = Product::whereIn('id',$ids)->whereUserId($user_id->id)->pluck('sku');
                 $products = Product::whereIn('sku',$products_sku)->get();
+            }elseif($request->has('choose_cat_ids')){
+
+                $ids = explode(',',$request->choose_cat_ids);
+                $products_sku = Product::whereIn('category_id',$ids)->whereUserId($user_id->id)->pluck('sku');
+                $products = Product::whereIn('sku',$products_sku)->get();                
+                
             }else{
                 $products = Product::whereUserId($user_id->id)->get();
             }

@@ -39,25 +39,25 @@
                         align-items: center;">
                             <p>Download PDF:</p>
                             <div class="d-flex my-3" >
-                            <a href="{{ inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}" class="btn btn-outline-primary mx-1" target="_blank">
+                            <a href="{{ inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}" class="btn btn-outline-primary mx-1">
                                 Download
                             </a>
-                            <a class="btn btn-outline-primary mx-1" id="jaya1" href="#animatedModal1" role="button">Change Style</a>                
+                            <a class="btn btn-outline-primary mx-1" id="jaya1" href="#animatedModal1" role="button">Change Style</a>
                             </div>
                         </div>
                         <div class="row mt-3 px-3" style="display: flex;
                         align-items: center;">
                             <p >Download PPT:</p>
-                            <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">       
-                            <button onclick="getPPT()" type="button" class="btn btn-outline-info" style="position: relative; right: 5rem;">Download</button>
-                            </div>
+                            <a href="{{ inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}?download=ppt" class="btn btn-outline-primary mx-1">
+                                Download
+                            </a>
                         </div>
                         <div class="row mt-3 px-3" style="display: flex;
                         align-items: center;">
                             <p style= "mt-5 !important"> Export Excel:</p>
-                            <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3 " style="margin-left: 100px">
-                            <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button">Download</button>
-                        </div> 
+                            <a href="{{ inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}?download=excel" class="btn btn-outline-primary mx-1">
+                                Download
+                            </a>
                         </div>
                     </div>
                 </div>       
@@ -84,7 +84,6 @@
 
 @include('frontend.micro-site.proposals.modal.change_style')
 
-
 @push('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
@@ -105,13 +104,10 @@
              left: '10%',
          });
 
-        $("#jaya1").click(function(){
-            $(".close-animatedModal2").click();
-        })
-
-        
-
-
+         $("#jaya1").click(function () {
+             $(".close-animatedModal2").click();
+         })
+         
     </script>
     
     

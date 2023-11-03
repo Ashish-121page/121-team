@@ -59,21 +59,32 @@
                             </a>
                         </div>
 
+                        <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.users.show','panel.user_shops.edit'] ,'active open' ) }}">
+                            <a href="{{ route('panel.user_shops.edit',[$user_shop->id ?? 0,'active'=>'shop-details']) }}" class="a-item" style="color:#ccd3e4;" >
+                                <i class="ik ik-user"></i>
+                                <span>{{ 'Profile' }}</span>
+                            </a>
+                        </div>
 
+                        {{-- <div class="nav-item dropdown ml-4 {{ activeClassIfRoutes(['panel.users.show','panel.user_shops.edit'] ,'active open' ) }} "> 
+                            <a href="{{route('panel.users.show','panel.user_shops.edit')}}"class="nav-item dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" style="color:#ccd3e4;">
+                                <i class="ik ik-user"></i>
+                                <span>{{ 'Profile' }}</span>
+                            </a>
+                           <div class="dropdown-menu" style="">
+                               <a href="{{ route('panel.user_shops.edit',[$user_shop->id ?? 0,'active'=>'my-info']) }}" class="dropdown-item a-item" >{{ __('My Info')}}</a> 
+                               <a href="{{ route('panel.seller.enquiry.index') }}" class="dropdown-item a-item" >{{ __('Contact')}}</a> 
+                               <a href="{{ route('panel.users.show', [auth()->id(),'active'=>'my-info'])}}" class="dropdown-item a-item" >{{ __('Account')}}</a>
+                           </div>
+                        </div> --}}
+                        
 
                         {{-- <div class="nav-item {{ ($segment2 == 'orders') ? 'active' : '' }}">
                                 <a href="{{ route('panel.orders.index')}}" class="a-item" ><i class="ik ik-shopping-cart"></i><span>{{ 'Orders' }}</span></a>
                             </div> --}}
-                            {{-- <div class="nav-item {{ activeClassIfRoutes(['panel.users.show','panel.user_shops.edit'] ,'active open' ) }} has-sub"> --}}
-                                {{-- <a href="#"><i class="ik ik-user"></i><span>{{ 'Profile' }}</span></a> --}}
-                                {{-- <div class="submenu-content" style=""> --}}
-                                    {{-- <a href="{{ route('panel.user_shops.edit',[$user_shop->id ?? 0,'active'=>'my-info']) }}" class="menu-item a-item">{{ __('My Info')}}</a> --}}
-                                    {{-- <a href="{{ route('panel.seller.enquiry.index') }}" class="menu-item a-item">{{ __('Contact')}}</a> --}}
-                                    {{-- <a href="{{ route('panel.users.show', [auth()->id(),'active'=>'my-info'])}}" class="menu-item a-item">{{ __('Account')}}</a> --}}
-                                {{-- </div> --}}
-                            {{-- </div> --}}
+                           
 
-                        {{-- <div class="nav-item {{ activeClassIfRoutes(['panel.users.show','panel.user_shops.edit'] ,'active open' ) }}">
+                         <div class="nav-item {{ activeClassIfRoutes(['panel.users.show','panel.user_shops.edit'] ,'active open' ) }}">
                             <a href="{{ route('panel.user_shops.edit',[$user_shop->id ?? 0,'active'=>'shop-details']) }}" class="a-item" ><i class="ik ik-user"></i><span>{{ 'Profile' }}</span></a>
                         </div>
 
@@ -107,8 +118,9 @@
                         ->get();
                 @endphp
             @endif
+
+            
             <div class="top-menu d-flex align-items-center">
-                
                 <div class="nav-item ml-4">
                     <a href="{{ route('panel.settings.index',encrypt(auth()->id())) }}" class="a-item" style="color:#ccd3e4;">
                         <i class="ik ik-settings"></i>

@@ -547,8 +547,8 @@
                                         @endif --}}
                                         <form action="{{ route('pages.proposal.update', $proposal->id) }}" method="post" enctype="multipart/form-data" id="ProposalForm" class="row">
                                             @csrf
-                                            <input type="hidden" name="user_id" value="{{ auth()->id() }}">
-                                            <input type="hidden" name="user_shop_id" value="{{ $user_shop_record->id }}">
+                                            <input type="hidden" name="user_id" value="{{ decrypt($user_key) }}">
+                                            <input type="hidden" name="user_shop_id" value="{{ getShopDataByUserId(decrypt($user_key))->id }}">
 
                                             <div class="col-md-12 ">
                                                 <div class="d-flex justify-content-between">
@@ -562,7 +562,9 @@
                                                                 <div class="form-group">
                                                                     {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
                                                                     {{-- <a href="{{ url('proposal/offeroptions') }}" class="btn btn-sm btn-outline-primary">Next</a> --}}
-                                                                    <a class="btn btn-outline-primary" id="jaya2" href="#animatedModal2" role="button">Next</a>
+                                                                    @if ($proposal->status == 1 && $proposal->type == 0)
+                                                                        <a class="btn btn-outline-primary" id="jaya2" href="#animatedModal2" role="button">Next</a>
+                                                                    @endif
                                                                 </div>
 
                                                                 {{-- commmented save and preview buttons --}}
@@ -699,10 +701,10 @@
                                                                 <div class="col-2">
                                                                     <div class="form-group {{ $errors->has('offer_currency') ? 'has-error' : '' }}">
                                                                         <label for="customer_mob_no" class="control-label">Offer Currency</label>
-                                                                        <div class="input-group">
-                                                                            <select name="offer_currency" id="offer_currency" class="form-group select2" disabled>
+                                                                        <div class="">
+                                                                            <select name="offer_currency" id="offer_currency" class="form-control" readonly>
                                                                               @foreach ($currency_record as $item)
-                                                                                <option value="{{ $item->currency }}" @if ($item->currency == ($proposal->offer_currency ?? 'INR')) selected @endif>{{ $item->currency }}</option>
+                                                                                <option value="{{ $item->currency }}" @if ($item->currency == ($proposal->offer_currency ?? session()->get('currency_name') ?? 'INR')) selected @endif>{{ $item->currency }}</option>
                                                                               @endforeach
                                                                             </select>
                                                                           </div>
@@ -910,13 +912,15 @@
                                                         <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">Back</a>
                                                     </div>
                                                     <div class="form-group">
-                                                                    <button type="submit" class="btn btn-outline-primary">Save</button>
-                                                                </div>
-                                                                <div class="d-flex">
-                                                                    <div class="form-group">
-                                                                        {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
-                                                                        <a class="btn btn-outline-primary" id="jaya2" href="#animatedModal2" role="button">Next</a>
-                                                                    </div>
+                                                        <button type="submit" class="btn btn-outline-primary">Save</button>
+                                                    </div>
+                                                    <div class="d-flex">
+                                                    <div class="form-group">
+                                                        {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
+                                                            @if ($proposal->status == 1 && $proposal->type == 0)
+                                                                <a class="btn btn-outline-primary" id="jaya2" href="#animatedModal2" role="button">Next</a>
+                                                            @endif
+                                                    </div>
 
                                                             {{-- commented save and preview buttons --}}
                                                                 
@@ -1525,7 +1529,7 @@
         $("#jaya2").animatedModal({
              animatedIn: 'lightSpeedIn',
              animatedOut: 'lightSpeedOut',
-             color: 'fffff',
+             color: 'FFFFFF',
              height: '80%',
              width: '60%',
              top: '10%',
