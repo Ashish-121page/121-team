@@ -849,8 +849,7 @@ class ProductController extends Controller
         // $request['properties_varient'] = ['Material','Colour','Size'];
         
         // magicstring($request->all());
-        // return;
-        
+
         try {
             $allowed_array = ['yes',"Yes","YES",'1'];
             $count = 0;
@@ -862,6 +861,7 @@ class ProductController extends Controller
             $loop2 = [];
             $loop3 = [];
             $product_id = '';
+
 
             
             if ($request->properties_varient != null && $request->properties_varient != []) {
@@ -1657,9 +1657,9 @@ class ProductController extends Controller
                             'brand_name' => $request->brand_name ?? '',
                         ];
                         ProductExtraInfo::create($product_extra_info_obj_user);
+                    }
+                }
 
-
-                        
 
                 if($file_lock == 0){
                     if(request()->has('img') && count($request->file('img')) > 0){
@@ -1756,8 +1756,8 @@ class ProductController extends Controller
              
 
         } catch (\Throwable $e) {
-            throw $e;
-            // return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
+            // throw $e;
+            return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
 
         
