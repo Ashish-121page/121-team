@@ -291,6 +291,13 @@
                     text-align: center;
                     cursor:pointer;
                     color:#fff;
+                    left: 60%
+                }
+
+                #animatedModal2{
+                    overflow-y: hidden!important;
+                    overflow-x: hidden!important;
+
                 }
 
         </style>
@@ -489,7 +496,7 @@
                                                                                 }
                                                                                 $price = exchangerate($price,$exhangerate,$HomeCurrency);
                                                                             @endphp
-                                                                            @if ($proposal->relate_to == $proposal->user_shop_id)
+                                                                            @if ($proposal->user_id == auth()->id())
                                                                                 {{-- <span>Offer Price: {{ format_price($price) }}</span> --}}
                                                                                 <span>Offer Price:
                                                                                     {{ $currency_symbol }}
@@ -549,7 +556,7 @@
                                             @csrf
                                             <input type="hidden" name="user_id" value="{{ decrypt($user_key) }}">
                                             <input type="hidden" name="user_shop_id" value="{{ getShopDataByUserId(decrypt($user_key))->id }}">
-
+                                        <div class="col-md-6">
                                             <div class="col-md-12 ">
                                                 <div class="d-flex justify-content-between">
                                                     <div class="">
@@ -563,7 +570,7 @@
                                                                     {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
                                                                     {{-- <a href="{{ url('proposal/offeroptions') }}" class="btn btn-sm btn-outline-primary">Next</a> --}}
                                                                     @if ($proposal->status == 1 && $proposal->type == 0)
-                                                                        <a class="btn btn-outline-primary" id="jaya2" href="#animatedModal2" role="button">Next</a>
+                                                                        <a class="btn btn-outline-primary jaya2" id="jaya2" href="#animatedModal2" role="button">Next</a>
                                                                     @endif
                                                                 </div>
 
@@ -638,42 +645,47 @@
                                                                 id="slug" value="{{ $proposal->slug }}">
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-2 col-12">
-                                                        <div class="form-group {{ $errors->has('customer_name') ? 'has-error' : '' }}">
-                                                            <label for="customer_name" class="control-label">
-                                                                @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == null  )
-                                                                    Buyer Name
-                                                                @else
-                                                                    Offer By
-                                                                @endif
-                                                                <span
-                                                                    class="text-danger">*</span> </label>
-                                                            <input required class="form-control" name="customer_name" type="text"
-                                                                id="customer_name" value="{{ $customer_name }}" list="mycustomer" autocomplete="off" required>
+                                                   
+                                                        <div class="col-md-12 col-12">
+                                                            <div class="row">
+                                                            <div class="col-5">
+                                                                <div class="form-group {{ $errors->has('customer_name') ? 'has-error' : '' }}">
+                                                                    <label for="customer_name" class="control-label">
+                                                                        @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == null  )
+                                                                            Buyer Name
+                                                                        @else
+                                                                            Offer By
+                                                                        @endif
+                                                                        <span
+                                                                            class="text-danger">*</span> </label>
+                                                                    <input required class="form-control" name="customer_name" type="text"
+                                                                        id="customer_name" value="{{ $customer_name }}" list="mycustomer" autocomplete="off" required>
 
-                                                            <datalist id="mycustomer">
-                                                                @if ($my_resellers != null)
-                                                                    @forelse ($my_resellers as $my_reseller)
-                                                                        <option value="{{ App\User::whereId($my_reseller->user_id)->first()->name ." ,".UserShopNameByUserId($my_reseller->user_id) }}">{{ App\User::whereId($my_reseller->user_id)->first()->name ." ,".UserShopNameByUserId($my_reseller->user_id) }}</option>    
-                                                                    @empty
-                                                                        
-                                                                    @endforelse
+                                                                    <datalist id="mycustomer">
+                                                                        @if ($my_resellers != null)
+                                                                            @forelse ($my_resellers as $my_reseller)
+                                                                                <option value="{{ App\User::whereId($my_reseller->user_id)->first()->name ." ,".UserShopNameByUserId($my_reseller->user_id) }}">{{ App\User::whereId($my_reseller->user_id)->first()->name ." ,".UserShopNameByUserId($my_reseller->user_id) }}</option>    
+                                                                            @empty
+                                                                                
+                                                                            @endforelse
 
-                                                                @endif
-                                                            </datalist>
+                                                                        @endif
+                                                                    </datalist>
+                                                                </div>
+                                                            </div>
+                                               
+
+                                                            {{-- original alias, phone and email --}}                                                 
+                                                            <div class="col-5"> 
+                                                                <div class="form-group {{ $errors->has('customer_alias') ? 'has-error' : '' }}">
+                                                                    <label for="customer_alias" class="control-label">Alias (optional)</label>
+                                                                    <input class="form-control" name="customer_alias" type="text" id="customer_alias" value="{{ $customer_alias }}">
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-
-                                                    {{-- original alias, phone and email --}}
-
-                                                    <div class="col-md-2 col-12"> 
-                                                        <div class="form-group {{ $errors->has('customer_alias') ? 'has-error' : '' }}">
-                                                            <label for="customer_alias" class="control-label">Alias (optional)</label>
-                                                            <input class="form-control" name="customer_alias" type="text" id="customer_alias" value="{{ $customer_alias }}">
                                                         </div>
-                                                    </div>
 
-                                                    <div class="col-md-8 col-12">
+                                                    <div class="col-md-12 col-6">
                                                         <div class="row">
                                                             <div class="col-5">
                                                                 <div class="form-group {{ $errors->has('customer_mob_no') ? 'has-error' : '' }}">
@@ -724,7 +736,7 @@
                                                     </div>
 
                                                     {{-- @if ($proposal->relate_to == $proposal->user_shop_id) --}}
-                                                        <div class="col-md-6 col-12">
+                                                        <div class="col-md-12 col-12">
                                                             <div class="form-group">
                                                                 <label for="proposal_note" class="control-label">Offer Notes</label>
                                                                 <textarea  class="form-control" rows="7" name="proposal_note" id="proposal_note"
@@ -748,7 +760,7 @@
 
 
                                                     @if ($proposal->relate_to == $proposal->user_shop_id)   
-                                                       <div class="row">
+                                                       <div class="row d-none">
                                                             <div class="col-md-6">
                                                                 <div class="card-body">
                                                                         <label for="">Upload Client Logo</label>
@@ -830,33 +842,33 @@
                                                
                                                     
                                                 
-                                                {{--<div class="row">
-                                                    <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">
-                                                        <div class="col-6">
-                                                            <div class="row mt-3">
-                                                                <button onclick="getPDF();" class="btn btn-outline-primary " type="button" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Download</button>
-                                                            </div>
-                                                            <div class="row mt-3"> 
-                                                            <button onclick="getPPT()" type="button" class="btn btn-outline-info" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Download</button>
-                                                            </div>
-                                                            <div class="row mt-3">
-                                                            <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i> Download</button>
-                                                            </div>   
-                                                        </div>                                                   
-                                                    </div>
-                                                </div>--}}
+                                                    {{--<div class="row">
+                                                        <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">
+                                                            <div class="col-6">
+                                                                <div class="row mt-3">
+                                                                    <button onclick="getPDF();" class="btn btn-outline-primary " type="button" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Download</button>
+                                                                </div>
+                                                                <div class="row mt-3"> 
+                                                                <button onclick="getPPT()" type="button" class="btn btn-outline-info" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Download</button>
+                                                                </div>
+                                                                <div class="row mt-3">
+                                                                <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i> Download</button>
+                                                                </div>   
+                                                            </div>                                                   
+                                                        </div>
+                                                    </div>--}}
                                                  
                                             
 
 
                                             
                                             
-                                            {{-- original custom fields --}}
-                                            {{-- <div class="col-md-6 float-start"> --}}
-                                                    {{-- <div class="form-group">
-                                                        <label for="passcode" class="form-label">Enter Passcode <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </label>
-                                                        <input type="text" class="form-control" placeholder="0 0 0 0" name="password" id="passcode" maxlength="4" oninvalid="alert('Enter minimum 4 digit passcode')" value="{{ $offerPasscode ?? ""}}" required>
-                                                    </div> --}}
+                                                    {{-- original custom fields --}}
+                                                    {{-- <div class="col-md-6 float-start"> --}}
+                                                            {{-- <div class="form-group">
+                                                                <label for="passcode" class="form-label">Enter Passcode <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </label>
+                                                                <input type="text" class="form-control" placeholder="0 0 0 0" name="password" id="passcode" maxlength="4" oninvalid="alert('Enter minimum 4 digit passcode')" value="{{ $offerPasscode ?? ""}}" required>
+                                                            </div> --}}
                                                 
                                                     {{-- <div class="h6">Fields to include <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </div>
                                                     <select name="optionsforoffer[]" class="select2" multiple>
@@ -902,81 +914,83 @@
 
                                                         </div>
                                                     @endif
-                                            </div> --}}
+                                                </div> --}}
 
 
  
-                                            <div class="col-md-12 ">
-                                                <div class="d-flex justify-content-between mt-5">
-                                                    <div class="">
-                                                        <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">Back</a>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <button type="submit" class="btn btn-outline-primary">Save</button>
-                                                    </div>
-                                                    <div class="d-flex">
-                                                    <div class="form-group">
-                                                        {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
-                                                            @if ($proposal->status == 1 && $proposal->type == 0)
-                                                                <a class="btn btn-outline-primary" id="jaya2" href="#animatedModal2" role="button">Next</a>
-                                                            @endif
-                                                    </div>
+                                                <div class="col-md-12 ">
+                                                    <div class="d-flex justify-content-between mt-5">
+                                                        <div class="">
+                                                            <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">Back</a>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <button type="submit" class="btn btn-outline-primary">Save</button>
+                                                        </div>
+                                                        <div class="d-flex">
+                                                        <div class="form-group">
+                                                            {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
+                                                                @if ($proposal->status == 1 && $proposal->type == 0)
+                                                                    <a class="btn btn-outline-primary jaya2" id="jaya2" href="#animatedModal2" role="button">Next</a>
+                                                                @endif
+                                                        </div>
 
-                                                            {{-- commented save and preview buttons --}}
-                                                                
-                                                            {{-- @if ($proposal->status == 1 && $proposal->type == 0) --}}
-                                                                {{-- <div class="">                                               
-                                                                    @if ($customer_mob_no != null)
-                                                                        <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
-                                                                            <i class="fab fa-whatsapp" class=""></i>
-                                                                        </a>    
-                                                                    @else
-                                                                        <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
-                                                                            <i class="fab fa-whatsapp" class=""></i>
-                                                                        </a>
-                                                                    @endif
+                                                                {{-- commented save and preview buttons --}}
                                                                     
-                                                                    <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
-                                                                        <i class="far fa-envelope"></i>
-                                                                    </a>
-                                                                </div> --}}
-                                                                {{-- @endif          --}}
-                                                                {{-- @if ($proposal->status == 1 && $proposal->type == 1) --}}
+                                                                {{-- @if ($proposal->status == 1 && $proposal->type == 0) --}}
                                                                     {{-- <div class="">                                               
                                                                         @if ($customer_mob_no != null)
-                                                                            <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                            <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                                 <i class="fab fa-whatsapp" class=""></i>
                                                                             </a>    
                                                                         @else
-                                                                            <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                            <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                                 <i class="fab fa-whatsapp" class=""></i>
                                                                             </a>
                                                                         @endif
                                                                         
-                                                                        <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
+                                                                        <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
                                                                             <i class="far fa-envelope"></i>
                                                                         </a>
                                                                     </div> --}}
-                                                                {{-- @endif
-                                                        </div> --}}
+                                                                    {{-- @endif          --}}
+                                                                    {{-- @if ($proposal->status == 1 && $proposal->type == 1) --}}
+                                                                        {{-- <div class="">                                               
+                                                                            @if ($customer_mob_no != null)
+                                                                                <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                                    <i class="fab fa-whatsapp" class=""></i>
+                                                                                </a>    
+                                                                            @else
+                                                                                <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
+                                                                                    <i class="fab fa-whatsapp" class=""></i>
+                                                                                </a>
+                                                                            @endif
+                                                                            
+                                                                            <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
+                                                                                <i class="far fa-envelope"></i>
+                                                                            </a>
+                                                                        </div> --}}
+                                                                    {{-- @endif
+                                                            </div> --}}
 
 
-                                                        {{-- @if ($proposal->type == 1)
-                                                            <button class="btn btn-outline-primary btn-sm copyLInk" type="button" data-link="{{ inject_subdomain('proposal/create', $slug_guest, false, false)}}?linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" >Copy LInk <i class="far fa-copy"></i> </button>
-                                                        @endif   --}}
-                                                        
-                                                        
-                                                    {{-- @if ($proposal->status == 1 && $proposal->type == 0)
-                                                        <div class="">
-                                                            <div class="form-group mx-2">
-                                                                @if(proposalCustomerDetailsExists($proposal->id))
-                                                                    <a href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}" class="ml-auto btn-link" target="_balnk" >Preview</a>
-                                                                @endif
+                                                            {{-- @if ($proposal->type == 1)
+                                                                <button class="btn btn-outline-primary btn-sm copyLInk" type="button" data-link="{{ inject_subdomain('proposal/create', $slug_guest, false, false)}}?linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" >Copy LInk <i class="far fa-copy"></i> </button>
+                                                            @endif   --}}
+                                                            
+                                                            
+                                                        {{-- @if ($proposal->status == 1 && $proposal->type == 0)
+                                                            <div class="">
+                                                                <div class="form-group mx-2">
+                                                                    @if(proposalCustomerDetailsExists($proposal->id))
+                                                                        <a href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}" class="ml-auto btn-link" target="_balnk" >Preview</a>
+                                                                    @endif
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    @endif --}}
+                                                        @endif --}}
+                                                    </div>
                                                 </div>
                                             </div>
+                                        </div>
                                         </form>
                                     @endif
                                 </div>
@@ -1526,14 +1540,14 @@
     
 
     <script>
-        $("#jaya2").animatedModal({
+        $(".jaya2").animatedModal({
              animatedIn: 'lightSpeedIn',
              animatedOut: 'lightSpeedOut',
              color: 'FFFFFF',
-             height: '80%',
+             height: '60%',
              width: '60%',
              top: '10%',
-             left: '10%',
+             left: '45%',
 
          });
 

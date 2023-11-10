@@ -5,7 +5,7 @@
             @if ($Team_categorygroup)
             <div class="cardbx m-1 col-4 product-card product-box d-flex flex-column border bg-white"  style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
                 {{-- <a href="{{ route('panel.seller.category.index','13') }}" class="bg-primary text-danger" style="color:white;height: 100%;width: 100%;display: flex;align-items: center;justify-content: center;font-size: larger;background-color: #6e6ee683;"> --}}
-                <a href="{{ route('panel.seller.category.index','13') }}" class="text-danger btn btn-outline-primary" style="display: block;height: 100%;width: 100%;position: absolute;left: 0;text-align: center;">
+                <a href="{{ route('panel.seller.category.index','13') }}" class="text-dark btn btn-outline-primary" style="display: block;height: 100%;width: 100%;position: absolute;left: 0;text-align: center;">
                     <span style="height: 100%;display: flex;width: 100%;justify-content: center;align-items: center;">+ Add Category</span>
                 </a>
             </div>
@@ -26,7 +26,7 @@
                         <a href="#one" class="btn text-primary btn-sm invisible">
                             <i class="fas fa-trash"></i>
                         </a>
-                        <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{ $item->id }}" class="btn text-primary btn-sm">
+                        <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&productsgrid=true&category_id={{ $item->id }}" class="btn text-primary btn-sm">
                             <i class="fas fa-caret-right"></i>
                         </a>
                     </div>

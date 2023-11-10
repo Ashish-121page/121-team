@@ -55,7 +55,65 @@
                                                 </div>
                                             </div>
 
-                                            <div class="d-flex justify-content-between gap-2" id="pbox_show-{{$key}}-{{$index}}">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>{{ $subcategory->name }}</th>
+                                                        <th>
+                                                            <button class="btn btn-outline-primary shadow-none btn-icon editchange" type="button" data-box-parent="pbox_show-{{$key}}-{{$index}}" data-box-edit="pbox_edit-{{$key}}-{{ $index }}">
+                                                                <i class="fas fa-pencil-alt"></i>
+                                                            </button>
+                                                            <a href="{{ route('panel.constant_management.category.delete',$subcategory->id) }}" class="btn btn-outline-danger shadow-none btn-icon">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                        </th>
+                                                    </tr>
+                                                    <!-- You can add more rows for additional data -->
+                                                </thead>
+                                            </table>
+                                            
+
+                                            {{-- <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{ $subcategory->name }}</h5>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <!-- Additional information can be added here if needed -->
+                                                        </div>
+                                                        <div class="btn-group">
+                                                            <button class="btn btn-outline-primary shadow-none btn-icon editchange" type="button" data-box-parent="pbox_show-{{$key}}-{{$index}}" data-box-edit="pbox_edit-{{$key}}-{{ $index }}">
+                                                                <i class="fas fa-pencil-alt"></i>
+                                                            </button>
+                                                            <a href="{{ route('panel.constant_management.category.delete',$subcategory->id) }}" class="btn btn-outline-danger shadow-none btn-icon">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> --}}
+                                            
+                                                {{-- cards representation --}}
+                                            {{-- <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{ $subcategory->name }}</h5>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <!-- Additional information can be added here if needed -->
+                                                        </div>
+                                                        <div class="btn-group">
+                                                            <button class="btn btn-outline-primary shadow-none btn-icon editchange" type="button" data-box-parent="pbox_show-{{$key}}-{{$index}}" data-box-edit="pbox_edit-{{$key}}-{{ $index }}">
+                                                                <i class="fas fa-pencil-alt"></i>
+                                                            </button>
+                                                            <a href="{{ route('panel.constant_management.category.delete',$subcategory->id) }}" class="btn btn-outline-danger shadow-none btn-icon">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> --}}
+
+                                        {{-- original style --}}
+                                            {{-- <div class="d-flex justify-content-between gap-2" id="pbox_show-{{$key}}-{{$index}}">
                                                 <div class="w-70">
                                                     <span id="text-represent-{{$key}}-{{$index}}">{{ $subcategory->name }}</span>
                                                 </div>
@@ -67,7 +125,7 @@
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                         </div>
                                     @empty
                                         <div class="col-3">

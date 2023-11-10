@@ -268,12 +268,12 @@
                         }
                     @endphp
                     <div
-                        class="col-12 justify-content-center mx-auto d-flex">
+                        class="col-12 justify-content-center mx-auto d-flex @if (request()->get('view') == 'latest-view') takebottom @endif">
                         <div style="position: relative;width: fit-content">
-                            {{-- <input type="file" id="clienticon" class="visually-hidden">
+                            <input type="file" id="clienticon" class="visually-hidden">
                             <label for="clienticon" style="position: absolute;right: 2%" class="noprint chicon">
                                 <i class="fas fa-pencil-alt text-primary fs-5"></i>
-                            </label> --}}
+                            </label>
                             {{-- <img src="{{ asset('frontend/assets/img/Client_logo_placeholder.svg') }}" alt="Client Logo" id="clientLogo" style="height: 150px;width: 250px;object-fit: contain;"> --}}
                             <img src="{{ $offerbannerPath }}" alt="Client Logo" id="clientLogo"
                                 style="height:200px;width: 1100px;object-fit: contain;">
@@ -286,7 +286,7 @@
                 @csrf
                 <input type="hidden" name="proposal_id" value="{{ $proposal->id }}">
 
-                <div class="row justify-content-start mt-5 " style="margin-bottom: 180px">
+                <div class="row justify-content-between">
                     {{-- <div class="col-12"> --}}
 
                     @if (request()->has('view') && request()->get('view') == 'firstview')
@@ -336,18 +336,10 @@
             </p>
         </div>
 
-        
-        
-        
-        
+        <a class="btn btn-outline-primary d-none mx-1" id="jaya1" href="#animatedModal3" role="button">Change Style</a>
+
+
         @include('frontend.micro-site.shop.proposal.modal.pdfcustom')
-
-        @if (session()->get('offer_attribute_count',0) != 0)
-            <a class="btn btn-outline-primary d-none mx-1" id="jaya1" href="#animatedModal3" role="button">Change Style</a>
-        @endif
-        
-        
-
 
     </section>
 @endsection
@@ -566,7 +558,7 @@
             $(".noprint").addClass('d-none');
             $(".deleteitem").addClass('d-none');
 
-            $(".takebottom").css('margin-bottom', '200px');
+            $(".takebottom").css('margin-bottom', '400px');
 
 
             if ($('.pdf-margin').hasClass('d-none')) {
@@ -644,6 +636,7 @@
         };
     </script>
 
+    {{-- {!! $pptTesmplate[0]->data !!} --}}
 
     <script>
         function limitCharacters(inputString, limit) {
@@ -744,21 +737,158 @@
                     // }
                 });
 
-                {!! $pptTesmplate[0]->data !!}
-               
+                let pptx = new PptxGenJS();
+
+                let firstpage = pptx.addSlide("Front Page");
+                let secondpage = pptx.addSlide("Second Page");
+                let thirdpage = pptx.addSlide("Third Page");             
+                let logo = document.querySelector("#clientLogo").src;
+                let rows = [];
 
 
-                // console.log("Somethig Happened..");
-                // $.toast({
-                //     heading: 'Generating PPT',
-                //     text: "This powerpoint is being generated. Takes upto 30 seconds",
-                //     showHideTransition: 'slide',
-                //     icon: 'success',
-                //     loaderBg: '#f96868',
-                //     position: 'top-right'
-                //     hideAfter: 8000,
-                // });
+                let firstImage = "https://images.unsplash.com/photo-1475776408506-9a5371e7a068?auto=format&fit=crop&q=80&w=1516&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
                 
+                let SecondImage = "https://images.unsplash.com/photo-1499748926165-1085fc69e9fc?auto=format&fit=crop&q=80&w=1470&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+
+                let thirdImage = "https://images.unsplash.com/photo-1485970247670-34cd80f5a996?auto=format&fit=crop&q=80&w=1548&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+
+                let LastImage = "https://images.unsplash.com/photo-1536759808958-bcc29b661ec6?auto=format&fit=crop&q=80&w=1470&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+                
+                let BackgroundImage = "https://images.unsplash.com/photo-1506057213367-028a17ec52e5?auto=format&fit=crop&q=80&w=1470&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+                
+                firstpage.addImage({
+                    path: firstImage,
+                    x: 0,
+                    y: 0,
+                    w: '100%',
+                    h: '100%'
+                });
+                
+                // Put Second Cover Image
+                secondpage.addImage({
+                    path: SecondImage,
+                    x: 0,
+                    y: 0,
+                    w: '100%',
+                    h: '100%'
+                });
+
+                // Put Third Cover Image
+                thirdpage.addImage({
+                    path: thirdImage,
+                    x: 0,
+                    y: 0,
+                    w: '100%',
+                    h: '100%'
+                });
+
+                // code for 1X1 loop
+                for (let index = 0; index < passedArray.length; index += 1) {
+                    slides[index] = pptx.addSlide();
+
+                    slides[index].addImage({
+                        path: BackgroundImage,
+                        x: '0',
+                        y: '0',
+                        w: '100%',
+                        h: '100%'
+                    })
+                    slides[index].addImage({
+                        path: logo,
+                        x: '0.25',
+                        y: '0.157',
+                        w: '2.1',
+                        h: '0.566'
+                    });
+
+                    slides[index].addImage({
+                        path: passedArray[index],
+                        x: '0.09',
+                        y: '0.25',
+                        w: '4.99',
+                        h: '5.10'
+                    });
+
+                    // Adding Up Product Info
+                    rows = [];
+                        if (titleArray != null) {
+                            if (titleArray[i] ?? '' != '') {
+                                rows.push(["Product TITLE", ":", titleArray[index]]);
+                            }
+                        }
+                        if (modelArray != null) {
+                            if (modelArray[i] ?? '' != '') {
+                                rows.push(["Model Code", ":", modelArray[index]]);
+                            }
+                        }
+                        if (modelArray != null) {
+                            if (modelArray[i] ?? '' != '') {
+                                rows.push(["Description", ":", limitCharacters (modelArray[index],80 )]);
+                            }
+                        }
+                        
+                        if (priceArray != null) {
+                            if (priceArray[i] ?? '' != '') {
+                                rows.push(["Price", ":", priceArray[index]]);
+                            }
+                        }
+
+                        {{--// selected custom fields from modal--}}
+                        if (Additional1Array != null) {
+                            if (Additional1Array[index] ?? '' != '') {
+                                rows.push([ `${ $(".print_content0").text().split(":")[0].trim() }`, ":" , Additional1Array[index].split(":")[1].trim()?? '']);    
+                            }
+                        }
+                        if (Additional2Array != null) {
+                            if (Additional2Array[index] ?? '' != '') {
+                                rows.push([ `${ $(".print_content1").text().split(":")[0].trim() }`, ":" , Additional2Array[index].split(":")[1].trim() ?? '']);
+                            }
+                        }
+                        if (Additional3Array != null) {
+                            if (Additional3Array[index] ?? '' != '') {
+                                rows.push([ `${ $(".print_content2").text().split(":")[0].trim() }`, ":" , Additional3Array[index].split(":")[1].trim() ?? '']);
+                            }
+                        }
+
+                        if (rows != null) {
+                            slides[index].addTable(rows, {
+                                x: 5.37,
+                                y: 0.25,
+                                w: 4.34,
+                                h: 5.10
+                            });
+                        }
+
+                } //  End of Loop
+
+                let lastslide = pptx.addSlide("Last slide");
+                // Put last slide Cover Image
+                    lastslide.addImage({
+                    path: LastImage,
+                    x: 0,
+                    y: 0,
+                    w: '100%',
+                    h: '100%'
+                });
+
+                // Put Logo on last slide  Cover Image
+                // lastslide.addImage({
+                //     path: logo,
+                //     x: '0.25',
+                //     y: '0.157',
+                //     w: '2.1',
+                //     h: '0.566'
+                // });
+
+
+                pptx.writeFile({
+                    fileName: "Proposal.pptx"
+                });
+
+
+
+
+                console.log("Somethig Happened..");
             });
         });
     </script>

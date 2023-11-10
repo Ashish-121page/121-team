@@ -65,7 +65,9 @@ class ProposalController extends Controller
                 $proposals->whereUserId(0);
             }
 
-            $proposals = $proposals->withCount('items')->paginate($length);
+            $proposals = $proposals->withCount('items')->orderBy('id','DESC')->paginate($length);        
+
+
             if ($request->ajax()) {
                 return view('panel.proposals.load', ['proposals' => $proposals])->render();  
             }

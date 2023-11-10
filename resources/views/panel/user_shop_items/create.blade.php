@@ -185,7 +185,7 @@
                  -ms-flex:1 1 auto;
                     flex:1 1 auto;
                     padding:1.25rem;
-                    max-height: 490px;
+                    max-height: 75vh;
                     overflow-y: auto;
             }
 
@@ -220,7 +220,40 @@
                @include('backend.include.message')
                 <!-- end message area-->
 
-                    <div class="row">
+                <div class="row">
+                    <div class="col-lg-6 col-md-12  col-12 my-2">
+                        <div class="one" style="display: flex; align-items: center; justify-content: flex-start;">
+                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}"
+                                class="btn btn-outline-primary mx-1 
+                                @if (!request()->has('products') && !request()->has('assetsafe') && !request()->has('properties') && !request()->has('productsgrid')) active @endif
+                                ">
+                                Categories
+                            </a>
+                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&productsgrid=true"
+                                class="btn btn-outline-primary mx-1 @if (request()->has('products') OR request()->has('productsgrid')) active @endif">
+                                Products
+                            </a>
+                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&properties=true"
+                                class="btn btn-outline-primary mx-1 @if (request()->has('properties')) active @endif">
+                                Properties
+                            </a>
+                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&assetsafe=true"
+                                class="btn btn-outline-primary mx-1 @if (request()->has('assetsafe')) active @endif">
+                                Assets Safe
+                            </a>
+                        </div>
+                    </div>
+                
+                    {{-- This Menu is Always Visible --}}
+                    <div class="col-lg-6 col-md-12 col-12 my-2">        
+                        <div class="two" style="display: flex; align-items: center; justify-content: flex-end;">
+                            @include('panel.user_shop_items.includes.action_menu')
+                        </div>
+                    </div>
+                </div>
+                
+
+                    {{-- <div class="row">
                         <div class="col-md-6 col-12 my-2">
                             <div class="one" style="display: flex;align-items: center;justify-content: flex-start;">
                                 <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}"
@@ -244,15 +277,15 @@
                                 </a>
 
                             </div>
-                        </div>
+                        </div> --}}
 
                         {{-- ` This Menu is Always Visible  --}}
-                        <div class="col-md-6 col-12 my-2">        
+                        {{-- <div class="col-md-6 col-12 my-2">        
                             <div class="two" style="display: flex;align-items: center;justify-content: flex-end;">
                                 @include('panel.user_shop_items.includes.action_menu')
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
 
                     {{-- ` This Menu Only Visible when Checkbox Is Checked  --}}
@@ -334,15 +367,16 @@
                 </div>
                 <div class="modal-body">
                     <form action="{{ route('panel.products.update.qr') }}" method="get" id="qrform">
-                    @csrf
+                    {{-- @csrf --}}
                     <div class="form-group" id="productsDropdown">
-                        <select name="product_ids[]" class="form-control select2"  id="needqr" multiple>
+                        <input type="text" id="needqr" name="product_ids">
+                        {{-- <select name="product_ids[]" class="form-control select2"  id="needqr" multiple>
                             @foreach ($qr_products as $qr_product)
                                 <option value="{{ $qr_product->id }}">
                                     {{ "Model Code: ".$qr_product->model_code.' : '.$qr_product->title.' , '.$qr_product->color.' , '.$qr_product->size  }}
                                 </option>
                             @endforeach
-                        </select>
+                        </select> --}}
                     </div>
                     <div class="form-check p-0">
                         <label class="custom-control custom-checkbox">
@@ -406,8 +440,7 @@
         
         </script>
         <script>
-            // Add Product To Pin
-            
+            // Add Product To Pin=
             $('.input-checkpin').click(function(){
                 var  id = $(this).val();
                 if($(this).prop('checked')){
@@ -628,30 +661,6 @@
                 });
             });
 
-            // $(document).on('click','#delproduct_dummy',function(e){
-            //     e.preventDefault();
-            //     var msg = $(this).data('msg') ?? "You won't be able to revert back!";
-            //     $.confirm({
-            //         draggable: true,
-            //         title: 'Are You Sure!',
-            //         content: msg,
-            //         type: 'red',
-            //         typeAnimated: true,
-            //         buttons: {
-            //             tryAgain: {
-            //                 text: 'Confirm',
-            //                 btnClass: 'btn-red',
-            //                 action: function(){
-            //                     $("#delproduct").click();
-            //                 }
-            //             },
-            //             close: function () {
-            //             }
-            //         }
-            //     });
-            // });
-
-            $("#delproduct_dummy").click()    
             $("#delproduct_dummy").click(function (e) { 
                 e.preventDefault();
                 let selected = $(".input-check:checked").length;
@@ -711,7 +720,7 @@
                     record.forEach(element => {
                         selected.push(element.dataset.record);
                     });
-
+                    $(".selectedbtn").html(selected.length+' selected')
                     return selected;
                 }
 

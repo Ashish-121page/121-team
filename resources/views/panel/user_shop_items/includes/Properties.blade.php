@@ -72,8 +72,8 @@
                         <a href="javascript:void(0);" id="print" data-url="{{ route('panel.product_attributes.print') }}"
                             data-rows="{{json_encode($product_attributes) }}" class="btn btn-primary btn-sm">Print</a>
                     </div>
-                    <input type="text" name="search" class="form-control" placeholder="Search" id="search"
-                        value="{{request()->get('search') }}" style="width:unset;">
+                    {{-- <input type="text" name="search" class="form-control" placeholder="Search" id="search"
+                        value="{{request()->get('search') }}" style="width:unset;"> --}}
                 </div>
                 <div class="table-responsive">
                     <table id="table" class="table">

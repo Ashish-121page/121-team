@@ -110,7 +110,7 @@
                 <div class="row">
                 <div class="container ">
                     <div>
-                        Last update: <span>{{  now()->diffInDays(Carbon\Carbon::parse($product->updated_at)) }} Day's ago</span>
+                        Last update: <span>{{  now()->diffInDays(Carbon\Carbon::parse($product->updated_at)) }} Days ago</span>
                     </div>
                 </div>
                 </div>

@@ -108,7 +108,7 @@
                 <div class="row">
                 <div class="container ">
                     <div>
-                        Last update: <span>{{  now()->diffInDays(Carbon\Carbon::parse($product->updated_at)) }} Day's ago</span>
+                        Last update: <span>{{  now()->diffInDays(Carbon\Carbon::parse($product->updated_at)) }} Days ago</span>
                     </div>
                 </div>
                 </div>
@@ -184,8 +184,8 @@
                                                 <span class="text-success" style="font-weight: 600;"><small>In Stock</small></span>
                                             @endif
                                             <h5 class="text-muted my-2">
-                                                {{ $currency_symbol." ". exchangerate($price,$exhangerate,$HomeCurrency) }} &nbsp;&nbsp;&nbsp;
-                                                MRP : <strike> {{ $currency_symbol." ". exchangerate($product->mrp,$exhangerate,$HomeCurrency) }} </strike>
+                                                {{ $currency_symbol." ". round(exchangerate($price,$exhangerate,$HomeCurrency),2) }} &nbsp;&nbsp;&nbsp;
+                                                MRP : <strike> {{ $currency_symbol." ". round(exchangerate($product->mrp,$exhangerate,$HomeCurrency),2) }} </strike>
                                             </h5>
                                             
                                         </div>
@@ -382,20 +382,25 @@
                                         <p class="">{!!  html_entity_decode(preg_replace('/_x([0-9a-fA-F]{4})_/', '&#x$1;', $user_shop_item->description)) ?? '' !!}</p>
                                     @elseif($product->description != null)
 
-                                        <div class="accordion" id="accordionDescription">
+                                    <div class="row">
+                                        {{-- acoordion for add info start --}}
+                                        <div class="col-12">
+
+                                                {{-- <div class="accordion" id="accordionDescription"></div> --}}
                                             <div class="accordion-item">
-                                            <h2 class="accordion-header">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                                    Description
-                                                </button>
-                                            </h2>
-                                            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="">
-                                                <div class="accordion-body">
-                                                {!!  html_entity_decode(preg_replace('/_x([0-9a-fA-F]{4})_/', '&#x$1;', $product->description)) ?? '' !!}
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsedesc" aria-expanded="false" aria-controls="collapsedesc">
+                                                        Description
+                                                    </button>
+                                                </h2>
+                                                <div id="collapsedesc" class="accordion-collapse collapse" data-bs-parent="">
+                                                    <div class="accordion-body">
+                                                    {!!  html_entity_decode(preg_replace('/_x([0-9a-fA-F]{4})_/', '&#x$1;', $product->description)) ?? '' !!}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            </div>
                                         </div>
+                                    </div>
                                     @endif
 
                                     {{--` Another Part TAX --}}

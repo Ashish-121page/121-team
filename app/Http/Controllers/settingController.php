@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ExportTemplates;
 use App\Models\Media;
+use App\Models\UserCurrency;
 use App\Models\UserShop;
 use App\User;
 use Illuminate\Http\Request;
@@ -15,11 +16,16 @@ class settingController extends Controller
     public function index(Request $request,$user) {
 
         $user = User::whereId(decrypt($user))->first();
-        
-        
         $templates = ExportTemplates::get();
+        $user_shop = getShopDataByUserId($user->id);
+        $currency_record = UserCurrency::where('user_id',$user->id)->get();
+        $acc_permissions = json_decode($user->account_permission);
+
+        // magicstring($acc_permissions);
         
-        return view("panel.settings.index",compact('templates'));
+        // return;
+
+        return view("panel.settings.index",compact('templates','user','user_shop','currency_record','acc_permissions'));
     }
     
     
@@ -155,5 +161,14 @@ class settingController extends Controller
             return back()->with("error","Cannot Update ".$th);
         }
     }
+
+
+    function EditTemplate(ExportTemplates $template){
+
+        return view('panel.settings.admin.edit-template',compact('template'));
+    }
+
+
+
 
 }

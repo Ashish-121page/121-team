@@ -8,9 +8,11 @@
         <div class="container-fluid">
         
         <div class="top-menu d-flex align-items-center " id="product-action" style="position: sticky;top: 0; background-color: white; z-index: 100;">
+            <button class="btn btn-sm mx-1 selectedbtn">0 Selected</button>
+
             <button class="btn btn-sm btn-outline-primary mx-1" id="exportproductbtn">Export</button>
             {{-- <button class="btn btn-sm btn-outline-danger mx-1 " id="delete_all_dummy">All Delete</button> --}}
-            <button class="btn btn-sm btn-outline-danger mx-1 " id="delproduct_dummy"> Delete Selected</button>
+            <button class="btn btn-sm btn-outline-primary mx-1 " id="delproduct_dummy"> Delete</button>
             {{-- <a href="javascript:void(0);" data-toggle="modal" data-target="#updateQR" class="btn btn-sm btn-outline-primary mx-1" title="Upload QR Code">
                 Get QR 
             </a> --}}
@@ -37,7 +39,7 @@
     {{-- For Category --}}
     <div class="top-menu d-flex align-items-center " id="product-action">
         <button class="btn btn-sm btn-outline-primary mx-1" id="export-categrory">Export</button>
-        <button class="btn btn-sm btn-outline-danger mx-1" id="deletecatbtn">Delete</button>
+        <button class="btn btn-sm btn-outline-primary mx-1" id="deletecatbtn">Delete</button>
         {{-- <a href="{{ route('panel.constant_management.category.delete', $item->id)  }}" title="Delete Category" class="btn btn-sm delete-item dropdown-item">Delete</a> --}}
     </div>
 @endif

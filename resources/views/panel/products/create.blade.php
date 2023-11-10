@@ -498,8 +498,8 @@
                                                     Upload
                                                 </button>
 
-                                                <a href="{{ route('panel.bulk.product.bulk-export', auth()->id()) }}"
-                                                    type="button" class="btn btn-outline-primary">Fill & Upload</a>
+                                                {{-- <a href="{{ route('panel.bulk.product.bulk-export', auth()->id()) }}"
+                                                    type="button" class="btn btn-outline-primary">Fill & Upload</a> --}}
                                             </div>
                                         </form>
                                     </div>
@@ -534,52 +534,18 @@
                     $("#"+$(this).data('open')).toggleClass('d-none');
                 });
 
-                var acr_btn = document.querySelector('#weightbox');
-                var switchery = new Switchery(acr_btn, {
-                    color: '#6666CC',
-                    jackColor: '#fff'
+                $(".hiddenbxbtn").change(function (e){
+                    $("#"+$(this).data('open')).toggleClass('d-none');
                 });
 
-                var acr_btn = document.querySelector('#productdimensionsbx');
-                var switchery = new Switchery(acr_btn, {
-                    color: '#6666CC',
-                    jackColor: '#fff'
-                });                
+                var elems = Array.prototype.slice.call(document.querySelectorAll('.hiddenbxbtn'));
 
-                var acr_btn = document.querySelector('#productpackingbx');
-                var switchery = new Switchery(acr_btn, {
-                    color: '#6666CC',
-                    jackColor: '#fff'
-                });
-                
-                var acr_btn = document.querySelector('#productshippingbx');
-                var switchery = new Switchery(acr_btn, {
-                    color: '#6666CC',
-                    jackColor: '#fff'
-                });
-                
-                var acr_btn = document.querySelector('#productsourcedbx');
-                var switchery = new Switchery(acr_btn, {
-                    color: '#6666CC',
-                    jackColor: '#fff'
-                });
-                
-                var acr_btn = document.querySelector('#productsamplebx');
-                var switchery = new Switchery(acr_btn, {
-                    color: '#6666CC',
-                    jackColor: '#fff'
-                });
-                     
-                var acr_btn = document.querySelector('#productexclusivebx');
-                var switchery = new Switchery(acr_btn, {
-                    color: '#6666CC',
-                    jackColor: '#fff'
-                });
-                
-                var acr_btn = document.querySelector('#exclubtn');
-                var switchery = new Switchery(acr_btn, {
-                    color: '#6666CC',
-                    jackColor: '#fff'
+                elems.forEach(function(html) {
+                    var switchery = new Switchery(html,{
+                        color: '#6666CC',
+                        jackColor: '#fff'
+                    });
+
                 });
 
                 $(".md-step").click(function (e) { 
@@ -587,7 +553,7 @@
 
                     let stepindex = $(this).data('step');
                     let newwindow = $(`[data-index="${stepindex+1}"]`);
-                    activeIndex = stepindex+1;
+                    activeIndex = (stepindex+1);
 
                     $(this).addClass('active');
                     $(".stepper").addClass('d-none');
@@ -601,6 +567,12 @@
                         $(".next_btn").addClass('d-none');
                     }
                     
+                    if ($(".md-step").length == (stepindex+1)) {
+                        $('.create_btn').removeClass('d-none');
+                    }else{
+                        $('.create_btn').addClass('d-none');
+                    }
+
                     $(".next_btn").removeClass('d-none');
                     newwindow.removeClass('d-none')            
                 });

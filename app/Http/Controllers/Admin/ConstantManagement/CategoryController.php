@@ -51,17 +51,22 @@ class CategoryController extends Controller
                             ->where('level',2)
                             ->where('user_id',null)
                             ->get()->toArray();
+                            
 
-                $category =  array_merge($category_own,$category_global);
+                $user_selected_category_id = json_decode(auth()->user()->selected_category);    
+                
+                
+                if ($user_selected_category_id != null) {
+                    $user_selected_category = Category::whereIn('id',$user_selected_category_id)->get()->toArray() ?? [];
+                    $category =  array_merge($category_own,$user_selected_category);
+                }else{
+                    $category =  $category_own;
+                }
             }
-
-
-            // magicstring($category);
-            // return;
-
-
-            return view('backend.constant-management.category.index', compact('category','industries'));
+            
+            return view('backend.constant-management.category.index', compact('category','industries','category_global'));
         } catch (\Exception $e) {
+            throw $e;
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
@@ -605,6 +610,42 @@ class CategoryController extends Controller
     }
     
 
+
+    public function selectglobalCategory(Request $request,$user_id) {
+
+        try {
+            $user = User::whereId(decrypt($user_id))->first();            
+            $exist_category = json_decode($user->selected_category) ?? [];
+            if (isset($exist_category)) {
+                if ($exist_category != null) {
+                    echo "It is not Null";
+                    $count = 0;
+                    $newcat = [];
+                    foreach ($request->globalcategory as $key => $req) {
+                        if (in_array($req,$exist_category)) {
+                            continue; //- Skip That Category..
+                        }else{
+                            array_push($exist_category,$req);
+                        }
+                        $count++;
+                    }
+                    $user->selected_category = json_encode($exist_category);
+                    $user->save();
+                }else{
+                    $user->selected_category = json_encode($request->globalcategory);
+                    $user->save();
+                }            
+            }
+
+            return back()->with('success',"Categories Added !!");
+            
+        } catch (\Throwable $th) {
+            // throw $th;
+            return back()->with('error',"There was an Error. $th->getMessage()");
+        }
+
+        
+    }
 
 
 

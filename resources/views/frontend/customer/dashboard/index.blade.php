@@ -440,7 +440,7 @@
 
                                     @if(getUserProgressStatistics(auth()->id()) != 100)
 
-                                        <div class="col-lg-6 col-md-6 col-12">
+                                        {{-- <div class="col-lg-6 col-md-6 col-12">
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h5 class="text-center">
@@ -542,8 +542,29 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
+
+                                        
                                     @endif
+
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="text-center mx-auto justify-content-center">
+
+                                                <button class="btn btn-primary mt-2 mx-auto text-center" onclick="location.href='{{ route('customer.dashboard') }}?active=account&subactive=business_profile&upload_gst=true'">
+                                                    {{-- <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "business_profile") active show @endif" id=ekycform"> </a>   --}}
+                                                    Upload GST / IEC
+                                                </button>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    {{-- <div class="button"> {{ route('customer.dashboard') }}?active=account&subactive=business_profile&upload_gst=true
+                                        Upload GST / IEC
+                                    </div> --}}
                                     {{-- <div class="col-lg-6 col-md-6 col-12">
                                         <div class="card">
                                             <div class="card-body"> --}}
@@ -1847,12 +1868,12 @@
                                             <a data-subactive="about_me" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'about_me') active @endif" >{{ __('Brief Intro')}}</a>
                                         </li> --}}
 
-                                        <li class="nav-item">
+                                        {{-- <li class="nav-item">
                                             <a data-subactive="my_address" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'my_address') active @endif">{{ __('My Address')}}</a>
-                                        </li>
-                                        <li class="nav-item">
+                                        </li> --}}
+                                        {{-- <li class="nav-item">
                                             <a  data-subactive="security" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'security') active @endif">{{ __('Security')}}</a>
-                                        </li>
+                                        </li> --}}
                                     </ul>
                                 </div>
 
@@ -1988,8 +2009,8 @@
                                     </div>
                                 </div>
 
-                                <div class="card shadow mb-3 border-0 card customer_card card-site_detail">
-                                    <div class="card-body">
+                                <div class="card shadow mb-3 border-0 card customer_card card-site_detail d-none">
+                                    <div class="card-body d-none">
                                         {{-- <h5 class="mb-3">My Page</h5> --}}
 
                                         <form action="{{ route('panel.user_shops.updateuser', $user_shop->id) }}" method="post" class="mb-3" enctype="multipart/form-data">
@@ -2002,7 +2023,7 @@
                                             @endphp
 
 
-                                            <div class="row mb-3">
+                                            <div class="row mb-3 d-none">
                                                 <div class="col-md-6 col-12">
                                                     <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                                                         <label for="name" class="control-label">Display Name</label>
@@ -2049,7 +2070,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row mb-2">
+                                            <div class="row mb-2 d-none">
                                                 {{-- <div class="h5">Display Intro</div> --}}
 
                                                 <div class="col-md-6 col-12 mt-lg-0 mt-md-0 mt-">
@@ -2371,11 +2392,11 @@
                                     </div>
                                 </div>
 
-                                <div class="card shadow mb-3 border-0 card-my_address customer_card">
+                                {{-- <div class="card shadow mb-3 border-0 card-my_address customer_card">
                                     <div class="card-body">
-                                        <div class="d-flex justify-content-between mb-3">
+                                        <div class="d-flex justify-content-between mb-3"> --}}
                                             {{-- <h5 class="mt-1">Billing Addresses</h5> --}}
-                                            <a href="javascript:void(0);" class="btn btn-primary addAddress" data-id="{{ auth()->id() }}">Add Address</a>
+                                            {{-- <a href="javascript:void(0);" class="btn btn-primary addAddress" data-id="{{ auth()->id() }}">Add Address</a>
                                         </div>
                                         @if ($addresses->count() > 0)
                                             <div class="row">
@@ -2417,7 +2438,7 @@
                                                 <h6 class="text-muted">No Address Yet!</h6>
                                             </div>
                                         @endif
-                                        <div class="border-bottom mt-3"></div>
+                                        <div class="border-bottom mt-3"></div> --}}
 
                                         {{-- <h5 class="mt-2">Site Addresses</h5>
                                         @php
@@ -2499,14 +2520,14 @@
                                                 <button class="btn btn-primary" type="submit">Update</button>
                                             </div>
                                             <div class="col-12"><hr></div>
-                                        </form>
-                                        --}}
+                                        </form>--}}
+                                        
 
 
-                                    </div>
-                                </div>
+                                    {{-- </div>
+                                </div> --}}
 
-                                <div class="card shadow mb-3 border-0 card-security customer_card">
+                                {{-- <div class="card shadow mb-3 border-0 card-security customer_card">
                                     <div class="card-body">
                                         <h5 class="">Change Password</h5>
                                         <form action="{{ route('panel.update-password', $user->id) }}" method="post">
@@ -2548,7 +2569,7 @@
                                             </div><!--end row-->
                                         </form>
                                     </div>
-                                </div>
+                                </div> --}}
 
 
                             </div><!--end teb pane-->

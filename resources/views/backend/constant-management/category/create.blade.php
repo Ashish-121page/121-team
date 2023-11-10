@@ -53,7 +53,7 @@
                             <div class="row">               
                                 <div class="col-md-12 col-12"> 
                                     <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
-                                        <label for="name" class="control-label">Name Of the Category<span class="text-danger">*</span></label>
+                                        <label for="name" class="control-label">Category Name<span class="text-danger">*</span></label>
                                         <input required  class="form-control" name="name" type="text" id="name" value="{{old('name')}}" placeholder="Enter Name" >
                                     </div>
                                 </div>
@@ -62,6 +62,9 @@
                                 <div class="col-md-12 col-12"> 
                                     <div class="form-group mb-0">
                                         <label for="input">{{ __('Sub Categories')}} <span class="text-danger">*</span> </label>
+                                    </div>
+                                    <div class="alert alert-warning" style="widtdsh: fit-content" role="alert">
+                                        <i class="fas fa-info-circle mx-2"></i> Enter multiple values, Seperate by Comma (,)
                                     </div>
                                     <div class="form-group">
                                         <input style="width: 100%" name="value[]" type="text" id="tags" class="form-control" value="" required>

@@ -23,11 +23,11 @@
                             <input type="submit" name="delete_all" id="delete_all" value="Delete All Products" class="btn btn-outline-primary d-none"> 
                         @endif
                         {{-- <a href="{{ asset('instructions/instructions.pdf') }}" download="instructions.pdf" class="btn btn-outline-primary m-1">Download Instruction</a> --}}
-                        <input type="text" placeholder="Type and Enter" id="searchValue" name="search" value="{{ request()->get('search') }}"  class="form-control">
-                        <div class="d-flex ml-2">
-                            {{-- <button type="submit" id="filterBtn" class="btn btn-icon btn-outline-warning " title="submit"><i class="fa fa-filter" aria-hidden="true"></i></button> --}}
+                        {{-- <input type="text" placeholder="Type and Enter" id="searchValue" name="search" value="{{ request()->get('search') }}"  class="form-control"> --}}
+                        {{-- <div class="d-flex ml-2">
+                            <button type="submit" id="filterBtn" class="btn btn-icon btn-outline-warning " title="submit"><i class="fa fa-filter" aria-hidden="true"></i></button>
                             <a href="{{ route('panel.user_shop_items.create',['type' => request()->get('type'),'type_id' => request()->get('type_id')]) }}" class="btn btn-icon btn-outline-danger ml-2" title="Refresh"><i class="fa fa-redo" aria-hidden="true"></i></a>
-                        </div>
+                        </div> --}}
                     </div>
                     @if(request()->get('type_id') == auth()->id())
                         {{-- <a href="javascript:void(0);" data-toggle="modal" data-target="#updateQR" class="btn btn-icon btn-sm btn-outline-dark ml-2" title="Upload QR Code"><i class="fa fa-qrcode" aria-hidden="true"></i></a> --}}
@@ -70,9 +70,36 @@
                 </div>
                 @endif
                 
-        @if (request()->has('category_id') && request()->get('category_id') != '')
-            <h1> {{ App\Models\Category::whereId(request()->get('category_id'))->first()->name }} </h1>
-        @endif
+            @if (request()->has('category_id') && request()->get('category_id') != '')
+
+                @php
+                    if (request()->has('productsgrid')) { 
+                        $view = 'productsgrid=true' ;
+                    }else{
+                        $view = 'products=true' ;
+                    }
+                @endphp
+                <div class="row">
+                    <div class="col-12" style="width: 80vw;overflow: hidden; overflow-x: auto">
+                            <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&{{$view}}&category_id={{request()->get('category_id') }}" class="text-primary">
+                                <h1 class="d-inline-block" style="font-size: medium"> 
+                                <u>{{ App\Models\Category::whereId(request()->get('category_id'))->first()->name }} </u>
+                                <i class="fas fa-chevron-right" style="font-size: small"></i> 
+                            </h1>
+                        </a>
+                        @php
+                            $products_subcat = App\Models\Product::where('user_id',auth()->id())->pluck('sub_category'); 
+                            $record = App\Models\Category::whereIn('id',$products_subcat)->whereparentId(request()->get('category_id'))->get();
+                        @endphp
+                        
+                        @foreach ($record as $item)
+                            <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&{{$view}}&category_id={{request()->get('category_id') }}&sub_category_id={{ $item->id}}" class="btn btn-outline-primary @if (request()->has('sub_category_id') && request()->get('sub_category_id') == $item->id) active @endif">{{ $item->name }}</a>
+                        @endforeach
+                        
+                    </div>
+                </div>
+
+            @endif
         <div class="row mt-4">
 
             {{-- <div class="col-lg-3 col-md-4 filterable-items mb-4 border border-primary d-flex justify-content-center align-items-center skeltonbtn" style="font-size: 2vh; padding-right: 0px!important; padding-left: 0px!important;">
@@ -83,7 +110,7 @@
             </div> --}}
 
             <div class="col-lg-3 col-md-4 filterable-items mb-4 border border-primary d-flex justify-content-center align-items-center skeltonbtn" style="font-size: 2vh; width: 25rem;  min-height: 13.5rem; ">
-                <a href="{{ route('panel.products.create') }}?action=nonbranded" class="text-danger " style="display: block;height: 100%;width: 100%;position: absolute ;text-align: center;">
+                <a href="{{ route('panel.products.create') }}?action=nonbranded" class="text-dark " style="display: block;height: 100%;width: 100%;position: absolute ;text-align: center;">
                     <span style="height: 100%;display: flex;width: 100%;justify-content: center;align-items: center;">+ Add Product</span> 
                 </a>
             </div>
@@ -150,7 +177,7 @@
                                     }
                                 @endphp
                             <div>
-                                <div class="d-flex justify-content-between mb-2" style="position: absolute;top: 4%;left: 78%;">
+                                <div class="d-flex justify-content-between mb-2" style="position: absolute;top: 4%;left: 85%;">
                                     @if($product_exists != null)
                                     {{-- <div class="ml-2 mt-2">
                                             @if($product_exists->is_published == 1)
@@ -214,7 +241,7 @@
                                         </div> --}}
 
                                         <label class="custom-chk prdct-checked" data-select-all="boards">
-                                            <input type="checkbox" name="delproducts[]" class="input-check d-none" value="{{ $scoped_product->sku }}" data-record="{{ $scoped_product->id }}">
+                                            <input type="checkbox" name="delproducts[]" class="input-check invisible buddy" value="{{ $scoped_product->sku }}" data-record="{{ $scoped_product->id }}">
                                             <span class="checkmark mr-5 mt-5"></span>
                                         </label>
                                     @endif
@@ -291,7 +318,7 @@
         @endif
     </form>
 </div>
-<div>
+<div>    
     {{ $scoped_products->appends(request()->query())->links() }} 
 </div>
 

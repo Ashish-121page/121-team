@@ -1,5 +1,5 @@
 <div id="animatedModal1">
-    <div id="btn-close-modal1" class="close-animatedModal1 custom-spacing" style="color:black; font-size: 1.5rem">
+    <div id="btn-close-modal1" class="close-animatedModal1 custom-spacing" style="color:black; font-size: 1.5rem; ">
         <i class="far fa-times-circle fa-rotate-270 fa-lg "></i>
     </div>
     <div class="modal-content custom-spacing" style="background-color:#f3f3f3; height: 80%; width: 80%;">
@@ -67,8 +67,29 @@
                             </svg> --}}
                             <img src="{{ asset('frontend/assets/img/thirdview.svg') }}" width="150px" height="150px">
                         </a>                        
-                    </div> 
+                    </div>
+                    <div class="col-8">
+                        <div class="row"  style="display: flex; justify-content: center;">
+                            {{-- <div class="col-4">
+                                <button id="cancelButton" class="btn btn-outline-primary">Cancel</button>"btn-close-modal1" class="close-animatedModal1 custom-spacing"
+                            </div> --}}
+                            <div class="col-4">
+                                <button id="btn-close-modal1" class="close-animatedModal1  btn btn-outline-primary text-primary">Cancel</button>
+                            </div>
+                            {{-- <div class="col-4 ">
+                                <button class="btn btn-outline-primary">Preview</button>
+                            </div>  --}}
+                            <div class="">
+                                <div class="form-group mx-2">
+                                    @if(proposalCustomerDetailsExists($proposal->id))
+                                    <button class="btn btn-outline-primary" href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}" class="ml-auto btn-link" target="_blank" >Preview</button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                
             </div>
         
 

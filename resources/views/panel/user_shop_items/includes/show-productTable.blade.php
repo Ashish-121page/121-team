@@ -11,7 +11,7 @@
         <input type="hidden" name="type_id" value="{{ request()->get('type_id')}}">
         <input type="hidden" name="type" value="{{ request()->get('type')}}">
         <input type="hidden" name="bulk_hike" class="bulkHike" value="">
-            <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex justify-content-end">
                 {{-- <h5>Catalogue ({{$scoped_products->count()}})</h5> --}}
                 <div class="d-flex">
                     <div class="d-flex">
@@ -68,16 +68,22 @@
                 @endif
                 
         @if (request()->has('category_id') && request()->get('category_id') != '')
-            <h1> {{ App\Models\Category::whereId(request()->get('category_id'))->first()->name }} </h1>
-
-            <div class="row">
-                <div class="col-12" style="width: 80vw;overflow: hidden; overflow-x: auto">
+        
+        <div class="row">
+            <div class="col-12" style="width: 80vw;overflow: hidden; overflow-x: auto">
+                    <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{request()->get('category_id') }}" class="text-primary">
+                        <h1 class="d-inline-block" style="font-size: medium"> 
+                            <u>{{ App\Models\Category::whereId(request()->get('category_id'))->first()->name }} </u>
+                            <i class="fas fa-chevron-right" style="font-size: small"></i> 
+                        </h1>
+                    </a>
                     @php
-                        $record = App\Models\Category::whereIn('id',$scoped_products->pluck('sub_category'))->whereparentId(request()->get('category_id'))->get();
+                        $products_subcat = App\Models\Product::where('user_id',auth()->id())->pluck('sub_category'); 
+                        $record = App\Models\Category::whereIn('id',$products_subcat)->whereparentId(request()->get('category_id'))->get();
                     @endphp
                     
                     @foreach ($record as $item)
-                        <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{request()->get('category_id') }}&sub_category_id={{ $item->id}}" class="btn btn-outline-info @if (request()->has('sub_category_id') && request()->get('sub_category_id') == $item->id) active @endif">{{ $item->name }}</a>
+                        <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{request()->get('category_id') }}&sub_category_id={{ $item->id}}" class="btn btn-outline-primary @if (request()->has('sub_category_id') && request()->get('sub_category_id') == $item->id) active @endif">{{ $item->name }}</a>
                     @endforeach
                    
                 </div>
@@ -105,7 +111,7 @@
                         </div> --}}
                         <div>
                             {{-- <button type="button" id="export_button" class="btn btn-success btn-sm">Excel</button> --}}
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
+                            <button class="btn btn-secondary dropdown-toggle d-none " type="button" id="dropdownMenu1" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">Edit Columns</button>
                 
                             <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
@@ -149,7 +155,7 @@
                         </div>
                         {{-- <input type="text" name="search" class="form-control" placeholder="Search" id="search" --}}
                             {{-- value="{{request()->get('search') }}" style="width:unset;"> --}}
-                            <input type="text" placeholder="Type and Enter" id="searchValue" name="search" value="{{ request()->get('search') }}"  class="form-control"  style="width:unset;">
+                            {{-- <input type="text" placeholder="Type and Enter" id="searchValue" name="search" value="{{ request()->get('search') }}"  class="form-control"  style="width:unset;"> --}}
                     </div>
                     <div class="table-responsive">
                         <table id="table" class="table">

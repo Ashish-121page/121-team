@@ -52,6 +52,9 @@ $breadcrumb_arr = [
             </div>
         </div>
         <div class="row">
+            <div class="col-12">
+                <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_ide={{ encrypt(auth()->id()) }}&properties=true" class="btn btn-secondary">Back</a>
+            </div>
             <div class="col-md-8 mx-auto">
                 <!-- start message area-->
                @include('backend.include.message')

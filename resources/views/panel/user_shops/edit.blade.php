@@ -83,44 +83,51 @@
                             {{-- <li class="nav-item">
                                 <a data-active="my-info" class="mr-2 active-swicher btn pills-btn text-white @if(request()->has('active') && request()->get('active') == "my-info") active  @endif" id="pills-my-info-tab" data-toggle="pill" href="#previous-month" role="tab" aria-controls="pills-my-info" aria-selected="false">{{ __('My Info')}}</a>
                             </li> --}}
-                            @if(AuthRole() == 'Admin')
+                            {{-- @if(AuthRole() == 'Admin')
 
                                 <li class="nav-item ">
-                                    <a data-active="shop-details" class="mr-2 active-swicher text-white pills-btn btn @if(request()->has('active') && request()->get('active') == "shop-details") active  @endif" id="pills-general-tab" data-toggle="pill" href="#last-month" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Account Info')}}</a>
+                                    <a data-active="shop-details" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "shop-details") active  @endif" id="pills-general-tab" data-toggle="pill" href="#last-month" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Account Info')}}</a>
+                                </li>
+                            @endif --}}
+
+                            @if(AuthRole() == 'User')
+
+                                <li class="nav-item ">
+                                    <a data-active="shop-details" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "shop-details") active  @endif" id="pills-general-tab" data-toggle="pill" href="#last-month" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Account Info')}}</a>
                                 </li>
                             @endif
                                 
 
-                            <li class="nav-item ">
-                                <a data-active="page-feature" class="mr-2 active-swicher text-white pills-btn btn @if(request()->has('active') && request()->get('active') == "page-feature") active  @endif" id="pills-general-tab" data-toggle="pill" href="#page-feature" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('My Page')}}</a>
-                            </li>
+                            {{-- <li class="nav-item ">
+                                <a data-active="page-feature" class="mr-2 active-swicher  btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "page-feature") active  @endif" id="pills-general-tab" data-toggle="pill" href="#page-feature" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('My Page')}}</a>
+                            </li> --}}
 
-                            @if (AuthRole() == 'Admin')
+                            @if (AuthRole() == 'User')
                                 <li class="nav-item">
-                                    <a  data-active="business_profile" class="mr-2  active-swicher btn pills-btn text-white @if(request()->has('active') && request()->get('active') == "business_profile") active  @endif" id="pills-story-tab" data-toggle="pill" href="#user_shop_story" role="tab" aria-controls="pills-story" aria-selected="false">{{ __('E-KYC')}}</a>
+                                    <a  data-active="business_profile" class="mr-2  active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "business_profile") active  @endif" id="pills-story-tab" data-toggle="pill" href="#user_shop_story" role="tab" aria-controls="pills-story" aria-selected="false">{{ __('E-KYC')}}</a>
                                 </li>
                             @endif
 
                           
 
                             <li class="nav-item ">
-                                <a data-active="about-section" class="mr-2 active-swicher text-white pills-btn btn @if(request()->has('active') && request()->get('active') == "about-section") active  @endif" id="pills-general-tab" data-toggle="pill" href="#about-section" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Brief Intro')}}</a>
+                                <a data-active="about-section" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "about-section") active  @endif" id="pills-general-tab" data-toggle="pill" href="#about-section" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Brief Intro')}}</a>
                             </li>
                             
                            
                             <li class="nav-item">
-                                <a data-active="my-address" class="mr-2 active-swicher btn pills-btn text-white @if(request()->has('active') && request()->get('active') == "my-address") active  @endif" id="pills-my-address-tab" data-toggle="pill" href="#my-address-area" role="tab" aria-controls="pills-my-address" aria-selected="false">{{ __('My Address')}}</a>
+                                <a data-active="my-address" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "my-address") active  @endif" id="pills-my-address-tab" data-toggle="pill" href="#my-address-area" role="tab" aria-controls="pills-my-address" aria-selected="false">{{ __('My Address')}}</a>
                             </li>
 
                             <li class="nav-item ">
-                                <a data-active="shop-passcodes" class="mr-2 active-swicher text-white pills-btn btn @if(request()->has('active') && request()->get('active') == "shop-passcodes") active  @endif" id="pills-settings2-tab" data-toggle="pill" href="#pills-settings2" role="tab" aria-controls="pills-settings2" aria-selected="false">{{ __('Passcodes')}}</a>
+                                <a data-active="shop-passcodes" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "shop-passcodes") active  @endif" id="pills-settings2-tab" data-toggle="pill" href="#pills-settings2" role="tab" aria-controls="pills-settings2" aria-selected="false">{{ __('Passcodes')}}</a>
                             </li>
 
                             
 
-                            {{-- <li class="nav-item">
-                                <a data-active="security" class="mr-2 active-swicher btn pills-btn text-white @if(request()->has('active') && request()->get('active') == "security") active  @endif" id="pills-features-tab" data-toggle="pill" href="#features" role="tab" aria-controls="pills-features" aria-selected="false">{{ __('Security')}}</a>
-                            </li> --}}
+                            <li class="nav-item">
+                                <a data-active="security" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "security") active  @endif" id="pills-features-tab" data-toggle="pill" href="#features" role="tab" aria-controls="pills-features" aria-selected="false">{{ __('Security')}}</a>
+                            </li>
                             {{-- <li class="nav-item">
                                 <a data-active="team" class="mr-2 active-swicher btn pills-btn text-white @if(request()->has('active') && request()->get('active') == 'team') active  @endif" id="pills-team-tab" data-toggle="pill" href="#user-shop-team" role="tab" aria-controls="pills-team" aria-selected="false">{{ __('Team')}}</a>
                             </li>
@@ -615,31 +622,31 @@
                                         </form>
 
                                         {{-- Team Form --}}
-                                        <hr>
+                                        {{-- <hr> --}}
                                         <h6 class="mt-3">Team Section</h6>
                                         <form action="{{ route('panel.teams.user-shops.update') }}" method="post" enctype="multipart/form-data">
                                             @csrf
                                             <input type="hidden" name="user_shop_id" id="" value="{{ $user_shop->id }}">
                                                 <div class="row mt-3">
                                                     <div class="col-md-12 col-12">
-                                                        <div class="form-group {{ $errors->has('title') ? 'has-error' : '' }}">
+                                                        {{-- <div class="form-group {{ $errors->has('title') ? 'has-error' : '' }}">
                                                             <label for="title" class="control-label">Title</label>
                                                             <input class="form-control" placeholder="Enter Title" name="title" required type="text" id="title" value="{{ $team['title'] ?? '' }}">
-                                                        </div>
+                                                        </div> --}}
                                                     </div>  
                                                     <div class="col-md-12 col-12">
-                                                        <div class="form-group {{ $errors->has('description') ? 'has-error' : '' }}">
+                                                        {{-- <div class="form-group {{ $errors->has('description') ? 'has-error' : '' }}">
                                                             <label for="description" class="control-label">Description</label>
                                                             <textarea class="form-control" placeholder="Enter Descriptoin" name="description" type="text" id="description"
                                                                 value="">{{ $team['description'] ?? '' }}</textarea>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
-                                                    <div class="col-md-12">
+                                                    {{-- <div class="col-md-12">
                                                         <div class="form-group">
                                                             <button type="submit" class="btn btn-primary">Update</button>
                                                             <a href="{{ inject_subdomain('about-us', $user_shop->slug)}}#team" class="btn btn-outline-primary" target="_blank">Preview</a>
                                                         </div>
-                                                    </div> 
+                                                    </div>  --}}
                                                 </div>    
                                             
                                                 <div class="row">
@@ -721,7 +728,7 @@
                             
                             {{-- New Pill 2 By Ashish --}}
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == "page-feature") active show @endif" id="page-feature" role="tabpanel" aria-labelledby="pills-general-tab">
-                                <div class="row">
+                                <div class="row d-none">
                                     <div class="col-lg-8">
                                        <h6 class="my-3">Page Features</h6>
                                         {{-- <form action="{{ route('panel.user_shops.contact',$user_shop->id) }}" method="post">
@@ -1263,10 +1270,12 @@
                                                                @endif
                                                            @endif
                                                        </div>
+                                                       @if(AuthRole() == 'Admin')
                                                        <div class="col-md-12 col-12 mt-3">
-                                                        <label for="last_site" class="form-label">Existing Site</label>
-                                                        <input type="text" placeholder="Existing Site" class="form-control" value="{{ $ekyc->last_site  ?? ''}}" readonly>
-                                                    </div>
+                                                            <label for="last_site" class="form-label">Existing Site</label>
+                                                            <input type="text" placeholder="Existing Site" class="form-control" value="{{ $ekyc->last_site  ?? ''}}" readonly>
+                                                        </div>
+                                                    
         
                                                     <div class="col-md-12 col-12 mt-3">
                                                         <label for="last_site" class="form-label">Applying For Account</label>
@@ -1289,6 +1298,7 @@
                                                         <label for="remarks" class="form-label">User Remarks</label>
                                                         <input type="text" placeholder="User remarks" class="form-control" value="{{ $ekyc->remarks  ?? ''}}" name="remarks" readonly>
                                                     </div>
+                                                    @endif
                                                        <hr class="m-2">
                                                        @if(AuthRole() == 'Admin')
                                                            @if($user->ekyc_status == 1)
