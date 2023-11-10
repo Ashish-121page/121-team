@@ -60,7 +60,7 @@
                             <h3>Offers</h3>
                             <div class="d-flex justicy-content-right">
                                 @php
-                                    $slug = App\Models\Usershop::where('user_id',auth()->user()->id)->first()->slug;
+                                    $slug = App\Models\UserShop::where('user_id',auth()->user()->id)->first()->slug;
                                 @endphp
                                 @if(AuthRole() != 'User')
                                     <div class="form-group mb-0 mr-2">
@@ -197,9 +197,9 @@
                                                                     Passcode: {{ $proposal->password }}
                                                                 </span> --}}
                                                                 <br>
-                                                                @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == "")
+                                                                {{-- @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == "")
                                                                     <span class="mt-3">Expiry : {{ $proposal->valid_upto ?? "None"}} </span>
-                                                                @endif
+                                                                @endif --}}
                                                         </div>
                                                     @endif
                                                 </div>
@@ -304,6 +304,34 @@
                     }
                 });
             });
+
+
+            function copyTextToClipboard(text) {
+                    if (!navigator.clipboard) {
+                        fallbackCopyTextToClipboard(text);
+                        return;
+                    }
+                    navigator.clipboard.writeText(text).then(function() {
+                    }, function(err) {
+                    });
+                    $.toast({
+                        heading: 'SUCCESS',
+                        text: "Offer link copied.",
+                        showHideTransition: 'slide',
+                        icon: 'success',
+                        loaderBg: '#f96868',
+                        position: 'top-right'
+                    });
+            }
+
+            $(".copybtn").click(function (e) {
+                e.preventDefault();
+                var link = $(this).val();
+                copyTextToClipboard(link);
+            });
+
+
+            
         });
         
     </script>

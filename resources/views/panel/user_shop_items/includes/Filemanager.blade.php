@@ -1,6 +1,7 @@
+
 <div class="container-fluid p-0 m-0">
-    <iframe src="{{ url('/laravel-filemanager') }}" style="width: 100%; height: 85vh; overflow: hidden; border: none;"></iframe>
-    {{-- <iframe src="https://devtest.121.page/shop" style="width: 100%; height: 85vh; overflow: hidden; border: none;"></iframe> --}}
+    {{-- <iframe src="{{ url('/laravel-filemanager') }}" style="width: 100%; height: 85vh; overflow: hidden; border: none;"></iframe> --}}
+    <iframe src="{{ route('panel.filemanager.index') }}" style="width: 100%; height: 85vh; overflow: hidden; border: none;"></iframe>
 </div>
 
 @push('script')

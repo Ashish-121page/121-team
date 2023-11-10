@@ -214,6 +214,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::group(['namespace' => 'Admin\ConstantManagement','prefix' => 'constant-management', 'as' => 'constant_management.'], function () {
 
         Route::group(['middleware' => 'can:manage_category', 'prefix' => 'category', 'as' => 'category.'], function () {
+
             Route::get('/view/{type_id}', [CategoryController::class,'index'])->name('index');
             Route::get('/create/{type_id}/{level?}/{parent_id?}', [CategoryController::class,'create'])->name('create');
             Route::post('/store', [CategoryController::class,'store'])->name('store');
@@ -223,6 +224,8 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
             Route::post('/change', [CategoryController::class,'change'])->name('changeup');
             Route::post('/update/{id}', [CategoryController::class,'update'])->name('update');
             Route::get('/delete/{id}', [CategoryController::class,'destroy'])->name('delete');
+
+            Route::any('/select/Global/{user_id}', [CategoryController::class,'selectglobalCategory'])->name('select.global');
 
             Route::post('bulk/delete/{user_id}', [CategoryController::class,'bulkdelete'])->name('bulk.delete');
 
@@ -245,6 +248,8 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::get('/{user}', [settingController::class,'index'])->name('index');
         Route::get('makedefaultTemplate/{user}{template}', [settingController::class,'makedefaultTemplate'])->name('make.default.Template');
         Route::post('offer/banner', [settingController::class,'uploadbanner'])->name('upload.banner');
+        
+        Route::get('edit/Template/{template}', [settingController::class,'EditTemplate'])->name('edit.Template');
         
     });
 

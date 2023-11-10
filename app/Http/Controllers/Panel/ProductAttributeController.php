@@ -115,7 +115,7 @@ class ProductAttributeController extends Controller
             }
  
             $chkCount = ProductAttribute::where('name',$request->name)->where('user_id',$request->user_id)->get();
-            if (count($chkCount) != 0) {   
+            if (count($chkCount) == 0) {   
                 // ! Uploading Attributes
                 $AttributValue = ProductAttribute::create([
                     'name' => $request->get('name'),

@@ -77,9 +77,9 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="">Model Number</label>
+                                    <label for="">Model Number <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" placeholder="Enter Model Number" name="model_code"
-                                    value="{{ old('model_code') }}" list="available_modelcode" autocomplete="off">
+                                    value="{{ old('model_code') }}" list="available_modelcode" autocomplete="off" required>
                                     @if ($available_model_code != null)
                                         <datalist id="available_modelcode">
                                             @foreach ($available_model_code as $item)
@@ -430,8 +430,7 @@
                                     <hr class="text-primary">
                                     <label for="weightbox">
                                         <div class="h6">Product Weight</div>
-                                    </label>
-                                    <br>
+                                    </label> &nbsp;&nbsp;&nbsp;
                                     <input type="checkbox" data-open="weightboxbtn" id="weightbox" class="hiddenbxbtn">
                                 </div>
                             </div>
@@ -472,8 +471,7 @@
                                     <hr class="text-primary">
                                     <label for="productdimensionsbx">
                                         <div class="h6">Product Dimensions</div>
-                                    </label>
-                                    <br>
+                                    </label> &nbsp;&nbsp;&nbsp;
                                     <input type="checkbox" data-open="productdimensionsbox" id="productdimensionsbx" class="hiddenbxbtn">
                                 </div>
                             </div>
@@ -524,8 +522,7 @@
                                     <hr class="text-primary">
                                     <label for="productpackingbx">
                                         <div class="h6">Product Packing</div>
-                                    </label>
-                                    <br>
+                                    </label> &nbsp;&nbsp;&nbsp;
                                     <input type="checkbox" data-open="productpackingbox" id="productpackingbx" class="hiddenbxbtn">
                                 </div>
                             </div>
@@ -603,8 +600,7 @@
                                     <hr class="text-primary">
                                     <label for="productshippingbx">
                                         <div class="h6">Shipping Details</div>
-                                    </label>
-                                    <br>
+                                    </label> &nbsp;&nbsp;&nbsp;
                                     <input type="checkbox" data-open="productshippingbox" id="productshippingbx" class="hiddenbxbtn">
                                 </div>
                             </div>
@@ -653,8 +649,7 @@
                                 <hr class="text-primary">
                                 <label for="productexclusivebx">
                                     <div class="h6">Exclusive  </div>
-                                </label>
-                                <br>
+                                </label> &nbsp;&nbsp;&nbsp;
                                 <input type="checkbox" data-open="productexclusivebox" id="productexclusivebx" class="hiddenbxbtn">
                             </div>
                         </div>
@@ -687,8 +682,7 @@
                                 <hr class="text-primary">
                                 <label for="productsamplebx">
                                     <div class="h6">Sample Details</div>
-                                </label>
-                                <br>
+                                </label> &nbsp;&nbsp;&nbsp;
                                 <input type="checkbox" data-open="productsamplebox" id="productsamplebx" class="hiddenbxbtn">
                             </div>
                         </div>
@@ -755,8 +749,7 @@
                                 <hr class="text-primary">
                                 <label for="productsourcedbx">
                                     <div class="h6">Sourced from Outside</div>
-                                </label>
-                                <br>
+                                </label> &nbsp;&nbsp;&nbsp;
                                 <input type="checkbox" data-open="productsourcedbox" id="productsourcedbx" class="hiddenbxbtn">
                             </div>
                         </div>

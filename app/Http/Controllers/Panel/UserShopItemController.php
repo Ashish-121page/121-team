@@ -192,9 +192,6 @@ class UserShopItemController extends Controller
 
                     $pinned_products = Product::whereUserId($request->type_id)->whereIn('id', $scoped_items->pluck('product_id'))->where('pinned',1)->orderBy('pinned','DESC')->get();
                     $pinned_items = $pinned_products->pluck('id')->toArray();
-
-
-                
                 }
             }else{
                 $scoped_products = [];

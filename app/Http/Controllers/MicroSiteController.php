@@ -105,6 +105,8 @@ class MicroSiteController extends Controller
             ->telegram()
             ->whatsapp()
             ->reddit();
+
+            
         return view('frontend.micro-site.index',compact('slug','banner','products','user_shop','about','testimonial','social','random_products','shareButtons1','story','related_products','group_id','user'));
     }
     public function shopCart(Request $request)
@@ -201,12 +203,17 @@ class MicroSiteController extends Controller
         if(request()->has('brand') != null && request()->get('brand') != null){
             $user_shop_items->where('products.brand', request()->get('brand'));
         }
+
         if(request()->has('from')  && request()->get('from') != null &&  request()->has('to')  && request()->get('to') != null){
+
+            $from = request()->get('from') * session()->get('Currency_exchange') ?? request()->get('from');
+            $to = request()->get('to') * session()->get('Currency_exchange') ?? request()->get('to');
+
             if(request()->to == 10){
-                $user_shop_items->where('user_shop_items.price','>=',request()->get('from'));
+                $user_shop_items->where('user_shop_items.price','>=',$from);
             }else{
-                $user_shop_items->whereBetween('user_shop_items.price', [request()->get('from'), request()->get('to')]);
-            }
+                $user_shop_items->whereBetween('user_shop_items.price', [$from, $to]);
+            }   
         }
 
         if(request()->has('sort') && request()->get('sort') != null){
@@ -228,6 +235,16 @@ class MicroSiteController extends Controller
         }else{
             $user_shop_items->where('products.exclusive','0');
         }
+
+
+
+        
+        if ($request->has('pinned') && $request->get('pinned','off') == 'on' ) {
+            $pinned_products = Product::where('user_id',$user_shop->user_id)->where('pinned',1)->pluck('id');
+            $user_shop_items->whereIn('product_id',$pinned_products);
+            // magicstring($user_shop_items->get());
+        }
+
 
         $items = $user_shop_items
                 ->whereIsPublished(1)
@@ -262,20 +279,18 @@ class MicroSiteController extends Controller
         $brands = Brand::whereIn('id',$brands_ids)->whereStatus(1)->get();
         $category_id = request()->get('category_id');
         $selectedcolors = request()->get('color');
+        
         $minID = Product::whereNotNull('price')->where('user_id',$user_shop->user_id)->min("price");
         $maxID = Product::whereNotNull('price')->where('user_id',$user_shop->user_id)->max("price");
-            // dd($minID);
-            // dd($maxID);
-            // magicstring($countattri);
-            // return;
-
 
         $proposalid = -1;
         $temdata = json_decode($user_shop->team);
         $manage_offer_guest = $temdata->manage_offer_guest ?? 0;
         $manage_offer_verified = $temdata->manage_offer_verified ?? 0;
             
-            
+        
+
+        
         if ($request->ajax()) {
             return view('frontend.micro-site.shop.loadIndex',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','user_shop','alll_searches','currency_record'));
         }

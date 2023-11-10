@@ -132,49 +132,9 @@ class SellerController extends Controller
 
     public function ashish(Request $request)
     {        
-
-
-        $folderPath = 'public/files/2'; // Replace 'your-folder-path' with the actual folder path
-
-
-        echo $folderPath.newline();
-
-        if (Storage::exists($folderPath)) {
-            $files = Storage::files($folderPath);
-            
-            foreach ($files as $file) {
-                echo "Name of The File: " . basename($file) . newline(2);
-
-                echo "Size of The File: " . number_format(Storage::size($file)/ (1024 * 1024),2)  . 'MB' . newline(2);
-                
-                echo "Last Modified Date of The File: " . date("Y-m-d H:i:s",Storage::lastModified($file)) . newline(2);
-                
-                echo "Extension of The File: " . pathinfo($file, PATHINFO_EXTENSION) . newline(2);
-
-                echo "TYpe of The File: " . Storage::mimeType($file) . newline(2);
-
-            }
-        } else {
-            echo "The specified folder does not exist.";
-        }
-
-
-        echo public_path();
-
-    // $folderPath = public_path('public/files/2'); // Replace 'your-folder-path' with the actual folder path
-
-    //     if (FacadesFile::isDirectory($folderPath)) {
-    //         $files = FacadesFile::files($folderPath);
-            
-    //         foreach ($files as $file) {
-    //             // $file is an instance of SplFileInfo
-    //             echo $file->getFilename() . "<br>";
-    //         }
-    //     } else {
-    //         echo "The specified folder does not exist.";
-    //     }
-
-
+        
+        magicstring(session()->all());
+        
         
         // return view('devloper.ashish.index',compact('msg','code'));
     }

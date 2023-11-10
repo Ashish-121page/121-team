@@ -127,7 +127,7 @@
                     @endif
                 </div>
         </div> --}}
-        @if(getSellerProgressStatistics(auth()->id()) != 100 || $user_shop->slug == auth()->user()->phone)
+        {{-- @if(getSellerProgressStatistics(auth()->id()) != 100 || $user_shop->slug == auth()->user()->phone) --}}
         @php
             // ` Current Progress
             $first = (auth()->user()->ekyc_status == 1) ? true : false;
@@ -189,7 +189,7 @@
 
                         {{-- Step 4  --}}
                         <div class="col bg-white shadow m-1"  @if (!$forth) title="Complete step 3" @endif>
-                            <a href="@if ($first && $second && $third && $forth) #completed @elseif($first && $second && $third) #fourthlink @else #pending @endif " @if(!$third) style="cursor: not-allowed !important" @endif>
+                            <a href="@if ($first && $second && $third && $forth) #completed @elseif($first && $second && $third) {{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }} @else #pending @endif " @if(!$third) style="cursor: not-allowed !important" @endif>
                                 <div class="circle @if ($first && $second && $third && $forth) bg-success @elseif($first && $second && $third) bg-primary @else bg-secondary @endif text-white">
                                     <span>
                                         @if ($first && $second && $third && $forth) <i class="fas fa-check-circle"></i> @else 4 @endif
@@ -199,17 +199,16 @@
                                 <div class="h6 my-2"><b>Make Offer</b></div>
                                 
                                 <p>Create fast offers for Buyers in any of ppt, pdf, excel formats</p>
-                            </a>
+                            </>
                         </div>
 
                         {{-- Step 5  --}}
                         <div class="col bg-white shadow m-1"  @if (!$fifth) title="Complete step 4" @endif>
-                            @if ($first && $second && $third && $forth && $fifth) 
-                                <a href="#completed">
+                            <a href="{{ route('panel.settings.index',encrypt(auth()->id())) }}"@if ($first && $second && $third && $forth && $fifth) #completed>
                             @elseif($first && $second && $third && $forth) 
                                 <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank">
                             @else 
-                                <a href="#pending" @if(!$forth) style="cursor: not-allowed !important" @endif>
+                                <a href="{{ route('panel.settings.index',encrypt(auth()->id())) }}" @if(!$forth) style="cursor: not-allowed !important" @endif>
                             @endif
                                     <div class="circle @if ($first && $second && $third && $forth && $fifth) bg-success @elseif($first && $second && $third && $forth) bg-primary @else bg-secondary @endif text-white">
                                         <span>
@@ -225,7 +224,7 @@
                     <div class="bar"></div>
                 </div>
             </div>
-        @else
+        {{-- @else
             <div class="col-xl-12 col-lg-12 col-md-12 col-12 statistics_count">
                 <div class="card">
                     <div class="card-header">
@@ -361,7 +360,7 @@
                     </div>
                 </div>
             </div>  
-        @endif
+        @endif --}}
     @endif
     <!-- project-ticket end -->
 

@@ -5,12 +5,13 @@
 
     @if (request()->has('products') || request()->has('productsgrid'))
         <div class="d-flex">
-            <a href="?type={{ request()->get('type') }}&type_id={{ request()->get('type_id') }}&productsgrid=true" class="btn btn-icon btn-outline-primary mx-1">
+            <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&productsgrid=true&category_id={{request()->get('category_id') }}&sub_category_id={{ request()->get('sub_category_id') }}" class="btn btn-icon btn-outline-primary mx-1 @if(request()->has('productsgrid')) active @endif">
                 <i class="fas fa-th-large"></i>
             </a>
-            <a href="?type={{ request()->get('type') }}&type_id={{ request()->get('type_id') }}&products=true" class="btn btn-icon btn-outline-primary mx-1">
+            <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{request()->get('category_id') }}&sub_category_id={{ request()->get('sub_category_id') }}" class="btn btn-icon btn-outline-primary mx-1 @if(request()->has('products')) active @endif">
                 <i class="fas fa-list"></i>
             </a>
+
         </div>
         <a href="{{ route('panel.products.create') }}?action=nonbranded&update_record"
             class="btn btn-outline-primary  mx-1">
@@ -26,7 +27,7 @@
         @endif
 
         @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id"))
-            <button id="delete_all_dummy"class="btn btn-outline-danger ">Delete All Products</button>
+            <button id="delete_all_dummy"class="btn btn-outline-primary  ">Delete All Products</button>
         @endif
     
 
