@@ -141,6 +141,16 @@
                 -webkit-box-shadow: unset !important;
                 box-shadow: unset !important;
             }
+            /* for md stepper create */
+            .md-step editable custom_active_add-::before{
+                content: '';
+                background-color: #8484f8;
+                height: ;
+                width: ;
+                position: absolute;
+                bottom: ;
+                left: ;
+            }
         </style>
     @endpush
 
@@ -555,6 +565,10 @@
                     let newwindow = $(`[data-index="${stepindex+1}"]`);
                     activeIndex = (stepindex+1);
 
+                    $.each($('.md-step'), function (i, v) {
+                     $(this).removeClass('active');
+                    });
+
                     $(this).addClass('active');
                     $(".stepper").addClass('d-none');
                     $('.stepper-actions').find('.previous_btn').addClass('d-none');
@@ -611,11 +625,12 @@
             });
 
 
-        </script>
+        </script>       
        
         
         <script>
             $(document).ready(function() {
+
                 $("#check_all").click(function(e) {
                     $(".my_attribute").click();
                 });
@@ -623,17 +638,29 @@
                 $(".my_attribute").click(function(e) {
                     let keyindex = $(this).data('index');
                     let tag = `<div class="form-group" id="parent_${$(this).data('index')}">
-                    <input type="checkbox" value="${$(this).val()}" id="${$(this).attr('id')}" class="selected_prop m-2" checked data-parent="parent_${$(this).data('index')}">
-                    <label for="${$(this).attr('id')}" class="form-label" style="font-size: large;user-select: none;">${$(this).val()}</label>
-                </div>`;
+                        <input type="checkbox" value="${$(this).val()}" id="${$(this).attr('id')}" class="selected_prop m-2 d-none" checked data-parent="parent_${$(this).data('index')}">
+                        <label for="${$(this).attr('id')}" class="form-label" style="font-size: 12.8px;user-select: none;">${$(this).val()}</label>
+                    </div>`;
 
                     if ($(this).is(":checked")) {
                         $(".selected_tag").append(tag);
                     } else {
                         $(`#parent_${$(this).data('index')}`).remove();
                     }
-                });
 
+                    myfunc();
+                });
+                
+                function myfunc() {
+                    if ($(".my_attribute:checked").length > 0) {
+                        // any one is checked
+                        $("#tableselected").removeClass('invisible');
+                    } else {
+                        $("#tableselected").addClass('invisible');
+                    }
+                }
+
+                
             });
         </script>
 
@@ -859,19 +886,36 @@
             <script>
                 $(document).ready(function() {
                     $(".updateproducts").click();
-
-                    $.toast({
-                        heading: 'Success',
-                        text: 'Upload Excel to Update SKUs',
-                        icon: 'success',
-                        position: 'top-right',
-                        textAlign: 'left',
-                        loader: true,
-                        loaderBg: '#9EC600'
-                    })
+                    // $.toast({
+                    //     heading: 'Success',
+                    //     text: 'Upload Excel to Update SKUs',
+                    //     icon: 'success',
+                    //     position: 'top-right',
+                    //     textAlign: 'left',
+                    //     loader: true,
+                    //     loaderBg: '#9EC600'
+                    // })
                 });
             </script>
         @endif
+
+        @if (request()->has('single_product'))
+            <script>
+                $(document).ready(function() {
+                    $(".getSingleProduct").click();
+                });
+            </script>
+        @endif
+
+        @if (request()->has('bulk_product'))
+            <script>
+                $(document).ready(function() {
+                    $(".getcustomProduct").click();
+                });
+            </script>
+        @endif
+
+
 
 
     @endpush

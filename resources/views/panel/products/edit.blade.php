@@ -43,6 +43,10 @@
                 z-index: 9999;
             }
 
+            .click1{
+                cursor: pointer;
+            }
+            
         </style>
     @endpush
 
@@ -78,8 +82,14 @@
                         <form action="{{ route('panel.products.update', $product->id) }}" method="post" enctype="multipart/form-data" id="ProductForm">
                             @csrf
                             <input type="hidden" name="brand_id" value="{{$product->brand_id}}">
+                            <div class="row mb-5">
+                                <div class="col-12" style="margin-bottom: 4%">
+                                    <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_ide={{ encrypt(auth()->id()) }}&productsgrid=true" class="btn btn-secondary">Back</a>
+                                </div>
+                            </div>
+
                             {{-- Stepper Start --}}
-                            <div class="md-stepper-horizontal orange">
+                            <div class="md-stepper-horizontal orange mt-5">
                                 <div class="md-step active done custom_active_add-0" data-step="0">
                                     <div class="md-step-circle"><span>1</span></div>
                                     <div class="md-step-title">Essentials</div>
@@ -88,37 +98,45 @@
                                 </div>
                                 <div class="md-step editable custom_active_add-1" data-step="1">
                                     <div class="md-step-circle"><span>2 </span></div>
+                                    <div class="md-step-title">Asset Safe</div>
+                                    <div class="md-step-bar-left"></div>
+                                    <div class="md-step-bar-right"></div>
+                                </div>
+                                <div class="md-step editable custom_active_add-5" data-step="2">
+                                    <div class="md-step-circle"><span>3</span></div>
                                     <div class="md-step-title">Sale Pricing</div>
                                     <div class="md-step-bar-left"></div>
                                     <div class="md-step-bar-right"></div>
                                 </div>
-                                <div class="md-step editable custom_active_add-2" data-step="2">
-                                    <div class="md-step-circle"><span>3</span></div>
+                                <div class="md-step editable custom_active_add-2" data-step="3">
+                                    <div class="md-step-circle"><span>4</span></div>
                                     <div class="md-step-title">Basic Info</div>
                                     <div class="md-step-bar-left"></div>
                                     <div class="md-step-bar-right"></div>
                                 </div>
-                                <div class="md-step editable custom_active_add-3" data-step="3">
-                                    <div class="md-step-circle"><span>4</span></div>
+                                <div class="md-step editable custom_active_add-3" data-step="4">
+                                    <div class="md-step-circle"><span>5</span></div>
                                     <div class="md-step-title">Product Properties</div>
                                     <div class="md-step-bar-left"></div>
                                     <div class="md-step-bar-right"></div>
                                 </div>
-                                <div class="md-step editable custom_active_add-4" data-step="4">
-                                    <div class="md-step-circle"><span>5</span></div>
+                                <div class="md-step editable custom_active_add-4" data-step="5">
+                                    <div class="md-step-circle"><span>6</span></div>
                                     <div class="md-step-title">Internal - Production</div>
                                     <div class="md-step-bar-left"></div>
                                     <div class="md-step-bar-right"></div>
                                 </div>
-                                {{-- <div class="md-step editable custom_active_add-5">
-                                    <div class="md-step-circle"><span>6</span></div>
-                                    <div class="md-step-title">Custom Attributes</div>
+                                
+                                <div class="md-step editable custom_active_add-6" data-step="6">
+                                    <div class="md-step-circle"><span>7</span></div>
+                                    <div class="md-step-title"> Variants</div>
                                     <div class="md-step-bar-left"></div>
                                     <div class="md-step-bar-right"></div>
-                                </div> --}}
+                                </div>
                             </div>
 
                             {{--  Stepper End  --}}
+                           
 
                             <div class="stepper" data-index="1">
                                 <div class="card ">
@@ -250,35 +268,8 @@
                                         </div>
                                     </div>
                                 </div>
-
-
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h3>Images</h3>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6 col-12">
-                                                <div class="form-group {{ $errors->has('img') ? 'has-error' : ''}}">
-                                                    <label for="img" class="control-label">Image_main</label>
-                                                    <input class="form-control" name="img[]" multiple type="file" id="img" value="{{$product->img}}">
-                                                    <div class="row">
-                                                        @forelse ($medias as $media)
-                                                            <div class="col-3">
-                                                                <div>
-                                                                    <img id="img-preview" src="{{ asset($media->path) }}" class="mt-3 product-img" />
-                                                                    <a href="{{ route('panel.products.deleteImage',$media->id) }}" style="position: absolute;right: 10px;" class="btn btn-icon btn-danger delete-item"><i class="ik ik-trash"></i></a>
-                                                                </div>
-                                                            </div>
-                                                        @empty
-                                                        @endforelse
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>  
-                                    </div>
-                                </div>
-                                <div class="card">
+                                {{--` theme collection --}}
+                                {{-- <div class="card">
                                     <div class="card-header">
                                         <h3>Theme Collection</h3>
                                     </div>
@@ -292,9 +283,9 @@
                                                 </div>
                                                 <div class="col-md-4 col-4">
                                                     <div class="form-group">
-                                                        <label for="season_month" class="control-label">Season / Month</label >
+                                                        <label for="season_month" class="control-label">Season / Month</label > --}}
                                                         {{-- <input  class="form-control" name="season_month" type="text" id="season_month" value="{{$prodextra->season_month ?? '' }}" > --}}
-                                                        <select name="season_month" id="season_month" class="select2">
+                                                        {{-- <select name="season_month" id="season_month" class="select2">
                                                             <option value="">Select Sourcing Month</option>
                                                             @php
                                                                 $selectedMonth = $prodextra->season_month ?? '';
@@ -323,11 +314,11 @@
                                                         <label for="season_year">Theme / Collection Year</label label >
                                                         {{-- <input class="form-control" name="season_year" type="number" id="season_year" value= "{{ $prodextra->season_year ?? '0' }}"  required> --}}
                                                         {{-- <select id="season_year"></select> --}}
-                                                        <select name="season_year" id="season_year" class="form-control select2">
-                                                            <option value="">Select Year</option>
+                                                        {{-- <select name="season_year" id="season_year" class="form-control select2">
+                                                            <option value="">Select Year</option> --}}
                                                             {{-- <option value="{{ $option->id }}" @if ($option->id == $prodextra->season_year) selected
                                                                 @endif>{{  $option->name ?? ''}}</option> --}}
-                                                            @php
+                                                            {{-- @php
                                                                 $selectedYear = $prodextra->season_year ?? '';
                                                             @endphp
                                                             @for ($i = date('Y'); $i >= 1985; $i--)
@@ -342,128 +333,296 @@
                                                 </div>                                          
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
 
                             </div>
 
+                            {{-- ` Asset Safe --}}
                             <div class="stepper d-none" data-index="2">
-                                <div class="card ">
+                                <div class="card mt-2">
                                     <div class="card-header">
-                                        <h3></h3>
+                                        <h3>Upload new</h3>
                                     </div>
                                     <div class="card-body">
-                                        <div class="row">                                           
-
-                                            <div class="col-md-4 col-4">
-                                                <div class="form-group ">
-                                                    <label for="base_currency" class="control-label">Base currency </label>
-                                                    {{-- <input  class="form-control" name="base_currency" type="text" id="base_currency" value="{{$product->base_currency}}" > --}}
-                                                    @php
-                                                        $currencies = App\Models\UserCurrency::where('user_id',auth()->id())->get();
-                                                    @endphp
-                                                    <select name="base_currency" id="base_currency" class="select2">
-                                                        @forelse ($currencies as $item)
-                                                            <option value="{{ $item->currency }}">{{ $item->currency }}</option>
+                                        <div class="row">
+                                            <div class="col-md-12 col-12">
+                                                <div class="form-group {{ $errors->has('img') ? 'has-error' : ''}}">
+                                                    {{-- <label for="img" class="control-label">Image_main</label> --}}
+                                                    <input class="form-control" name="img[]" multiple type="file" id="img" value="{{$product->img}}">
+                                                    <div class="row">
+                                                        {{-- @forelse ($medias as $media)
+                                                            <div class="col-3">
+                                                                <div>
+                                                                    <img id="img-preview" src="{{ asset($media->path) }}" class="mt-3 product-img" />
+                                                                    <a href="{{ route('panel.products.deleteImage',$media->id) }}" style="position: absolute;right: 10px;" class="btn btn-icon btn-danger delete-item"><i class="ik ik-trash"></i></a>
+                                                                </div>
+                                                            </div>
                                                         @empty
-                                                            <option value="INR">INR</option>
-                                                        @endforelse
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 col-4">
-                                                <div class="form-group ">
-                                                    <label for="selling_price_unit" class="control-label">Selling Price Unit </label>
-                                                    <input  class="form-control" name="selling_price_unit" type="text" id="selling_price_unit" value="{{$product->selling_price_unit}}" >
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 col-4">
-                                                <div class="form-group">
-                                                    <label for="min_sell_pr_without_gst" class="control-label">Customer Price, without GST </label>
-                                                    <input class="form-control" name="min_sell_pr_without_gst" type="number" id="min_sell_pr_without_gst" value="{{ $product->min_sell_pr_without_gst ?? '' }}" >
-                                                </div>
-                                            </div>
-
-                                            @php
-                                                $vip_group = getPriceGroupByGroupName(auth()->id(),"VIP");
-                                                $reseller_group = getPriceGroupByGroupName(auth()->id(),"Reseller");
-                                            @endphp
-
-                                            
-                                            <div class="col-md-4 col-4 d-none">
-                                                <div class="form-group ">
-                                                    <label for="vip_group" class="control-label">VIP Customer Price, without GST  </label>
-                                                    <input  class="form-control" name="vip_group" type="number" id="vip_group" value="{{ getPriceByGroupIdProductId($vip_group->id,$product->id,0) ?? '0' }}" >
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 col-4 d-none">
-                                                <div class="form-group ">
-                                                    <label for="reseller_group" class="control-label">Reseller Price, without GST </label>
-                                                    <input  class="form-control" name="reseller_group" type="number" id="reseller_group"  value="{{ getPriceByGroupIdProductId($reseller_group->id,$product->id,0) ?? '0' }}" >
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 col-4">
-                                                <div class="form-group ">
-                                                    <label for="mrp" class="control-label">MRP Incl. tax </label>
-                                                    <input  class="form-control" name="mrp" type="number" id="mrp" value="{{ $product->mrp  }}" >
-                                                </div>
-                                            </div>                                               
-
-
-                                            <div class="col-md-4 col-4">
-                                                <div class="form-group {{ $errors->has('hsn') ? 'has-error' : ''}}">
-                                                    <label for="hsn" class="control-label">HSN Tax</label>
-                                                    <input  class="form-control" name="hsn" type="text" id="hsn" value="{{$product->hsn}}" >
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 col-4">
-                                                <div class="form-group {{ $errors->has('hsn_percent') ? 'has-error' : ''}}">
-                                                    <label for="hsn_percent" class="control-label">HSN Percent </label>
-                                                    <input  class="form-control" name="hsn_percent" type="number" id="hsn_percent" value="{{$product->hsn_percent}}" >
-                                                </div>
-                                            </div>
-
-                                            
-                                            
-                                            
-                                            <div class="col-md-6">
-                                                
-                                            </div>
-                                            @if ($product->user_id != null)
-                                                <input type="hidden" name="user_id" value="{{$product->user_id}}">
-                                            @else
-                                                <div class="col-md-4 col-12">
-                                                    <div class="form-group">
-                                                        <label for="user_id">User<span class="text-danger">*</span></label>
-                                                        <select name="user_id" id="user_id" class="form-control select2">
-                                                            <option value="" readonly>Select User </option>
-                                                            @foreach(UserList()  as $option)
-                                                                <option value="{{ $option->id }}" {{  old('user_id') == $option->id ? 'Selected' : '' }}>{{  $option->name ?? ''}}</option>
-                                                            @endforeach
-                                                        </select>
+                                                        
+                                                        @endforelse --}}
                                                     </div>
                                                 </div>
-                                            @endif
-
-
-                                            <div class="col-md-4 col-12 d-none">
-                                                 <div class="form-group">
-                                                    <label for="status">Status</label>
-                                                    <select name="status" id="status" class="form-control select2">
-                                                        <option value="" readonly>Select Status</option>
-                                                            @foreach(getProductStatus() as $option)
-                                                                <option value="{{  $option['id'] }}" @if ($option['id'] == $product->status) selected @endif>{{ $option['name']}}</option>
-                                                            @endforeach
-                                                    </select>
-                                                </div>
                                             </div>
-                                        </div>
+                                        </div>  
                                     </div>
                                 </div>
+                                
+                                <div class="card ">
+                                    <div class="row">
+                                        <div class="col-4">
 
-                            </div>
+                                          <table class="table">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col-1"> File Type</th>
+                                                <th scope="col-2"> # </th>
+                                                <th scope="col-3">Total Size</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr class="click1" data-table="tableimage">
+                                                <th scope="row">Images</th>
+                                                <td> {{count($medias)}}</td>
+                                                <td> {{ number_format($mediaSize_Image/(1024 * 1024),2) }} MB</td>
+                                              </tr>
+                                              <tr class="click1" data-table="tableattchment">
+                                                <th scope="row">Attachments</th>
+                                                <td> {{count($mediaAssets)}}</td>
+                                                <td> {{ number_format($mediaSize_attachment/(1024 * 1024),2) }} MB</td>
+                                              </tr>
+                                              <tr class="click1" data-table="tablegif">
+                                                <th scope="row">Gifs</th>
+                                                <td> {{count($medias_gif)}}</td>
+                                                <td> {{ number_format($mediaSize_gif/(1024 * 1024),2) }} MB</td>
+                                              </tr>
+                                              <tr class="click1" data-table="tablevideo">
+                                                <th scope="row">Videos</th>
+                                                <td> {{count($media_Video)}}</td>
+                                                <td> {{ number_format($mediaSize_video/(1024 * 1024),2) }} MB</td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+
+                                        </div>
+                                  
+                                  
+                                        <div class="col-8 justify-content-between">
+
+                                            <table class="table table-bordered d-none" id="tableimage">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col-6">Asset Name</th>
+                                                        <th scope="col-6">File Size</th>
+                                                        <th scope="col-3">Last Updated</th>
+                                                        <th scope="col-6">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse ($medias as $media)
+                                                        @php
+                                                            $path = str_replace("storage","public",$media->path);
+                                                            if (Storage::exists($path)) {   
+                                                                $filename = basename($path);                                                                
+                                                            }else{
+                                                                continue;
+                                                            }
+
+                                                            if ($media->file_type != "Image") {
+                                                                continue;
+                                                            }
+
+                                                        @endphp
+                                                        <tr>
+                                                            <th scope="row">
+                                                                {{-- {{ $filename }} --}}
+                                                                <span class="filename" data-oldname="{{$filename }}">
+                                                                    {{$filename }}
+                                                                </span>
+                                                            </th>
+                                                            <td>
+                                                                {{ number_format(Storage::size($path)/ (1024 * 1024),2) }} MB
+                                                            </td>
+                                                            <td>
+                                                                {{ date("Y-m-d H:i:s",Storage::lastModified($path)) }}
+                                                            </td>
+                                                            <td>
+                                                                <a href="{{ asset($media->path) }}" download="{{ $media->file_name }}" class="btn btn-link">Download</a>
+
+                                                                <a href="{{ route('panel.products.unlink.asset',[encrypt($product->id),encrypt($media->path) ]) }}?product={{ encrypt($product->id) }}" class="btn btn-link">Unlink</a>
+                                                                
+                                                                
+                                                                
+                                                                <button type="button" class="btn btn-link deletebtn" data-filepath="{{ encrypt($path) }}">Delete</button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                            
+                                            <table class="table table-bordered d-none" id="tableattchment">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col-6">Asset Name</th>
+                                                        <th scope="col-6">File Size</th>
+                                                        <th scope="col-3">Last Updated</th>
+                                                        <th scope="col-6">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    @forelse ($mediaAssets as $media)
+                                                        @php
+                                                            $path = str_replace("storage","public",$media->path);
+                                                            if (Storage::exists($path)) {   
+                                                                $filename = basename($path);                                                                
+                                                            }else{
+                                                                continue;
+                                                            }
+                                                                                                                   
+                                                        @endphp
+                                                        <tr>
+                                                            <th scope="row">
+                                                                {{-- {{ $filename }} --}}
+                                                                <span class="filename" data-oldname="{{$filename }}">
+                                                                    {{$filename }}
+                                                                </span>
+                                                            </th>
+                                                            <td>
+                                                                {{ number_format(Storage::size($path)/ (1024 * 1024),2) }} MB
+                                                            </td>
+                                                            <td>
+                                                                {{ date("Y-m-d H:i:s",Storage::lastModified($path)) }}
+                                                            </td>
+                                                            <td>
+                                                                <a href="{{ asset($media->path) }}" download="{{ $media->file_name }}" class="btn btn-link">Download</a>
+                                                                <a href="{{ route('panel.products.unlink.asset',[encrypt($product->id),encrypt($media->path) ]) }}" class="btn btn-link">Unlink</a>
+                                                                <button type="button" class="btn btn-link deletebtn" data-filepath="{{ encrypt($path) }}">Delete</button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+
+                                            <table class="table table-bordered d-none" id="tablegif">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col-6">Asset Name</th>
+                                                        <th scope="col-6">File Size</th>
+                                                        <th scope="col-3">Last Updated</th>
+                                                        <th scope="col-6">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    @forelse ($medias_gif as $media)
+                                                        @php
+                                                            $path = str_replace("storage","public",$media->path);
+                                                            if (Storage::exists($path)) {   
+                                                                $filename = basename($path);                                                                
+                                                            }else{
+                                                                continue;
+                                                            }
+                                                            
+                                                            if (explode("/",\Storage::mimeType($path))[1] != 'gif') {
+                                                                continue;
+                                                            }
+                                                                                                                   
+                                                        @endphp
+                                                        <tr>
+                                                            <th scope="row">
+                                                                {{-- {{ $filename }} --}}
+                                                                <span class="filename" data-oldname="{{$filename }}">
+                                                                    {{$filename }}
+                                                                </span>
+                                                            </th>
+                                                            <td>
+                                                                {{ number_format(Storage::size($path)/ (1024 * 1024),2) }} MB
+                                                            </td>
+                                                            <td>
+                                                                {{ date("Y-m-d H:i:s",Storage::lastModified($path)) }}
+                                                            </td>
+                                                            <td>
+                                                                <a href="{{ asset($media->path) }}" download="{{ $media->file_name }}" class="btn btn-link">Download</a>
+                                                                <a href="{{ route('panel.products.unlink.asset',[encrypt($product->id),encrypt($media->path) ]) }}" class="btn btn-link">Unlink</a>
+                                                                <button type="button" class="btn btn-link deletebtn" data-filepath="{{ encrypt($path) }}">Delete</button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+
+                                            <table class="table table-bordered d-none" id="tablevideo">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col-6">Asset Name</th>
+                                                        <th scope="col-6">File Size</th>
+                                                        <th scope="col-3">Last Updated</th>
+                                                        <th scope="col-6">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    @forelse ($media_Video as $media)
+                                                        @php
+                                                            $path = str_replace("storage","public",$media->path);
+                                                            if (Storage::exists($path)) {   
+                                                                $filename = basename($path);                                                                
+                                                            }else{
+                                                                continue;
+                                                            }
+                                
+                                                            if (explode("/",\Storage::mimeType($path))[0] != 'video') {
+                                                                continue;
+                                                            }
+
+                                                        @endphp
+                                                        <tr>
+                                                            <th scope="row">
+                                                                {{-- {{ $filename }} --}}
+                                                                <span class="filename" data-oldname="{{$filename }}">
+                                                                    {{$filename }}
+                                                                </span>
+                                                            </th>
+                                                            <td>
+                                                                {{ number_format(Storage::size($path)/ (1024 * 1024),2) }} MB
+                                                            </td>
+                                                            <td>
+                                                                {{ date("Y-m-d H:i:s",Storage::lastModified($path)) }}
+                                                            </td>
+                                                            <td>
+                                                                <a href="{{ asset($media->path) }}" download="{{ $media->file_name }}" class="btn btn-link">Download</a>
+                                                                <a href="{{ route('panel.products.unlink.asset',[encrypt($product->id),encrypt($media->path) ]) }}" class="btn btn-link">Unlink</a>
+                                                                <button type="button" class="btn btn-link deletebtn" data-filepath="{{ encrypt($path) }}">Delete</button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+
+                                            
+                                        </div>
+
+                                    </div>
+                                                    
+                                                                                        
+                                </div>
+                                
+                            </div> 
                             
-                            <div class="stepper d-none" data-index="3">
+                            <div class="stepper d-none" data-index="4">
                                 <div class="card">
                                     <div class="card-header">
                                         <h3>Basic Product Info</h3>
@@ -494,7 +653,7 @@
                                                     </div>
                                                 </div>
                                                 
-                                                <div class="col-md-4 col-4">
+                                                <div class="col-md-4 col-4 d-none">
                                                     <div class="form-group">
                                                         <label for="video_url">Video Url </label>
                                                         <input type="url" name="video_url" class="form-control" value="{{ $product->video_url }}" id="video_url">
@@ -502,7 +661,7 @@
                                                 </div>
                                                 
                                                 
-                                                <div class="col-md-4 col-4">
+                                                <div class="col-md-4 col-4 d-none">
                                                     <div class="form-group {{ $errors->has('artwork_url') ? 'has-error' : ''}}">
                                                         <label for="artwork_url" class="control-label">Art Work Reference</label>
                                                         <input class="form-control" name="artwork_url" type="url" id="artwork_url" value="{{ $product->artwork_url }}" placeholder="Enter Artwork URL" >
@@ -544,9 +703,8 @@
                                     </div>
                                 </div>                                
                             </div> 
-                            
-                            
-                            <div class="stepper d-none" data-index="4">
+                                
+                            <div class="stepper d-none" data-index="5">
                                 <div class="card ">
                                     <div class="card-header">
                                         <h3>Product Properties</h3>
@@ -562,7 +720,9 @@
                                                         <label for="weightbox">
                                                             <div class="h6">Product Weight</div>
                                                         </label> &nbsp;&nbsp;&nbsp;
-                                                        <input type="checkbox" data-open="weightboxbtn" id="weightbox" class="hiddenbxbtn">
+
+
+                                                        <input type="checkbox" data-open="weightboxbtn" id="weightbox" class="hiddenbxbtn" @if ($shipping->gross_weight ?? '' != '' || $shipping->weight ?? '' != '' ) checked @endif>
                                                     </div>
                                                 </div>
                                                 <div class="row d-none" id="weightboxbtn">
@@ -576,7 +736,7 @@
                                                     <div class="col-md-4 col-4">
                                                         <label class="">{{ __('Weight')}}</label>
                                                        <div class="form-group">
-                                                           <input class="form-control" name="weight" type="nnumber" id="weight" value="{{$shipping->weight ?? ''}}" >
+                                                           <input class="form-control" name="weight" type="nnumber" id="weight" value="{{ $shipping->weight ?? ''}}" >
                                                        </div>
                                                    </div>
     
@@ -603,7 +763,7 @@
                                                         <label for="productdimensionsbx">
                                                             <div class="h6">Product Dimensions</div>
                                                         </label> &nbsp;&nbsp;&nbsp;
-                                                        <input type="checkbox" data-open="productdimensionsbox" id="productdimensionsbx" class="hiddenbxbtn">
+                                                        <input type="checkbox" data-open="productdimensionsbox" id="productdimensionsbx" class="hiddenbxbtn" @if ($shipping->length ?? '' != '' || $shipping->width ?? '' != '' || $shipping->height ?? '' != '' ) checked @endif >
                                                     </div>
                                                 </div>
                                                 <div class="row d-none" id="productdimensionsbox">
@@ -646,7 +806,7 @@
                                                 </div>
                                             </div>
 
-                                            {{--PRODUCT PACKING--}}
+                                            {{--`PRODUCT PACKING--}}
                                             <div class="col-12">
                                                 <div class="row mb-3">
                                                     <div class="col-12">
@@ -654,7 +814,7 @@
                                                         <label for="productpackingbx">
                                                             <div class="h6">Product Packing</div>
                                                         </label> &nbsp;&nbsp;&nbsp;
-                                                        <input type="checkbox" data-open="productpackingbox" id="productpackingbx" class="hiddenbxbtn">
+                                                        <input type="checkbox" data-open="productpackingbox" id="productpackingbx" class="hiddenbxbtn" @if ($carton_details->standard_carton ?? '' != '' || $carton_details->carton_weight ?? '' != '' || $carton_details->carton_length ?? '' != '' || $carton_details->carton_width ?? '' != '' || $carton_details->carton_height ?? '' != '' ) checked @endif>
                                                     </div>
                                                 </div>
 
@@ -724,7 +884,8 @@
                                                 </div>
                                             </div>
 
-                                            {{--Shipping Details--}}
+                                            {{--`Shipping Details--}}
+
                                             <div class="col-12">
                                                 <div class="row mb-3">
                                                     <div class="col-12">
@@ -732,7 +893,7 @@
                                                         <label for="productshippingbx">
                                                             <div class="h6">Shipping Details</div>
                                                         </label> &nbsp;&nbsp;&nbsp;
-                                                        <input type="checkbox" data-open="productshippingbox" id="productshippingbx" class="hiddenbxbtn">
+                                                        <input type="checkbox" data-open="productshippingbox" id="productshippingbx" class="hiddenbxbtn" @if ($prodextra->CBM ?? ''  != '' || $prodextra->production_time ?? '' != '' || $prodextra->MBQ ?? '0' != '' || $prodextra->MBQ_unit ?? '0' != '' || $prodextra->remarks ?? '' != '' ) checked @endif>
                                                     </div>
                                                 </div>
                                                 <div class="row d-none" id="productshippingbox">
@@ -771,7 +932,6 @@
 
                                             <div class="col-12">
                                                 <div class="row mb-3">
-
                                                     {{-- <div class="col-12">
                                                         <div class="h4">
                                                             Used
@@ -793,9 +953,8 @@
                                                             array_push($tmp_var,getAttruibuteValueById($value)->attribute_value);
                                                         }
                                                     }
-                                                
-                                                    @endphp
-                                            
+
+                                                    @endphp                                           
                                                         @if (!empty($tmp_var))
                                                             <div class="col-md-4 col-12">
                                                                 <div class="form-group ">
@@ -809,14 +968,17 @@
                                             </div>
                                         
 
-                                        <div class="row">
-
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h5>Properties</h5>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="row">                
+                                        {{-- <div class="row"> --}}
+                                            <div class="col-12">
+                                                <div class="row mb-3">
+                                                    <div class="col-12">
+                                                        <hr class="text-primary">
+                                                        <label for="productpropertiesbx">
+                                                            <div class="h6">Properties</div>
+                                                        </label> &nbsp;&nbsp;&nbsp;
+                                                        <input type="checkbox" data-open="productpropertiesbox" id="productpropertiesbx" class="hiddenbxbtn" @if ($attribute_value_id != null) checked @endif>
+                                                    </div>
+                                                    <div class="row d-none" id="productpropertiesbox">                                                                  
                                                         @foreach ($user_custom_col_list as $key => $item)
                                                             {{-- ` Getting Product Property Values --}}
                                                             @php
@@ -842,13 +1004,13 @@
                                                                             @endif >{{ $record->attribute_value }}</option>
                                                                         @endforeach
                                                                     </select>
+                                                                    
                                                                 </div>
                                                             </div>
                             
-                                                        @endforeach
+                                                        @endforeach                                                                
                                                     </div>
-                                                </div>
-                                            </div>
+                                                </div>                           
                                         </div>
                                         
                                     </div>
@@ -856,7 +1018,7 @@
 
                             </div>
 
-                            <div class="stepper d-none" data-index="5">
+                            <div class="stepper d-none" data-index="6">
                                 <div class="card ">
                                     <div class="col-12 d-none">
                                                 <div class="row mb-3">
@@ -899,7 +1061,7 @@
                                                     <div class="h6">Sample Details</div>
                                                 </label>
                                                 <br>
-                                                <input type="checkbox" data-open="productsamplebox" id="productsamplebx" class="hiddenbxbtn">
+                                                <input type="checkbox" data-open="productsamplebox" id="productsamplebx" class="hiddenbxbtn" @if ($prodextra->sample_available ?? '' != '' || $prodextra->sampling_time ?? ''!= '')checked  @endif >
                                             </div>
                                         </div>
 
@@ -976,7 +1138,7 @@
                                                     <div class="h6">Sourced from Outside</div>
                                                 </label>
                                                 <br>
-                                                <input type="checkbox" data-open="productsourcedbox" id="productsourcedbx" class="hiddenbxbtn">
+                                                <input type="checkbox" data-open="productsourcedbox" id="productsourcedbx" class="hiddenbxbtn" @if ($prodextra->vendor_sourced_from ?? '' != '' || $prodextra->vendor_price ?? '' != ''  || $prodextra->vendor_currency ?? ''!= '' || $prodextra->product_cost_unit ?? '' != '' ) checked  @endif>
                                             </div>
                                         </div>
                                         <div class="row d-none" id="productsourcedbox">                                                   
@@ -1065,241 +1227,167 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>   
+                                    </div>  
+                                     {{--`Theme Collection from essentials  --}}
+                                     <div class="card">
+                                        <div class="card-header">
+                                            <h3>Theme Collection</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">  
+                                                    <div class="col-md-4 col-4"required >
+                                                        <div class="form-group ">
+                                                            <label for="collection_name" class="control-label">Theme / Collection Name</label >
+                                                            <input  class="form-control" name="collection_name" type="text" id="collection_name" value="{{$prodextra->collection_name ?? '' }}" >
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 col-4">
+                                                        <div class="form-group">
+                                                            <label for="season_month" class="control-label">Season / Month</label >
+                                                            {{-- <input  class="form-control" name="season_month" type="text" id="season_month" value="{{$prodextra->season_month ?? '' }}" > --}}
+                                                            <select name="season_month" id="season_month" class="select2">
+                                                                <option value="">Select Sourcing Month</option>
+                                                                @php
+                                                                    $selectedMonth = $prodextra->season_month ?? '';
+                                                                @endphp
+                                                                @foreach ([
+                                                                    'January' => 'January',
+                                                                    'February' => 'February',
+                                                                    'March' => 'March',
+                                                                    'April' => 'April',
+                                                                    'May' => 'May',
+                                                                    'June' => 'June',
+                                                                    'July' => 'July',
+                                                                    'August' => 'August',
+                                                                    'September' => 'September',
+                                                                    'October' => 'October',
+                                                                    'November' => 'November',
+                                                                    'December' => 'December',
+                                                                ] as $monthValue => $monthName)
+                                                                    <option value="{{ $monthValue }}" @if ($selectedMonth == $monthValue) selected @endif>{{ $monthName }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 col-4">
+                                                        <div class="form-group ">
+                                                            <label for="season_year">Theme / Collection Year</label label >
+                                                            {{-- <input class="form-control" name="season_year" type="number" id="season_year" value= "{{ $prodextra->season_year ?? '0' }}"  required> --}}
+                                                            {{-- <select id="season_year"></select> --}}
+                                                            <select name="season_year" id="season_year" class="form-control select2">
+                                                                <option value="">Select Year</option>
+                                                                {{-- <option value="{{ $option->id }}" @if ($option->id == $prodextra->season_year) selected
+                                                                    @endif>{{  $option->name ?? ''}}</option> --}}
+                                                                @php
+                                                                    $selectedYear = $prodextra->season_year ?? '';
+                                                                @endphp
+                                                                @for ($i = date('Y'); $i >= 1985; $i--)
+                                                                    <option value="{{ $i }}" @if ($selectedYear == $i) selected @endif>{{ $i }}</option>
+                                                                @endfor
+                                                            </select>
+                                                                   
+                                                            
+                                                            
+    
+                                                        </div>
+                                                    </div>                                          
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                                                
-                            {{-- <div class="stepper d-none" data-index="6">
-                                <div class="card "> --}}
+                            
+                            {{-- ` Sale Pricing --}}
+                            <div class="stepper d-none" data-index="3">
+                                <div class="card ">
+                                    <div class="card-header">
+                                        <h3></h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">                                           
+
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group ">
+                                                    <label for="base_currency" class="control-label">Base currency </label>
+                                                    {{-- <input  class="form-control" name="base_currency" type="text" id="base_currency" value="{{$product->base_currency}}" > --}}
+                                                    @php
+                                                        $currencies = App\Models\UserCurrency::where('user_id',auth()->id())->get();
+                                                    @endphp
+                                                    <select name="base_currency" id="base_currency" class="select2">
+                                                        @forelse ($currencies as $item)
+                                                            <option value="{{ $item->currency }}" @if ($product->base_currency == $item->currency) selected @endif>{{ $item->currency }}</option>
+                                                        @empty
+                                                            <option value="INR">INR</option>
+                                                        @endforelse
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group ">
+                                                    <label for="selling_price_unit" class="control-label">Selling Price Unit </label>
+                                                    <input  class="form-control" name="selling_price_unit" type="text" id="selling_price_unit" value="{{$product->selling_price_unit}}" >
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group">
+                                                    <label for="min_sell_pr_without_gst" class="control-label">Customer Price, without GST </label>
+                                                    <input class="form-control" name="min_sell_pr_without_gst" type="number" id="min_sell_pr_without_gst" value="{{ $product->min_sell_pr_without_gst ?? '' }}" >
+                                                </div>
+                                            </div>
+
+                                            @php
+                                                $vip_group = getPriceGroupByGroupName(auth()->id(),"VIP");
+                                                $reseller_group = getPriceGroupByGroupName(auth()->id(),"Reseller");
+                                            @endphp
+
+                                            
+                                            <div class="col-md-4 col-4 d-none">
+                                                <div class="form-group ">
+                                                    <label for="vip_group" class="control-label">VIP Customer Price, without GST  </label>
                                     
-                                            {{-- ` PRODUCT WEIGHT GROUP --}}
-                                            {{-- <div class="col-12">
-                                                <div class="row mb-3">
-                                                    <div class="col-12">
-                                                        <hr class="text-primary">
-                                                        <label for="weightboxbtn">
-                                                            <div class="h6">Product Weight</div>
-                                                        </label>
-                                                        <br>
-                                                        <input type="checkbox" data-open="weightbox" id="weightboxbtn" class="hiddenbxbtn">
-                                                    </div>
+                                                    <input  class="form-control" name="vip_group" type="number" id="vip_group" value="{{ getPriceByGroupIdProductId($vip_group->id,$product->id,0) ?? '0' }}" >
                                                 </div>
-                                                <div class="row d-none" id="weightbox">
-                                                    <div class="col-md-6 col-12">
-                                                        <div class="form-group ">
-                                                            <label for="gross_weight" class="control-label">Gross Weight</label>
-                                                            <input  class="form-control" name="gross_weight" type="text" id="gross_weight" value="{{ $shipping->gross_weight ?? ''}}" >
-                                                        </div>
-                                                    </div>
-    
-                                                    <div class="col-md-6 col-12">
-                                                        <label class="">{{ __('Weight')}}</label>
-                                                       <div class="form-group">
-                                                           <input class="form-control" name="weight" type="nnumber" id="weight" value="{{$shipping->weight ?? ''}}" >
-                                                       </div>
-                                                   </div>
-    
-                                                    <div class="col-md-6 col-12">
-                                                        <label class="">{{ __('Weight UOM')}}</label> --}}
-                                                        {{-- Drop Down --}}
-                                                        {{-- gms/kgs --}}
-                                                        {{-- <div class="form-group">
-                                                            <select name="unit" id="unit" class="form-control select2">
-                                                                <option @if(($shipping->unit ?? '') == 'gms') selected @endif value="gms">gms</option>
-                                                                <option @if(($shipping->unit ?? '') ==  'kgs') selected @endif value="kgs">kgs</option>
-                                                            </select> --}}
-                                                            {{-- <input class="form-control" name="unit" type="nnumber" id="unit" value="{{$shipping->unit ?? ''}}" > --}}
-                                                        {{-- </div>
-                                                    </div>
+                                            </div>
+                                            <div class="col-md-4 col-4 d-none">
+                                                <div class="form-group ">
+                                                    <label for="reseller_group" class="control-label">Reseller Price, without GST </label>
+                                                    <input  class="form-control" name="reseller_group" type="number" id="reseller_group"  value="{{ getPriceByGroupIdProductId($reseller_group->id,$product->id,0) ?? '0' }}" >
                                                 </div>
-                                            </div> --}}
-
-                                            {{-- ` PRODUCT DIMENSION GROUP --}}
-                                            {{-- <div class="col-12">
-                                                <div class="row mb-3">
-                                                    <div class="col-12">
-                                                        <hr class="text-primary">
-                                                        <label for="productdimensionsbx">
-                                                            <div class="h6">Product Dimensions</div>
-                                                        </label>
-                                                        <br>
-                                                        <input type="checkbox" data-open="productdimensionsbox" id="productdimensionsbx" class="hiddenbxbtn">
-                                                    </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group ">
+                                                    <label for="mrp" class="control-label">MRP Incl. tax </label>
+                                                    <input  class="form-control" name="mrp" type="number" id="mrp" value="{{ $product->mrp  }}" >
                                                 </div>
-                                                <div class="row d-none" id="productdimensionsbox">
-                                                    
-                                                    <div class="col-md-6 col-12">
-                                                        <label class="Length">{{ __('Length')}}</label>
-                                                        <div class="form-group">
-                                                            <input class="form-control" name="length" type="nnumber" id="length" value="{{$shipping->length ?? ''}}" >
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12">
-                                                        <label class="">{{ __('Width')}}</label>
-                                                        <div class="form-group">
-                                                            <input class="form-control" name="width" type="nnumber" id="width" value="{{$shipping->width ?? ''}}" >
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12">
-                                                        <label class="">{{ __('Height')}}</label>
-                                                         <div class="form-group">
-                                                             <input class="form-control" name="height" type="nnumber" id="height" value="{{$shipping->height ?? ''}}" >
-                                                         </div>
-                                                     </div>
+                                            </div>                                               
 
-                                                    <div class="col-md-6 col-12">
-                                                        <label class="">{{ __('LWH UOM')}}</label> --}}
-                                                        {{-- DropDown --}}
-                                                        {{-- mm/cms/inches/feet --}}
-                                                        {{-- @dd($shipping) --}}
-                                                        {{-- <div class="form-group">
-                                                            <select name="length_unit" id="length_unit" class="form-control select2">
-                                                                <option @if(($shipping->length_unit ?? '') == 'mm') selected @endif value="mm">mm</option>
-                                                                <option @if(($shipping->length_unit ?? '') == 'cms') selected @endif  value="cms">cms</option>
-                                                                <option @if(($shipping->length_unit ?? '') == 'inches') selected @endif  value="inches">inches</option>
-                                                                <option @if(($shipping->length_unit ?? '') == 'feet') selected @endif  value="feet">feet</option>
-                                                            </select> --}}
-                                                            {{-- <input class="form-control" name="length_unit" type="nnumber" id="length_unit" value="{{$shipping->length_unit ?? ''}}" > --}}
-                                                        {{-- </div>
-                                                    </div>
 
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group {{ $errors->has('hsn') ? 'has-error' : ''}}">
+                                                    <label for="hsn" class="control-label">HSN Tax</label>
+                                                    <input  class="form-control" name="hsn" type="text" id="hsn" value="{{$product->hsn}}" >
                                                 </div>
-                                            </div> --}}
-
-                                            {{-- ` PRODUCT PACKING GROUP --}}
-                                            {{-- <div class="col-12">
-                                                <div class="row mb-3">
-                                                    <div class="col-12">
-                                                        <hr class="text-primary">
-                                                        <label for="productpackingbx">
-                                                            <div class="h6">Product Packing</div>
-                                                        </label>
-                                                        <br>
-                                                        <input type="checkbox" data-open="productpackingbox" id="productpackingbx" class="hiddenbxbtn">
-                                                    </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group {{ $errors->has('hsn_percent') ? 'has-error' : ''}}">
+                                                    <label for="hsn_percent" class="control-label">HSN Percent </label>
+                                                    <input  class="form-control" name="hsn_percent" type="number" id="hsn_percent" value="{{$product->hsn_percent}}" >
                                                 </div>
-
-                                                <div class="row d-none" id="productpackingbox">
-                                                    <div class="col-md-6 col-12">
-                                                        <label class="">{{ __('Standard Carton Pcs')}}</label>
-                                                         <div class="form-group">
-                                                             <input class="form-control" name="standard_carton" type="text" id="standard_carton" value="{{$carton_details->standard_carton ?? ''}}" >
-                                                         </div>
-                                                     </div>
-                                                     <div class="col-md-6 col-12">
-                                                         <label class="">{{ __('Carton Actual Weight')}}</label>
-                                                         <div class="form-group">
-                                                             <input class="form-control" name="carton_weight" type="number" id="carton_weight" value="{{$carton_details->carton_weight ?? ''}}" >
-                                                         </div>
-                                                     </div>
- 
-                                                     <div class="col-md-6 col-12">
-                                                         <label class="">{{ __('Carton Length')}}</label>
-                                                         <div class="form-group">
-                                                             <input class="form-control" name="carton_length" type="number" id="carton_length" value="{{$carton_details->carton_length ?? ''}}" >
-                                                         </div>
-                                                     </div>
- 
-                                                     <div class="col-md-6 col-12">
-                                                         <label class="">{{ __('Carton Width')}}</label>
-                                                         <div class="form-group">
-                                                             <input class="form-control" name="carton_width" type="number" id="carton_width" value="{{$carton_details->carton_width ?? ''}}" >
-                                                         </div>
-                                                     </div>
- 
-                                                     <div class="col-md-6 col-12">
-                                                         <label class="">{{ __('Carton Height')}}</label>
-                                                         <div class="form-group">
-                                                             <input class="form-control" name="carton_height" type="number" id="carton_height" value="{{$carton_details->carton_height ?? ''}}" >
-                                                         </div>
-                                                     </div>
- 
-                                                     <div class="col-md-6 col-12">
-                                                         <label class="">{{ __('Carton Dimension Unit')}}</label>
-                                                         <div class="form-group"> --}}
-                                                            {{-- <input class="form-control" name="Carton_Dimensions_unit" type="nnumber" id="Carton_Dimensions_unit" value="{{$carton_details->Carton_Dimensions_unit ?? ''}}" > --}}
-
-                                                            {{-- <select name="Carton_Dimensions_unit" class="select2" id="Carton_Dimensions_unit">
-                                                                <option value="mm">mm</option>
-                                                                <option value="cms">cms</option>
-                                                                <option value="inches">inches</option>
-                                                                <option value="feet">feet</option>
-                                                            </select>
-
-                                                         </div>
-                                                     </div> --}}
- 
-                                                     
-                                                     {{-- <div class="col-md-6 col-12">
-                                                         <label class="">{{ __('UOM')}}</label> --}}
-                                                         {{-- DropDown --}}
-                                                         {{-- pcs/ sets --}}
-                                                         {{-- <div class="form-group"> --}}
-                                                             {{-- <input class="form-control" name="carton_unit" type="nnumber" id="carton_unit" value="{{$carton_details->carton_unit ?? ''}}" > --}}
-                                                             {{-- <select name="carton_unit" id="carton_unit" class="form-control select2">
-                                                                 <option @if(($carton_details->carton_unit ?? '') == 'pcs') selected @endif value="pcs">pcs</option>
-                                                                 <option @if(($carton_details->carton_unit ?? '') == 'sets') selected @endif value="sets">sets</option>
-                                                             </select>
-                                                         </div>
-                                                     </div>
-                                                </div>
-                                            </div> --}}
-
-                                            {{-- ` PRODUCT SHIPPING GROUP --}}
-                                            {{-- <div class="col-12">
-                                                <div class="row mb-3">
-                                                    <div class="col-12">
-                                                        <hr class="text-primary">
-                                                        <label for="productshippingbx">
-                                                            <div class="h6">Shipping Details</div>
-                                                        </label>
-                                                        <br>
-                                                        <input type="checkbox" data-open="productshippingbox" id="productshippingbx" class="hiddenbxbtn">
-                                                    </div>
-                                                </div>
-                                                <div class="row d-none" id="productshippingbox">
-                                                    <div class="col-md-6 col-12">
-                                                        <div class="form-group ">
-                                                            <label for="CBM" class="control-label">CBM</label>
-                                                            <input  class="form-control" name="CBM" type="text" id="CBM" value="{{$prodextra->CBM ?? '' }}" >
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12">
-                                                        <div class="form-group ">
-                                                            <label for="production_time" class="control-label">Production time (days)</label>
-                                                            <input  class="form-control" name="production_time" type="number" id="production_time" value="{{$prodextra->production_time ?? '' }}" >
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12">
-                                                        <div class="form-group ">
-                                                            <label for="MBQ" class="control-label">MBQ</label>
-                                                            <input  class="form-control" name="MBQ" type="text" id="MBQ" value="{{$prodextra->MBQ ?? '0' }}" >
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12">
-                                                        <div class="form-group ">
-                                                            <label for="MBQ_unit" class="control-label">MBQ_units</label>
-                                                            <input  class="form-control" name="MBQ_unit" type="number" id="MBQ_unit" value="{{$prodextra->MBQ_unit ?? '0' }}" >
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 col-12">
-                                                        <div class="form-group ">
-                                                            <label for="remarks" class="control-label">Remarks</label>
-                                                            <input  class="form-control" name="remarks" type="text" id="remarks" value="{{$prodextra->remarks ?? '' }}" >
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div> --}}
+                                            </div>
 
                                             
                                             
+                                            
+                                            <div class="col-md-6">
+                                                
+                                            </div>
                                             @if ($product->user_id != null)
                                                 <input type="hidden" name="user_id" value="{{$product->user_id}}">
                                             @else
                                                 <div class="col-md-4 col-12">
                                                     <div class="form-group">
-                                                        <label for="user_id">User</label>
-                                                        <select name="user_id" id="user_id" class="form-control select2 </div>
+                                                        <label for="user_id">User<span class="text-danger">*</span></label>
+                                                        <select name="user_id" id="user_id" class="form-control select2">
                                                             <option value="" readonly>Select User </option>
                                                             @foreach(UserList()  as $option)
                                                                 <option value="{{ $option->id }}" {{  old('user_id') == $option->id ? 'Selected' : '' }}>{{  $option->name ?? ''}}</option>
@@ -1313,7 +1401,7 @@
                                             <div class="col-md-4 col-12 d-none">
                                                  <div class="form-group">
                                                     <label for="status">Status</label>
-                                                    <select name="status" id="status" class="form-control select2" required >
+                                                    <select name="status" id="status" class="form-control select2">
                                                         <option value="" readonly>Select Status</option>
                                                             @foreach(getProductStatus() as $option)
                                                                 <option value="{{  $option['id'] }}" @if ($option['id'] == $product->status) selected @endif>{{ $option['name']}}</option>
@@ -1321,14 +1409,93 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                {{-- </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            </div> --}}
+                            </div>       
+                                            
+                            @if ($product->user_id != null)
+                                <input type="hidden" name="user_id" value="{{$product->user_id}}">
+                            @else
+                                <div class="col-md-4 col-12">
+                                    <div class="form-group">
+                                        <label for="user_id">User</label>
+                                        <select name="user_id" id="user_id" class="form-control select2 </div>
+                                            <option value="" readonly>Select User </option>
+                                            @foreach(UserList()  as $option)
+                                                <option value="{{ $option->id }}" {{  old('user_id') == $option->id ? 'Selected' : '' }}>{{  $option->name ?? ''}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            @endif
+
+
+                            <div class="col-md-4 col-12 d-none">
+                                    <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select name="status" id="status" class="form-control select2" required >
+                                        <option value="" readonly>Select Status</option>
+                                            @foreach(getProductStatus() as $option)
+                                                <option value="{{  $option['id'] }}" @if ($option['id'] == $product->status) selected @endif>{{ $option['name']}}</option>
+                                            @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="stepper d-none" data-index="7">
+                                <div class="card ">
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col-md-10 col-12">
                             
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Varients</th>
+                                                        <th scope="col">Edit</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>                                                                                
+                                                        @foreach ($productVarients as $item)
+                                                        @php
+                                                            $ashudata = App\Models\ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',$item)->groupBy('attribute_value_id')->get();
+                                                        @endphp
+                            
+                                                        @foreach ($ashudata as $item1)
+                                                        @php
+                                                            $testchk = getAttruibuteValueById($item1->attribute_value_id);
+                                                        @endphp
+                                                        @if (!isset($testchk))
+                                                            @continue
+                                                        @endif
+                                                            
+                                                            <tr>
+                                                                <td>
+                                                                    {{ $loop->iteration }}
+                                                                </td>
+                                                                <td>{{ getAttruibuteValueById($item1->attribute_value_id)->attribute_value }} ( {{ getAttruibuteById($item)->name }} ) </td>
+                                                                <td>
+                                                                    <a href="{{ route('panel.products.delete.sku',[encrypt($item1->product_id),encrypt($item1->attribute_value_id)]) }}" class="btn btn-outline-danger delete-btn">
+                                                                        Delete
+                                                                    </a>
 
-
-
-
+                                                                    <a href="{{ route('panel.products.edit',$item1->product_id) }}" class="btn btn-outline-primary">
+                                                                        Edit
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach                                                                                                                                                                                                    
+                                                        @endforeach                                                        
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>                                                                                                                                                                       
+                                    </div>
+                            </div>
+                                
 
                            
                             <div class="alert alert-info d-none">
@@ -1432,7 +1599,7 @@
 
         </div>
 
-        <div class="row d-flex justify-content-center">
+        {{-- <div class="row d-flex justify-content-center">
             <div class="col-md-10 col-12">
 
                 <table class="table">
@@ -1473,9 +1640,14 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div> --}}
 
 
+
+        <form action="{{ route('panel.filemanager.delete') }}" id="deletefileform">
+            <input type="hidden" name="user_id" id="user_id" value="{{ encrypt(auth()->id()) }}">
+            <input type="hidden" name="files" id="filesId" value="{{ encrypt(auth()->id()) }}">
+        </form>
 
     </div>
      @include('panel.products.include.varient',['product_id'=>$product->id])
@@ -1487,17 +1659,108 @@
         <script src="{{ asset('backend/js/form-advanced.js') }}"></script>
         <script src="https://cdn.ckeditor.com/4.14.1/full/ckeditor.js"></script>
         <script src="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
+        <script src="{{ asset('backend/js/jquery.editable.js') }}"></script>
+        <script>
+            $(document).ready(function () {
+
+        
+              $(".click1").click(function () {
+
+                  $.each($(".click1"), function (indexInArray, valueOfElement) {
+                    let alldata = valueOfElement.dataset.table;
+                    $("#"+alldata).addClass('d-none');
+                    $(this).removeClass('bg-primary text-light');
+                  });
+
+                  $(this).addClass('bg-primary text-light')
+
+                  $("#" + $(this).data('table')).toggleClass("d-none");
+
+              });
+
+                // {{--` Renaming File --}}
+                $(".filename").click(function (element) {
+                    let oldname = $(this).data('oldname');
+
+                    $(this).editable("dblclick", function (e) {
+                       if (e.value != '') {
+                        $.ajax({
+                            type: "post",
+                            url: "{{ route('panel.filemanager.rename') }}",
+                            data: {
+                                'oldName': oldname,
+                                'newName': e.value,
+                            },
+                            dataType: "json",
+                            success: function (response) {
+                                // console.log(response);
+                            }
+                        });
+                       }
+                    });
+                });
+
+
+              // {{--` Delete Item --}}
+              $(".deletebtn").click(function (e) { 
+                    e.preventDefault();
+                    let selected = $(this).data('filepath');
+                    
+                    var msg = `
+                    <span class="text-danger">You are about to delete 1 asset(s)</span> <br/>
+                    <span>This action cannot be undone. To confirm type <b>DELETE</b></span>
+                    <input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='DELETE'>`;
+
+                    $.confirm({
+                        draggable: true,
+                        title: `Delete 1 asset(s)`,
+                        content: msg,
+                        type: 'blue',
+                        typeAnimated: true,
+                        buttons: {
+                            tryAgain: {
+                                text: 'DELETE',
+                                btnClass: 'btn-danger',
+                                action: function(){
+                                    let margin = $('#margin').val();
+                                    if (margin == 'DELETE') {
+
+                                        $("#filesId").val(selected);
+                                        $("#action").val('deleteFile');
+                                        $("#deletefileform").submit();
+                                        
+                                    } else {
+                                        $.alert('Type DELETE to Proceed');
+                                    }
+
+                                    
+                                }
+                            },
+                            close: function () {
+
+                            }
+                        }
+                    });
+                });
+
+        
+
+
+
+            });
+          </script>
         <script>
 
 
             $('.TAGGROUP').tagsinput('items');
             $(document).ready(function () {
-                $(".changegroup").change(function (e) { 
-                    e.preventDefault();
-                    let key = $(this).val();
-                    let url = "http://{{ ENV('APP_URL') }}/panel/products/edit/"+key;
-                    window.location.href = url;
-                });
+                
+                // $(".changegroup").change(function (e) { 
+                //     e.preventDefault();
+                //     let key = $(this).val();
+                //     let url = "http://{{ ENV('APP_URL') }}/panel/products/edit/"+key;
+                //     window.location.href = url;
+                // });
             });      
 
             var options = {
@@ -1579,6 +1842,12 @@
                 jackColor: '#fff'
             });
 
+            var productdimensionsbx = document.querySelector('#productpropertiesbx');
+            var switchery = new Switchery(productdimensionsbx, {
+                color: '#6666CC',
+                jackColor: '#fff'
+            });
+
 
             var productdimensionsbx = document.querySelector('#productsamplebx');
             var switchery = new Switchery(productdimensionsbx, {
@@ -1621,8 +1890,14 @@
                 $("#"+hiddenbx).toggleClass('d-none');
             });
 
+            $.each($(".hiddenbxbtn"), function (indexInArray, valueOfElement) { 
+                
+                 if (valueOfElement.checked == true) {
+                    let hiddenbx = $(this).data('open');
+                    $("#"+hiddenbx).toggleClass('d-none');
+                 }
+            });
 
-            
 
 
             $(document).on('click','.update-sku',function(e){
@@ -1698,6 +1973,13 @@
                 let newwindow = $(`[data-index="${stepindex+1}"]`);
                 activeIndex = stepindex+1;
 
+                
+                $.each($('.md-step'), function (i, v) {
+                     $(this).removeClass('active');
+                });
+                
+
+                
                 $(this).addClass('active');
                 $(".stepper").addClass('d-none');
                 $('.stepper-actions').find('.previous_btn').addClass('d-none');

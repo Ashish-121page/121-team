@@ -71,6 +71,10 @@
     margin-top: 20px; /* Adjust the margin-top value as needed */
 }
 
+ul {
+    list-style-type: none;
+}
+
 
 
 
@@ -86,20 +90,14 @@
                         {{-- <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-0 me-2 mx-2"><i class="fas fa-chevron-left"></i> Back</a> --}}
                     </div>
                 </div>
-                @if ($user_shop->user_id == auth()->id())
+                {{-- @if ($user_shop->user_id == auth()->id()) --}}
                     <div class="col-12 col-md-6 col-lg-6 col-sm-8 d-flex justify-content-end">
-                        <li class="nav-item ">
+                        <li class="nav-item d-none">
                             <a class="nav-link active" aria-current="page" href="{{ route('panel.products.edit',$product->id) }}">
                             <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i>Edit</button></a>
-
-                        </li>
-                        <li class="nav-item d-none">
-                            <a class="nav-link" href="#">
-                            <button type="submit" class="btn btn-outline-primary mb-0 me-2"><i class="far fa-edit"></i>Create Label</button><br>
-                            </a>
-                        </li>
+                        </li>                      
                     </div>
-                @endif
+                {{-- @endif --}}
                 
             </ul>
 
@@ -123,9 +121,9 @@
                             {{-- <button class="zoomBtn">
                                 <img src="{{ asset('backend/img/move.png') }}" alt="" style="height: 30px;object-fit: contain;">
                             </button> --}}
-                                <a href="{{ @asset(getMediaByIds($image_ids)->path ??'frontend/assets/img/placeholder.png') }}"  download="{{ $product->model_code }}" class="zoomBtn" style="background-color: transparent">
+                                {{-- <a href="{{ @asset(getMediaByIds($image_ids)->path ??'frontend/assets/img/placeholder.png') }}"  download="{{ $product->model_code }}" class="zoomBtn" style="background-color: transparent">
                                     <i class="fas fa-download text-dark fs-3"></i>
-                                </a>
+                                </a> --}}
                                 
                                 @php
                                     $ProductExinfo = App\Models\ProductExtraInfo::where('product_id',$product->id)->first();
@@ -156,6 +154,29 @@
                                 
                             @endforeach
                         </div>
+
+
+                        <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-between gap-3 w-100 mt-3">
+                            {{-- @if ($user_shop->user_id == auth()->id()) --}}
+                            <a class="btn btn-outline-primary" aria-current="page" href="{{ route('panel.products.edit',$product->id) }}" target="_parent">Edit</a>
+                            {{-- @endif --}}
+                            <a class="btn btn-outline-primary" id="sharebtn" href="#sharemodal" role="button"> 
+                                Share
+                            </a>
+                            {{-- @if ($product->user_id == auth()->id() ) --}}
+                                <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button" style="">Internal Details</a>
+                            {{-- @endif --}}
+                            {{-- <div class="row">
+                                {{-- <a href="{{ @asset(getMediaByIds($image_ids)->path ??'frontend/assets/img/placeholder.png') }}"  download="{{ $product->model_code }}" class="zoomBtn" style="background-color: transparent; top: 85%! important">
+                                    <i class="fas fa-download text-dark fs-3"></i>
+                                </a> --}}
+                            {{-- </div> --}} 
+                             <a href="{{ @asset(getMediaByIds($image_ids)->path ??'frontend/assets/img/placeholder.png') }}"  download="{{ $product->model_code }}" class="" style="background-color: transparent; top: 85%! important">
+                                    <i class="fas fa-download text-dark fs-3"></i>
+                                </a>
+
+                        </div>
+                       
                     </div>
                 </div>
 
@@ -190,14 +211,14 @@
                                             
                                         </div>
 
-                                        <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-end gap-3 align-items-center">
-                                            <a class="btn btn-outline-primary" id="sharebtn" href="#sharemodal" role="button"> 
+                                        {{-- <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-end gap-3 align-items-center"> --}}
+                                            {{-- <a class="btn btn-outline-primary" id="sharebtn" href="#sharemodal" role="button"> 
                                                 Share <i class="fas fa-share"></i>
-                                            </a>
-                                            @if ($product->user_id == auth()->id() )
-                                                <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Internal Details</a>
-                                            @endif
-                                        </div>
+                                            </a> --}}
+                                            {{-- @if ($product->user_id == auth()->id() ) --}}
+                                                {{-- <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button">Internal Details</a> --}}
+                                            {{-- @endif --}}
+                                        {{-- </div> --}}
 
                                         <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-start gap-3 align-items-center">
                                             <div class="d-flex mb-2">
@@ -254,57 +275,7 @@
                                             >{{ $material }}</option>
                                         @endforeach
                                     </select>
-                                </div> --}}
-                                
-                                @if (count($colors) > 0)
-                                    <div class="">
-                                        <label for="selected_Cust"> Colour </label>
-                                        <select name="selected_default[]" class="form-control form-select" id="selected_1">
-                                            {{-- <option value="" disabled >Select Color</option> --}}
-                                            @foreach ($colors as $color)
-                                                <option value="{{ $color->attribute_value_id }}" 
-                                                @if ($result_attri != null) 
-                                                    {{( in_array($color->attribute_value_id,request()->get('search_keywords'))) ? 'Selected' : '' }} 
-                                                        {{(in_array($color->attribute_value_id,$result_attri)) ? "" : 'disabled'}}
-                                                    @endif
-                                                    >{{ getAttruibuteValueById($color->attribute_value_id)->attribute_value }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                @endif
-                                @if (count($sizes) > 0)
-                                    <div class="">
-                                        <label for="selected_Cust"> Size </label>
-                                        <select name="selected_default[]" class="form-control form-select" id="selected_2">
-                                            {{-- <option value="" disabled>Select Size</option> --}}
-                                            @foreach ($sizes as $size)
-                                                <option value="{{ $size->attribute_value_id }}"
-                                                @if ($result_attri != null) 
-                                                    {{( in_array($size->attribute_value_id,request()->get('search_keywords'))) ? 'Selected' : '' }} 
-                                                    {{(in_array($size->attribute_value_id,$result_attri)) ? "" : 'disabled'}}
-                                                @endif
-                                                >{{ getAttruibuteValueById($size->attribute_value_id)->attribute_value }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                @endif
-                                @if (count($materials) > 0)
-                                    <div class="">
-                                        <label for="selected_Cust"> Material </label>                                                    
-                                        <select name="selected_default[]" class="form-control form-select" id="selected_3">
-                                            @foreach ($materials as $material)
-                                                <option value="{{ $material->attribute_value_id }}"
-                                                @if ($result_attri != null) 
-                                                {{( in_array($material->attribute_value_id,$result_attri) ) ? "" : 'disabled'}}
-                                                    {{( in_array($material->attribute_value_id,request()->get('search_keywords'))) ? 'Selected' : '' }} 
-                                                @endif    
-                                                >{{ getAttruibuteValueById($material->attribute_value_id)->attribute_value }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                @endif
-
-                       
+                                </div> --}}                       
 
                                 <div class="d-none">
                                     <button class="collapsed btn btn-icon btn-outline-primary p-2 rounded-circle" type="button" data-bs-toggle="collapse" data-bs-target="#attributeval-1" aria-expanded="false" aria-controls="attributeval-1" title="Load More">
@@ -317,49 +288,81 @@
                                         </a>
                                     @endif
                                 </div>
+
+                                @foreach ($attributes as $key => $attribute)
+                                    @php
+                                        $attribute_values = App\Models\ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',$attribute['id'])->groupBy('attribute_value_id')->get();      
+                                    @endphp
+
+                                    @if ($attribute['name'] == '' || $attribute['name'] == null)
+                                        @continue
+                                    @endif
+
+
+                                    @if (count($attribute_values) != 0)
+                                        <div class="form-group">
+                                            <label for="selected_Cust" @if(count($attribute_values) > 1) style="color:#6666cc;font-weight: bold" @endif> {{ $attribute['name'] }} @if(count($attribute_values) > 1) * @endif </label>                                                    
+                                            <select class="form-control form-select" style="width: max-content"
+                                            name="selected_Cust[]">
+                                                @foreach ($attribute_values as $attribute_value)
+                                                    @if ($attribute_value != '')
+                                                        <option value="{{ $attribute_value->attribute_value_id ?? ''}}"
+                                                        @if ($result_attri != null) 
+                                                            {{( in_array($attribute_value->attribute_value_id,request()->get('search_keywords'))) ? 'Selected' : '' }} 
+                                                            {{(in_array($attribute_value->attribute_value_id,$result_attri)) ? "" : 'disabled'}}
+                                                        @endif  >
+                                                            {{ getAttruibuteValueById($attribute_value->attribute_value_id)->attribute_value ?? ''}}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    @endif
+                                @endforeach
                             </div>
+                            
 
                             {{-- ` Start of first accordion for extra attributes --}}
-                            <div class="accordion accordion-flush mt-3 w-lg-50" id="moreattributes">
+                            {{-- <div class="accordion accordion-flush mt-3 w-lg-50" id="moreattributes"> --}}
                                 {{-- Item Start --}}
-                                <div class="accordion-item shadow-none">
-                                  <div id="attributeval-1" class="accordion-collapse collapse show" data-bs-parent="#moreattributes">
-                                    <div class="accordion-body">
-                                        <div class="d-flex flex-wrap gap-3">
-                                            @foreach ($attributes as $key => $attribute)
-                                                @php
-                                                    $attribute_values = App\Models\ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',$attribute->id)->groupBy('attribute_value_id')->get();      
-                                                @endphp
-                                                @if ($key < 3)
-                                                    @continue
-                                                @endif
-                                                @if (count($attribute_values) != 0)
-                                                   <div class="form-group">
-                                                    <label for="selected_Cust"> {{ $attribute->name }} </label>                                                    
-                                                    <select class="form-control form-select" style="width: max-content"
-                                                     name="selected_Cust[]">
-                                                        @foreach ($attribute_values as $attribute_value)
-                                                            @if ($attribute_value != '')
-                                                                <option value="{{ $attribute_value->attribute_value_id ?? ''}}"
-                                                                @if ($result_attri != null) 
-                                                                    {{( in_array($attribute_value->attribute_value_id,request()->get('search_keywords'))) ? 'Selected' : '' }} 
-                                                                    {{(in_array($attribute_value->attribute_value_id,$result_attri)) ? "" : 'disabled'}}
-                                                                @endif  >
-                                                                    {{ getAttruibuteValueById($attribute_value->attribute_value_id)->attribute_value ?? ''}}
-                                                                </option>
-                                                            @endif
-                                                        @endforeach
-                                                    </select>
-                                                   </div>
-                                                @endif
-                                            @endforeach
+                                {{-- <div class="accordion-item shadow-none">
+                                    <div id="attributeval-1" class="accordion-collapse collapse show" data-bs-parent="#moreattributes">
+                                        <div class="accordion-body">
+                                            <div class="d-flex flex-wrap gap-3">
+                                                @foreach ($attributes as $key => $attribute)
+                                                    @php
+                                                        $attribute_values = App\Models\ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',$attribute->id)->groupBy('attribute_value_id')->get();      
+                                                    @endphp
+                                                    @if ($key < 3)
+                                                        @continue
+                                                    @endif
+                                                    @if (count($attribute_values) != 0)
+                                                    <div class="form-group">
+                                                        <label for="selected_Cust" @if(count($attribute_values) > 1) style="color:#6666cc;font-weight: bold" @endif> {{ $attribute->name }} @if(count($attribute_values) > 1) * @endif </label>                                                    
+                                                        <select class="form-control form-select" style="width: max-content"
+                                                        name="selected_Cust[]">
+                                                            @foreach ($attribute_values as $attribute_value)
+                                                                @if ($attribute_value != '')
+                                                                    <option value="{{ $attribute_value->attribute_value_id ?? ''}}"
+                                                                    @if ($result_attri != null) 
+                                                                        {{( in_array($attribute_value->attribute_value_id,request()->get('search_keywords'))) ? 'Selected' : '' }} 
+                                                                        {{(in_array($attribute_value->attribute_value_id,$result_attri)) ? "" : 'disabled'}}
+                                                                    @endif  >
+                                                                        {{ getAttruibuteValueById($attribute_value->attribute_value_id)->attribute_value ?? ''}}
+                                                                    </option>
+                                                                @endif
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
                                         </div>
-                                    </div>
 
-                                  </div>
-                                </div>
+                                    </div>
+                                </div> --}}
                                 {{-- Item End --}}
-                              </div>
+                            {{-- </div> --}}
                             
                             {{-- ` End of first accordion for extra attributes  --}}
 
@@ -529,6 +532,67 @@
                                         @endif
                                     </div>
                               
+                                    <div class="row my-3 ">
+                                        <div class="col-12">
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAssets" aria-expanded="false" aria-controls="collapseAssets">
+                                                        Assets
+                                                    </button>
+                                                </h2>
+                                                <div id="collapseAssets" class="accordion-collapse collapse" data-bs-parent="">
+                                                    <div class="accordion-body">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr style="vertical-align:middle;">
+                                                                    <th scope="col-1">#</th>
+                                                                    <th scope="col-2">Asset Name</th>
+                                                                    <th scope="col-3">File Size</th>
+                                                                    <th scope="col-4"></th>
+                                                                </tr>
+                                                            </thead>
+
+                                                            <tbody>
+
+                                                                @php
+                                                                    $NotInType = ['jpg','jpeg','png','avif'];
+                                                                    // $linkedAssets = App\Models\Media::where('type_id',$product->id)->where('type','Product')->where('tag','!=','Product_Image')->get();
+                                                                    $linkedAssets = App\Models\Media::where('type_id',$product->id)->where('type','Product')->whereNotIn('extension',$NotInType)->orderBy('file_type','DESC')->get();
+                                                                @endphp
+
+                                                                @forelse ($linkedAssets as $item)
+                                                                    @php
+                                                                        $path = str_replace("storage","public",$item->path);
+                                                                        if (Storage::exists($path)) {   
+                                                                            $filename = basename($path);                                                                
+                                                                        }else{
+                                                                            continue;
+                                                                        }                                                                                                                            
+                                                                    @endphp
+                                                                    <tr style="vertical-align:middle;">
+                                                                        <td> {{ $loop->iteration }} </td>
+                                                                        <td> {{ $filename }} </td>
+                                                                        <td>  {{ number_format(Storage::size($path)/ (1024 * 1024),2) }} MB </td>
+                                                                        <td>
+                                                                            <a href="{{ asset($item->path) }}" download="{{ $filename }}" class="btn btn-link">Download</a>
+                                                                        </td>
+                                                                    </tr>
+                                                                @empty
+                                                                    
+                                                                @endforelse
+
+
+
+                                                            </tbody>
+
+
+
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     
                                     
                                 </div>
@@ -915,11 +979,11 @@
         @include('frontend.micro-site.shop.include.zoom-image')
         @include('frontend.micro-site.shop.include.social-share')
 
-        @if ($user_shop->user_id == auth()->id())
+        {{-- @if ($user_shop->user_id == auth()->id()) --}}
             {{-- Model Include of Addional Detail of Product --}}
             @include('frontend.micro-site.shop.include.Additional_details')
             {{-- Model Include of Addional Detail of Product --}}
-        @endif
+        {{-- @endif --}}
 
 
     </section><!--end section-->

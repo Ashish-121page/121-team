@@ -21,11 +21,11 @@
                             @php
                                 $chkdata = array_column($category,'id');
                             @endphp
-                            @foreach ($category_global as $item)
-                                @if (in_array($item['id'],$chkdata))
-                                    @continue
-                                @endif
-                                <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                            @foreach ($sub_category as $item)
+                                @php
+                                    $parentname = App\Models\Category::where('id',$item->parent_id)->first();
+                                @endphp
+                                <option value="{{ $item->id }}">{{ $parentname->name }} > {{ $item->name }}</option>
                             @endforeach
                         </select>
                     </div>

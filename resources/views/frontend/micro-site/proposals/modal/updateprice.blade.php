@@ -18,21 +18,23 @@
                             <label for="price" class="control-label">Offer Price</label>
                             <input class="form-control" name="price" min="0" type="number" id="price" placeholder="Enter price">
                             
+                            
+                            <label for="remarks_offer">Customsation</label>
+                            <div class="form-floating">
+                                <textarea class="form-control" placeholder="Customsation requested by buyer" id="remarks_offer" name="remarks_offer"></textarea>
+                            </div>                              
+                            
                             <label for="attachment">Attachment</label>
                             <input type="file" class="form-control" name="attachment" name="attachment">
 
-                            <label for="remarks_offer">remarks</label>
-                            <div class="form-floating">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="remarks_offer" name="remarks_offer"></textarea>
-                            </div>
-                              
-
-                            <label for="Customise_product">Customise</label>
-                            <input type="text" class="form-control" name="Customise_product" name="Customise_product" placeholder="Customise">
+                            
+                            <label for="Customise_product" class="d-none">Customise</label>
+                            <input type="text" class="form-control d-none" name="Customise_product" name="Customise_product" placeholder="Customise">
 
                         </div>
                       
-                        <button type="submit" class="btn btn-primary float-right">Update</button>
+                        <button type="submit" class="btn btn-primary mx-1 float-right">Update</button>
+                        <button type="button" class="btn btn-outline-primary mx-1 float-right" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
 
 
                     </div>

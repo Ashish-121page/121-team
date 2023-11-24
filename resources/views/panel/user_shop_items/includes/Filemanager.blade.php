@@ -1,8 +1,18 @@
+{{-- @push('head')
+<style>
+
+.main-content bg-white{
+    margin-top: 0px !important;
+}
+</style>
+
+@endpush --}}
 
 <div class="container-fluid p-0 m-0">
     {{-- <iframe src="{{ url('/laravel-filemanager') }}" style="width: 100%; height: 85vh; overflow: hidden; border: none;"></iframe> --}}
-    <iframe src="{{ route('panel.filemanager.index') }}" style="width: 100%; height: 85vh; overflow: hidden; border: none;"></iframe>
+    <iframe src="{{ route('panel.filemanager.index') }}?view=grid" style="width: 100%; height: 85vh; overflow: hidden!important; border: none;"></iframe>
 </div>
+
 
 @push('script')
 <script src="{{ asset('backend/js/index-page.js') }}"></script>

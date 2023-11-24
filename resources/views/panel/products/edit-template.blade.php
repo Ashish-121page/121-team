@@ -196,10 +196,53 @@
                                             @forelse ($col_list as $item => $key)
                                                 @if (!in_array($item,$default_property))
                                                     <tr class="">
+                                                        <td scope="row" style="padding:0px! important">
+                                                            <div class="form-group h-100" style="cursor: pointer; margin-bottom:0rem!important; ">
+                                                                <input type="checkbox" value="{{$item}}" style="10%" id="attri_{{$item}}" class="my_attribute mx-1" name="myfields[]" data-index="{{ $key }}" @if (in_array($item,json_decode($template->columns_values))) checked @endif>
+                                                                <label for="attri_{{$item}}" class="form-label" style="font-size: large;user-select: none; width:90%">{{$item}}</label>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            @empty
+                                                <tr class="">
+                                                    <td scope="row">
+                                                        <div class="form-group">
+                                                            <label for="attri_1" class="form-label w-100 h-100" style="font-size: large;user-select: none;">System Under Upgrade Try Again Later.</label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {{-- System Attribute Accordation --}}
+                    {{-- <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsesystemattri"
+                                aria-expanded="false" aria-controls="collapsesystemattri">
+                                System Properties ( {{count((array) $default_property)}} )
+                            </button>
+                        </h2>
+                        <div id="collapsesystemattri" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                        
+                                <div class="table-responsive" style="max-height:80%; overflow:hidden;overflow-y:auto;">
+                                    <table class="table">
+                                        <tbody>
+                                            @forelse ($col_list as $item => $key)
+                                                @if (in_array($item,$default_property))
+                                                    <tr class="">
                                                         <td scope="row">
                                                             <div class="form-group">
-                                                                <input type="checkbox" value="{{$item}}" id="attri_{{$item}}" class="my_attribute mx-1" name="myfields[]" data-index="{{ $key }}" @if (in_array($item,json_decode($template->columns_values))) checked @endif>
                                                                 <label for="attri_{{$item}}" class="form-label" style="font-size: large;user-select: none;">{{$item}}</label>
+                                                                <input type="checkbox" value="{{$item}}" id="attri_{{$item}}" class="sys_attribute m-2 invisible" checked name="systemfiels[]">
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -220,9 +263,18 @@
                             </div>
                         </div>
 
-                    </div>
+                    </div> --}}
 
-                    {{-- System Attribute Accordation --}}
+                    <div class="actionbtn border mt-2 d-flex justify-content-between align-items-center my-2">
+                        
+                        <a class="btn btn-outline-primary px-5 close-button" href="{{ route('panel.products.create') }}?action=nonbranded&bulk_product">Cancel</a>
+
+                        <button class="btn btn-primary px-5">Save and Download</button>
+                    </div>
+                </div>
+
+                {{-- 2nd column --}}
+                <div class="col-md-6 col-12 h-100 invisible" style="overflow: auto; max-height: 80vh" id="tableselected">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsesystemattri"
@@ -265,14 +317,6 @@
 
                     </div>
 
-                    <div class="actionbtn border mt-2 d-flex justify-content-between align-items-center my-2">
-                        <button class="btn btn-outline-primary px-5 close-animatedModal">Cancel</button>
-                        <button class="btn btn-primary px-5">Save and Download</button>
-                    </div>
-                </div>
-
-                {{-- 2nd column --}}
-                <div class="col-md-6 col-12 h-100" style="overflow: auto; max-height: 80vh">
                     <div class="my-3">
                         <div class="form-group">
                             <input type="text" class="form-control" placeholder="Template Name" required name="template_name" id="template_name" value="{{ $template->template_name }}">
@@ -325,7 +369,9 @@
                 }else{
                     $(`#parent_${$(this).data('index')}`).remove();
                 }
+                
             });
+            
 
 
 
@@ -347,9 +393,17 @@
                         $(`#parent_${$(this).data('index')}`).remove();
                     }
                 }
-
+                myfunc();
 
             })
+            function myfunc() {
+                if ($(".my_attribute:checked").length > 0) {
+                    // any one is checked
+                    $("#tableselected").removeClass('invisible');
+                } else {
+                    $("#tableselected").addClass('invisible');
+                }
+            }
 
 
         });

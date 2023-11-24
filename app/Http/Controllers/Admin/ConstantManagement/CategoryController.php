@@ -20,6 +20,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use function GuzzleHttp\Promise\all;
 
 class CategoryController extends Controller
 {
@@ -44,12 +45,14 @@ class CategoryController extends Controller
                             ->where('level',2)
                             // ->where('user_id',null)
                             ->where('user_id',auth()->id())
+                            ->orderBy('name','ASC')
                             ->get()->toArray();
 
 
                 $category_global = Category::where('category_type_id',13)
                             ->where('level',2)
                             ->where('user_id',null)
+                            ->orderBy('name','ASC')
                             ->get()->toArray();
                             
 
@@ -57,19 +60,53 @@ class CategoryController extends Controller
                 
                 
                 if ($user_selected_category_id != null) {
-                    $user_selected_category = Category::whereIn('id',$user_selected_category_id)->get()->toArray() ?? [];
+                    $user_selected_category_parent = Category::whereIn('id',$user_selected_category_id)->pluck('parent_id')->toArray() ?? [];
+                    $user_selected_category = Category::whereIn('id',$user_selected_category_parent)->get()->toArray() ?? [];
+
                     $category =  array_merge($category_own,$user_selected_category);
+
                 }else{
                     $category =  $category_own;
                 }
+                $sub_category = Category::where('level',3)->get();
+
             }
             
-            return view('backend.constant-management.category.index', compact('category','industries','category_global'));
+            return view('backend.constant-management.category.index', compact('category','industries','category_global','sub_category'));
         } catch (\Exception $e) {
             throw $e;
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
+
+
+    public function checkglobal(Request $request) {
+        
+        if ($request->ajax()) {
+            $name = $request->search;
+            $chk = Category::where('name',$name)->where('user_id',null)->first();
+    
+            
+            if ($chk != null) {
+                $data = Category::where('parent_id',$chk->id)->pluck('name');
+                
+                            
+                $response  = ['status'=>"SUCCESS","Message"=> "Record Exist!!","DATA" => $data,"COUNT" => $data->count()];
+                $response = json_encode($response);
+    
+            }else{
+                $response  = ['status'=>"FAILED","Message"=> "New Entry","DATA" => "NULL","COUNT" => 0];
+                $response = json_encode($response);
+            }
+            
+            return $response;
+        }
+        
+    }
+
+    
+    
+    
 
     /**
      * Show the form for creating a new resource.
@@ -95,6 +132,10 @@ class CategoryController extends Controller
         //     'level' => 'required',
         //     'category_type_id' => 'required',
         // ]);
+        
+        if (count(explode(" > ",$request->name)) > 1) {
+            $request['name'] = explode(" > ",$request->name)[1];
+        } 
         
         // return $request->all();
         try {
@@ -131,9 +172,9 @@ class CategoryController extends Controller
                         'type' => 1,
                         'icon' => null
                     ]);
-                    echo "UNdefined Industru Is not Exist".newline();
+                    echo "UNdefined Industry Is not Exist".newline();
                 }else{
-                    echo "UNdefined Industru Already Exist".newline();
+                    echo "UNdefined Industry Already Exist".newline();
                     $industry_for_user = $chk_undefined[0];
                 }
     
@@ -145,11 +186,35 @@ class CategoryController extends Controller
                     echo "Category Already Exist in Your Account.";
                 }
 
+
                 if (count($chk_Default) != 0) {
-                    echo "System Category Already Exist, With Same Name.";
+
+                    $usrr = auth()->user();
+                    $selected_category = json_decode($usrr->selected_category) ?? [];
+                    if (!in_array($chk_Default[0]->id,$selected_category)) {
+                        $VALUE = $chk_Default[0]->id;
+                        array_push($selected_category,"$VALUE");
+                    }else{
+                        return back()->with('error',"Already Exist in Your Account");
+                    }
+
+                    $selected_category = json_encode($selected_category);
+                    $usrr->selected_category = $selected_category;
+                    $usrr->save();
+
+                    return back()->with('success',"Added SuccessFully");
                 }
 
-                
+
+
+
+
+
+                if (count($chk_own) != 0 || count($chk_Default) != 0) {
+                    return back()->with('error',"Category Already Exist");
+                }
+
+                // Creating Category
                 $category = Category::create([
                     'name' => $catname,
                     'category_type_id' => $category_type_id,
@@ -314,7 +379,9 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        // return 's';
+
+        $id = decrypt($id);
+        
         $category = Category::whereId($id)->first();
 
         // Level 1
@@ -326,6 +393,8 @@ class CategoryController extends Controller
                     return back()->with('success', 'Industry Deleted Successfully!');
                 }
             }
+
+            
         }elseif($category->level == 2){
             $product = Product::whereCategoryId($id)->exists();
             $user_shop = UserShopItem::whereCategoryId($id)->exists();
@@ -337,15 +406,47 @@ class CategoryController extends Controller
                        return back()->with('success', 'Category Deleted Successfully!');
                    }
                }else{
-                   return back()->with('error','You cannot delete this Category ID since it is linked to a product ');
+                   return back()->with('error',"First move products to another category before deleting category");
                }
+               
+
+
         }elseif($category->level == 3){
-            $product = Product::whereSubCategory($id)->exists();
-            $user_shop = UserShopItem::whereSubCategoryId($id)->exists();
+
+            
+            if (AuthRole() == 'Admin') {
+                $product = Product::whereSubCategory($id)->exists();
+                $user_shop = UserShopItem::whereSubCategoryId($id)->exists();
+            }else{
+                $product = Product::whereSubCategory($id)->where('user_id',auth()->id())->exists();
+                $user_shop = UserShopItem::whereSubCategoryId($id)->where('user_id',auth()->id())->exists();
+            }
+
+
            // System Defined
                if((!$product || !$user_shop) && (!$product && !$user_shop)){
-                   $category->delete();
+
+                    if ($category->user_id == auth()->id()) {
+                        $category->delete();
+                    }elseif (AuthRole() == 'Admin') {
+                        $category->delete();
+                    }else{
+                        $user = auth()->user();
+                        $selected_category = json_decode($user->selected_category) ?? [];
+
+                        foreach ($selected_category as $key => $value) {
+
+                            if ($category->id == $value) {
+                                array_splice($selected_category,$key);
+                            }
+                        }
+                        $user->selected_category = json_encode($selected_category);
+                        $user->save();
+                    }
+                
                 //    deleteSubCategory($id);
+                
+                
                    if ($category) {
                        return back()->with('success', 'Sub Category Deleted Successfully!');
                    }
@@ -353,6 +454,7 @@ class CategoryController extends Controller
                    return back()->with('error','You cannot delete this Sub Category ID since it is linked to a product ');
                }
         }
+        
     }
 
 

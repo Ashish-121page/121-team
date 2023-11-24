@@ -21,7 +21,7 @@
         <style>
             .error {
                 color: red;
-            }
+            }            
 
         </style>
     @endpush

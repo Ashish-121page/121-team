@@ -21,7 +21,7 @@
         </div>
 
     </div>
-    
+     
 @elseif(request()->has('assetsafe'))
     {{-- For FileManager` --}}
     {{-- ` Nothig TO Show Here. --}}
@@ -39,7 +39,8 @@
     {{-- For Category --}}
     <div class="top-menu d-flex align-items-center " id="product-action">
         <button class="btn btn-sm btn-outline-primary mx-1" id="export-categrory">Export</button>
-        <button class="btn btn-sm btn-outline-primary mx-1" id="deletecatbtn">Delete</button>
+        <button class="btn btn-sm btn-outline-primary mx-1 d-none" id="deletecatbtn">Delete</button>
+        <button class="btn btn-sm btn-outline-primary mx-1" id="delcat_dummy">Delete</button>
         {{-- <a href="{{ route('panel.constant_management.category.delete', $item->id)  }}" title="Delete Category" class="btn btn-sm delete-item dropdown-item">Delete</a> --}}
     </div>
 @endif

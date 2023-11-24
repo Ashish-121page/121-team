@@ -5,17 +5,19 @@ namespace App\Http\Controllers\Panel;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Product;
+use App\Models\ProductExtraInfo;
 use App\Models\UserShopItem;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
+use Illuminate\Support\Facades\Response;
+
 
 class FileManager extends Controller
 {
-    public function index(Request $request)
-    {
+    public function index(Request $request){
         try{
            return view('panel.seller_files.index');
         }catch(\Exception $e){
@@ -25,15 +27,14 @@ class FileManager extends Controller
     }
 
     public function newview(Request $request) {
-
         $user_id = auth()->id();
         $filetypes = [];
         $filterfiles = [];
         
         $folderPath = "public/files/$user_id";
-        $sortOrder = $request->get('filtername','name'); // Specify the sort order ('name', 'date', 'size')
-        $sortType = $request->get('filtertype','ASC');
-
+        $linkedItems = [];
+        $sortOrder = $request->get('filtername','date'); // Specify the sort order ('name', 'date', 'size')
+        $sortType = $request->get('filtertype','DESC');
         
         if (Storage::exists($folderPath)) {
             $files = Storage::allFiles($folderPath);
@@ -59,6 +60,15 @@ class FileManager extends Controller
                     usort($files, function ($a, $b) {
                         return Storage::size($a) - Storage::size($b);
                     });
+                }elseif ($sortOrder == 'attachment') {
+                    foreach ($files as $key => $file) {
+                        $filename = basename($file);
+                        $path = "storage/files/$user_id/$filename";
+                        $linked = Media::where('path',$path)->groupBy('type_id')->get()->count() ?? 0;
+                        array_push($linkedItems,$linked);
+                    }
+
+                    array_multisort($linkedItems,SORT_ASC,$files);
                 }
             }else{
             
@@ -80,15 +90,35 @@ class FileManager extends Controller
                     usort($files, function ($a, $b) {
                         return Storage::size($b) - Storage::size($a);
                     });
+                }elseif ($sortOrder == 'attachment') {
+                    foreach ($files as $key => $file) {
+                        $filename = basename($file);
+                        $path = "storage/files/$user_id/$filename";
+                        $linked = Media::where('path',$path)->groupBy('type_id')->get()->count() ?? 0;
+                        array_push($linkedItems,$linked);
+                    }
+
+                    array_multisort($linkedItems,SORT_DESC,$files);
                 }
             }
           
             // Getting Folder Size
             $formattedSize = 0;
-
             $user_shop_item = UserShopItem::where('user_id',auth()->id())->pluck('product_id');
-            $Products = Product::whereIn('id',$user_shop_item)->get();
+            $limit = $request->get('pageliimt',5);
+
+            $Products = Product::whereIn('id',$user_shop_item)->paginate($limit);
+            $Products_attribute = ProductExtraInfo::whereIn('product_id',$user_shop_item)->groupBy('attribute_value_id')->get();
             
+
+            if ($request->ajax() && $request->workload == 'linkproductsearch') {
+                // $limit = $request->get('pageliimt',5);
+                $Products = Product::whereIn('id',$user_shop_item)->where('title',"LIKE","%".$request->searchCode."%")->paginate($limit);
+                $Products_attribute = ProductExtraInfo::whereIn('product_id',$user_shop_item)->groupBy('attribute_value_id')->get();
+                return view('panel.Filemanager.modals.ProductList',compact('Products','Products_attribute'));
+            }
+
+
 
             foreach ($files as $file) {
                 $fileSize = Storage::size($file);
@@ -97,27 +127,19 @@ class FileManager extends Controller
                 if (!in_array($filechk,$filetypes)) {
                     array_push($filetypes,$filechk);
                 }
-
                 if ($request->has('file_type') && $request->get('file_type') != null && $request->get('file_type') != 'all') {
                     if ($filechk == $request->get('file_type')) {
                         array_push($filterfiles,$file);
                     }
                     $files = $filterfiles;
                 }
-                
             }
-
-  
             
             $page = request()->get('page', 1);
             $perPage = 24;
             $offset = ($page - 1) * $perPage;            
             $slicedFiles = array_slice($files, $offset, $perPage);
             $paginator = new LengthAwarePaginator($slicedFiles, count($files), $perPage, $page);
-
-            // magicstring($filterfiles);
-            // return;
-
 
         }else{
             Storage::makeDirectory($folderPath);
@@ -126,8 +148,7 @@ class FileManager extends Controller
             return;
         }
 
-
-        return view('panel.Filemanager.index',compact('paginator','formattedSize','Products','filetypes'));
+        return view('panel.Filemanager.index',compact('paginator','formattedSize','Products','filetypes','Products_attribute'));
     }
 
     function renamefile(Request $request) {
@@ -158,6 +179,7 @@ class FileManager extends Controller
                 $Mediarecords = Media::where('path',$OldpathInDB)->get();
                 foreach ($Mediarecords as $key => $media) {
                     $media->path = $NewpathInDB;
+                    $media->file_name = $newName;
                     $media->save();
                     $countProduct++;
                 }
@@ -181,12 +203,23 @@ class FileManager extends Controller
             $deletefiles = explode(',',$request->get('files'));
             $count = 0;
             
+            
             foreach ($deletefiles as $key => $filePath) {
                 if (Storage::exists(decrypt($filePath))) {
+
+                    $path = decrypt($filePath);
+                    $path = str_replace('public','storage',$path);
+                    
+                    $media = Media::where('path',$path)->get();
+
+                    foreach ($media as $key => $value) {
+                        $value->delete();
+                    }
+                    
                     Storage::delete(decrypt($filePath));
                     $count++;
                 }else{
-                    // return back()->with('error',"File Does Not Exit.");
+                    return back()->with('error',"File Does Not Exit.");
                 }
             }
     
@@ -205,12 +238,9 @@ class FileManager extends Controller
         $folderPath = "public/files/$user_id";
         
         $fileName = $file->getClientOriginalName() ?? Str::random(10);
-        
-        
-        $path = $file->storeAs($folderPath, $fileName);
-
-        
-        return response()->json(['path' => $path]);
+    
+        $path = $file->storeAs($folderPath, $fileName);        
+        return response()->json(['path' => $path,'Filename' => $fileName]);
     }
 
 
@@ -252,22 +282,122 @@ class FileManager extends Controller
         return response()->file(storage_path("app/public/exports/" . $zipFileName), $headers);
     }
 
+
+    public function productsaperator(Request $request) {
+        
+        // magicstring($request->all());
+
+        try {
+            $dr  = $request->delimiter;
+            $delimiter = '-';
+            $alignment = $request->alignment;
+            $count = 0;
+
+            switch ($dr) {
+                case 'underscore':
+                    $delimiter = "_";
+                    break;
+                case 'dash':
+                    $delimiter = "-";
+                    break;
+
+                case 'dot':
+                    $delimiter = ".";
+                    break;
+
+                case 'hashtag':
+                    $delimiter = "#";
+                    break;
+
+                default:
+                    $delimiter = "_";
+                    break;
+            }
+                    
+            // ` extracting Model Code
+            $model_codes = [];
+            foreach (json_decode($request->filename) as $key => $names) {
+                $names = pathinfo($names)['filename'];            
+                $tmp_data = explode($delimiter,$names);
+                array_push($model_codes,$tmp_data[$alignment]);
+            }
+
+
+            // Linking Product With Images
+            foreach ($model_codes as $key1 => $models) {
+                $products = Product::where('model_code',$models)->where('user_id',auth()->id())->get();
+
+            if ($products->count() != 0) {
+                    foreach ($products as $key => $product) {
+                        
+                        $usi = UserShopItem::where('product_id',$product->id)->where('user_id',auth()->id())->first();
+                        if ($usi != null) {
+
+                            $arr_images = [];
+                            $exist_image = $usi->images;
+                            
+                            $file = json_decode($request->filename)[$key1];
+                            $media = new Media();
+                            $media->tag = "Product_Image";
+                            $media->file_type = "Image";
+                            $media->type = "Product";
+                            $media->type_id = $product->id;
+                            $media->file_name = basename($file);
+                            $media->path = "storage/files/".auth()->id()."/".basename($file);
+                            $media->extension = explode('.',basename($file))[1] ?? '';
+                            $media->save();
+                            $arr_images[] = $media->id;
+                            $count++;
+
+                            // // Add images to UserShopItem
+                            if(count($arr_images) > 0) {
+                                
+                                if ($exist_image == null || $exist_image = '') {
+                                    $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                }else{
+                                    $usi->images =  $usi->images.','.implode(',',$arr_images) ?? null;
+                                }
+                                
+                                $usi->save();
+                            }
+
+                            
+                            
+                        }
+                    }
+            }
+
+            }
+
+            return back()->with('success',"$count assets linked with $count products !!");
+
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+    }
+
+
+
+
     public function linkproduct(Request $request,$user_id) {
         try {
             $user_id = decrypt($user_id);
             $countProduct = 0;
-            magicstring($request->all());
+
             foreach ($request->product_id as $key => $product_id) {
                     
                 $prouduct_id = decrypt($product_id);
                 $arr_images = [];
-                $usi = UserShopItem::where('product_id',$prouduct_id)->where('user_id',$user_id)->first();
+                $usi = UserShopItem::where('product_id',$prouduct_id)->where('user_id',$user_id)->first();               
+                
                 $exist_image = $usi->images;
                 $count = 0;
-                foreach (explode(',',$request->get('images')) as $key => $value) {
+                foreach (json_decode($request->images) as $key => $value) {
                     // array_push($filePaths,decrypt($value));
-                    $file = decrypt($value);
-                    
+                    // $file = decrypt($value);
+
+                    $file = $value;
                     $media = new Media();
                     $media->tag = "Product_Image";
                     $media->file_type = "Image";
@@ -298,10 +428,13 @@ class FileManager extends Controller
 
             return back()->with('success',"$count assets linked with $countProduct products !!");
         } catch (\Throwable $th) {
-            // throw $th;
+            throw $th;
             return back()->with('error',"There was an error while linking assets");
         }
     }
+
+
+
 
 
 }

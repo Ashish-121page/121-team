@@ -216,6 +216,11 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::group(['middleware' => 'can:manage_category', 'prefix' => 'category', 'as' => 'category.'], function () {
 
             Route::get('/view/{type_id}', [CategoryController::class,'index'])->name('index');
+
+            Route::get('/check/global', [CategoryController::class,'checkglobal'])->name('check.global');
+
+
+
             Route::get('/create/{type_id}/{level?}/{parent_id?}', [CategoryController::class,'create'])->name('create');
             Route::post('/store', [CategoryController::class,'store'])->name('store');
             Route::get('/edit/{id}', [CategoryController::class,'edit'])->name('edit');
@@ -519,6 +524,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
     // @ Group Route for Bulk Sheet 
     Route::group(['middleware' => 'auth','namespace' => '/bulk', 'prefix' => '/', 'as' => 'bulk.'], function () {
+
         Route::post('/product-upload', [NewBulkController::class,'productUpload'])->name('product-upload');
         Route::get('/export/product-bulk-sheet/{user_id}', [NewBulkController::class,'ProductSheetExport'])->name('product.bulk-sheet-export');
 
@@ -528,14 +534,10 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::post('/update/product-bulk', [NewBulkController::class,'productBulkUpdate'])->name('product.bulk-update');
         Route::get('/export/product-bulk/{user_id}', [NewBulkController::class,'exportData'])->name('product.bulk-export');
 
-
         // ` Update Bulk Excel For Users Upload Admin Start
         Route::get('/manage-bulk', [NewBulkController::class,'updateExcelShow'])->name('manage.bulk');
         Route::post('/update-bulk-excel', [NewBulkController::class,'updateExcel'])->name('update.bulk.excel');
-        // ` Update Bulk Excel For Users Upload Admin End
-
-
-        
+        // ` Update Bulk Excel For Users Upload Admin End        
     });
 
 

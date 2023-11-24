@@ -357,6 +357,10 @@
             overflow-y: hidden!important;
             overflow-x: hidden!important
         }
+        /* filter alignment */
+        .accordion-body {
+            padding: 0 0 !important
+        }
 
 </style>
 
@@ -508,7 +512,7 @@
                                         </h2>
                                         <div id="collapscatrgory" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                                         <div class="accordion-body">
-                                <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
+                                <ul class="list-unstyled mt-1 mb-0 custom-scrollbar" style="padding-left:1rem">
                                     <li>
                                         <h5 class="form-check">
                                             <input class="form-check-input" type="radio" @if(!request()->has('category_id') ||request()->get('category_id') == null ) checked @endif  value="" id="categoryAll" name="category_id">
@@ -522,9 +526,9 @@
                                             $sub_category = App\Models\Category::whereId(request()->get('sub_category_id'))->first();
                                             @endphp
                                             <li>
-                                                <h5 class="form-check">
+                                                <h5 class="form-check" style="display: flex;align-items: center;gap: 6px;">
                                                     <input class="form-check-input filterCategory" type="radio" value="{{ $item->id }}" id="category{{ $item->id }}" name="category_id" @if((request()->has('category_id') && request()->get('category_id') ==  $item->id )) checked @endif>
-                                                    <label for="category{{ $item->id }}" class="form-check-label fltr-lbl   ">
+                                                    <label for="category{{ $item->id }}" class="form-check-label fltr-lbl mt-2">
                                                         {{$item->name}} 
                                                         {{--  Category Count --}}
                                                         <span style="font-size: 11px">({{ getProductCountViaCategoryId($item->id,$user_shop->user_id) }})</span>
@@ -534,12 +538,12 @@
                                             @if(request()->has('category_id') && request()->get('category_id') ==  $item->id )
                                                 @php
                                                     $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
-                                                @endphp 
-                                                <div style="padding-left: 25px">
+                                                @endphp                                                 
+                                                    <div style="padding-left: 25px; display: flex;align-items: center;gap: 6px;">
                                                     <ul class="list-unstyled custom-scrollbar">
                                                         @foreach ($subcategories as $subcategorie)
                                                             <li>        
-                                                                <h6 class="form-check">
+                                                                <h5 class="form-check">
                                                                     <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
                                                                     <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
                                                                         {{$subcategorie->name}}
@@ -548,7 +552,7 @@
                                                                             ({{ getProductCountViaSubCategoryId($subcategorie->id,$user_shop->user_id) }})
                                                                         </span>
                                                                     </label>
-                                                                </h6>
+                                                                </h5>
                                                             </li>
                                                         @endforeach
                                                     </ul>
@@ -641,7 +645,10 @@
                             {{-- Applying scoobooo layout in color and other attri --}}
                                 @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
                                     @foreach ($additional_attribute as $key => $item)
-                                        @if (getAttruibuteById($item)->visibility == 1)
+                                        @php
+                                            $testchk = getAttruibuteById($item);
+                                        @endphp
+                                        @if ( isset($testchk) && getAttruibuteById($item)->visibility == 1)
                                             <div class="container mt-3">
                                                 <!-- Collapsible Button -->
                                                 <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#AttributeList_{{$key}}" aria-expanded="false" aria-controls="AttributeList_{{$key}}">

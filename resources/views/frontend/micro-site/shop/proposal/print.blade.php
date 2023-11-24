@@ -20,11 +20,11 @@
                 @foreach ($products as $key => $product)
                             <tr class="">
                                 <td>
-                                     @if($product->user_id == auth()->id())
+                                     {{-- @if($product->user_id == auth()->id()) --}}
                                         {{ $product->model_code }}
-                                    @else 
+                                    {{-- @else 
                                         {{ isset($usi) ? $usi->id : '' }}
-                                    @endif  
+                                    @endif   --}}
                                 </td>
                                 <td scope="row"> {{ $product->title }} </td>
                                 <td> {{ $product->description ?? '--' }} </td>
@@ -75,15 +75,13 @@
                                     @php
                                         $url = asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png'));
                                         // $proposal_pro_img = App\Models\ProposalItem::where('proposal_id',$proposal->id)->where('product_id',$product->id)->first()->shorturl_img;
-                                        $proposal_pro = App\Models\ProposalItem::where('proposal_id',$proposal->id)->where('product_id',$product->id)->first();
-                                        if ($proposal_pro->shorturl_img == null) {
-                                            $proposal_pro->shorturl_img = shrinkurl($url);
-                                            $proposal_pro->save();
-                                        }
-                                    @endphp
-                                    <pre>
-                                        {{trim($proposal_pro->shorturl_img)}}
-                                    </pre>
+                                        // $proposal_pro = App\Models\ProposalItem::where('proposal_id',$proposal->id)->where('product_id',$product->id)->first();
+                                        // if ($proposal_pro->shorturl_img == null) {
+                                        //     $proposal_pro->shorturl_img = shrinkurl($url);
+                                        //     $proposal_pro->save();
+                                        // }
+                                        @endphp
+                                        <img src="{{ $url }}" alt="" style="height:150px">
                                 </td> 
                             </tr>
                         @endforeach

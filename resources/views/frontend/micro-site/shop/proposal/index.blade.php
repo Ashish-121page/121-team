@@ -47,6 +47,10 @@
 {{-- Animated modal --}}
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.css">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
 <style>
     @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css");
 
@@ -134,14 +138,14 @@
     </div> --}}
 
 
-        <div class="fixedbtn position-fixed noprint animate__animated animate__bounceInRight urehdug d-none"
+        {{-- <div class="fixedbtn position-fixed noprint animate__animated animate__bounceInRight urehdug d-none"
             style="bottom: 25px; right: 25px; z-index: 999;">
             <a href="{{ request()->url() }}" class="btn d-flex gap-2 align-item-center justify-content-center"
                 style="background-color: #283353; color: white;">
                 <i class="fas fa-redo my-1"></i>
                 <span class="d-none d-sm-block d-md-block">Undo Changes</span>
             </a>
-        </div>
+        </div> --}}
 
 
 
@@ -310,7 +314,6 @@
 
         </div><!--end container-->
 
-
         </form>
 
         <div id="printbx">
@@ -323,7 +326,7 @@
             @endif --}}
 
 
-        <div class="noprint">
+        {{-- <div class="noprint">
             <p class="bg-primary px-5" style="padding: 20px 0;">
                 Edit on Page &gt; Export as PDF ; or
                 Export in ppt &gt; Edit
@@ -334,11 +337,14 @@
                 <br>
                 <b>Note 3 :</b> Edits are NOT saved. Refresh to undo.
             </p>
-        </div>
+        </div> --}}
 
         
         
-        
+        <form action="{{ route('pages.proposal.excel') }}" id="printExcel" method="post">
+            @csrf
+            <input type="hidden" name="tabelcontent" id="djfdgfvi" value="">
+        </form>
         
         @include('frontend.micro-site.shop.proposal.modal.pdfcustom')
 
@@ -360,6 +366,27 @@
 
     <script src="{{ asset('backend/plugins/select2/dist/js/select2.min.js') }}"></script>
 
+    <script>
+
+        function getTableData(tabelId) {
+            var array = [];
+            var headers = [];
+            $('#'+tabelId+' th').each(function (index, item) {
+                headers[index] = $(item).html().replace(/^\s+|\s+$/gm, '');
+            });
+
+            $('#'+tabelId+' tr').has('td').each(function () {
+                var arrayItem = {};
+                $('td', $(this)).each(function (index, item) {
+                    arrayItem[headers[index]] = $(item).html().replace(/^\s+|\s+$/gm, '');
+                });
+                array.push(arrayItem);
+
+            });
+            return array;
+        }
+        
+    </script>
 
     <script>
         $("#jaya1").animatedModal({
@@ -539,6 +566,11 @@
 
         $(document).on('click', '#export_button', function() {
             html_table_to_excel('xlsx');
+            // let tabledata = getTableData("printproposals");
+            // $("#djfdgfvi").val(JSON.stringify(tabledata));
+            // $("#printExcel").submit();
+
+            // exportToExcel()
         })
 
 
@@ -762,4 +794,96 @@
             });
         });
     </script>
+    {{-- Script for Printing Excel --}}
+
+    <script>
+        // your_script.js
+        // function populateTable() {
+        //     // Populate your table with data. This is an example.
+        //     const table = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+        //     const newRow = table.insertRow(table.length);
+
+        //     newRow.insertCell(0).innerHTML = "Data 1";
+        //     newRow.insertCell(1).innerHTML = "Data 2";
+        //     newRow.insertCell(2).innerHTML = "Data 3";
+        //     newRow.insertCell(3).innerHTML = "Data 4";
+        //     newRow.insertCell(4).innerHTML = '<img src="image.jpg" width="100" />';
+        //     // Add more rows as needed
+        // }
+        // Function to send the table data to the server and handle the response
+        
+        // function exportToExcel() {
+        //     const table = document.getElementById('printproposals');
+        //     const data = table.outerHTML;
+        //     console.log(data);
+
+        //     // Using Axios for the AJAX request
+        //     // axios.post("{{ route('pages.proposal.excel') }}", {
+        //     //         htmlTable: data
+        //     //     }, {
+        //     //         responseType: 'blob' // Important to handle binary response data
+        //     //     })
+        //     //     .then(response => {
+        //     //         // Create a URL from the response blob and trigger download
+        //     //         const url = window.URL.createObjectURL(new Blob([response.data]));
+        //     //         const link = document.createElement('a');
+        //     //         link.href = url;
+        //     //         link.setAttribute('download', 'exported_data.xlsx'); // Set the file name
+        //     //         document.body.appendChild(link);
+        //     //         link.click();
+        //     //         document.body.removeChild(link);
+        //     //     })
+        //     //     .catch(error => console.error('Error:', error));
+        // }
+
+
+
+            function exportToExcel() {
+                const table = document.getElementById('printproposals');
+                const data = table.outerHTML;
+
+                $.ajax({
+                    url: "{{ route('pages.proposal.excel') }}",
+                    type: 'POST',
+                    data: {
+                        htmlTable: data
+                    },
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    success: function(response) {
+                        // Handle the blob response
+                        const url = window.URL.createObjectURL(response); // Use the blob response directly
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', 'exported_data.xlsx'); // Set the file name
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Error:', textStatus, errorThrown);
+                    }
+                });
+            }
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+        
+        
+        // Ensure CSRF token is included in the header for Laravel
+        // axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        // Populate table on load
+        // document.addEventListener('DOMContentLoaded', populateTable);
+
+        
+    </script>
+
+    
+    
 @endsection

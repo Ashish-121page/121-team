@@ -2,7 +2,7 @@
 <div class="row">
     <div class="col-md-6 col-12 my-2">
         <div class="d-flex justify-content-start ">
-            <button type="button" class="btn mx-1">
+            <button type="button" class="btn mx-1 btn-outline-primary">
                 <span id="selected_count">0</span> Selected
             </button>
             <button type="button" class="btn exportbtn mx-1">

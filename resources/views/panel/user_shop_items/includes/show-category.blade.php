@@ -1,4 +1,4 @@
-<div class="card-body">
+<div class="card-body1">
    <div class="d-flex gap-2 flex-wrap">
 
         @if($acc_permissions->managegroup == "yes")
@@ -66,7 +66,7 @@
 
         {{-- Own Category --}}
         @php
-            $own_categories = App\Models\Category::whereNotIn('id',$categories->pluck('id'))->where('user_id',auth()->id())->where('level',2)->get();
+            $own_categories = App\Models\Category::whereNotIn('id',$categories->pluck('id'))->where('user_id',auth()->id())->where('level',2)->orderBy('name','ASC')->get();
         @endphp
         
         @foreach ($own_categories as $item)            
@@ -92,7 +92,7 @@
                 <div class="cardbody d-flex gap-2 p-4">
                     {{-- getting Last 3 Record of Product --}}
                     @php
-                        $last_Records = App\Models\Product::where('category_id',$item->id)->orderBy('id','DESC')->limit(3)->get();
+                        $last_Records = App\Models\Product::where('category_id',$item->id)->groupBy('model_code')->orderBy('id','DESC')->limit(3)->get();
                     @endphp
 
                     @foreach ($last_Records as $last_Record)

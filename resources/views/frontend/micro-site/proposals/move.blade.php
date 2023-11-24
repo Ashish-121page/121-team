@@ -18,7 +18,8 @@
     if ($proposal->type == 1) {
         $offer_url = $make_offer_link;
     }
-
+// echo $proposal->id;
+// return;
     @endphp
     <!-- push external head elements to head -->
     @push('head')
@@ -30,9 +31,9 @@
 
 
         <style>
-            .app-sidebar , .header-top{
+            /* .app-sidebar , .header-top{
                 display: none !important;
-            }
+            } */
 
             .main-content{
                 padding: 0 !important;
@@ -298,7 +299,7 @@
                     overflow-y: hidden!important;
                     overflow-x: hidden!important;
 
-                }
+                }                   
 
         </style>
         @if (auth()->id() != 155)
@@ -433,7 +434,10 @@
                                                                 <div class="profile-pic">
                                                                     <div class="row">
                                                                         <div class="col-md-12 pt-2 text-center p-0" style="margin-top: -15px;">
-                                                                            <h6 class="mb-0 ">{{$product->title??"--"}}</h6>
+                                                                            <span class="mb-0 ">{{$product->title??"--"}}</span>
+                                                                            
+                                                                            <br>
+                                                                            
                                                                             {{-- @if(isset($product->category_id) || isset($product->sub_category))
                                                                             <span>{{fetchFirst('App\Models\Category',$product->sub_category,'name','--')}}</span> <br>
                                                                             @endif --}}
@@ -495,9 +499,12 @@
                                                                                     $margin = "Custom Price";
                                                                                 }
                                                                                 $price = exchangerate($price,$exhangerate,$HomeCurrency);
+                                                                                // $user = session()->get('temp_user_id') ?? session()->get('user_id');
+                                                                                $user = auth()->id() ?? session()->get('user_id') ?? session()->get('temp_user_id');
                                                                             @endphp
-                                                                            @if ($proposal->user_id == auth()->id())
+                                                                            @if ($proposal->user_id == $user)
                                                                                 {{-- <span>Offer Price: {{ format_price($price) }}</span> --}}
+                                                                                <br>
                                                                                 <span>Offer Price:
                                                                                     {{ $currency_symbol }}
                                                                                     {{ isset($price) ? number_format(round($price,2)) : '' }}    
@@ -513,9 +520,9 @@
                                                                                 @php
                                                                                     $ashus = json_decode($proposal_item->note);
                                                                                 @endphp
-                                                                                <span>Remarks: {!! $ashus->remarks_offer !!}</span>
-                                                                                <br>
-                                                                                <span>Customise: {!! $ashus->Customise_product !!}</span>
+                                                                                <span>Customisation: {!! $ashus->remarks_offer !!}</span>
+                                                                                {{-- <br>
+                                                                                <span>Customise: {!! $ashus->Customise_product !!}</span> --}}
                                                                             @endif
 
                                                                             @if ($proposal_item->attachment != null)
@@ -712,13 +719,15 @@
                                                             @if (isset($currency_record) && count($currency_record) != 0)
                                                                 <div class="col-2">
                                                                     <div class="form-group {{ $errors->has('offer_currency') ? 'has-error' : '' }}">
-                                                                        <label for="customer_mob_no" class="control-label">Offer Currency</label>
+                                                                        <label for="customer_mob_no" class="control-label">Currency</label>
                                                                         <div class="">
-                                                                            <select name="offer_currency" id="offer_currency" class="form-control" readonly>
+                                                                            {{-- <select name="offer_currency" id="offer_currency" class="form-control" readonly>
                                                                               @foreach ($currency_record as $item)
                                                                                 <option value="{{ $item->currency }}" @if ($item->currency == ($proposal->offer_currency ?? session()->get('currency_name') ?? 'INR')) selected @endif>{{ $item->currency }}</option>
                                                                               @endforeach
-                                                                            </select>
+                                                                            </select> --}}
+
+                                                                            <input type="text" name="offer_currency" disabled class="form-control" value="{{ $proposal->offer_currency ?? session()->get('currency_name') ?? 'INR' }}">
                                                                           </div>
                                                                         {{-- <div class="input-group">
                                                                            
@@ -1006,10 +1015,13 @@
         Please Wait...
     </div>
     @include('frontend.micro-site.proposals.modal.updateprice')
+    
     {{-- @include('frontend.micro-site.proposals.modal.change_style') --}}
-    @if (request()->has('type') && request()->get('type') == 'send')
+
+    @if (request()->has('type') && request()->get('type') == 'send' && $proposal->status == 1 && $proposal->type == 0)
         @include('frontend.micro-site.proposals.offeroptions')
     @endif
+    
 
     
     
@@ -1545,15 +1557,11 @@
              animatedOut: 'lightSpeedOut',
              color: 'FFFFFF',
              height: '60%',
-             width: '60%',
+             width: '50%',
              top: '10%',
-             left: '45%',
+             left: '52%',
 
          });
-
-
-
-
 
         </script>
 

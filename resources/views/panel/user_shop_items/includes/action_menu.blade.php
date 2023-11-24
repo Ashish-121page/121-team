@@ -19,15 +19,30 @@
         </a>
         @if($acc_permissions->addandedit == "yes")
             @if ($Team_proadd)
-                <a href="{{ route('panel.products.create') }}?action=nonbranded"
+                {{-- <a href="{{ route('panel.products.create') }}?action=nonbranded"
                     class="btn btn-outline-primary  mx-1">
                     Add Product
-                </a>
+                </a> --}}
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle mx-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Add Product
+                    </button>
+
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('panel.products.create') }}?action=nonbranded&single_product">Single Product</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('panel.products.create') }}?action=nonbranded&bulk_product">Bulk - by Excel</a>
+                        </li>
+                    </ul>
+                    
+                </div>
             @endif
         @endif
 
         @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id"))
-            <button id="delete_all_dummy"class="btn btn-outline-primary  ">Delete All Products</button>
+            <button id="delete_all_dummy"class="btn btn-outline-primary">Delete All Products</button>
         @endif
     
 
@@ -46,3 +61,17 @@
     @endif
     
 </div>
+
+
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#pageSelect').change(function(){
+            var selectedValue = $(this).val();
+
+            if(selectedValue !== "0") {
+                window.location.href = selectedValue; 
+            }
+        });
+    });
+</script> --}}

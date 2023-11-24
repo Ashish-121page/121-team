@@ -23,7 +23,19 @@
                 <div class="col-md-12 col-12"> 
                     <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
                         <label for="name" class="control-label">Category Name<span class="text-danger">*</span></label>
-                        <input required  class="form-control" name="name" type="text" id="name" value="{{old('name')}}" placeholder="Enter Name" >
+                        <input class="form-control" name="name" id="newcatname" type="text" id="name" value="{{old('name')}}" placeholder="Enter Name"  list="availablecategory" required autocomplete="off">
+
+                        <datalist id="availablecategory">
+                            @foreach ($sub_category as $item)
+                                @if ($item->name == 'Sub Sub')
+                                    @continue   
+                                @endif
+                                @php
+                                    $parentname = App\Models\Category::where('id',$item->parent_id)->first();
+                                @endphp
+                                <option value="{{ $parentname->name }} > {{ $item->name }}">{{ $parentname->name }} > {{ $item->name }}</option>
+                            @endforeach
+                        </datalist>
                     </div>
                 </div>
                                                                             

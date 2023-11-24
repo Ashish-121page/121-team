@@ -40,12 +40,15 @@
 
 
             {{-- ` This Menu is Always Visible  --}}
+            
             <div class="col-md-6 col-12 my-2">        
-                <div class="two" style="display: flex;align-items: center;justify-content: flex-end;">
-                    <a href="https://forms.gle/W7xxYt9gwzamse9TA" target="_blank" class="btn btn-outline-primary mx-1">
-                        Create New
-                    </a>                    
-                </div>
+                @if (!request()->has('open')) 
+                    <div class="two" style="display: flex;align-items: center;justify-content: flex-end;">
+                        <a href="https://forms.gle/W7xxYt9gwzamse9TA" target="_blank" class="btn btn-outline-primary mx-1">
+                            Create New
+                        </a>                    
+                    </div>
+                @endif    
             </div>
 
 
@@ -56,7 +59,7 @@
             @if (request()->has('open') && request()->get('open') == 'offers')
                 @include('panel.settings.pages.Offers')
             @elseif (request()->has('open') && request()->get('open') == 'team')
-                @include('panel.settings.pages.team')
+                @include('panel.settings.pages.Team')
             @else
                 @include('panel.settings.pages.Template')
             @endif
@@ -103,42 +106,54 @@
                 $(".select2insidemodalTeam").select2({
                     dropdownParent: $("#addTeam")
                 });
+
                 $('#otpButtonteam').on('click',function(e){
-            e.preventDefault();
-            var number = $('#contact_number').val();
-            $.ajax({
-                url: "{{ route('panel.user.send-otp') }}",
-                method: 'GET',
-                data: {
-                    phone_no: number
-                },
-                success: function(response) {
-                    if(response.title == 'Error'){
+                e.preventDefault();
+                    var number = $('#contact_number').val();
+                    if (number != '' && number != null) {
+                        $.ajax({
+                            url: "{{ route('panel.user.send-otp') }}",
+                            method: 'GET',
+                            data: {
+                                phone_no: number
+                            },
+                            success: function(response) {
+                                if(response.title == 'Error'){
+                                    $.toast({
+                                        heading: response.title,
+                                        text: response.message,
+                                        showHideTransition: 'slide',
+                                        icon: 'error',
+                                        loaderBg: '#f2a654',
+                                        position: 'top-right'
+                                    });
+                                }else{
+                                    $.toast({
+                                        heading: response.title,
+                                        text: response.message,
+                                        showHideTransition: 'slide',
+                                        icon: 'success',
+                                        loaderBg: '#f96868',
+                                        position: 'top-right'
+                                    });
+                                }
+                                $('.otpaction1').removeClass('d-none');
+                                $('.otpaction2').removeClass('d-none');
+                                $('.additionalNumber').attr('readonly',true);1
+                                $('#OTP').html(response.otp)
+                            }
+                        });
+                    }else{
                         $.toast({
-                            heading: response.title,
-                            text: response.message,
+                            heading: "Error",
+                            text: "The number is required",
                             showHideTransition: 'slide',
                             icon: 'error',
                             loaderBg: '#f2a654',
                             position: 'top-right'
                         });
-                    }else{
-                        $.toast({
-                            heading: response.title,
-                            text: response.message,
-                            showHideTransition: 'slide',
-                            icon: 'success',
-                            loaderBg: '#f96868',
-                            position: 'top-right'
-                        });
                     }
-                    $('.otpaction1').removeClass('d-none');
-                    $('.otpaction2').removeClass('d-none');
-                    $('.additionalNumber').attr('readonly',true);1
-                    $('#OTP').html(response.otp)
-                }
-            })
-        });
+                });
 
         $('#verifyOTP').on('click',function(e){
             e.preventDefault();
