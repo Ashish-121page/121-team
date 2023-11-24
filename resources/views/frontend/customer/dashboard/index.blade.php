@@ -354,8 +354,10 @@
                                             <i class="uil uil-envelope h5 align-middle me-2 mb-0"></i>
                                              Support Ticket</h6>
                                     </div>
-                                </a><!--end nav link-->
-                            </li><!--end nav item-->
+                                </a>
+                                <!--end nav link-->
+                            </li>
+                            <!--end nav item-->
 
                         </ul><!--end nav pills-->
                         <div class="">
@@ -439,7 +441,6 @@
                                     {!! QrCode::size(300)->generate( $url ) !!} --}}
 
                                     @if(getUserProgressStatistics(auth()->id()) != 100)
-
                                         {{-- <div class="col-lg-6 col-md-6 col-12">
                                             <div class="card">
                                                 <div class="card-body">
@@ -543,8 +544,6 @@
                                                 </div>
                                             </div>
                                         </div> --}}
-
-                                        
                                     @endif
 
                                     <div class="col-lg-6 col-md-6 col-12">
@@ -559,30 +558,7 @@
                                             </div>
                                             </div>
                                         </div>
-                                    </div>
-
-
-                                    {{-- <div class="button"> {{ route('customer.dashboard') }}?active=account&subactive=business_profile&upload_gst=true
-                                        Upload GST / IEC
-                                    </div> --}}
-                                    {{-- <div class="col-lg-6 col-md-6 col-12">
-                                        <div class="card">
-                                            <div class="card-body"> --}}
-                                                {{-- <h5 class="">
-                                                    Create Offer
-                                                </h5> --}}
-                                                {{-- <div class="text-center mx-auto justify-content-center">
-                                                    <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Make Offer</a>
-                                                    @if(getUserProgressStatistics(auth()->id()) == 100)
-                                                        <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Scan QR</a>
-                                                    @endif
-
-
-                                                </div>
-                                                
-                                            </div>
-                                        </div>
-                                    </div> --}}
+                                    </div> 
 
                                     @if(getUserProgressStatistics(auth()->id()) == 100)
                                         <div class="col-12 border border-danger mt-4">
@@ -732,82 +708,82 @@
                                             </div>
                                         </div>
 
-                                    <!-- statistics -->
-                                    <div class="col-xl-6 col-md-12 mt-3">
-                                        <div class="card table-card-right">
-                                            <div class="card-header">
-                                                <h4>{{ __('Statistics')}}</h4>
-                                                <div class="card-header-right">
-                                                    <ul class="list-unstyled card-option">
-                                                        <li><i class="ik ik-chevron-left action-toggle"></i></li>
-                                                        <li><i class="ik ik-minus minimize-card"></i></li>
-                                                        <li><i class="ik ik-x close-card"></i></li>
-                                                    </ul>
+                                        <!-- statistics -->
+                                        <div class="col-xl-6 col-md-12 mt-3">
+                                            <div class="card table-card-right">
+                                                <div class="card-header">
+                                                    <h4>{{ __('Statistics')}}</h4>
+                                                    <div class="card-header-right">
+                                                        <ul class="list-unstyled card-option">
+                                                            <li><i class="ik ik-chevron-left action-toggle"></i></li>
+                                                            <li><i class="ik ik-minus minimize-card"></i></li>
+                                                            <li><i class="ik ik-x close-card"></i></li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="card-block pb-0 mb-0">
-                                                <div class="table-responsive">
-                                                    <table class="table  without-header">
-                                                        <tbody>
-                                                            <tr style="height:12px">
-                                                                <td class="d-flex align-items-center mt-4 gap-3 mx-auto">
-                                                                    <div class="bg-primary fs-3 mr-2" style="height: 10px;width: 10px; border-radius: 50%;"></div>
-                                                                    <div class="h6">{{ format_price($enquiry_amt) }}</div>
-                                                                    </li>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="h6 mt-4">Samples issued</div>
-                                                                    {{-- <p>Rs. Sample value </p> --}}
-                                                                </td>
-                                                                <!--td class="text-right">
-                                                                    <label class="badge badge-warning">43%</label>
-                                                                </td-->
-                                                            </tr>
-                                                            <tr style="height:12px">
-                                                                <td class="d-flex align-items-center mt-3 gap-3">
-                                                                    <div class="bg-success fs-3 mr-2 " style="height: 10px;width: 10px; border-radius: 50%;"></div>
-                                                                    <div class="h6">{{ $Numbverofoffer ?? 0 }}</div>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="h6 mt-3">No. of Offers</div>
-                                                                    {{-- <p>No. of Offers </p> --}}
-                                                                </td>
-                                                                <!--td class="text-right">
-                                                                    <label class="badge badge-success">58%</label>
-                                                                </td-->
-                                                            </tr>
-                                                            <tr style="height:12px">
-                                                                <td class="d-flex align-items-center mt-3 gap-3">
-                                                                    <div class="bg-warning fs-3 mr-2 " style="height: 10px;width: 10px; border-radius: 50%;"></div>
-                                                                    <div class="h6 mt-3">{{ __('--')}}</div>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="h6 mt-3">Visitors on Display</div>
-                                                                    {{-- <p>Visitors on Display</p> --}}
-                                                                </td>
-                                                                <!--td class="text-right">
-                                                                    <label class="badge badge-danger">30%</label>
-                                                                </td-->
-                                                            </tr>
-                                                            <tr style="height:12px">
-                                                                <td class="d-flex align-items-center mt-3 gap-3 ">
-                                                                    <div class="bg-danger fs-3 mr-2" style="height: 10px;width: 10px; border-radius: 50%;"></div>
-                                                                    <div class="h6 mt-3">{{ $productcount  }}</div>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="h6 mt-3">Products on Display</div>
-                                                                    {{-- <p>Products on Display </p> --}}
-                                                                </td>
-                                                                <!--td class="text-right">
-                                                                    <label class="badge badge-danger">30%</label>
-                                                                </td-->
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                                <div class="card-block pb-0 mb-0">
+                                                    <div class="table-responsive">
+                                                        <table class="table  without-header">
+                                                            <tbody>
+                                                                <tr style="height:12px">
+                                                                    <td class="d-flex align-items-center mt-4 gap-3 mx-auto">
+                                                                        <div class="bg-primary fs-3 mr-2" style="height: 10px;width: 10px; border-radius: 50%;"></div>
+                                                                        <div class="h6">{{ format_price($enquiry_amt) }}</div>
+                                                                        </li>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="h6 mt-4">Samples issued</div>
+                                                                        {{-- <p>Rs. Sample value </p> --}}
+                                                                    </td>
+                                                                    <!--td class="text-right">
+                                                                        <label class="badge badge-warning">43%</label>
+                                                                    </td-->
+                                                                </tr>
+                                                                <tr style="height:12px">
+                                                                    <td class="d-flex align-items-center mt-3 gap-3">
+                                                                        <div class="bg-success fs-3 mr-2 " style="height: 10px;width: 10px; border-radius: 50%;"></div>
+                                                                        <div class="h6">{{ $Numbverofoffer ?? 0 }}</div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="h6 mt-3">No. of Offers</div>
+                                                                        {{-- <p>No. of Offers </p> --}}
+                                                                    </td>
+                                                                    <!--td class="text-right">
+                                                                        <label class="badge badge-success">58%</label>
+                                                                    </td-->
+                                                                </tr>
+                                                                <tr style="height:12px">
+                                                                    <td class="d-flex align-items-center mt-3 gap-3">
+                                                                        <div class="bg-warning fs-3 mr-2 " style="height: 10px;width: 10px; border-radius: 50%;"></div>
+                                                                        <div class="h6 mt-3">{{ __('--')}}</div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="h6 mt-3">Visitors on Display</div>
+                                                                        {{-- <p>Visitors on Display</p> --}}
+                                                                    </td>
+                                                                    <!--td class="text-right">
+                                                                        <label class="badge badge-danger">30%</label>
+                                                                    </td-->
+                                                                </tr>
+                                                                <tr style="height:12px">
+                                                                    <td class="d-flex align-items-center mt-3 gap-3 ">
+                                                                        <div class="bg-danger fs-3 mr-2" style="height: 10px;width: 10px; border-radius: 50%;"></div>
+                                                                        <div class="h6 mt-3">{{ $productcount  }}</div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="h6 mt-3">Products on Display</div>
+                                                                        {{-- <p>Products on Display </p> --}}
+                                                                    </td>
+                                                                    <!--td class="text-right">
+                                                                        <label class="badge badge-danger">30%</label>
+                                                                    </td-->
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
                                     @endif
 
@@ -1429,7 +1405,7 @@
 
                         <div class="tab-pane fade bg-white shadow rounded p-4 @if(request()->has('active') && request()->get('active') == "support-ticket") active show @endif" id="support-ticket" role="tabpanel" aria-labelledby="support-ticket">
                             <div class="d-flex justify-content-between mb-2">
-                                <h5 class="mt-1">Support Tickets</h5>
+                                <h5 class="mt-1">Support Ticket</h5>
                                 <a href="javascript:void(0);"  class="btn btn-primary raiseTicket">Raise a Ticket</a>
                             </div>
                            <div class="border-bottom"></div>

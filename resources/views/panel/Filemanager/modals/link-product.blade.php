@@ -15,14 +15,26 @@
                     <input type="hidden" name="images" id="imagelinkModel">
 
                     <label for="productid">Select Product</label>
+                    
                     <select name="product_id[]" id="productidModal" class="form-control select2" multiple>
                         @foreach ($Products as $Product)
-                            <option value="{{ encrypt($Product->id) }}">Model: {{ $Product->model_code." - ".$Product->title }} </option>
+                            <option value="{{ encrypt($Product->id) }}">Model: {{ $Product->model_code." - ".$Product->title }} - Main </option>
                         @endforeach
+
+                        @foreach ($Products_attribute as $Product)
+                            @php
+                                $pdata = App\Models\Product::where('id',$Product->product_id)->first();
+                                $dump = getAttruibuteValueById($Product->attribute_value_id)->attribute_value ?? '';
+                            @endphp
+                            @if ($dump != '')
+                                <option value="{{ encrypt($Product->product_id) }}"> Model: {{ $pdata->model_code." - ".$pdata->title }} - {{ $dump }} </option>
+                            @endif
+                        @endforeach
+
                     </select>
                     <button type="submit" class="btn btn-outline-primary my-3">Submit</button>
-                </form>
 
+                </form>
             </div>
         </div>
     </div>

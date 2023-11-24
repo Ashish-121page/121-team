@@ -83,12 +83,12 @@
                             {{-- <li class="nav-item">
                                 <a data-active="my-info" class="mr-2 active-swicher btn pills-btn text-white @if(request()->has('active') && request()->get('active') == "my-info") active  @endif" id="pills-my-info-tab" data-toggle="pill" href="#previous-month" role="tab" aria-controls="pills-my-info" aria-selected="false">{{ __('My Info')}}</a>
                             </li> --}}
-                            {{-- @if(AuthRole() == 'Admin')
+                            @if(AuthRole() == 'Admin')
 
                                 <li class="nav-item ">
                                     <a data-active="shop-details" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "shop-details") active  @endif" id="pills-general-tab" data-toggle="pill" href="#last-month" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Account Info')}}</a>
                                 </li>
-                            @endif --}}
+                            @endif
 
                             @if(AuthRole() == 'User')
 
@@ -209,6 +209,7 @@
                                                 @csrf
                                                 <input type="hidden" name="type" value="setting1">
                                                 <input type="hidden" name="user_shop" value="{{ $user_shop->id }}">
+                                                <input type="hidden" name="slug" value="{{ $user_shop->slug }}">
                                                 <div class="row mb-2">
                                                     <div class="col">
                                                         <label for="">Public Display</label> <br>
@@ -301,10 +302,13 @@
                                                             @if ($data != null)
                                                                 <div class="h6">Survey Response</div>
                                                                 <span><b>{{ json_decode($data->question) }}</b></span>
+                                                                <br><br>
                                                                 <p>
-                                                                    @foreach (json_decode($data->response) as $item)
+                                                                    @forelse (json_decode($data->response) ?? [] as $item) 
                                                                         {{ $loop->iteration.". ". $item }} <br>
-                                                                    @endforeach
+                                                                    @empty
+                                                                        Didn't Filled Yet.
+                                                                    @endforelse
                                                                 </p>
                                                             @endif
                                                         </div>

@@ -12,12 +12,12 @@
                                 <button class="btn shadow-none collapsed collapseicon bg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{$key}}" aria-expanded="false" aria-controls="collapse{{$key}}" style="width: 100%;text-align: left;border-bottom: 2px solid #6666cc;">
                                     
                                     <i class="fas fa-angle-right iconchange" ></i>
-                                    {{ $item['name'] }} {{ $item['type'] == 1 ? "" : "(Self)" }}
+                                    {{ $item['name'] }} 
+                                    {{-- {{ $item['type'] == 1 ? "" : "(Self)" }} --}}
                                 </button>
                             </h2>
                             <div id="collapse{{$key}}" class="accordion-collapse accordion-collapse collapse">
-                                <div class="accordion-body">
-                                    
+                                <div class="accordion-body">                                   
                                     <div class="row" id="appendbox-{{$key}}">
 
                                           {{-- Adding A New Item --}}
@@ -36,7 +36,13 @@
                                         
                                     {{-- ` Getting Sub Categories --}}
                                     @php
-                                        $subcategories = App\Models\Category::where('parent_id',$item['id'])->get();
+                                        $user_selected_category_id = json_decode(auth()->user()->selected_category);    
+                                        
+                                        if ($item['user_id'] == auth()->id()) {
+                                            $subcategories = App\Models\Category::where('parent_id',$item['id'])->get();
+                                        }else{
+                                            $subcategories = App\Models\Category::whereIn('id',$user_selected_category_id)->where('parent_id',$item['id'])->get();
+                                        }
                                     @endphp
                                     @forelse ($subcategories as $index => $subcategory)
                                         <div class="col-3 my-2">
@@ -55,77 +61,20 @@
                                                 </div>
                                             </div>
 
-                                            <table class="table table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>{{ $subcategory->name }}</th>
-                                                        <th>
-                                                            <button class="btn btn-outline-primary shadow-none btn-icon editchange" type="button" data-box-parent="pbox_show-{{$key}}-{{$index}}" data-box-edit="pbox_edit-{{$key}}-{{ $index }}">
-                                                                <i class="fas fa-pencil-alt"></i>
-                                                            </button>
-                                                            <a href="{{ route('panel.constant_management.category.delete',$subcategory->id) }}" class="btn btn-outline-danger shadow-none btn-icon">
-                                                                <i class="fas fa-trash"></i>
-                                                            </a>
-                                                        </th>
-                                                    </tr>
-                                                    <!-- You can add more rows for additional data -->
-                                                </thead>
-                                            </table>
-                                            
-
-                                            {{-- <div class="card mb-3">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">{{ $subcategory->name }}</h5>
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <div>
-                                                            <!-- Additional information can be added here if needed -->
-                                                        </div>
-                                                        <div class="btn-group">
-                                                            <button class="btn btn-outline-primary shadow-none btn-icon editchange" type="button" data-box-parent="pbox_show-{{$key}}-{{$index}}" data-box-edit="pbox_edit-{{$key}}-{{ $index }}">
-                                                                <i class="fas fa-pencil-alt"></i>
-                                                            </button>
-                                                            <a href="{{ route('panel.constant_management.category.delete',$subcategory->id) }}" class="btn btn-outline-danger shadow-none btn-icon">
-                                                                <i class="fas fa-trash"></i>
-                                                            </a>
-                                                        </div>
+                                            {{-- original style --}}
+                                            <div class="d-flex justify-content-between gap-2" id="pbox_show-{{$key}}-{{$index}}">                                                
+                                                    <div class="w-70">
+                                                        <span id="text-represent-{{$key}}-{{$index}}">{{ $subcategory->name }}</span>
                                                     </div>
-                                                </div>
-                                            </div> --}}
-                                            
-                                                {{-- cards representation --}}
-                                            {{-- <div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">{{ $subcategory->name }}</h5>
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <div>
-                                                            <!-- Additional information can be added here if needed -->
-                                                        </div>
-                                                        <div class="btn-group">
-                                                            <button class="btn btn-outline-primary shadow-none btn-icon editchange" type="button" data-box-parent="pbox_show-{{$key}}-{{$index}}" data-box-edit="pbox_edit-{{$key}}-{{ $index }}">
-                                                                <i class="fas fa-pencil-alt"></i>
-                                                            </button>
-                                                            <a href="{{ route('panel.constant_management.category.delete',$subcategory->id) }}" class="btn btn-outline-danger shadow-none btn-icon">
-                                                                <i class="fas fa-trash"></i>
-                                                            </a>
-                                                        </div>
+                                                    <div class="w-25">
+                                                        <button class="btn btn-outline-primary shadow-none btn-icon editchange" type="button" data-box-parent="pbox_show-{{$key}}-{{$index}}" data-box-edit="pbox_edit-{{$key}}-{{ $index }}">
+                                                            <i class="fas fa-pencil-alt"></i>
+                                                        </button>
+                                                        <a href="{{ route('panel.constant_management.category.delete',encrypt($subcategory->id)) }}"  class="btn btn-outline-danger shadow-none btn-icon">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
                                                     </div>
-                                                </div>
-                                            </div> --}}
-
-                                        {{-- original style --}}
-                                            {{-- <div class="d-flex justify-content-between gap-2" id="pbox_show-{{$key}}-{{$index}}">
-                                                <div class="w-70">
-                                                    <span id="text-represent-{{$key}}-{{$index}}">{{ $subcategory->name }}</span>
-                                                </div>
-                                                <div class="w-25">
-                                                    <button class="btn btn-outline-primary shadow-none btn-icon editchange" type="button" data-box-parent="pbox_show-{{$key}}-{{$index}}" data-box-edit="pbox_edit-{{$key}}-{{ $index }}">
-                                                        <i class="fas fa-pencil-alt"></i>
-                                                    </button>
-                                                    <a href="{{ route('panel.constant_management.category.delete',$subcategory->id) }}"  class="btn btn-outline-danger shadow-none btn-icon">
-                                                        <i class="fas fa-trash"></i>
-                                                    </a>
-                                                </div>
-                                            </div> --}}
+                                            </div>
                                         </div>
                                     @empty
                                         <div class="col-3">

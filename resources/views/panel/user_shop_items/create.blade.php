@@ -296,20 +296,22 @@
                         </div>
                     </div>
 
-                    
-                    @if (request()->has('products'))
-                        @include('panel.user_shop_items.includes.show-productTable')
-                    @elseif(request()->has('assetsafe'))
-                        @include('panel.user_shop_items.includes.Filemanager')    
-                    @elseif(request()->has('productsgrid'))
-                        @include('panel.user_shop_items.includes.show-product')    
-                    @elseif(request()->has('properties'))
-                        @include('panel.user_shop_items.includes.Properties')
-                    @else
-                        @include('panel.user_shop_items.includes.show-category')
-                    @endif
+                    <div class="" id="contentbx">
+                        
+                        @if (request()->has('products'))
+                            @include('panel.user_shop_items.includes.show-productTable')
+                        @elseif(request()->has('assetsafe'))
+                            @include('panel.user_shop_items.includes.Filemanager')    
+                        @elseif(request()->has('productsgrid'))
+                            @include('panel.user_shop_items.includes.show-product')    
+                        @elseif(request()->has('properties'))
+                            @include('panel.user_shop_items.includes.Properties')
+                        @else
+                            @include('panel.user_shop_items.includes.show-category')
+                        @endif
                     
 
+                    </div>
                     
                 </div>
             </div>
@@ -465,6 +467,13 @@
                     });
                 }
             });
+
+            // {{--` ` for Page Refresh in Pagination --}}
+            $(".page-link").click(function (e) { 
+                window.location.href = $(this).attr('href');                
+            });
+            
+            
             $('#hike').on('change',function(){
                 var hike = $(this).val();
                 $('.bulkHike').val(hike);
@@ -475,18 +484,39 @@
                 var length = $('#lengthField').val(); 
                 $('#lengthInput').val(length);
                 $('#searchField').val(search);
-                $('#filterRecordsForm').submit();
+                $('#filterRecordsForm').submit();             
             })
-            $('#searchValue').keypress(function(event) {
+            
+
+            $('#searchValue').keyup(function(event) {
                 if (event.keyCode == 13) {
                     event.preventDefault();
-                    var search = $('#searchValue').val();
-                    var length = $('#lengthField').val(); 
-                    $('#lengthInput').val(length);
-                    $('#searchField').val(search);
-                    $('#filterRecordsForm').submit();
                 }
+
+                let val = $(this).val()
+                
+                $.ajax({
+                    type: "GET",
+                    url: "{{ route('panel.user_shop_items.create') }}",
+                    data: {
+                        'search': val,
+                        'productsgrid': 'true',
+                        'type_ide': "{{ request()->get('type_ide') }}",
+                        'type': "{{ request()->get('type') }}",
+                        'workload': 'AjaxSearch'
+                    },
+                    success: function (response) {
+                        $("#maincontentbxProductLIst").html(response)
+                    },
+                    error:  function (response) {
+                        $("#maincontentbxProductLIst").html(response)
+                    }
+                });
+
+
             });
+
+
             $('.bulkHike').val($('#hike').val());
             $(document).ready(function(){
                 $('.addProductBtn').on('click',function(){
@@ -548,6 +578,7 @@
                     });
                     
                 }); 
+
                 $('#category_id').change(function(){
                     var id = $(this).val();
                     if(id){
@@ -565,7 +596,6 @@
                         })
                     }
                 });
-                                    
             
                 $('#select-all').click(function(){
                     if($('.input-check').is(':checked')){
@@ -661,42 +691,160 @@
                 });
             });
 
-            $("#delproduct_dummy").click(function (e) { 
-                e.preventDefault();
-                let selected = $(".input-check:checked").length;
-                
-                var msg = `
-                <span class="text-danger">You are about to delete ${selected} products</span> <br/>
-                <span>This action cannot be undone. To confirm type <b>DELETE</b></span>
-                <input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Delete'>`;
+           
 
-                $.confirm({
-                    draggable: true,
-                    title: `Delete ${selected} products`,
-                    content: msg,
-                    type: 'blue',
-                    typeAnimated: true,
-                    buttons: {
-                        tryAgain: {
-                            text: 'DELETE',
-                            btnClass: 'btn-danger',
-                            action: function(){
-                                let margin = $('#margin').val();
-                                if (margin == 'DELETE') {
-                                    $("#delproduct").click();
+            $("#delproduct_dummy").click(function (e) { 
+            e.preventDefault();
+            let selected = $(".input-check:checked").length;
+            let delete_type_INPUT = $("#delete_type");
+            var msg = `
+            <span class="text-danger">You are about to Delete ${selected} Products</span> <br/>
+            <span>This action cannot be undone. To confirm type <b>DELETE</b></span>
+            <br><br>
+            <input type="checkbox" value="with_product" id="with_product"/>
+            <label for="with_product">Delete jpeg, video, design assets</label>
+            <input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='DELETE'>`;
+
+            $.confirm({
+                draggable: true,
+                title: `Delete ${selected} products`,
+                content: msg,
+                type: 'blue',
+                typeAnimated: true,
+                buttons: {
+                    
+                    tryAgain: {
+                        text: 'DELETE',
+                        btnClass: 'btn-danger', 
+                        action: function(){
+                            let margin = $('#margin').val();
+                            if (margin == 'DELETE') {
+                                // If text matches, change button to danger
+                                $('.btn-secondary').removeClass('btn-secondary').addClass('btn-danger');
+
+                                if (document.getElementById("with_product").checked == true) {
+                                    delete_type_INPUT.val("with_asset")
                                 } else {
-                                    $.alert('Type DELETE to Proceed');
+                                    delete_type_INPUT.val("without_asset")
                                 }
 
-                                
+                                $("#delproduct").click();
+                            } else {
+                                $.alert('Type DELETE to Proceed');
                             }
-                        },
-                        close: function () {
-
                         }
+                    },
+                    cancel: function () {
+
                     }
-                });
+                }
             });
+        });
+
+        // $("#delproduct_dummy").click(function (e) { 
+        //     e.preventDefault();
+        //     let selected = $(".input-check:checked").length;
+        //     let delete_type_INPUT = $("#delete_type");
+        //     var msg = `
+        //     <span class="text-danger">You are about to Delete ${selected} Products</span> <br/>
+        //     <span>This action cannot be undone. To confirm type <b>DELETE</b></span>
+        //     <br><br>
+        //     <input type="checkbox" value="with_product" id="with_product"/>
+        //     <label for="with_product">Delete jpeg, video, design assets</label>
+        //     <input type='text' id='margin' class='w-100 form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='DELETE'>`;
+
+        //     $.confirm({
+        //         draggable: true,
+        //         title: `Delete ${selected} products`,
+        //         content: msg,
+        //         type: 'blue',
+        //         typeAnimated: true,
+        //         buttons: {
+        //             tryAgain: {
+        //                 text: 'DELETE',
+        //                 btnClass: 'btn-secondary', // Initially set as secondary
+        //                 action: function(){
+        //                     let margin = $('#margin').val();
+        //                     if (margin == 'DELETE') {
+        //                         // If text matches, change button to danger
+        //                         $('.btn-secondary').removeClass('btn-secondary').addClass('btn-danger');
+                                
+        //                         if (document.getElementById("with_product").checked == true) {
+        //                             delete_type_INPUT.val("with_asset")
+        //                         } else {
+        //                             delete_type_INPUT.val("without_asset")
+        //                         }
+
+        //                         $("#delproduct").click();
+        //                     } else {
+        //                         $.alert('Type DELETE to Proceed');
+        //                     }
+        //                 }
+        //             },
+        //             cancel: function () {
+        //                 // Handle cancel action if needed
+        //             }
+        //         }
+        //     });
+
+        //     // Check input on change
+        //     $('#margin').on('input', function() {
+        //         let margin = $(this).val();
+        //         if (margin === 'DELETE') {
+        //             // If text matches, enable the button
+        //             $('.btn-secondary').prop('disabled', false);
+        //         } else {
+        //             // If text does not match, disable the button
+        //             $('.btn-secondary').prop('disabled', true);
+        //         }
+        //     });
+        // });
+
+        </script>
+
+        <script>
+            $("#delcat_dummy").click(function (e) { 
+            e.preventDefault();
+            let selected = $(".input-check:checked").length;
+            let delete_type_INPUT = $("#delete_type");
+            var msg = `
+            <span class="text-danger">You are about to Delete ${selected} Categories</span> <br/>
+            <span>This action cannot be undone. To confirm type <b>DELETE</b></span>
+            <br><br>
+            
+            <input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='DELETE'>`;
+
+            $.confirm({
+                draggable: true,
+                title: `Delete ${selected} Categories `,
+                content: msg,
+                type: 'blue',
+                typeAnimated: true,
+                buttons: {
+                    
+                    tryAgain: {
+                        text: 'DELETE',
+                        btnClass: 'btn-danger', 
+                        action: function(){
+                            let margin = $('#margin').val();
+                            if (margin == 'DELETE') {
+                                // If text matches, change button to danger
+                                $('.btn-secondary').removeClass('btn-secondary').addClass('btn-danger');
+
+                                
+
+                                $("#deletecatbtn").click();
+                            } else {
+                                $.alert('Type DELETE to Proceed');
+                            }
+                        }
+                    },
+                    cancel: function () {
+
+                    }
+                }
+            });
+        });
 
 
         </script>
@@ -738,14 +886,50 @@
                 })
 
 
+                // $(".input-check").change(function (e) { 
+                //     myfunc()
+                // });
+
+
+                // $("#checkallinp").change(function (e) { 
+                //     $('.input-check').click();                
+                // });
+
+
+                
+                // {{--` Check File --}}
+                $(".input-check").click(function (e) {
+                    let checkall = $("#checkallinp");
+                    $("#selected_count").html($(".input-check:checked").length);
+
+                    if ($(".input-check:checked").length > 0) {
+                        // any one is checked
+                        checkall.prop("checked",true);
+                    } else {
+                        checkall.prop("checked",false);
+                    }
+                });
+
+                // {{--` Check All --}}
+                $("#checkallinp").click(function (e) {
+                    
+                    if ($(".input-check:checked").length < $(".input-check").length) {
+                        $(".input-check").prop('checked',false)
+                        $(".input-check").click()
+                        $(this).prop('checked',true);
+                        myfunc()
+                    }else{
+                        $(".input-check").prop('checked',false)
+                        $(this).prop('checked',false);
+                        myfunc()
+                    }
+
+
+                });
                 $(".input-check").change(function (e) { 
-                    myfunc()
+                    myfunc();
                 });
 
-
-                $("#checkallinp").change(function (e) { 
-                    $('.input-check').click();                
-                });
 
                 $("#export-categrory").click(function (e) { 
                     e.preventDefault();
@@ -803,12 +987,9 @@
             });
 
             $(".opencateedit").click(function (e) { 
-                e.preventDefault();
-                
+                e.preventDefault();                
                 $("#catid").val($(this).data('catidchange'));
-                $("#old_name").val($(this).data('catname'))
-
-                
+                $("#old_name").val($(this).data('catname'))                
                 $("#demo01").click()
             });
             // $("#demo01").click()

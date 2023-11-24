@@ -19,7 +19,11 @@
                     <i class="fas fa-arrow-down filterbtn  @if(request()->get('filtertype') == 'DESC' && request()->get('filtername') == 'size') active @endif" data-filteraname="size" data-filtertype="DESC"></i>
                 </th>
                 <th scope="col" class="text-light">Extension</th>
-                <th scope="col" class="text-light">File Type</th>
+                <th scope="col" class="text-light">
+                    Linked Items
+                    <i class="fas fa-arrow-up filterbtn @if(request()->get('filtertype') == 'ASC' && request()->get('filtername') == 'attachment') active @endif" data-filteraname="attachment" data-filtertype="ASC"></i>
+                    <i class="fas fa-arrow-down filterbtn  @if(request()->get('filtertype') == 'DESC' && request()->get('filtername') == 'attachment') active @endif" data-filteraname="attachment" data-filtertype="DESC"></i>
+                </th>
                 <th scope="col" class="text-light">
                     Last Modified
                     <i class="fas fa-arrow-up filterbtn @if(request()->get('filtertype') == 'ASC' && request()->get('filtername') == 'date') active @endif" data-filteraname="date" data-filtertype="ASC"></i>
@@ -38,7 +42,15 @@
                         <input type="checkbox" name="checkthis" id="checkthis" class="form-check checkme" value="{{ encrypt($file) }}">
                     </th>
                     <td class="preview-img">
-                        <img src="{{ asset(Storage::url($file)) }}" alt="Thumbnail of The Image.">
+                        @php
+                            $filetype = explode("/",Storage::mimeType($file))[0];
+                        @endphp
+                        @if ($filetype == 'image')
+                            <img src="{{ asset(Storage::url($file)) }}" alt="Thumbnail of The Image.">
+                        @else
+                            <img src="https://placehold.co/600x400?text={{ $filetype }}" alt="Thumbnail of The Image.">
+                        @endif
+                        
                     </td>
                     <td>
                         <span class="filename" data-oldname="{{ basename($file) }}">
@@ -51,8 +63,23 @@
                     <td  class="text-uppercase">
                         {{ pathinfo($file, PATHINFO_EXTENSION) }}
                     </td>
-                    <td class="text-uppercase">
-                        {{ explode("/",Storage::mimeType($file))[0] }}
+                    <td style="width: 250px">
+                        @php
+                            $filename = basename($file);
+                            $user_id = auth()->id();
+                            $path = "storage/files/$user_id/$filename";
+                            $linked = App\Models\Media::where('path',$path)->groupBy('type_id')->pluck('type_id');
+                            $models = App\Models\Product::whereIn('id',$linked)->groupBy('model_code')->pluck('model_code');
+                        @endphp
+                        @forelse ($models as $key => $model)
+                            {{ $model }} 
+                            @if ($key != 0)
+                                ,
+                            @endif
+                        @empty
+                            No Item Linked
+                        @endforelse
+                        
                     </td>
                     <td>
                         <span>

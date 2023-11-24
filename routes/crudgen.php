@@ -120,6 +120,7 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
     
     
 Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefix' => 'panel/products','as' =>'panel.products.'], function () {
+    
         Route::get('', ['uses' => 'ProductController@index', 'as' => 'index']);
         Route::get('inventory', ['uses' => 'ProductController@inventoryIndex', 'as' => 'inventory.index']);
         Route::post('inventory/store', ['uses' => 'ProductController@inventoryStore', 'as' => 'inventory.store']);
@@ -145,6 +146,12 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
         Route::get('edit/template/{template}', ['uses' => 'ProductController@edittemplate', 'as' => 'edit.template']);
         Route::post('update/template/{template}', ['uses' => 'ProductController@updatetemplate', 'as' => 'update.template']);
         Route::get('download/template/{template}', ['uses' => 'ProductController@downloadtemplate', 'as' => 'download.template']);
+
+
+        Route::get("unlink/{pId}/{assets_path}",['uses' => 'ProductController@unlinkasset', 'as' => 'unlink.asset']);
+
+        // Route::get('singlecreate',['uses' => 'ProductController@singlecreate', 'as' => 'single.create']);
+
         
         
     }); 
@@ -218,6 +225,9 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
         Route::get('', ['uses' => 'UserShopItemController@index', 'as' => 'index']);
         Route::any('/print', ['uses' => 'UserShopItemController@print', 'as' => 'print']);
         Route::get('create', ['uses' => 'UserShopItemController@create', 'as' => 'create']);
+
+        Route::get('/check-linked', ['uses' => 'UserShopItemController@linkedasset', 'as' => 'linked.asset']);
+        
         Route::post('store', ['uses' => 'UserShopItemController@store', 'as' => 'store']);
         Route::post('add/bulk', ['uses' => 'UserShopItemController@addBulk', 'as' => 'addbulk']);
         Route::post('remove/bulk', ['uses' => 'UserShopItemController@removebulk', 'as' => 'removebulk']);
@@ -419,5 +429,9 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
 
     Route::post('/downloadZip', ['uses' => 'FileManager@downloadZip', 'as' => 'downloadZip']);
     Route::post('/linkproduct/{user_id}', ['uses' => 'FileManager@linkproduct', 'as' => 'link.product']);
+    
+    Route::post('/delimeter/Link', ['uses' => 'FileManager@productsaperator', 'as' => 'link.saperator']);
+
+
     
 }); 

@@ -25,6 +25,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Microproposals;
+use App\Http\Controllers\NewBulkController;
 use App\Http\Controllers\Panel\ProposalItemController;
 use App\Http\Controllers\settingController;
 
@@ -53,6 +54,9 @@ Route::group(['middleware' => 'subdomain'],  function () {
             // Making Propsals in 
             Route::get('/proposal/create', [Microproposals::class,'create'])->name('proposal.create');
             Route::get('/proposal/edit/{proposal}/{user_key}', [Microproposals::class,'edit'])->name('proposal.edit');
+
+            Route::any('/proposal/export/excel', [Microproposals::class,'exportexcel'])->name('proposal.excel');
+
             Route::get('api-store', [Microproposals::class,'apiStore'])->name('api.store');
             Route::get('api-remove', [Microproposals::class,'apiRemove'])->name('api.remove');
             Route::get('/proposal/picked/{proposal}/{user_key}', [Microproposals::class,'picked'])->name('proposal.picked');
@@ -172,7 +176,9 @@ Route::get('/user-shop-cs-filler', function () {
         Route::get('/blog/{id}', [BlogController::class,'show'])->name('blog.show');
         
         // Todo: Custom Routes 
-        Route::get('/ashish', [SellerController::class,'ashish']);
+        Route::any('/ashish', [DevRouteController::class,'ashish']);
+        Route::any('/excel', [NewBulkController::class,'testExports']);
+
         Route::get('/jaya', [DevRouteController::class,'jaya']);
         Route::get('/jaya/form', [DevRouteController::class,'jayaform']);
 

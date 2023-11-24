@@ -130,11 +130,11 @@
         {{-- @if(getSellerProgressStatistics(auth()->id()) != 100 || $user_shop->slug == auth()->user()->phone) --}}
         @php
             // ` Current Progress
-            $first = (auth()->user()->ekyc_status == 1) ? true : false;
-            $second = (count(App\Models\Category::where('user_id',auth()->id())->get()) != 0) ? true : false;
-            $third = (count(App\Models\Product::where('user_id',auth()->id())->get()) != 0) ? true : false;
-            $forth = (count(App\Models\Proposal::where('user_id',auth()->id())->get()) != 0) ? true : false;
-            $fifth = false;
+            $first =  (auth()->user()->ekyc_status == 1) ? true : false;
+            $second = ($first) ? ((count(App\Models\Category::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
+            $third =  ($second) ? ((count(App\Models\Product::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
+            $forth =  ($third) ? ((count(App\Models\Proposal::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
+            $fifth =  false;
 
         @endphp
         
@@ -199,7 +199,7 @@
                                 <div class="h6 my-2"><b>Make Offer</b></div>
                                 
                                 <p>Create fast offers for Buyers in any of ppt, pdf, excel formats</p>
-                            </>
+                            </a>
                         </div>
 
                         {{-- Step 5  --}}

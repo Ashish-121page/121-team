@@ -29,7 +29,8 @@ class ProposalController extends Controller
      */
      public function index(Request $request)
      {
-        
+
+
          $length = 12;
          if(request()->get('length')){
              $length = $request->get('length');
@@ -38,7 +39,7 @@ class ProposalController extends Controller
          
             if($request->get('search')){
                 $proposals->where('id','like','%'.$request->search.'%')
-                                ->orWhere('name','like','%'.$request->search.'%')
+                                ->orWhere('customer_details','like','%'.$request->search.'%')    
                 ;
             }
             
@@ -65,7 +66,22 @@ class ProposalController extends Controller
                 $proposals->whereUserId(0);
             }
 
-            $proposals = $proposals->withCount('items')->orderBy('id','DESC')->paginate($length);        
+            if ($request->has('Sent')) {
+                if ($request->get('Sent') == 'draft') {
+                    $proposals->where('status',0);
+                }elseif ($request->get('Sent') == 'sent') {
+                    $proposals->where('status',1);
+                }else{
+                    // No Condition...
+                }
+            }
+            if ($request->has('Buyer_name') && $request->get('Buyer_name')) {
+                $proposals->where('customer_details','LIKE',"%".$request->get('Buyer_name')."%");                
+            }
+
+            $proposals = $proposals->withCount('items')->orderBy('id','DESC')->paginate($length);            
+        
+            
 
 
             if ($request->ajax()) {
@@ -242,7 +258,7 @@ class ProposalController extends Controller
         
         try{ 
             $arr = [
-                'customer_name'=> '',
+                'customer_f'=> '',
                 'customer_mob_no'=> '',
             ];
             $request['customer_details'] = json_encode($arr);

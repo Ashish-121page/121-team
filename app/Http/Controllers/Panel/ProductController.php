@@ -24,6 +24,7 @@ use App\Models\Usertemplates;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use phpseclib3\File\ASN1\Maps\AttributeValue;
 use PHPUnit\Framework\MockObject\Stub\ReturnSelf;
 
@@ -277,9 +278,11 @@ class ProductController extends Controller
             $materials = $attributes->where('name','Material')->first();
             $prodextra = ProductExtraInfo::whereId(request()->get('id'))->first();
 
-            $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
+            $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value) ?? [];
             $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
+
             $num = end($delfault_cols) +1;
+            
             $new_custom_attribute = [];
             foreach ($user_custom_col_list as $key => $value) {
                 $new_custom_attribute += [$value => $num];
@@ -298,7 +301,8 @@ class ProductController extends Controller
             return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups','user_custom_col_list'));
 
         }catch(\Exception $e){            
-            return back()->with('error', 'There was an error: ' . $e->getMessage());
+            // return back()->with('error', 'There was an error: ' . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -850,7 +854,8 @@ class ProductController extends Controller
         // $request['properties_varient'] = ['Material','Colour','Size'];
         
         // magicstring($request->all());
-
+        // return;
+        
         try {
             $allowed_array = ['yes',"Yes","YES",'1'];
             $count = 0;
@@ -863,7 +868,8 @@ class ProductController extends Controller
             $loop3 = [];
             $product_id = '';
 
-
+            $user_id = auth()->user()->id;                        
+            $folderPath = "public/files/$user_id";
             
             if ($request->properties_varient != null && $request->properties_varient != []) {
                 $variation_count = count($request->properties_varient);
@@ -1090,6 +1096,38 @@ class ProductController extends Controller
                                     'price'=> $request->vip_price ?? 0,
                                 ]);
                             }
+
+                            $arr_images = [];
+                            // * Start Creating Media...
+
+
+                            foreach ($request->img as $key => $image) {
+                                if($image != null){
+                                    // Uploading File
+                                    $filename = $image->getClientOriginalName();
+                                    
+                                    $path = $image->storeAs($folderPath, $filename);
+
+                                    // Creating FIle link
+                                    $media = new Media();
+                                    $media->tag = "Product_Image";
+                                    $media->file_type = "Image";
+                                    $media->type = "Product";
+                                    $media->type_id = $product_obj->id;
+                                    $media->file_name = $image->getClientOriginalName();
+                                    $media->path = str_replace("public",'storage',$path);
+                                    $media->extension = explode('.',$image->getClientOriginalName())[1] ?? '';
+                                    $media->save();
+                                    $arr_images[] = $media->id;
+                                }
+                            }
+
+                            // Add images to UserShopItem
+                            if(count($arr_images) > 0) {
+                                $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                $usi->save();
+                            }
+
 
 
                         }
@@ -1344,6 +1382,38 @@ class ProductController extends Controller
                             ]);
                         }
 
+                        
+                        $arr_images = [];
+                        // * Start Creating Media...
+
+
+                        foreach ($request->img as $key => $image) {
+                            if($image != null){
+                                // Uploading File
+                                $filename = $image->getClientOriginalName();
+                                $path = $image->storeAs($folderPath, $filename);
+
+                                // Creating FIle link
+                                $media = new Media();
+                                $media->tag = "Product_Image";
+                                $media->file_type = "Image";
+                                $media->type = "Product";
+                                $media->type_id = $product_obj->id;
+                                $media->file_name = $image->getClientOriginalName();
+                                $media->path = str_replace("public",'storage',$path);
+                                $media->extension = explode('.',$image->getClientOriginalName())[1] ?? '';
+                                $media->save();
+                                $arr_images[] = $media->id;
+                            }
+                        }
+
+
+                        // Add images to UserShopItem
+                        if(count($arr_images) > 0) {
+                            $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                            $usi->save();
+                        }
+
 
                     }
 
@@ -1558,6 +1628,39 @@ class ProductController extends Controller
                     }
 
 
+                    
+                    $arr_images = [];
+                    // * Start Creating Media...
+                    foreach ($request->img as $key => $image) {
+                        if($image != null){
+                            // Uploading File
+                            $filename = $image->getClientOriginalName();
+                            
+                            $path = $image->storeAs($folderPath, $filename);
+
+                            // Creating FIle link
+                            $media = new Media();
+                            $media->tag = "Product_Image";
+                            $media->file_type = "Image";
+                            $media->type = "Product";
+                            $media->type_id = $product_obj->id;
+                            $media->file_name = $image->getClientOriginalName();
+                            $media->path = str_replace("public",'storage',$path);
+                            $media->extension = explode('.',$image->getClientOriginalName())[1] ?? '';
+                            $media->save();
+                            $arr_images[] = $media->id;
+                        }
+                    }
+
+
+
+                    // Add images to UserShopItem
+                    if(count($arr_images) > 0) {
+                        $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                        $usi->save();
+                    }
+
+
                 }
             }else{
 
@@ -1579,11 +1682,6 @@ class ProductController extends Controller
                         'type' => 0,
                     ]);
                 }
-
-
-
-
-
                 
                 // ` Craeting Variation of Non Defined Attribute
                 foreach ($custom_attriute_columns as $key => $custom_attriute) {
@@ -1697,6 +1795,37 @@ class ProductController extends Controller
                             ]);
                         }
 
+                        
+                        $arr_images = [];
+                        // * Start Creating Media...
+
+                        foreach ($request->img as $key => $image) {
+                            if($image != null){
+                                // Uploading File
+                                $filename = $image->getClientOriginalName();
+                                $path = $image->storeAs($folderPath, $filename);
+
+                                // Creating FIle link
+                                $media = new Media();
+                                $media->tag = "Product_Image";
+                                $media->file_type = "Image";
+                                $media->type = "Product";
+                                $media->type_id = $product_obj->id;
+                                $media->file_name = $filename;
+                                $media->path = str_replace("public",'storage',$path);
+                                $media->extension = explode('.',$filename)[1] ?? '';
+                                $media->save();
+                                $arr_images[] = $media->id;
+                            }
+                        }
+
+
+                        // Add images to UserShopItem
+                        if(count($arr_images) > 0) {
+                            $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                            $usi->save();
+                        }
+
                         $is_empty = false;
 
                     }
@@ -1804,6 +1933,39 @@ class ProductController extends Controller
                             'price'=> $request->vip_price ?? 0,
                         ]);
                     }
+                      
+                    $arr_images = [];
+                    // * Start Creating Media...
+                    foreach ($request->img as $key => $image) {
+                        if($image != null){
+                            // Uploading File
+                            $filename = $image->getClientOriginalName();
+                            
+                            $path = $image->storeAs($folderPath, $filename);
+
+                            // Creating FIle link
+                            $media = new Media();
+                            $media->tag = "Product_Image";
+                            $media->file_type = "Image";
+                            $media->type = "Product";
+                            $media->type_id = $product_obj->id;
+                            $media->file_name = $image->getClientOriginalName();
+                            $media->path = str_replace("public",'storage',$path);
+                            $media->extension = explode('.',$image->getClientOriginalName())[1] ?? '';
+                            $media->save();
+                            $arr_images[] = $media->id;
+                        }
+                    }
+
+
+
+                    // Add images to UserShopItem
+                    if(count($arr_images) > 0) {
+                        $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                        $usi->save();
+                    }
+
+
 
                     $count++;
                 }
@@ -1814,16 +1976,16 @@ class ProductController extends Controller
 
     
 
-            magicstring($custom_attriute_columns);
+            magicstring($folderPath);
             // return;
             $msg =  "Product Crated with Varient $count";
             // return back()->with('success',$msg);
 
 
-            magicstring($loop1);
-            magicstring($loop2);
-            magicstring($loop3);
-            echo $msg;
+            // magicstring($loop1);
+            // magicstring($loop2);
+            // magicstring($loop3);
+            // echo $msg;
 
 
             return redirect(route('panel.check.display'))->with('success',$msg);
@@ -1832,8 +1994,8 @@ class ProductController extends Controller
             return;
 
         } catch (\Throwable $e) {
-            // throw $e;
-            return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
+            throw $e;
+            // return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
 
         
@@ -1984,7 +2146,48 @@ class ProductController extends Controller
             $shipping = json_decode($product->shipping);
             $carton_details = json_decode($product->carton_details);
             $variations = Product::whereSku($product->sku)->get();
-            $medias = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->get();
+
+            $medias = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->where('extension','!=','gif')->get();
+            $medias_gif = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->where('extension','gif')->get();
+            $media_Video = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Video')->get();
+            $mediaAssets = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Asset')->get();
+            
+            $mediaSize_attachment = 0; 
+            foreach ($mediaAssets as $key => $media) {
+                $path = str_replace("storage","public",$media->path);
+                if (Storage::exists($path)) {   
+                    $size_Of_File = Storage::size($path);
+                    $mediaSize_attachment += $size_Of_File;
+                }
+            }
+
+            $mediaSize_video = 0;
+            foreach ($media_Video as $key => $media) {
+                $path = str_replace("storage","public",$media->path);
+                if (Storage::exists($path)) {   
+                    $size_Of_File = Storage::size($path);
+                    $mediaSize_video += $size_Of_File;
+                }
+            }
+            
+            $mediaSize_gif = 0; 
+            foreach ($medias_gif as $key => $media) {
+                $path = str_replace("storage","public",$media->path);
+                if (Storage::exists($path)) {   
+                    $size_Of_File = Storage::size($path);
+                    $mediaSize_gif += $size_Of_File;
+                }
+            }
+            
+            $mediaSize_Image = 0; 
+            foreach ($medias as $key => $media) {
+                $path = str_replace("storage","public",$media->path);
+                if (Storage::exists($path)) {   
+                    $size_Of_File = Storage::size($path);
+                    $mediaSize_Image += $size_Of_File;
+                }
+            }
+        
             // $prodextra = ProductExtraInfo::whereId(request()->get('id'))->first();
 
 
@@ -2014,11 +2217,13 @@ class ProductController extends Controller
             $productVarients = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_id')->pluck('attribute_id');
 
             $attribute_value_id = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
-
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id'));
+            
+        
+            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video'));
 
         }catch(\Exception $e){            
-            return back()->with('error', 'There was an error: ' . $e->getMessage());
+            // return back()->with('error', 'There was an error: ' . $e->getMessage());
+            throw $e;
         }
     }
     public function editVarient(Request $request)
@@ -2111,6 +2316,9 @@ class ProductController extends Controller
     public function update(Request $request,Product $product)
     {
 
+        // magicstring($request->all());
+        // return;
+
         $this->validate($request, [
             'brand_id'     => 'required',
             'user_id'     => 'required',
@@ -2122,26 +2330,19 @@ class ProductController extends Controller
             'status'     => 'required',
             'stock_qty'     => 'sometimes',
         ]); 
-           
-
         $allow_array = ['Yes','YES','yes','Hn','true',true,1,'on'];
-
         try{            
             if(!$request->has('is_publish')){
                 $request['is_publish'] = 0;
             }
-
-
             if(in_array($request->has('is_publish'),$allow_array)){
                 $request['is_publish'] = 1;
             }else{
                 $request['is_publish'] = 0;
             }
 
-            
             $usi = UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->first();
             $chk_inventroy = Inventory::where('product_id',$product->id)->where('user_id',auth()->id())->get();
-
             if ($request->has('manage_inventory') && $request->get('manage_inventory') == 1) {
                 if (count($chk_inventroy) == 0) {
                     // magicstring($request->all());
@@ -2157,35 +2358,57 @@ class ProductController extends Controller
                 }else{
                     getinventoryByproductId($product->id)->update(['status'=>1]);
                 }
+
+                
             }else{
                 if (count($chk_inventroy) != 0) {
                     getinventoryByproductId($product->id)->update(['status'=>0]);
                 }
             }
             
-
-
+       
+            $user_id  = auth()->user()->id;
+            $folderPath = "public/files/$user_id";
             if($product){
                 // To Fullfillment of Client MRP Need
                 $request['price'] =  $request->mrp;
                 if($request->hasFile("img")){
                         foreach($request->file('img') as $tempimg){
-                            $img = $this->uploadFile($tempimg, "products")->getFilePath();
+
                             $filename = $tempimg->getClientOriginalName();
+                            
+                            $path = $tempimg->storeAs($folderPath, $filename);
                             $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                            $fileType = ucfirst(explode("/",Storage::mimeType($path))[0] );
+                            $fileSize = Storage::size($path);
+                            $tag = '';
+                            if ($fileType == 'Image') {
+                                $tag = 'Product_Image';
+                            }
+                            elseif ($fileType == 'Video') {
+                                $tag = 'Product_Video';
+                            }else{
+                                $tag ='Product_Asset';
+                            }
+
                             if($filename != null){
                                 Media::create([
                                     'type' => 'Product',
                                     'type_id' => $product->id,
                                     'file_name' => $filename,
-                                    'path' => $img,
+                                    'path' => str_replace("public",'storage',$path),
                                     'extension' => $extension,
-                                    'file_type' => "Image",
-                                    'tag' => "Product_Image",
+                                    'file_type' => $fileType ?? "Image",
+                                    'tag' => $tag ?? "Product_Image",
                                 ]);
                             }
+                        
+
+                            
                         }
                     }
+
+                         
                 $shipping = [
                     'height' => $request->height,
                     'weight' => $request->weight,
@@ -2250,27 +2473,29 @@ class ProductController extends Controller
                 
                 
                 // @ This Part Will Create New Product Extra Info Records
-                $to_clone = ProductExtraInfo::where('group_id',$product->sku)->where('user_id',$request->user_id)->orderBy('created_at', 'desc')->first();
+                $to_clone = ProductExtraInfo::where('product_id',$product->id)->where('user_id',$request->user_id)->orderBy('created_at', 'desc')->first();
                 $groupId = $product->sku;
                 
-                foreach ($request->properties as $key => $value) {
-                    // checking Product Attribute Exist Or Not in Records
-                    $chkwds = ProductExtraInfo::where('group_id',$product->sku)->where('attribute_value_id',$value)->where('user_id',$request->user_id)->get();
-                    if ($chkwds->count() == 0) {
-                        echo "Property Does Not Exist".newline();
-                        // Getting Records of Attribute
-                        $attribute_record = getAttruibuteValueById($value);
-                        // $clonedProduct = $product->replicate();
-                        // $clonedProduct->created_at = Carbon::now();
-                        // $clonedProduct->save();
-
-                        $newproduct = $to_clone->replicate();
-                        $newproduct->product_id = $product->id;
-                        $newproduct->created_at = Carbon::now();
-                        $newproduct->attribute_value_id = $attribute_record->id;
-                        $newproduct->attribute_id = $attribute_record->parent_id;
-                        $newproduct->group_id = $groupId;
-                        $newproduct->save();
+                if ($request->properties != null && $request->properties != '') {
+                    foreach ($request->properties as $key => $value) {
+                        // checking Product Attribute Exist Or Not in Records
+                        $chkwds = ProductExtraInfo::where('group_id',$product->sku)->where('attribute_value_id',$value)->where('user_id',$request->user_id)->get();
+                        if ($chkwds->count() == 0) {
+                            echo "Property Does Not Exist".newline();
+                            // Getting Records of Attribute
+                            $attribute_record = getAttruibuteValueById($value);
+                            // $clonedProduct = $product->replicate();
+                            // $clonedProduct->created_at = Carbon::now();
+                            // $clonedProduct->save();
+    
+                            $newproduct = $to_clone->replicate();
+                            $newproduct->product_id = $product->id;
+                            $newproduct->created_at = Carbon::now();
+                            $newproduct->attribute_value_id = $attribute_record->id;
+                            $newproduct->attribute_id = $attribute_record->parent_id;
+                            $newproduct->group_id = $groupId;
+                            $newproduct->save();
+                        }
                     }
                 }
                 
@@ -2291,9 +2516,9 @@ class ProductController extends Controller
 
                                 
                 if($request->is_publish == 0){
-                    UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>0]);
+                    UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>0,'price' => $request->min_sell_pr_without_gst]);
                 }else{
-                    UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>1]);
+                    UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>1,'price' => $request->min_sell_pr_without_gst]);
                 }
 
                 $othershops = UserShopItem::where('user_id','!=',$product->user_id)->where('product_id',$product->id)->get();              
@@ -2402,6 +2627,37 @@ class ProductController extends Controller
             // return back()->with('error',"Oops There was and Error.");
         }
     }
+
+
+    public function unlinkasset($pId,$assets_path) {
+        
+        try {    
+            $product_id = decrypt($pId);
+            $path = decrypt($assets_path);
+            $count = 0;
+
+            $chk = Media::where('type_id',$product_id)->where('path',$path)->get();
+
+            foreach ($chk as $key => $value) {
+                $value->delete();
+                $count++;
+            }
+            
+            return back()->with('success',"Asset Unlinked Succesfully.");
+            
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+
+    }
+//     public function SingleCreate()
+// {
+//     return view('panel.products.pages.single-create');
+// }
+
+
+    
     
     
     

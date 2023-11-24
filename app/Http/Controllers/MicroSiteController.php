@@ -17,6 +17,7 @@ use App\Models\Enquiry;
 use App\Models\UserEnquiry;
 use App\Models\MailSmsTemplate;
 use App\Models\ProductAttribute;
+use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
 use App\Models\Proposal;
 use App\Models\ProposalItem;
@@ -106,7 +107,7 @@ class MicroSiteController extends Controller
             ->whatsapp()
             ->reddit();
 
-            
+
         return view('frontend.micro-site.index',compact('slug','banner','products','user_shop','about','testimonial','social','random_products','shareButtons1','story','related_products','group_id','user'));
     }
     public function shopCart(Request $request)
@@ -191,7 +192,7 @@ class MicroSiteController extends Controller
         ]);
         
         if(request()->has('title') && request()->get('title') != null){
-            $user_shop_items->where('user_shop_id',$user_shop->id)->where('products.title','like','%'.request()->get('title').'%')->orwhere('products.model_code','like','%'.request()->get('model_code').'%');
+            $user_shop_items->where('user_shop_id',$user_shop->id)->where('products.title','like','%'.request()->get('title').'%')->orwhere('products.model_code','like','%'.request()->get('model_code').'%')->orwhere('products.search_keywords','like','%'.request()->get('model_code').'%');            
         }
         if(request()->has('category_id') && request()->get('category_id') != null){
             $user_shop_items->where('user_shop_items.category_id', request()->get('category_id'));
@@ -290,6 +291,7 @@ class MicroSiteController extends Controller
             
         
 
+        
         
         if ($request->ajax()) {
             return view('frontend.micro-site.shop.loadIndex',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','user_shop','alll_searches','currency_record'));
@@ -713,6 +715,21 @@ class MicroSiteController extends Controller
         ->telegram()
         ->whatsapp()
         ->reddit();
+
+
+        $attributes_count = [];
+
+        $attributes = ProductAttribute::where('user_id',null)->orwhere('user_shop_id',$user_shop->id)->get()->toArray();
+
+        
+        foreach ($attributes as $key => $value) {
+            $finalCount =  ProductAttributeValue::where('parent_id',$value['id'])->get()->count() ?? 0;
+            array_push($attributes_count,$finalCount);
+        }
+
+
+        array_multisort($attributes_count,SORT_ASC,$attributes);
+
 
         
         // ` Work End Here

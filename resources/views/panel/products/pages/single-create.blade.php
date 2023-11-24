@@ -13,32 +13,38 @@
                     <div class="md-step-bar-left"></div>
                     <div class="md-step-bar-right"></div>
                 </div>
-                <div class="md-step editable custom_active_add-1" data-step="1">
+                {{-- <div class="md-step editable custom_active_add-1" data-step="1">
                     <div class="md-step-circle"><span>2 </span></div>
-                    <div class="md-step-title">Sale Pricing</div>
+                    <div class="md-step-title">Asset Safe</div>
                     <div class="md-step-bar-left"></div>
                     <div class="md-step-bar-right"></div>
-                </div>
+                </div> --}}
                 <div class="md-step editable custom_active_add-2" data-step="2">
-                    <div class="md-step-circle"><span>3</span></div>
-                    <div class="md-step-title">Basic Info</div>
+                    <div class="md-step-circle"><span>3 </span></div>
+                    <div class="md-step-title">Sale Pricing</div>
                     <div class="md-step-bar-left"></div>
                     <div class="md-step-bar-right"></div>
                 </div>
                 <div class="md-step editable custom_active_add-3" data-step="3">
                     <div class="md-step-circle"><span>4</span></div>
-                    <div class="md-step-title">Product Properties</div>
+                    <div class="md-step-title">Basic Info</div>
                     <div class="md-step-bar-left"></div>
                     <div class="md-step-bar-right"></div>
                 </div>
                 <div class="md-step editable custom_active_add-4" data-step="4">
                     <div class="md-step-circle"><span>5</span></div>
-                    <div class="md-step-title">Internal - Production</div>
+                    <div class="md-step-title">Product Properties</div>
                     <div class="md-step-bar-left"></div>
                     <div class="md-step-bar-right"></div>
                 </div>
                 <div class="md-step editable custom_active_add-5" data-step="5">
                     <div class="md-step-circle"><span>6</span></div>
+                    <div class="md-step-title">Internal - Production</div>
+                    <div class="md-step-bar-left"></div>
+                    <div class="md-step-bar-right"></div>
+                </div>
+                <div class="md-step editable custom_active_add-6" data-step="6">
+                    <div class="md-step-circle"><span>7</span></div>
                     <div class="md-step-title">Properties</div>
                     <div class="md-step-bar-left"></div>
                     <div class="md-step-bar-right"></div>
@@ -218,67 +224,296 @@
                     </div>
                 </div>
 
-                {{-- Theme Collection CARD --}}
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Theme Collection</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">  
-                                <div class="col-md-4 col-4"required >
-                                    <div class="form-group ">
-                                        <label for="collection_name" class="control-label">Theme / Collection Name</label >
-                                        <input  class="form-control" name="collection_name" type="text" id="collection_name" value="{{ old('collection_name') }}">
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-4">
-                                    <div class="form-group">
-                                        <label for="season_month" class="control-label">Season / Month</label >
-                                        {{-- <input  class="form-control" name="season_month" type="text" id="season_month" value="{{$prodextra->season_month ?? '' }}" > --}}
-                                        <select name="season_month" id="season_month" class="select2">
-                                            <option value="">Select Sourcing Month</option>
-                                            @foreach ([
-                                                'January' => 'January',
-                                                'February' => 'February',
-                                                'March' => 'March',
-                                                'April' => 'April',
-                                                'May' => 'May',
-                                                'June' => 'June',
-                                                'July' => 'July',
-                                                'August' => 'August',
-                                                'September' => 'September',
-                                                'October' => 'October',
-                                                'November' => 'November',
-                                                'December' => 'December',
-                                            ] as $monthValue => $monthName)
-                                                <option value="{{ $monthValue }}">{{ $monthName }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-4">
-                                    <div class="form-group ">
-                                        <label for="season_year">Theme / Collection Year</label label >
-                                        <select name="season_year" id="season_year" class="form-control select2">
-                                            <option value="">Select Year</option>
-                                            @for ($i = date('Y'); $i >= 1985; $i--)
-                                                <option value="{{ $i }}" >{{ $i }}</option>
-                                            @endfor
-                                        </select>
-                                               
-                                        
-                                        
-
-                                    </div>
-                                </div>                                          
-                        </div>
-                    </div>
-                </div>
+               
 
 
             </div>
+
+            {{-- ` Asset Safe --}}
+            {{-- <div class="stepper d-none" data-index="2">
+                <div class="card mt-2">
+                    <div class="card-header">
+                        <h3>Upload new</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+                                <div class="form-group {{ $errors->has('img') ? 'has-error' : ''}}"> --}}
+                                    {{-- <label for="img" class="control-label">Image_main</label> --}}
+                                    {{-- <input class="form-control" name="img[]" multiple type="file" id="img" value="{{$product->img}}">
+                                    <div class="row"> --}}
+                                        {{-- @forelse ($medias as $media)
+                                            <div class="col-3">
+                                                <div>
+                                                    <img id="img-preview" src="{{ asset($media->path) }}" class="mt-3 product-img" />
+                                                    <a href="{{ route('panel.products.deleteImage',$media->id) }}" style="position: absolute;right: 10px;" class="btn btn-icon btn-danger delete-item"><i class="ik ik-trash"></i></a>
+                                                </div>
+                                            </div>
+                                        @empty
+                                        
+                                        @endforelse --}}
+                                    {{-- </div>
+                                </div>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+                
+                <div class="card ">
+                    <div class="row">
+                        <div class="col-4">
+
+                          <table class="table">
+                            <thead>
+                              <tr>
+                                <th scope="col-1"> File Type</th>
+                                <th scope="col-2"> # </th>
+                                <th scope="col-3">Total Size</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr class="click1" data-table="tableimage">
+                                <th scope="row">Images</th>
+                                <td> {{count($medias)}}</td>
+                                <td> {{ number_format($mediaSize_Image/(1024 * 1024),2) }} MB</td>
+                              </tr>
+                              <tr class="click1" data-table="tableattchment">
+                                <th scope="row">Attachments</th>
+                                <td> {{count($mediaAssets)}}</td>
+                                <td> {{ number_format($mediaSize_attachment/(1024 * 1024),2) }} MB</td>
+                              </tr>
+                              <tr class="click1" data-table="tablegif">
+                                <th scope="row">Gifs</th>
+                                <td> {{count($medias_gif)}}</td>
+                                <td> {{ number_format($mediaSize_gif/(1024 * 1024),2) }} MB</td>
+                              </tr>
+                              <tr class="click1" data-table="tablevideo">
+                                <th scope="row">Videos</th>
+                                <td> {{count($media_Video)}}</td>
+                                <td> {{ number_format($mediaSize_video/(1024 * 1024),2) }} MB</td>
+                              </tr>
+                            </tbody>
+                          </table>
+
+                        </div>
+                  
+                  
+                        <div class="col-8 justify-content-between">
+
+                            <table class="table table-bordered d-none" id="tableimage">
+                                <thead>
+                                    <tr>
+                                        <th scope="col-6">Asset Name</th>
+                                        <th scope="col-6">File Size</th>
+                                        <th scope="col-3">Last Updated</th>
+                                        <th scope="col-6">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($medias as $media)
+                                        @php
+                                            $path = str_replace("storage","public",$media->path);
+                                            if (Storage::exists($path)) {   
+                                                $filename = basename($path);                                                                
+                                            }else{
+                                                continue;
+                                            }
+
+                                            if ($media->file_type != "Image") {
+                                                continue;
+                                            }
+
+                                        @endphp
+                                        <tr>
+                                            <th scope="row"> --}}
+                                                {{-- {{ $filename }} --}}
+                                                {{-- <span class="filename" data-oldname="{{$filename }}">
+                                                    {{$filename }}
+                                                </span>
+                                            </th>
+                                            <td>
+                                                {{ number_format(Storage::size($path)/ (1024 * 1024),2) }} MB
+                                            </td>
+                                            <td>
+                                                {{ date("Y-m-d H:i:s",Storage::lastModified($path)) }}
+                                            </td>
+                                            <td>
+                                                <a href="{{ asset($media->path) }}" download="{{ $media->file_name }}" class="btn btn-link">Download</a>
+
+                                                <a href="{{ route('panel.products.unlink.asset',[encrypt($product->id),encrypt($media->path) ]) }}?product={{ encrypt($product->id) }}" class="btn btn-link">Unlink</a>
+                                                
+                                                
+                                                
+                                                <button type="button" class="btn btn-link deletebtn" data-filepath="{{ encrypt($path) }}">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        
+                                    @endforelse
+                                </tbody>
+                            </table>
+                            
+                            <table class="table table-bordered d-none" id="tableattchment">
+                                <thead>
+                                    <tr>
+                                        <th scope="col-6">Asset Name</th>
+                                        <th scope="col-6">File Size</th>
+                                        <th scope="col-3">Last Updated</th>
+                                        <th scope="col-6">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @forelse ($mediaAssets as $media)
+                                        @php
+                                            $path = str_replace("storage","public",$media->path);
+                                            if (Storage::exists($path)) {   
+                                                $filename = basename($path);                                                                
+                                            }else{
+                                                continue;
+                                            }
+                                                                                                   
+                                        @endphp
+                                        <tr>
+                                            <th scope="row">
+                                                {{-- {{ $filename }} --}}
+                                                {{-- <span class="filename" data-oldname="{{$filename }}">
+                                                    {{$filename }}
+                                                </span>
+                                            </th>
+                                            <td>
+                                                {{ number_format(Storage::size($path)/ (1024 * 1024),2) }} MB
+                                            </td>
+                                            <td>
+                                                {{ date("Y-m-d H:i:s",Storage::lastModified($path)) }}
+                                            </td>
+                                            <td>
+                                                <a href="{{ asset($media->path) }}" download="{{ $media->file_name }}" class="btn btn-link">Download</a>
+                                                <a href="{{ route('panel.products.unlink.asset',[encrypt($product->id),encrypt($media->path) ]) }}" class="btn btn-link">Unlink</a>
+                                                <button type="button" class="btn btn-link deletebtn" data-filepath="{{ encrypt($path) }}">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        
+                                    @endforelse
+                                </tbody>
+                            </table>
+
+                            <table class="table table-bordered d-none" id="tablegif">
+                                <thead>
+                                    <tr>
+                                        <th scope="col-6">Asset Name</th>
+                                        <th scope="col-6">File Size</th>
+                                        <th scope="col-3">Last Updated</th>
+                                        <th scope="col-6">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @forelse ($medias_gif as $media)
+                                        @php
+                                            $path = str_replace("storage","public",$media->path);
+                                            if (Storage::exists($path)) {   
+                                                $filename = basename($path);                                                                
+                                            }else{
+                                                continue;
+                                            }
+                                            
+                                            if (explode("/",\Storage::mimeType($path))[1] != 'gif') {
+                                                continue;
+                                            }
+                                                                                                   
+                                        @endphp
+                                        <tr>
+                                            <th scope="row"> --}}
+                                                {{-- {{ $filename }} --}}
+                                                {{-- <span class="filename" data-oldname="{{$filename }}">
+                                                    {{$filename }}
+                                                </span>
+                                            </th>
+                                            <td>
+                                                {{ number_format(Storage::size($path)/ (1024 * 1024),2) }} MB
+                                            </td>
+                                            <td>
+                                                {{ date("Y-m-d H:i:s",Storage::lastModified($path)) }}
+                                            </td>
+                                            <td>
+                                                <a href="{{ asset($media->path) }}" download="{{ $media->file_name }}" class="btn btn-link">Download</a>
+                                                <a href="{{ route('panel.products.unlink.asset',[encrypt($product->id),encrypt($media->path) ]) }}" class="btn btn-link">Unlink</a>
+                                                <button type="button" class="btn btn-link deletebtn" data-filepath="{{ encrypt($path) }}">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        
+                                    @endforelse
+                                </tbody>
+                            </table>
+
+                            <table class="table table-bordered d-none" id="tablevideo">
+                                <thead>
+                                    <tr>
+                                        <th scope="col-6">Asset Name</th>
+                                        <th scope="col-6">File Size</th>
+                                        <th scope="col-3">Last Updated</th>
+                                        <th scope="col-6">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @forelse ($media_Video as $media)
+                                        @php
+                                            $path = str_replace("storage","public",$media->path);
+                                            if (Storage::exists($path)) {   
+                                                $filename = basename($path);                                                                
+                                            }else{
+                                                continue;
+                                            }
+                
+                                            if (explode("/",\Storage::mimeType($path))[0] != 'video') {
+                                                continue;
+                                            }
+
+                                        @endphp
+                                        <tr>
+                                            <th scope="row">
+                                                {{-- {{ $filename }} --}}
+                                                {{-- <span class="filename" data-oldname="{{$filename }}">
+                                                    {{$filename }}
+                                                </span>
+                                            </th>
+                                            <td>
+                                                {{ number_format(Storage::size($path)/ (1024 * 1024),2) }} MB
+                                            </td>
+                                            <td>
+                                                {{ date("Y-m-d H:i:s",Storage::lastModified($path)) }}
+                                            </td>
+                                            <td>
+                                                <a href="{{ asset($media->path) }}" download="{{ $media->file_name }}" class="btn btn-link">Download</a>
+                                                <a href="{{ route('panel.products.unlink.asset',[encrypt($product->id),encrypt($media->path) ]) }}" class="btn btn-link">Unlink</a>
+                                                <button type="button" class="btn btn-link deletebtn" data-filepath="{{ encrypt($path) }}">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        
+                                    @endforelse
+                                </tbody>
+                            </table>
+
+                            
+                        </div>
+
+                    </div>
+                                    
+                                                                        
+                </div>
+                
+            </div> --}}
         
-            <div class="stepper d-none" data-index="2">
+            <div class="stepper d-none" data-index="3">
 
                 <div class="card">
                     <div class="card-header">
@@ -291,7 +526,7 @@
                                 <label class="">{{ __('Base Currency')}}</label>
                                 {{-- <input class="form-control" name="base_currency" type="text" id="base_currency" value="{{ old('base_currency') }}" > --}}
                                 @php
-                                    $currencies = App\Models\UserCurrency::where('user_id',auth()->id())->get();
+                                    $currencies = App\Models\UserCurrency::where('user_id',auth()->id())->get() ?? [];
                                 @endphp
                                 <select name="base_currency" id="base_currency" class="select2">
                                     @forelse ($currencies as $item)
@@ -363,7 +598,7 @@
 
             </div>
             
-            <div class="stepper d-none" data-index="3">
+            <div class="stepper d-none" data-index="4">
                 <div class="card">
                     <div class="card-header">
                         <h4>Basic Product Info</h4>
@@ -392,7 +627,7 @@
                             </div>
 
                             
-                            <div class="col-md-4 col-6">
+                            <div class="col-md-4 col-6 d-none">
                                 <div class="form-group">
                                     <label for="">Video Url </label>
                                     <input type="url" name="video_url" class="form-control" id="video_url" value="{{ old('video_url') }}">
@@ -400,7 +635,7 @@
                             </div>
                             
                             
-                            <div class="col-md-4 col-6">
+                            <div class="col-md-4 col-6 d-none">
                                 <div class="form-group {{ $errors->has('artwork_url') ? 'has-error' : ''}}">
                                     <label for="artwork_url" class="control-label">Art Work Reference</label>
                                     <input class="form-control" name="artwork_url" type="url" id="artwork_url" value="{{old('artwork_url')}}" placeholder="Enter Artwork URL" >
@@ -417,7 +652,7 @@
 
             </div>
             
-            <div class="stepper d-none" data-index="4">
+            <div class="stepper d-none" data-index="5">
                 <div class="card ">
                     <div class="card-header">
                         <h3>Product Properties</h3>
@@ -641,7 +876,7 @@
                 </div>
             </div>
             
-            <div class="stepper d-none" data-index="5">
+            <div class="stepper d-none" data-index="6">
                 <div class="card ">
                     <div class="col-12 d-none">
                         <div class="row mb-3">
@@ -818,11 +1053,77 @@
                                 </div>
                             </div>
                         </div>
-                    </div>   
+                    </div>  
+                     {{--`Theme Collection from essentials  --}}
+                     <div class="card">
+                        <div class="card-header">
+                            <h3>Theme Collection</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">  
+                                    <div class="col-md-4 col-4"required >
+                                        <div class="form-group ">
+                                            <label for="collection_name" class="control-label">Theme / Collection Name</label >
+                                            <input  class="form-control" name="collection_name" type="text" id="collection_name" value="{{$prodextra->collection_name ?? '' }}" >
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-4">
+                                        <div class="form-group">
+                                            <label for="season_month" class="control-label">Season / Month</label >
+                                            {{-- <input  class="form-control" name="season_month" type="text" id="season_month" value="{{$prodextra->season_month ?? '' }}" > --}}
+                                            <select name="season_month" id="season_month" class="select2">
+                                                <option value="">Select Sourcing Month</option>
+                                                @php
+                                                    $selectedMonth = $prodextra->season_month ?? '';
+                                                @endphp
+                                                @foreach ([
+                                                    'January' => 'January',
+                                                    'February' => 'February',
+                                                    'March' => 'March',
+                                                    'April' => 'April',
+                                                    'May' => 'May',
+                                                    'June' => 'June',
+                                                    'July' => 'July',
+                                                    'August' => 'August',
+                                                    'September' => 'September',
+                                                    'October' => 'October',
+                                                    'November' => 'November',
+                                                    'December' => 'December',
+                                                ] as $monthValue => $monthName)
+                                                    <option value="{{ $monthValue }}" @if ($selectedMonth == $monthValue) selected @endif>{{ $monthName }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-4">
+                                        <div class="form-group ">
+                                            <label for="season_year">Theme / Collection Year</label label >
+                                            {{-- <input class="form-control" name="season_year" type="number" id="season_year" value= "{{ $prodextra->season_year ?? '0' }}"  required> --}}
+                                            {{-- <select id="season_year"></select> --}}
+                                            <select name="season_year" id="season_year" class="form-control select2">
+                                                <option value="">Select Year</option>
+                                                {{-- <option value="{{ $option->id }}" @if ($option->id == $prodextra->season_year) selected
+                                                    @endif>{{  $option->name ?? ''}}</option> --}}
+                                                @php
+                                                    $selectedYear = $prodextra->season_year ?? '';
+                                                @endphp
+                                                @for ($i = date('Y'); $i >= 1985; $i--)
+                                                    <option value="{{ $i }}" @if ($selectedYear == $i) selected @endif>{{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                                   
+                                            
+                                            
+
+                                        </div>
+                                    </div>                                          
+                            </div>
+                        </div>
+                    </div> 
                 </div>
             </div>     
 
-            <div class="stepper d-none" data-index="6">
+            <div class="stepper d-none" data-index="7">
                 
                 <div class="card">
                     <div class="card-header">
@@ -852,22 +1153,30 @@
                                     }else{
                                         $records = $own;
                                     }
-                                    $records = App\Models\ProductAttributeValue::where('parent_id',$records->id)->get();
+
+                                    if ($records != null) {
+                                        $records = App\Models\ProductAttributeValue::where('parent_id',$records->id)->get();
+                                    }else{
+                                        $records = [];
+                                    }
+
                                 @endphp                                
 
                                
                                 
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group">
-                                        <label for="properties_{{$key}}">{{ $item }}</label>
-                                        <select name="{{$item}}[]" id="properties_{{$key}}" class="select2" multiple>
-                                            <option value="">Select One</option>
-                                            @foreach ($records as $record)
-                                                <option value="{{ $record->id }}">{{ $record->attribute_value }}</option>
-                                            @endforeach
-                                        </select>
+                               @if (count($records) != 0)
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="properties_{{$key}}">{{ $item }}</label>
+                                            <select name="{{$item}}[]" id="properties_{{$key}}" class="select2" multiple>
+                                                <option value="">Select One</option>
+                                                @foreach ($records as $record)
+                                                    <option value="{{ $record->id }}">{{ $record->attribute_value }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
+                               @endif
 
                             @endforeach
                         </div>

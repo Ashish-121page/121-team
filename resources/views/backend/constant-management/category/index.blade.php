@@ -48,9 +48,9 @@
                     <a class="btn btn-outline-primary mx-1" id="addcategory" href="#animatedModal" role="button">
                         <i class="fa fa-plus" aria-hidden="true"></i> Create Category
                     </a>
-                    <button type="button" class="btn btn-outline-primary openglobal mx-1" data-bs-toggle="modal" data-bs-target="#selectGlobalMOdal">
+                    {{-- <button type="button" class="btn btn-outline-primary openglobal mx-1" data-bs-toggle="modal" data-bs-target="#selectGlobalMOdal">
                         Select Global Category
-                    </button>
+                    </button> --}}
                 </div>
             </div>
         </div>
@@ -239,6 +239,40 @@
                     $(this).toggleClass('bg-none');
                     $(this).find('i').toggleClass('fa-angle-right')
                     $(this).find('i').toggleClass('fa-angle-down')
+
+                });
+
+                $("#newcatname").change(function (e) { 
+                    e.preventDefault();
+                    let newval = $(this).val();
+
+
+                    let newvalue = newval.split(" > ")[1];
+                    
+                    $('#tags').tagsinput('add',newvalue);
+
+
+                    
+                    // $.ajax({
+                    //     type: "GET",
+                    //     url: "{{ route('panel.constant_management.category.check.global') }}",
+                    //     data: {
+                    //         "search": newval
+                    //     },
+                    //     success: function (response) {
+                    //         response = JSON.parse(response);
+                    //         console.table(response);
+                    //         if (response['status'] === 'SUCCESS') {
+                    //             console.log("SuccessFULL");
+
+                    //             console.log(response['DATA']);
+                    //             $("#tags").val(response['DATA']);
+                                
+                    //             $('#tags').tagsinput('refresh');
+
+                    //         }
+                    //     }
+                    // });
 
                 });
 

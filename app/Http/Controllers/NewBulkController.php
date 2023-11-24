@@ -21,14 +21,17 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 use PhpParser\Node\Expr\Cast\Object_;
 use PhpParser\Node\Stmt\Return_;
 use Psy\TabCompletion\Matcher\ObjectMethodDefaultParametersMatcher;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipArchive;
 
 
@@ -338,13 +341,14 @@ class NewBulkController extends Controller
                 // ` Checking VIP Price
                 if ($temp_item[$VIPPriceIndex] != null) {
                     if (!is_numeric($temp_item[$VIPPriceIndex])) {
-                        return back()->with('error',"Enter valid amount in VIP Price at Row $row");
+                        // return back()->with('error',"Enter valid amount in VIP Price at Row $row");
                     }
                 }
+
                 // ` Checking Reseller Price
                 if ($temp_item[$ResellerPriceIndex] != null) {
                     if (!is_numeric($temp_item[$ResellerPriceIndex])) {
-                        return back()->with('error',"Enter valid amount in Reseller Price at Row $row");
+                        // return back()->with('error',"Enter valid amount in Reseller Price at Row $row");
                     }
                 }
                 // ` Checking MRP Price
@@ -2364,8 +2368,8 @@ class NewBulkController extends Controller
         try {
         {
             // $products = Product::whereUserId($user_id->id)->take('120')->get();
-
-
+            // magicstring($request->all());
+            // return;
 
             if ($request->has('products')) {
                 $ids = explode(',',$request->products);
@@ -2381,8 +2385,12 @@ class NewBulkController extends Controller
                 $products = Product::whereUserId($user_id->id)->get();
             }
 
+            // $products_array [] = array(
+            //     'Id','Model_Code','Category','Sub_Category','Group ID','Image_main','image_name_front','image_name_back','image_name_side1','image_name_side2','image_name_poster','Additional Image Use ^^','Product name','Video URL','description','Search keywords','Brand Name','Base_currency','Selling Price_Unit','Customer_Price_without_GST','Shop_Price_VIP_Customer','Shop_Price_Reseller','mrpIncl tax','HSN Tax','HSN_Percnt','Copyright/ Exclusive item','Exclusive Buyer Name','Theme / Collection Name','Season / Month','Theme / Collection Year','Sample Year','Sample Month','Sampling time','CBM','Production time (days)','MBQ','MBQ_units','Remarks','Vendor Sourced from','Vendor price','Product Cost_Unit','Vendor currency','Sourcing Year','Sourcing month','Gross weight','Net weight','Weight_unit','Product length','Product width','Product height','Dimensions_unit','Carton length','Carton width','Carton height','Carton_Dimensions_unit','standard_carton_pcs','carton_weight_actual','unit','artwork_url',
+            // );
+
             $products_array [] = array(
-                'Id','Model_Code','Category','Sub_Category','Group ID','Image_main','image_name_front','image_name_back','image_name_side1','image_name_side2','image_name_poster','Additional Image Use ^^','Product name','Video URL','description','Search keywords','Brand Name','Base_currency','Selling Price_Unit','Customer_Price_without_GST','Shop_Price_VIP_Customer','Shop_Price_Reseller','mrpIncl tax','HSN Tax','HSN_Percnt','Copyright/ Exclusive item','Exclusive Buyer Name','Theme / Collection Name','Season / Month','Theme / Collection Year','Sample Year','Sample Month','Sampling time','CBM','Production time (days)','MBQ','MBQ_units','Remarks','Vendor Sourced from','Vendor price','Product Cost_Unit','Vendor currency','Sourcing Year','Sourcing month','Gross weight','Net weight','Weight_unit','Product length','Product width','Product height','Dimensions_unit','Carton length','Carton width','Carton height','Carton_Dimensions_unit','standard_carton_pcs','carton_weight_actual','unit','artwork_url',
+                'Id','Model_Code','Category','Sub_Category','Group ID','Image_main','image_name_front','image_name_back','image_name_side1','image_name_side2','image_name_poster','Additional Image Use ^^','Product name','description','Search keywords','Brand Name','Base_currency','Selling Price_Unit','Customer_Price_without_GST','mrpIncl tax','HSN Tax','HSN_Percnt','Exclusive Buyer Name','Theme / Collection Name','Season / Month','Theme / Collection Year','Sample Year','Sample Month','Sampling time','CBM','Production time (days)','MBQ','MBQ_units','Remarks','Vendor Sourced from','Vendor price','Product Cost_Unit','Vendor currency','Sourcing Year','Sourcing month','Gross weight','Net weight','Weight_unit','Product length','Product width','Product height','Dimensions_unit','Carton length','Carton width','Carton height','Carton_Dimensions_unit','standard_carton_pcs','carton_weight_actual','unit',
             );
     
             $custom_attribute = json_decode(auth()->user()->custom_attriute_columns);
@@ -2537,21 +2545,21 @@ class NewBulkController extends Controller
                     "image_name_poster"=>isset($product->medias[5]) ? ($product->medias[5]->file_name ?? ""): null,
                     "Additional Image Use ^^" => $additional_images,
                     "Product Name"=> $product->title ?? "",
-                    "Video URL"=>$product->video_url ?? '',
+                    // "Video URL"=>$product->video_url ?? '',
                     'Description' =>$product->description ?? '',
                     'search_keywords' => $product->search_keywords ?? '',
                     'brand_name' => $extraInfoData->brand_name ?? '',
                     'Base_currency' => $product->base_currency ?? 'INR',
                     'Selling Price_Unit' => $product->selling_price_unit ?? '',
                     "Customer_Price_without_GST"=> $usi->price ?? "",
-                    "Shop_Price_VIP_Customer"=> $vip_group_product->price ?? "",
-                    "Shop_Price_Reseller"=> $reseller_group_product->price ?? "",
+                    // "Shop_Price_VIP_Customer"=> $vip_group_product->price ?? "",
+                    // "Shop_Price_Reseller"=> $reseller_group_product->price ?? "",
                     "mrp Incl tax"=>$product->mrp,
                     "HSN Tax"=>$product->hsn,
                     "HSN_Percnt"=>$product->hsn_percent,
                     // 'allow_resellers' => (in_array(($extraInfoData->allow_resellers ?? 'No'),$allowed_array) ? 'Yes' : 'No') ?? 'No',
                     // 'Publish (it will be 0 for unpublish or 1 for publish)' => (in_array($product->is_publish,$allowed_array) ? "Yes" : "No") ?? "No" ,
-                    'Exclusive' => (in_array($product->exclusive,$allowed_array) ? 'Yes' : 'No') ?? 'No',
+                    // 'Exclusive' => (in_array($product->exclusive,$allowed_array) ? 'Yes' : 'No') ?? 'No',
                     'exclusive_buyer_name' => $extraInfoData->exclusive_buyer_name ?? '',
                     'collection_name' => $extraInfoData->collection_name ?? '',
                     'season_month' => $extraInfoData->season_month ?? '',
@@ -2585,7 +2593,7 @@ class NewBulkController extends Controller
                     'standard_carton_pcs' =>$standard_carton,
                     'carton_weight_actual' =>$carton_weight,
                     'unit' =>$carton_unit,
-                    'artwork_url' => $product->artwork_url,
+                    // 'artwork_url' => $product->artwork_url,
                     'Color' => implode("^^",$color_Val) ?? '',
                     'Size' => implode("^^",$size_Val) ?? '',
                     "Material" => implode("^^",$material_Val) ?? '',
@@ -2780,7 +2788,6 @@ class NewBulkController extends Controller
                             }else{
                                 $search_value = $temp_item[$tmp_col];
                                 $attribute_value_record = ProductAttributeValue::where('parent_id',$attribute_record->id)->where('attribute_value',$search_value)->first();
-                                
                                 if ($attribute_value_record == null) {
                                     return back()->with('error',"$search_value Does Not Exist in $custom_attribute Column  at Row $row.");
                                 }
@@ -3396,14 +3403,14 @@ class NewBulkController extends Controller
                         
 
                     // ` Checking Selling Price_Unit
-                    if (isset(${'Selling Price_Unit'})) {
-                        // ` Checking Customer Price
-                        if ($tmp_item[${'Selling Price_Unit'}] != null) {
-                            if (!is_numeric($tmp_item[${'Selling Price_Unit'}])){
-                                return back()->with('error',"Enter valid amount in Customer Price at Row $row");
-                            }
-                        }
-                    }
+                    // if (isset(${'Selling Price_Unit'})) {
+                    //     // ` Checking Customer Price
+                    //     if ($tmp_item[${'Selling Price_Unit'}] != null) {
+                    //         if (!is_numeric($tmp_item[${'Selling Price_Unit'}])){
+                    //             return back()->with('error',"Enter valid amount in Customer Price at Row $row");
+                    //         }
+                    //     }
+                    // }
 
                     // ` Checking Customer_Price_without_GST
                     if (isset(${'Customer_Price_without_GST'})) {
@@ -3420,9 +3427,12 @@ class NewBulkController extends Controller
                         // ` Checking Customer Price
                         if ($tmp_item[${'Shop_Price_VIP_Customer'}] != null) {
                             if (!is_numeric($tmp_item[${'Shop_Price_VIP_Customer'}])){
-                                return back()->with('error',"Enter valid amount in Shop VIP Customer Price at Row $row");
+                                // return back()->with('error',"Enter valid amount in Shop VIP Customer Price at Row $row");
+                                $Shop_Price_VIP_Customer = 0;
                             }
                         }
+                    }else{
+                        $Shop_Price_VIP_Customer = 0;
                     }
 
                     // ` Checking Shop_Price_Reseller
@@ -3430,9 +3440,12 @@ class NewBulkController extends Controller
                         // ` Checking Customer Price
                         if ($tmp_item[${'Shop_Price_Reseller'}] != null) {
                             if (!is_numeric($tmp_item[${'Shop_Price_Reseller'}])){
-                                return back()->with('error',"Enter valid amount in Shop Price Reseller at Row $row");
+                                // return back()->with('error',"Enter valid amount in Shop Price Reseller at Row $row");
+                                $Shop_Price_Reseller = 0;
                             }
                         }
+                    }else{
+                        $Shop_Price_Reseller = 0;
                     }
 
                     // ` Checking mrpIncl tax
@@ -3541,8 +3554,8 @@ class NewBulkController extends Controller
                             }
                         }
                     }
-
-
+                    
+                    
                     // ` Checking Production time (days)
                     if (isset(${'Production time (days)'})) {
                         // ` Checking Customer Price
@@ -3659,7 +3672,7 @@ class NewBulkController extends Controller
                             // ! checking Value Exist in Records or Not
                             if ($gvalue != '') {
                                 if (!in_array($gvalue,$attribute_value,true)) {
-                                    return back()->with('error',"$gvalue Not Exist At Row $row");
+                                    return back()->with('error',"$gvalue Not Exist in column $attribute_data->name At Row $row");
                                 }
                             }
 
@@ -3667,6 +3680,7 @@ class NewBulkController extends Controller
                     }
 
                 }
+
             // @ End of Validating Loop
 
             $modalArray = [];
@@ -3742,7 +3756,7 @@ class NewBulkController extends Controller
                             // ! checking Value Exist in Records or Not
                             if ($gvalue != '') {
                                 if (!in_array($gvalue,$attribute_value,true)) {
-                                    return back()->with('error',"$gvalue Not Exist At Row $row");
+                                    return back()->with('error',"$gvalue Not Exist in column $attribute_data->name At Row $row");
                                 }
                             }
 
@@ -3755,6 +3769,14 @@ class NewBulkController extends Controller
                     }else{
                         $video_url = '';
                     }
+                    
+                    if (isset(${'Allow_Resellers'})) {
+                        // $Allow_Resellers = $item[${'Allow_Resellers'}];
+                        $Allow_Resellers = 'No';
+                    }else{
+                        $Allow_Resellers = 'No';
+                    }
+
 
                     if (isset(${'Search keywords'})) {
                         $search_keywords = $item[${'Search keywords'}];
@@ -4025,7 +4047,7 @@ class NewBulkController extends Controller
                                             'product_id' => $product_obj->id,
                                             'user_id' => $user->id,
                                             'user_shop_id' => $user_shop->id, 
-                                            'allow_resellers' => $item[${'Allow_Resellers'}],
+                                            'allow_resellers' => $Allow_Resellers,
                                             'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
                                             'collection_name' => $item[${'Theme / Collection Name'}],
                                             'season_month' => $item[${'Season / Month'}],
@@ -4087,7 +4109,7 @@ class NewBulkController extends Controller
                                                         'product_id' => $product_obj->id,
                                                         'user_id' => $user->id,
                                                         'user_shop_id' => $user_shop->id, 
-                                                        'allow_resellers' => $item[${'Allow_Resellers'}],
+                                                        'allow_resellers' => $Allow_Resellers,
                                                         'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
                                                         'collection_name' => $item[${'Theme / Collection Name'}],
                                                         'season_month' => $item[${'Season / Month'}],
@@ -4137,7 +4159,7 @@ class NewBulkController extends Controller
                                         $g_p =  GroupProduct::create([
                                             'group_id'=>$reseller_group->id,
                                             'product_id'=>$product_obj->id,
-                                            'price'=> $item[${'Shop_Price_Reseller'}],
+                                            'price'=> $Shop_Price_Reseller,
                                         ]);
                                     }
                                 
@@ -4146,7 +4168,7 @@ class NewBulkController extends Controller
                                         GroupProduct::create([
                                             'group_id'=>$vip_group->id,
                                             'product_id'=>$product_obj->id,
-                                            'price'=>  $item[${'Shop_Price_VIP_Customer'}],
+                                            'price'=>  $Shop_Price_VIP_Customer,
                                         ]);
                                     }
                                     $arr_images = [];
@@ -4287,7 +4309,7 @@ class NewBulkController extends Controller
                                             'product_id' => $id,
                                             'user_id' => $user->id,
                                             'user_shop_id' => $user_shop->id, 
-                                            'allow_resellers' => $item[${'Allow_Resellers'}],
+                                            'allow_resellers' => $Allow_Resellers,
                                             'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
                                             'collection_name' => $item[${'Theme / Collection Name'}],
                                             'season_month' => $item[${'Season / Month'}],
@@ -4345,7 +4367,7 @@ class NewBulkController extends Controller
                                         'product_id' => $id,
                                         'user_id' => $user->id,
                                         'user_shop_id' => $user_shop->id, 
-                                        'allow_resellers' => $item[${'Allow_Resellers'}],
+                                        'allow_resellers' => $Allow_Resellers,
                                         'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
                                         'collection_name' => $item[${'Theme / Collection Name'}],
                                         'season_month' => $item[${'Season / Month'}],
@@ -4527,7 +4549,7 @@ class NewBulkController extends Controller
                                         'product_id' => $product_obj->id,
                                         'user_id' => $user->id,
                                         'user_shop_id' => $user_shop->id, 
-                                        'allow_resellers' => $item[${'Allow_Resellers'}] ?? 'No',
+                                        'allow_resellers' => $Allow_Resellers ?? 'No',
                                         'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
                                         'collection_name' => $item[${'Theme / Collection Name'}],
                                         'season_month' => $item[${'Season / Month'}],
@@ -4588,7 +4610,7 @@ class NewBulkController extends Controller
                                                     'product_id' => $product_obj->id,
                                                     'user_id' => $user->id,
                                                     'user_shop_id' => $user_shop->id, 
-                                                    'allow_resellers' => $item[${'Allow_Resellers'}],
+                                                    'allow_resellers' => $Allow_Resellers,
                                                     'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
                                                     'collection_name' => $item[${'Theme / Collection Name'}],
                                                     'season_month' => $item[${'Season / Month'}],
@@ -4638,7 +4660,7 @@ class NewBulkController extends Controller
                                     $g_p =  GroupProduct::create([
                                         'group_id'=>$reseller_group->id,
                                         'product_id'=>$product_obj->id,
-                                        'price'=> $item[${'Shop_Price_Reseller'}],
+                                        'price'=> $Shop_Price_Reseller,
                                     ]);
                                 }
                             
@@ -4647,7 +4669,7 @@ class NewBulkController extends Controller
                                     GroupProduct::create([
                                         'group_id'=>$vip_group->id,
                                         'product_id'=>$product_obj->id,
-                                        'price'=>  $item[${'Shop_Price_VIP_Customer'}],
+                                        'price'=>  $Shop_Price_VIP_Customer,
                                     ]);
                                 }
                                 $arr_images = [];
@@ -4788,7 +4810,7 @@ class NewBulkController extends Controller
                                         'product_id' => $id,
                                         'user_id' => $user->id,
                                         'user_shop_id' => $user_shop->id, 
-                                        'allow_resellers' => $item[${'Allow_Resellers'}],
+                                        'allow_resellers' => $Allow_Resellers,
                                         'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
                                         'collection_name' => $item[${'Theme / Collection Name'}],
                                         'season_month' => $item[${'Season / Month'}],
@@ -4966,7 +4988,7 @@ class NewBulkController extends Controller
                                         'product_id' => $product_obj->id,
                                         'user_id' => $user->id,
                                         'user_shop_id' => $user_shop->id, 
-                                        'allow_resellers' => $item[${'Allow_Resellers'}],
+                                        'allow_resellers' => $Allow_Resellers,
                                         'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
                                         'collection_name' => $item[${'Theme / Collection Name'}],
                                         'season_month' => $item[${'Season / Month'}],
@@ -5027,7 +5049,7 @@ class NewBulkController extends Controller
                                                     'product_id' => $product_obj->id,
                                                     'user_id' => $user->id,
                                                     'user_shop_id' => $user_shop->id, 
-                                                    'allow_resellers' => $item[${'Allow_Resellers'}],
+                                                    'allow_resellers' => $Allow_Resellers,
                                                     'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
                                                     'collection_name' => $item[${'Theme / Collection Name'}],
                                                     'season_month' => $item[${'Season / Month'}],
@@ -5077,7 +5099,7 @@ class NewBulkController extends Controller
                                     $g_p =  GroupProduct::create([
                                         'group_id'=>$reseller_group->id,
                                         'product_id'=>$product_obj->id,
-                                        'price'=> $item[${'Shop_Price_Reseller'}],
+                                        'price'=> $Shop_Price_Reseller ?? 0,
                                     ]);
                                 }
                             
@@ -5086,7 +5108,7 @@ class NewBulkController extends Controller
                                     GroupProduct::create([
                                         'group_id'=>$vip_group->id,
                                         'product_id'=>$product_obj->id,
-                                        'price'=>  $item[${'Shop_Price_VIP_Customer'}],
+                                        'price'=>  $Shop_Price_VIP_Customer ?? 0,
                                     ]);
                                 }
                                 $arr_images = [];
@@ -5306,7 +5328,6 @@ class NewBulkController extends Controller
                             'manage_inventory' =>  0,
                             'stock_qty' => 0,
                             'status' => 0,
-                            // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
                             'is_publish' => 1,
                             'price' => $price ?? 0,
                             'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}], 
@@ -5319,62 +5340,11 @@ class NewBulkController extends Controller
                             'exclusive' => (in_array($item[${'Copyright/ Exclusive item'}],$allowed_array)) ? 1 : 0,
                             'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
                             'SellingPriceUnitIndex' => $item[${'Selling Price_Unit'}] ?? '',
-                            // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
                         ];
                             
                         $product_obj = Product::create($product_obj);
 
-                        // debugtext($debuging_mode,"Printing Product Object","Red");
-                        // magicstring($product_obj);
-
                         array_push($Productids_array,$product_obj->id); 
-
-                        debugtext($debuging_mode,"Printing Product Ids","Red");
-                        // magicstring($Productids_array);
-
-                        // $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
-                        // $third = strtolower($third);
-                        // $third = ucwords($third);
-                        // $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$third)->first();
-                        // $vname = $product_att_val->attribute_value;
-                    
-                        // debugtext($debuging_mode,"making Variation for $vname","Red");
-
-                        // if ($product_att_val != null) {
-                        //     $product_extra_info_obj_user = [
-                        //         'product_id' => $product_obj->id,
-                        //         'user_id' => $user->id,
-                        //         'user_shop_id' => $user_shop->id, 
-                        //         'allow_resellers' => $item[${'Allow_Resellers'}],
-                        //         'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                        //         'collection_name' => $item[${'Theme / Collection Name'}],
-                        //         'season_month' => $item[${'Season / Month'}],
-                        //         'season_year' => $item[${'Theme / Collection Year'}],
-                        //         'sample_year' => $item[${'Sample Year'}],
-                        //         'sample_month' => $item[${'Sample Month'}],
-                        //         'sampling_time' => $item[${'Sampling time'}],
-                        //         'CBM' => $item[${'CBM'}],
-                        //         'production_time' => $item[${'Production time (days)'}],
-                        //         'MBQ' => $item[${'MBQ'}],
-                        //         'MBQ_unit' => $item[${'MBQ_units'}],
-                        //         'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                        //         'vendor_price' => $item[${'Vendor price'}],
-                        //         'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                        //         'vendor_currency' => $item[${'Vendor currency'}],
-                        //         'sourcing_year' => $item[${'Sourcing Year'}],
-                        //         'sourcing_month' => $item[${'Sourcing month'}],
-                        //         'attribute_value_id' => $product_att_val->id,
-                        //         'attribute_id' => $product_att_val->parent_id,
-                        //         // 'attribute_value_id' => $product_att_val->attribute_value,
-                        //         // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
-                        //         'group_id' => $sku_code,
-                        //         'Cust_tag_group' =>$item[${'Group ID'}],
-                        //         'remarks' => $item[${'Remarks'}] ?? '' ,
-                        //         'brand_name' => $item[${'Brand Name'}],
-                        //     ];
-
-                        //     ProductExtraInfo::create($product_extra_info_obj_user);
-                        // }
 
                         echo "Selected In Excel File";
                         magicstring($selected_custom_attribute);
@@ -5409,7 +5379,7 @@ class NewBulkController extends Controller
                                             'product_id' => $product_obj->id,
                                             'user_id' => $user->id,
                                             'user_shop_id' => $user_shop->id, 
-                                            'allow_resellers' => $item[${'Allow_Resellers'}],
+                                            'allow_resellers' => $Allow_Resellers,
                                             'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
                                             'collection_name' => $item[${'Theme / Collection Name'}],
                                             'season_month' => $item[${'Season / Month'}],
@@ -5429,8 +5399,6 @@ class NewBulkController extends Controller
                                             'sourcing_month' => $item[${'Sourcing month'}],
                                             'attribute_value_id' => $product_att_val->id,
                                             'attribute_id' => $product_att_val->parent_id,
-                                            // 'attribute_value_id' => $product_att_val->attribute_value,
-                                            // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
                                             'group_id' => $sku_code,
                                             'Cust_tag_group' =>$item[${'Group ID'}],
                                             'remarks' => $item[${'Remarks'}] ?? '' ,
@@ -5459,7 +5427,7 @@ class NewBulkController extends Controller
                             $g_p =  GroupProduct::create([
                                 'group_id'=>$reseller_group->id,
                                 'product_id'=>$product_obj->id,
-                                'price'=> $item[${'Shop_Price_Reseller'}],
+                                'price'=> $Shop_Price_Reseller,
                             ]);
                         }
                     
@@ -5468,7 +5436,7 @@ class NewBulkController extends Controller
                             GroupProduct::create([
                                 'group_id'=>$vip_group->id,
                                 'product_id'=>$product_obj->id,
-                                'price'=>  $item[${'Shop_Price_VIP_Customer'}],
+                                'price'=>  $Shop_Price_VIP_Customer,
                             ]);
                         }
                         $arr_images = [];
@@ -5591,38 +5559,17 @@ class NewBulkController extends Controller
 
                         if($product_obj){
                             ++$count;
-                        }
-                    
-                        
+                        }                        
                     }
+
+
                 }
             // ! Main For Uploading Data End
 
-            // Uploading FIle
-            if($request->has('uploadcustomfield')){
-                $path = "files/$user_id->id/Uploaded_excel/";
-
-                $filename = $request->uploadcustomfield->getClientOriginalName();
-
-                $img = $this->uploadFile($request->uploadcustomfield, "$path",null,$filename)->getFilePath();
-                
-                $extension = pathinfo($filename, PATHINFO_EXTENSION);
-
-                
-                Uploadrecord::create([
-                    'user_id' =>$user_id->id,
-                    'sheet_name' => $filename,
-                    'remarks' => $request->remarks ?? '',
-                    'path' => $img,
-                    'records' => $count,
-                    'field_set' => json_encode($request->myfields),
-                    'last_used' => Carbon::now(),
-                ]);
-            }
-            
             return back()->with('success',"$count Record Are Uploaded");
         } catch (\Throwable $th) {
             throw $th;
+            return;
         }
 
         
@@ -5841,6 +5788,17 @@ class NewBulkController extends Controller
             return back()->with('error',"Try Again later");
         }
 
+    }
+
+
+
+    public function testExports() {
+        
+        // Set headers for the download
+
+        
+        echo "Done";
+        return;
     }
 
 

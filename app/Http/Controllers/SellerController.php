@@ -129,18 +129,6 @@ class SellerController extends Controller
         }
     }
 
-
-    public function ashish(Request $request)
-    {        
-        
-        magicstring(session()->all());
-        
-        
-        // return view('devloper.ashish.index',compact('msg','code'));
-    }
-
-
-
     public function userEnquiryIndex()
     {
         $user_shop_id = UserShop::where('user_id',auth()->id())->firstOrFail();

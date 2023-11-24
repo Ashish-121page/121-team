@@ -12,8 +12,8 @@
 }
 
 .nav-item.active a span {
-        font-size: 16px; 
-    }
+    font-size: 16px; 
+}
 
 
 .nav-item.active a::before{
@@ -22,7 +22,7 @@
         height: 3px;
         width: 100%;
         position: absolute;
-        bottom: -10px;
+        bottom: 9px;
         left: 0px;
 }
 
@@ -60,7 +60,7 @@
                             <li class="nav-item">
 
                                 <div class="nav-item  {{ activeClassIfRoutes(['panel.dashboard'] ,'active' ) }}" >
-                                <a href="{{route('panel.dashboard')}}" class="a-item {{ activeClassIfRoutes(['panel.dashboard'] ,'active' ) }}" style="color:#ccd3e4; padding: 5px" ><i class="ik ik-bar-chart-4"></i><span>{{ __('Home')}}</span></a>                       
+                                <a href="{{route('panel.dashboard')}}" class="a-item {{ activeClassIfRoutes(['panel.dashboard'] ,'active' ) }}" style="color:#ccd3e4; padding: 17px" ><i class="ik ik-bar-chart-4"></i><span>{{ __('Home')}}</span></a>                       
                                 </div>
                             </li>
 
@@ -68,7 +68,7 @@
 
 
                         <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.user_shop_items.create'] ,'active' ) }}">
-                            <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" style="color:#ccd3e4; padding: 5px; " >
+                            <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" style="color:#ccd3e4; padding: 17px; " >
                                 {{-- <i class="ik ik-shopping-bag"></i> --}}                                
                                 <span>{{ 'Manage' }}</span>
                                 {{-- Products --}}
@@ -76,20 +76,22 @@
                         </div>
 
                         <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.check.display'] ,'active' ) }}">
-                            <a href="{{ route('panel.check.display') }}" class="a-item" style="color:#ccd3e4; padding: 5px ">
+                            <a href="{{ route('panel.check.display') }}" class="a-item" style="color:#ccd3e4; padding: 17px ">
                                 {{-- <i class="ik ik-upload"></i> --}}
                                 <span>{{ 'Display' }}</span>
                             </a>
                         </div>
 
-                        <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.proposals.index'] ,'active' ) }}">
-                            <a href="{{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" style="color:#ccd3e4; padding: 5px">
+                        <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.proposals.index','pages.proposal.picked'] ,'active' ) }}">
+                            <a href="{{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" style="color:#ccd3e4; padding: 17px">                           
                                 {{-- <i class="ik ik-tag"></i> --}}
                                 <span>{{ 'Offer' }}</span>
                             </a>
                         </div>
+                        
+                        
                         <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.panel.user_shop_items.create'] ,'active' ) }}">
-                            <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" style="color:#ccd3e4; padding: 5px" >
+                            <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" style="color:#ccd3e4; padding: 17px" >
                                 {{-- <i class="ik ik-archive"></i> --}}
                                 <span>{{ 'Quotes' }}</span>
                             </a>
@@ -160,9 +162,9 @@
             
             <div class="top-menu d-flex align-items-center">
                 <div class="nav-item ml-4">
-                    <a href="{{ route('panel.settings.index',encrypt(auth()->id())) }}" class="a-item" style="color:#ccd3e4;">
-                        <i class="ik ik-settings"></i>
-                        <span>{{ 'Settings' }}</span>
+                    <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank" class="a-item" style="color:#ccd3e4;">
+                        <i class="uil uil-envelope h5 align-middle me-2 mr-3"></i>
+                        <span style="align-items: flex-end">{{ '121 Support' }}</span>
                     </a>
                 </div>
 
@@ -215,6 +217,8 @@
                             <a class="dropdown-item" href="{{ url('panel/user-profile') }}"><i
                                     class="ik ik-user dropdown-icon"></i> {{ __('Profile') }}</a>
                             @endif
+                            
+                                
                             {{-- <a class="dropdown-item" href="#"><i class="ik ik-navigation dropdown-icon"></i> {{ __('Message')}}</a> --}}
                             @if (auth()->user()->is_supplier == 1)
                                 <a class="dropdown-item" href="{{ route('customer.dashboard') }}">
@@ -229,6 +233,19 @@
                                     <span>{{ 'Profile' }}</span>
                                 </a>
                             @endif
+
+                            {{-- <div class="top-menu d-flex align-items-center">
+                                <div class="nav-item ml-4"> --}}
+                                    <a href="{{ route('panel.settings.index',encrypt(auth()->id())) }}" class="dropdown-item" >
+                                        <i class="ik ik-settings dropdown-icon"></i>
+                                        <span>{{ 'Settings' }}</span>
+                                    </a>
+                                {{-- </div> --}}
+
+                                {{-- <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank" class="dropdown-item">
+                                    <i class="uil uil-envelope h5 align-middle me-2 mr-3"></i>
+                                    <span style="align-items: flex-end">{{ 'Support Ticket' }}</span>
+                                </a> --}}
 
                             @if (AuthRole() == 'User')
                                 {{-- <a class="dropdown-item" data-toggle="modal" data-target="#subscriptionModal" href="#subscriptionModal"><i class="ik ik-check-square dropdown-icon"></i> {{ __('Subscription')}}</a> --}}
