@@ -62,18 +62,12 @@
                                     
                                     <tr>
                                         <th scope="col">Sno.</th>
-                                        <th scope="col" id="usdhgn">One</th>
-                                        <th scope="col" id="sdhfjn">Two</th> 
+                                        <th scope="col" id="usdhgn">Modal Code</th>
+                                        <th scope="col" id="sdhfjn">Filename</th> 
                                     </tr>
                                     
                                 </thead>
                                 <tbody id="yetsidh">
-                                    
-                                    <tr>
-                                        <td>1</td>    
-                                        <td>One</td>    
-                                        <td>Two</td>    
-                                    </tr>                                                                            
                                     
                                 </tbody>
                             </table>

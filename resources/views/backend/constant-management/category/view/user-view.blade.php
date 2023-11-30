@@ -95,10 +95,21 @@
             
           </div>
         </div>
+    </div>
 
-
-
-      </div>
-
-    
 </div>
+
+
+<script>
+    $("input").keypress(function (e) { 
+        console.log(e.target.value);
+        var keyCode = e.which;
+        var keyChar = String.fromCharCode(keyCode);
+        var specialChars = ["#",'$','=','{','}','|','\\',';','"',"'",'?','/','~','`','!']; // Array of special characters
+
+        if (specialChars.includes(keyChar)) {
+            e.preventDefault(); // Prevent entering special characters
+        }
+    });    
+
+</script>

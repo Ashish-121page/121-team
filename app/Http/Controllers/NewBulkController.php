@@ -3032,13 +3032,13 @@ class NewBulkController extends Controller
                 //     }
                 // }
 
-                // if($usi){
-                //     $usi->is_published = (in_array($value[$Live_ActiveINdex],$allowArray) ? 1 : 0 ) ?? 0;
-                //     $usi->price = $value[$Customer_Price_without_GSTIndex];
-                //     $usi->category_id = $categoryID;
-                //     $usi->sub_category_id = $SubCategoryId;
-                //     $usi->save();
-                // }
+                if($usi){
+                    // $usi->is_published = (in_array($value[$Live_ActiveINdex],$allowArray) ? 1 : 0 ) ?? 0;
+                    $usi->price = $value[$Customer_Price_without_GSTIndex];
+                    $usi->category_id = $categoryID;
+                    $usi->sub_category_id = $SubCategoryId;
+                    $usi->save();
+                }
     
                 if($reseller_group_product){
                     $reseller_group_product->price = $value[$Shop_Price_ResellerIndex] ?? 0;

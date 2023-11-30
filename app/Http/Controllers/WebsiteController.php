@@ -47,6 +47,11 @@ class WebsiteController extends Controller
         return view('frontend.website.booksession.index');
     }
     
+    public function dtask()
+    {
+        return view('frontend.website.booksession.Dtask');
+    }
+    
      public function feedbackform()
     {
         return view('frontend.website.feedback.index');

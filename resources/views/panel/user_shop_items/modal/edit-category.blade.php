@@ -25,8 +25,9 @@
                             </div>
                         </div>
 
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-outline-primary">submit</button>
+                        <div class="col-12 d-flex align-items-center justify-content-between">
+                            <button type="button" class="btn btn-outline-primary close-animatedModal" id="btn-close-modal">Cancel</button>
+                            <button type="submit" class="btn btn-outline-primary"> Renam </button>
                         </div>
 
                     </div>

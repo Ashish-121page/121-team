@@ -37,10 +37,10 @@
                                                         <tr class="">
                                                             <td scope="row" style="padding:0px! important">
                                                                 <div class="form-group h-100" style="cursor: pointer; margin-bottom:0rem!important; ">
-                                                                    {{-- <input type="checkbox" value="{{$item}}" style="10%" id="attri_{{$item}}" class="my_attribute  mx-1" name="myfields[]" data-index="{{ $key }}"> --}}
-                                                                    <input type="checkbox" value="{{$item}}"  id="attri_{{$item}}" class="my_attribute d-none mx-1" name="myfields[]" data-index="{{ $key }}">
-                                                                    <label for="attri_{{$item}}" class="form-label w-100 h-100" style="font-size: 12.8px;user-select: none; ">{{$item}}</label>
-                                                                    {{-- <label for="attri_{{$item}}" class="form-label " style="font-size: large;user-select: none; width:90%">{{$item}}</label> --}}
+                                                                    <input type="checkbox" value="{{$item}}" style="10%" id="attri_{{$item}}" class="my_attribute  mx-1" name="myfields[]" data-index="{{ $key }}">
+                                                                    {{-- <input type="checkbox" value="{{$item}}"  id="attri_{{$item}}" class="my_attribute d-none mx-1" name="myfields[]" data-index="{{ $key }}"> --}}
+                                                                    {{-- <label for="attri_{{$item}}" class="form-label w-100 h-100" style="font-size: 12.8px;user-select: none; ">{{$item}}</label> --}}
+                                                                    <label for="attri_{{$item}}" class="form-label " style="font-size: large;user-select: none; width:90%">{{$item}}</label>
                                                                 </div>
                                                             </td>
                                                         </tr>
