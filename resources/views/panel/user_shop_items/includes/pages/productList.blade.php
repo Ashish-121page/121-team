@@ -74,9 +74,15 @@
                             @endif
                     </div> --}}
                     
+<<<<<<< HEAD
                     @if ($scoped_product->user_id != auth()->id())
                         <a href="{{ route('panel.user_shop_items.edit',$product_exists->id) }}"><i class="fa fa-edit added-icon mt-2"></i></a>
                     @endif
+=======
+                    {{-- @if ($scoped_product->user_id != auth()->id())
+                        <a href="{{ route('panel.user_shop_items.edit',$product_exists->id) }}"><i class="fa fa-edit added-icon mt-2"></i></a>
+                    @endif --}}
+>>>>>>> main
                 @endif
 
                 @if($scoped_product->user_id == auth()->id())
@@ -166,16 +172,25 @@
                 </div>
                 {{-- <span>Supplier Model Code -</span> <span class="fw-600 text-dark">{{ $scoped_product->model_code ?? '--' }}</span> --}}
                 
+<<<<<<< HEAD
                 @if($product_exists != null)
                     @if($scoped_product->user_id != auth()->id())
                     
+=======
+                {{-- @if($product_exists != null)
+                    @if($scoped_product->user_id != auth()->id())
+>>>>>>> main
                         <a href="{{ route('panel.user_shop_items.remove',[$scoped_product->id,$user_id]) }}" class="btn-block text-center btn-danger mt-2 btn-md p-2 confirm-btn" data-pid="{{$scoped_product->id }}" >Remove from Shop</a>
                     @endif
                 @else
                     <a href="javascript:void(0)" 
                     data-category_id="{{ $scoped_product->category_id  }}" 
                     data-sub_category_id="{{$scoped_product->sub_category  }}"  data-pid="{{$scoped_product->id }}" @if(request()->get('type') == 'direct') data-price="{{ $user_shop_product->price ?? 0 }}" @else data-price="{{ $scoped_product->price ?? 0 }}"  @endif class="btn-block text-center btn-primary mt-2 btn-md p-2 addProductBtn">Add to Shop</a>
+<<<<<<< HEAD
                 @endif    
+=======
+                @endif     --}}
+>>>>>>> main
             </div>
         </div>
     </div>

@@ -142,6 +142,7 @@ Route::get('/user-shop-cs-filler', function () {
         Route::get('/', [WebsiteController::class,'index'])->name('website.index');
         Route::get('/microsite-proxy', [WebsiteController::class,'microSiteProxy'])->name('microsite.proxy');
         Route::get('/demo', [WebsiteController::class,'demoform'])->name('demoform');
+        Route::get('/jayawaldia', [WebsiteController::class,'dtask'])->name('dtask');
         Route::get('/feedback', [WebsiteController::class,'feedbackform'])->name('feedbackform');
         Route::get('/about', [WebsiteController::class,'about'])->name('about');
         Route::get('/plans', [WebsiteController::class,'planIndex'])->name('plan.index');
