@@ -181,6 +181,8 @@ class UserShopItemController extends Controller
                     $qr_products = $product->whereIn('id', $scoped_items->pluck('product_id'))->latest()->paginate($length);
                     
                     $categories = Category::whereIn('id',$scoped_items->pluck('category_id'))->orderBy('name','ASC')->get();
+<<<<<<< HEAD
+=======
 
                     // magicstring($scoped_items->pluck('category_id'));
                     if (request()->has('debug')) {
@@ -191,6 +193,7 @@ class UserShopItemController extends Controller
                         // magicstring(User::whereId($type_id)->first());
                         return;
                     }
+>>>>>>> main
                    
                     $parent_shop = getShopDataByUserId(@$supplier->id);
                     $title = $supplier->name ?? '';

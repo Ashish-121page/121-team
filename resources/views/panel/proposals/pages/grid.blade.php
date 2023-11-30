@@ -76,7 +76,11 @@
                       </div>
                   </div>
 
+<<<<<<< HEAD
+                  <div class ="cardbody d-flex gap-2 p-4 justify-content-between" style="gap:10px;">
+=======
                   <div class ="cardbody d-flex gap-2 p-4 justify-content-between">
+>>>>>>> main
                     @foreach ($productItems as $key => $item)
                       @if ($key < 3)
                           @php
@@ -85,24 +89,45 @@
                           @if ($mediarecord != null)   
                                            
                             <div style="height: 100px; width: 100px;object-fit: contain; ">
+<<<<<<< HEAD
+                              <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid " style="border-radius: 10px;height: 100%; width: 100%; background-color:rgb(186, 183, 183); gap:10px; padding:0.15rem">
+=======
                               <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid p-1" style="border-radius: 10px;height: 100%; width: 100%; background-color:grey; gap:10px;">
+>>>>>>> main
                             </div>   
                                         
                           @endif                                                                    
                       @endif
                     @endforeach
+<<<<<<< HEAD
+                  </div>                  
+                  <div class="d-flex float-end justify-content-between">  
+                    
+                    <a class="btn btn-transparent w-fit" href="{{ inject_subdomain('proposal/picked/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?type=send" target="_blank" style="text-decoration: none; margin-bottom: 10px; color:primary ">
+                      <i class="fas fa-download" style="color:#6666cc"></i> 
+                    </a>                    
+                      <a class="btn btn-transparent w-fit " href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: none; margin-bottom: 10px ">
+                        <i class="fas fa-edit fa-lg" style="color:#6666cc"></i> 
+=======
                   </div>
 
                   <div class="d-flex float-end justify-content-between">                    
                       <a class="btn btn-primary w-fit mx-1" href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: none; margin-bottom: 10px ">
                         <i class="uil uil-comment-alt-edit h6"></i> Edit
+>>>>>>> main
                       </a>                      
                       
                     @if ($proposal->status == 1)                     
                       @if ($product_count != 0)                                               
+<<<<<<< HEAD
+                          <button class="btn-link text-primary copybtn w-fit mx-1"  value="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline; border:none; margin-bottom:22px">
+                              <i class="uil-link-alt"></i> Copy Link
+                          </button>                                                
+=======
                           <a class="btn-link text-primary copybtnw-fit mx-1"  href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline;">
                               <i class="uil-link-alt"></i> Copy Link
                           </a>                                                
+>>>>>>> main
                       @endif                                            
                           <a class="btn-link text-primary w-fit mx-1" href="{{inject_subdomain('make-copy/'.$proposal->id,$slug) }}" class="" style="text-decoration: underline;">
                               <i class="uil-copy"></i> Duplicate
@@ -114,9 +139,13 @@
                       </a>                                                                                   
                     @endif 
 
+<<<<<<< HEAD
+                                                                                                           
+=======
                       <a class="btn btn-transparent w-fit" href="{{ inject_subdomain('proposal/picked/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?type=send" target="_blank" style="text-decoration: none; margin-bottom: 10px; color:primary ">
                         <i class="fas fa-download" style="color:#6666cc"></i> 
                       </a>                                                                                        
+>>>>>>> main
                                                    
                   </div>
             

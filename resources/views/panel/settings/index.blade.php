@@ -3,9 +3,19 @@
 @section('content')
 
     <link rel="stylesheet" href="{{ asset('backend/plugins/select2/dist/css/select2.min.css') }}">
+<<<<<<< HEAD
+
+    <link href="{{ asset('frontend/assets/css/simplebar.css') }}" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
+
+
+
+=======
     <link href="{{ asset('frontend/assets/css/simplebar.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
 
+>>>>>>> main
     <!-- push external head elements to head -->
     @push('head')
     
@@ -21,6 +31,16 @@
                     <a href="{{ request()->url() }}" class="btn btn-outline-primary @if (!request()->has('open')) active @endif mx-1">
                         Templates
                     </a>
+<<<<<<< HEAD
+
+                    <a href="{{ request()->url() }}?open=offers" class="btn btn-outline-primary @if (request()->get('open') == 'offers') active @endif mx-1">
+                        Currency
+                    </a>
+
+                    <a href="{{ request()->url() }}?open=team" class="btn btn-outline-primary @if (request()->get('open') == 'team') active @endif mx-1">
+                        Team
+                    </a>
+=======
                     <a href="{{ request()->url() }}?open=offers" class="btn btn-outline-primary @if (request()->get('open') == 'offers') active @endif mx-1">
                         Currency
                     </a>
@@ -30,6 +50,7 @@
                     <a href="{{ request()->url() }}?open=category" class="btn btn-outline-primary @if (request()->get('open') == 'category') active @endif mx-1">
                         Category
                     </a>
+>>>>>>> main
 
 
                 </div>
@@ -57,8 +78,11 @@
                 @include('panel.settings.pages.Offers')
             @elseif (request()->has('open') && request()->get('open') == 'team')
                 @include('panel.settings.pages.Team')
+<<<<<<< HEAD
+=======
             @elseif (request()->has('open') && request()->get('open') == 'category')
                 @include('backend.constant-management.category.view.user-view')
+>>>>>>> main
             @else
                 @include('panel.settings.pages.Template')
             @endif
@@ -194,6 +218,8 @@
         })
             });
         </script>
+<<<<<<< HEAD
+=======
 
         <script>                    
             $(".editchange").click(function (e) { 
@@ -310,5 +336,6 @@
         </script>
 
 
+>>>>>>> main
     @endpush
 @endsection

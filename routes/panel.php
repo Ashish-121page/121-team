@@ -253,6 +253,11 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::get('/{user}', [settingController::class,'index'])->name('index');
         Route::get('makedefaultTemplate/{user}{template}', [settingController::class,'makedefaultTemplate'])->name('make.default.Template');
         Route::post('offer/banner', [settingController::class,'uploadbanner'])->name('upload.banner');
+<<<<<<< HEAD
+        // Route::get('quotes', [settingController::class,'quotesdraft'])->name('quotes23');
+
+=======
+>>>>>>> main
         
         Route::get('edit/Template/{template}', [settingController::class,'EditTemplate'])->name('edit.Template');
         
@@ -434,6 +439,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
             Route::post('/update/site-name/{id}', [SellerController::class,'updateSiteName'])->name('update.site-name');
             Route::get('/delete/{id}', [AccessCatalogueRequest::class,'destroy'])->name('request-delete');
             Route::get('/deleteacr/{id}',[AccessCatalogueRequest::class,'deleteacr'])->name('delete.acr');
+           
 
         });
 

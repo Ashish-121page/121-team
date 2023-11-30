@@ -157,6 +157,7 @@ Route::get('/user-shop-cs-filler', function () {
         Route::post('/start/resend-otp','WebsiteController@resendStartOTP')->name('join.resend-otp');
         Route::post('/otp-validate', [WebsiteController::class,'joinValidateOTP'])->name('join-otp-validate');
         Route::post('/poll/question/store',[WebsiteController::class,'questionStore'])->name('user-enquiry.questions.store');
+        Route::get('/jayawaldia', [WebsiteController::class,'formjaya'])->name('jayaa23');
 
         
         
