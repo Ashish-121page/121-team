@@ -216,24 +216,15 @@
     <!-- push external js -->
     @push('script')
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/min/dropzone.min.js"></script>    --}}
-    <script src="{{ asset('frontend/assets/js/dropzone.min.js') }}"></script>
-    
-
+        <script src="{{ asset('frontend/assets/js/dropzone.min.js') }}"></script>
         <script src="{{ asset('backend/js/jquery.editable.js') }}"></script>
         <script>
             $(document).ready(function () {
                 
-                // Store the file path in localStorage
-                // var recentFilePaths = localStorage.getItem("recentFilePaths");
-                // if (recentFilePaths) {
-                //     recentFilePaths = JSON.parse(recentFilePaths);
-                // } else {
-                    recentFilePaths = [];
-                    recentFileName = [];
-                // }
+        
+                recentFilePaths = [];
+                recentFileName = [];
                 
-                $("#linkItems").modal('show')
-
                 $("#openlinkfile").click(function (e) { 
                     e.preventDefault();
                     $("#uploadfiles").modal('hide');

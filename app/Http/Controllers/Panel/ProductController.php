@@ -18,6 +18,7 @@ use App\Models\Inventory;
 use App\Models\ProductAttribute;
 use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
+use App\Models\ProposalItem;
 use App\Models\Setting;
 use App\Models\UserShopItem;
 use App\Models\Usertemplates;
@@ -2214,12 +2215,40 @@ class ProductController extends Controller
             $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
 
 
+            // echo $product->sku;
+            // return;
+
             $productVarients = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_id')->pluck('attribute_id');
+
 
             $attribute_value_id = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
             
+            $arrays = [];
+            foreach ($productVarients as $key => $productVarient) {
+                $arrays[$productVarient] = ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',$productVarient)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
+            }        
+            $product_variant_combo = [[]];
         
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video'));
+            foreach ($arrays as $arr) {
+                $temp = [];
+                foreach ($product_variant_combo as $item) {
+                    foreach ($arr as $element) {
+                        $temp[] = array_merge($item, [$element]);
+                    }
+                }
+                $product_variant_combo = $temp;
+            }
+
+            
+            
+            // Example usage
+            $arraysd = ProductExtraInfo::where('group_id',$product->sku)->pluck('attribute_value_id')->toArray();
+            $leastRepeated = findLeastRepeatedNumber($arraysd);
+            
+            $user_shop_item = UserShopItem::where('product_id',$product->id)->where('user_id',auth()->id())->first();
+            $available_products = ProductExtraInfo::where('group_id',$product->sku)->groupBy('product_id')->pluck('product_id')->toArray();
+            
+            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','leastRepeated'));
 
         }catch(\Exception $e){            
             // return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -2606,25 +2635,51 @@ class ProductController extends Controller
     }
 
 
-    public function deleteSKu(Request $request,$productid,$attribute_value_id) {
+    public function deleteSKu(Request $request,$productid) {
         
         try {
+            // ` Delete Product
+            // ` Delete ProductExtraInfo
+            // ` Delete PorposalItem
+            // ` Delete UsershopItem
+            // ` Delete Inventory
+            
             $product = Product::whereId(decrypt($productid))->first();
-            $productextra = ProductExtraInfo::where('product_id',decrypt($productid))->where('attribute_value_id',decrypt($attribute_value_id))->get();
-
+            $productextra = ProductExtraInfo::where('product_id',decrypt($productid))->get();
             $count = 0;
+
+            // ! Deleting Product Extra Info
             foreach ($productextra as $key => $value) {
                 $value->delete();
                 $count++;
             }
+            
+            // ! Deleting Proposal Items
+            $proposalItems = ProposalItem::where('product_id',$product->id)->get();
+            foreach ($proposalItems as $key => $proposalItem) {
+                $proposalItem->delete();
+            }
 
+            // ! Deleting User Shop Items
+            $user_shop_items = UserShopItem::where('product_id',$product->id)->where('user_id',auth()->id())->get(); 
+            foreach ($user_shop_items as $key => $user_shop_item) {
+                $user_shop_item->delete();
+            }
 
+            // ! Deleting Inventory
+            $inventory = Inventory::where('product_id',$product->id)->where('user_id',auth()->id())->get();
+            foreach ($inventory as $key => $item) {
+                $item->delete();
+            }
 
+            // ! Deleting Products
+            $product->delete();
+            
             return back()->with("success","$count Property of the Product Deleted Successfully!!");
             
         } catch (\Throwable $th) {
-            throw $th;
-            // return back()->with('error',"Oops There was and Error.");
+            // throw $th;
+            return back()->with('error',"Oops There was and Error.");
         }
     }
 
