@@ -105,7 +105,11 @@ class FileManager extends Controller
             // Getting Folder Size
             $formattedSize = 0;
             $user_shop_item = UserShopItem::where('user_id',auth()->id())->pluck('product_id');
+<<<<<<< HEAD
             $limit = $request->get('pageliimt',5);
+=======
+            $limit = $request->get('pageliimt32',8);
+>>>>>>> main
 
             $Products = Product::whereIn('id',$user_shop_item)->paginate($limit);
             $Products_attribute = ProductExtraInfo::whereIn('product_id',$user_shop_item)->groupBy('attribute_value_id')->get();
@@ -113,7 +117,12 @@ class FileManager extends Controller
 
             if ($request->ajax() && $request->workload == 'linkproductsearch') {
                 // $limit = $request->get('pageliimt',5);
+<<<<<<< HEAD
                 $Products = Product::whereIn('id',$user_shop_item)->where('title',"LIKE","%".$request->searchCode."%")->paginate($limit);
+=======
+                $Products = Product::whereIn('id',$user_shop_item)->where('model_code',"LIKE","%".$request->searchCode."%")->orwhere('title',"LIKE","%".$request->searchCode."%")->paginate($limit);
+                
+>>>>>>> main
                 $Products_attribute = ProductExtraInfo::whereIn('product_id',$user_shop_item)->groupBy('attribute_value_id')->get();
                 return view('panel.Filemanager.modals.ProductList',compact('Products','Products_attribute'));
             }

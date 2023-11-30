@@ -7,6 +7,7 @@ use App\Models\Media;
 use App\Models\UserCurrency;
 use App\Models\UserShop;
 use App\User;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class settingController extends Controller
@@ -21,6 +22,7 @@ class settingController extends Controller
         $currency_record = UserCurrency::where('user_id',$user->id)->get();
         $acc_permissions = json_decode($user->account_permission);
 
+<<<<<<< HEAD
         // magicstring($acc_permissions);
         
         // return;
@@ -32,6 +34,51 @@ class settingController extends Controller
     // {
     //     return view("panel.settings.quotes23");
     // }
+=======
+        $length = 20;
+        $industries = Category::where('parent_id',null)->get();
+
+        if (AuthRole() == 'Admin') {
+            $category = Category::get();
+            $sub_category = Category::where('level',3)->get();
+
+        }else{
+            $category_own = Category::where('category_type_id',13)
+                        ->where('level',2)
+                        // ->where('user_id',null)
+                        ->where('user_id',auth()->id())
+                        ->orderBy('name','ASC')
+                        ->get()->toArray();
+
+
+            $category_global = Category::where('category_type_id',13)
+                        ->where('level',2)
+                        ->where('user_id',null)
+                        ->orderBy('name','ASC')
+                        ->get()->toArray();
+                        
+
+            $user_selected_category_id = json_decode(auth()->user()->selected_category);    
+            
+            
+            if ($user_selected_category_id != null) {
+                $user_selected_category_parent = Category::whereIn('id',$user_selected_category_id)->pluck('parent_id')->toArray() ?? [];
+                $user_selected_category = Category::whereIn('id',$user_selected_category_parent)->get()->toArray() ?? [];
+
+                $category =  array_merge($category_own,$user_selected_category);
+
+            }else{
+                $category =  $category_own;
+            }
+            $sub_category = Category::where('level',3)->get();
+
+        }
+
+
+
+        return view("panel.settings.index",compact('templates','user','user_shop','currency_record','acc_permissions','category','industries','category_global','sub_category'));
+    }
+>>>>>>> main
     
     
     public function makedefaultTemplate(Request $request,$user,$template) {

@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 {{--`Start table--}}
 
+=======
+{{--` Start table --}}
+>>>>>>> main
 <div class="row">
     <div class="col-12">
         <div class="row">
@@ -44,7 +48,11 @@
                             <td class="no-export action_btn"> 
                                 {{-- <input type="checkbox" id="checkallinp"> --}}
                             </td> 
+<<<<<<< HEAD
                             <td>Buyer Name</td>
+=======
+                            <td>Sent to</td>
+>>>>>>> main
                             <td>Created on</td>
                             <td>Total Products</td>
                             <td>Status</td>
@@ -110,20 +118,39 @@
                                 </td>
                   
                                 <td>
+<<<<<<< HEAD
                                     
                                     @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == "" || $proposal->user_id == auth()->id())                                        
                                         @php
                                             $product_count = App\Models\ProposalItem::where('proposal_id',$proposal->id)->get()->count();
                                         @endphp                                    
+=======
+                                    {{-- <a class="btn btn-outline-primary" href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="border-radius: 10%">
+                                        <i class="uil uil-comment-alt-edit h6"></i> Edit
+                                    </a> --}}
+                                    @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == "" || $proposal->user_id == auth()->id())
+                                        {{-- <div style="display: flex;gap: 15px;font-size: 1.6vh;text-align: center !important;"> --}}
+                                        @php
+                                            $product_count = App\Models\ProposalItem::where('proposal_id',$proposal->id)->get()->count();
+                                        @endphp
+
+                                    
+>>>>>>> main
                                         {{-- <button class="btn btn-outline-primary my-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             More <i class="uil-angle-right"></i>
                                         </button> --}}
                                       
                                         @if ($proposal->status == 1)
                                             @if ($product_count != 0)                                               
+<<<<<<< HEAD
                                                 <button class="btn-link text-primary copybtn mx-3"  value="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline; border:none;">
                                                     <i class="uil-link-alt"></i> Copy Link
                                                 </button>                                                
+=======
+                                                <a class="btn-link text-primary copybtn mx-3"  href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline;">
+                                                    <i class="uil-link-alt"></i> Copy Link
+                                                </a>                                                
+>>>>>>> main
                                             @endif                                            
                                                 <a class="btn-link text-primary mx-3" href="{{inject_subdomain('make-copy/'.$proposal->id,$slug) }}" class="" style="text-decoration: underline;">
                                                     <i class="uil-copy"></i> Duplicate
@@ -131,7 +158,17 @@
                                         @endif                                                                                  
                                             <a class="btn-link text-primary mx-3" href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: underline;">
                                                 <i class="uil uil-comment-alt-edit h6"></i> Edit ( {{ $product_count }} ) 
+<<<<<<< HEAD
                                             </a>                                                                                                                        
+=======
+                                            </a>                                        
+                                        
+                                        {{-- @if ($proposal->status == 1)                                            
+                                                <a href="{{ route('customer.lock.enquiry',$proposal->id) }}" class="dropdown-item">
+                                                    <i class="uil-lock-alt h6"></i> 
+                                                </a>                                        
+                                        @endif --}}
+>>>>>>> main
 
                                         @if ($proposal->status == 1)                                                                                  
                                                 <a href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="text-danger delete-item mx-3" style="text-decoration: underline;">

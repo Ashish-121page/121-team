@@ -264,6 +264,7 @@
             });
 
 
+<<<<<<< HEAD
             
  
             function copyTextToClipboard(text) {
@@ -321,6 +322,34 @@
 
 
             
+=======
+            function copyTextToClipboard(text) {
+                    if (!navigator.clipboard) {
+                        fallbackCopyTextToClipboard(text);
+                        return;
+                    }
+                    navigator.clipboard.writeText(text).then(function() {
+                    }, function(err) {
+                    });
+                    $.toast({
+                        heading: 'SUCCESS',
+                        text: "Offer link copied.",
+                        showHideTransition: 'slide',
+                        icon: 'success',
+                        loaderBg: '#f96868',
+                        position: 'top-right'
+                    });
+            }
+
+            $(".copybtn").click(function (e) {
+                e.preventDefault();
+                var link = $(this).val();
+                copyTextToClipboard(link);
+            });
+
+
+            
+>>>>>>> main
         });
         
     </script>
@@ -440,6 +469,7 @@
             location.reload()            
             
             });
+<<<<<<< HEAD
 
             // function copyTextToClipboard(text) {
             //         if (!navigator.clipboard) {
@@ -465,6 +495,8 @@
             //     copyTextToClipboard(link);
             // });
 
+=======
+>>>>>>> main
                                
                 
         
