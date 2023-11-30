@@ -15,104 +15,66 @@
 @endphp
     <!-- push external head elements to head -->
     @push('head')
+    <link rel="stylesheet" href="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
+    <style>
+        .error{
+            color:red;
+        }
+        .bootstrap-tagsinput{
+            width: 100%;
+        }
+    </style>
     @endpush
 
     <div class="container-fluid">
-    	<div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-lg-8">
-                    <div class="page-header-title">
-                        <i class="ik ik-mail bg-blue"></i>
-                        <div class="d-inline">
-                            <h5>{{ __('Create New Category')}}</h5>
-                            {{-- <span>{{ __('Add a new record for Category')}}</span> --}}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    @include('backend.include.breadcrumb')
-                </div>
-            </div>
-        </div>
-        <div class="row">
+        <div class="row justify-content-center">
             @include('backend.include.message')
-            <div class="col-md-8 mx-auto">
+    
+            <div class="col-12">
+                <a href="{{ route('panel.constant_management.category.index',13,2,12) }}" class="btn btn-outline-secondary">
+                    Back
+                </a>
+            </div>
+            <div class="col-md-8 col-12">
                 <div class="card ">
                     <div class="card-header">
-                        <h3>{{ __('Add Category')}}</h3>
+                        <h3>Create Product Category</h3>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('panel.constant_management.category.store') }}" method="post" enctype="multipart/form-data">
                             @csrf
-                            <input type="hidden" name="category_type_id" value="{{ $type_id }}">
-                            <input type="hidden" name="level" value="{{ $level }}">
-                            <input type="hidden" name="parent_id" value="{{ $parent_id }}">
-                            <div class="row">
-                                <div class="col-md-12 mx-auto">
-                                    {{-- <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group {{ $errors->has('category_id') ? 'has-error' : ''}}">
-                                                <label for="category_id">{{ __('Category Type')}}</label>
-                                                <select name="category_type_id" id="category_type_id" class="form-control select2">
-                                                    <option value="" readonly required>{{ __('Select Category Type')}}</option>
-                                                    @foreach (fetchAll('App\Models\CategoryType') as $index => $item)
-                                                        <option value="{{ $item->id }}">{{ $item->name }}</option> 
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group {{ $errors->has('level') ? 'has-error' : ''}}">
-                                                <label for="level">{{ __('level')}}</label>
-                                                <select name="level" id="level" class="form-control select2">
-                                                    <option value="" readonly required>{{ __('Select Level')}}</option>
-                                                    @foreach (getCategory() as $index => $item)
-                                                        <option value="{{ $item['id'] }}">{{ $item['name'] }}</option> 
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div> --}}
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
-                                                <label for="name" class="control-label">{{ 'Name' }}</label>
-                                                <input class="form-control" name="name" type="text" id="name" value="" required>
-                                            </div>
-                                        </div>
-                                        {{-- <div class="col-sm-6">
-                                            <div class="form-group {{ $errors->has('parent_id') ? 'has-error' : ''}}">
-                                                <label for="parent_id">{{ __('Parent')}}</label>
-                                                <select name="parent_id" id="parent_id" class="form-control select2">
-                                                    <option value="" readonly required>{{ __('Select Parent')}}</option>
-                                                    @foreach (fetchGet('App\Models\Category', 'where', 'level', '=', $prev_level) as $index => $item)
-                                                        <option value="{{ $item->id }}">{{ $item->name }}</option> 
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div> --}}
+                            {{-- Type ID 13 As Gifting --}}
+                            <input type="hidden" name="parent_id" value="{{ request()->get('parent_id') ?? null }}">
+                            <input type="hidden" name="category_type_id" value="{{ encrypt('13') }}">
+                            <input type="hidden" name="user_id" value="{{ encrypt(auth()->id()) }}">
+                            <input type="hidden" name="shop_id" value="{{ encrypt(getShopDataByUserId(auth()->id())->id) }}">
+
+                            
+                            <div class="row">               
+                                <div class="col-md-12 col-12"> 
+                                    <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
+                                        <label for="name" class="control-label">Category Name<span class="text-danger">*</span></label>
+                                        <input required  class="form-control" name="name" type="text" id="name" value="{{old('name')}}" placeholder="Enter Name" >
+                                    </div>
+                                </div>
+                                                                                            
+                            
+                                <div class="col-md-12 col-12"> 
+                                    <div class="form-group mb-0">
+                                        <label for="input">{{ __('Sub Categories')}} <span class="text-danger">*</span> </label>
+                                    </div>
+                                    <div class="alert alert-warning" style="widtdsh: fit-content" role="alert">
+                                        <i class="fas fa-info-circle mx-2"></i> Enter multiple values, Seperate by Comma (,)
+                                    </div>
+                                    <div class="form-group">
+                                        <input style="width: 100%" name="value[]" type="text" id="tags" class="form-control" value="" required>
                                     </div>
                                     
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group ">
-                                                <label for="logo" class=" col-form-label">{{ __('Icon')}}</label>
-                                                <div class="">
-                                                    <div class="input-group col-xs-12">
-                                                        <input type="file" name="icon" class="file-upload-default">
-                                                        <div class="input-group col-xs-12">
-                                                            <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Icon">
-                                                            <span class="input-group-append">
-                                                            <button class="file-upload-browse btn btn-success" type="button">{{ __('Upload')}}</button>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group text-right">
-                                        <button type="submit" class="btn btn-primary float-right">Create</button>
+                                </div>
+                                                            
+                                <div class="col-md-12 ml-auto">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary">Create</button>
                                     </div>
                                 </div>
                             </div>
@@ -120,9 +82,17 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
     <!-- push external js -->
     @push('script')
+    <script src="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#tags').tagsinput('items');
+        });
+    </script>
+      
     @endpush
 @endsection

@@ -67,11 +67,11 @@
                                                 {{-- @foreach(App\Models\Category::whereCategoryTypeId(13)->whereParentId(null)->whereType(1)->get()  as $option)
                                                     <option {{in_array($option->id, old('industry_id') ?: []) ? "selected" : ""}} value="{{ $option->id }}">{{  $option->name ?? ''}}</option> 
                                                 @endforeach --}}
-                                                <option  selected>Select Profile Type</option>
-                                                <option  value="customer">End consumer</option>
-                                                <option  value="supplier">Manufacturer / Stockist</option>
-                                                <option  value="reseller">Reseller</option>
-                                                <option  value="exporter">Exporter</option>
+                                                <option selected>Select Profile Type</option>
+                                                <option value="exporter">Exporter</option>
+                                                <option value="supplier">Manufacturer / Stockist</option>
+                                                <option value="reseller">Reseller</option>
+                                                <option value="customer">End consumer</option>
                                             </select>
                                             <span class="t-select-btn">
                                             </span>

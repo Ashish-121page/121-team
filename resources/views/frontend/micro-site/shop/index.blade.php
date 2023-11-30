@@ -16,6 +16,8 @@
         $team = json_decode($user_shop->team);        
         $manage_offer_verified = $team->manage_offer_verified ?? 0; 
         $manage_offer_guest = $team->manage_offer_guest ?? 0; 
+
+        $defaultCurrecy = App\Models\UserCurrency::where('User_shop_id',$user_shop->id)->where('default_currency',1)->first();
 	@endphp
 @endsection
 @section('content')
@@ -164,7 +166,7 @@
                                                 <span class="remove-tag" data-color="{{ $Color }}" title="click to Remove {{$name}}">x</span>
                                             </span>
                                         @endforeach
-                                    @endif
+                                    @endif                                     
                                 @endforeach
                             </div>
                             {{-- Scooboo Tags filter End --}}
@@ -457,12 +459,21 @@
                         </div>
                     </div>
 
+
+                    @php
+                        if (Session::has('Currency_id') != null) {
+                            $curr = Session::get('Currency_id');
+                        }else{
+                            $curr = $defaultCurrecy->currency;
+                        }
+                    @endphp                    
+
                     <div class="d-flex mb-2">
                         <div class="container" id="selector" style="width: max-content !important;">
                             <select class="form-control select_box w-auto" id="changeCurrency" name="Currency">
                                 <option aria-readonly="true">Change Currency</option>
                                 @foreach ($currency_record as $item)
-                                    <option value="{{ $item->id }}" @if ($item->id == (Session::get('Currency_id') ?? 'INR')) selected @endif > {{ $item->currency }}</option>
+                                    <option value="{{ $item->id }}" @if ($item->id == ($curr ?? 'INR')) selected @endif > {{ $item->currency }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -6,7 +6,7 @@
 
     }
 </style>
-<header id="topnav" class="defaultscroll" style=" position: inherit;">
+<header id="topnav" class="defaultscroll sticky">
     <div class="container">
       <!-- Logo container-->
       <a class="logo  list-inline-item mb-0 mt-2" href="{{ url('/') }}">
@@ -83,13 +83,13 @@
           <!-- Navigation Menu-->   
           @if(request()->routeIs('plan.checkout.store')  == false )
               <ul class="navigation-menu">
-                  <li><a href="{{ url('/') }}" class="sub-menu-item">Home</a></li>
+                  <li><a href="{{ url('/') }}" class="sub-menu-item">Product Tool</a></li>
                   {{-- <li><a href="{{ route('home.search') }}" class="sub-menu-item">Search</a></li> --}}
                   <li><a href="{{ route('about') }}" class="sub-menu-item">About</a></li>
                   {{-- <li><a href="{{ route('plan.index') }}" class="sub-menu-item">Plan</a></li> --}}
                   {{-- <li><a href="{{ route('blog.index') }}" class="sub-menu-item">Blog</a></li> --}}
                   <li>
-                      <a href="{{ route('contact.index') }}">Contact</a>
+                      <a href="{{ route('contact.index') }}" class="sub-menu-item">Contact</a>
                   </li>
               </ul><!--end navigation menu-->
             @endif

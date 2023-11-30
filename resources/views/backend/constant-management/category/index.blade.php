@@ -1,171 +1,94 @@
 @extends('backend.layouts.main') 
 @section('title', 'Category')
+
 @section('content')
+@push('head')
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.css">
     <style>
-        .remove-ik-class{
-                -webkit-box-shadow: unset !important;
-                box-shadow: unset !important;
-            }
+        .remove-ik-class {
+            -webkit-box-shadow: unset !important;
+            box-shadow: unset !important;
+        }
+
+        li {
+            list-style: none;
+            margin: 0 0 0 -30px;
+        }
+        .bg-none{
+            background: transparent !important;
+        }
+        .btn-primary:hover,
+        .btn-primary:focus,
+        .btn-primary.active {
+            background-color: #6666cc;
+            border: 1px solid #6666cc;
+            color: #ffffff !important;
+        }
+        .bootstrap-tagsinput{
+            width: 100%;
+        }
+        /* .select2-results__option */
+        .select2-selection__rendered li,.select2-results__options li{
+            margin: 5px !important;
+        }
     </style>
-    @php
-
-     if($level == 1){ $page_title = 'Categories';  $arr = null;}
-     elseif($level == 2){ $page_title = 'Sub Categories'; $arr = ['name'=> fetchFirst('App\Models\Category',request('parent_id'),'name','--'), 'url'=> route('panel.constant_management.category.index',$type_id), 'class' => ''];}
-     elseif($level == 3){$page_title = 'Sub Sub Categories'; $pre = request('parent_id')-1; $arr = ['name'=> fetchFirst('App\Models\Category',request('parent_id'),'name','--'), 'url'=> url('panel/constant-management/category/view/'.$type_id.'?level='.'2'.'&parent_id='.$pre), 'class' => ''];}
-
-     
-     $parent = App\Models\CategoryType::whereId($type_id)->first();
-
-      if($parent->id == 13){
-        if($level == 1) $page_title = "Industry";
-        elseif($level == 2) $page_title = "Category";
-        elseif($level == 3) $page_title = "Sub Category";
-    }
-
-    if (Authrole() == 'User') {
-            $breadcrumb_arr = [
-                $arr,
-                    // ,
-                ['name'=> $page_title, 'url'=> "javascript:void(0);", 'class' => 'active']
-     ];
-        }else{
-            $breadcrumb_arr = [
-                ['name'=>'Constant Management', 'url'=> "javascript:void(0);", 'class' => ''],
-                ['name'=>'Category', 'url'=> route("panel.constant_management.category_type.index"), 'class' => 'active'],
-                $arr,
-                ['name'=> $page_title, 'url'=> "javascript:void(0);", 'class' => 'active']
-        ];
-     }
-    @endphp
-    <!-- push external head elements to head -->
+@endpush
 
 
     <div class="container-fluid">
-    	<div class="page-header">
-            <div class="row align-items-end">
-                <div class="col-lg-8">
-                    <div class="page-header-title">
-                        <i class="ik ik-mail bg-blue"></i>
-                        <div class="d-flex">
-                            <h5>
-                               {{$page_title}} 
-                            </h5>
-                            @if(AuthRole() == 'User')
-                                <span style="margin-top: -10px;">
-                                    <i class="ik ik-info fa-2x text-dark ml-2 remove-ik-class" title="help Text"></i>
-                                </span>
-                            @endif
-                        </div>
-                        {{-- <span>{{ __('List of')}} {{$page_title}} </span> --}}
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    @include("backend.include.breadcrumb")
+
+        <div class="row my-2">
+            <div class="col-12 d-flex justify-content-between">
+                <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_ide={{encrypt(auth()->id())}}" class="btn btn-outline-secondary"> 
+                    Back
+                </a>
+                <div class="d-flex">
+                    <a class="btn btn-outline-primary mx-1" id="addcategory" href="#animatedModal" role="button">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Create Category
+                    </a>
+                    {{-- <button type="button" class="btn btn-outline-primary openglobal mx-1" data-bs-toggle="modal" data-bs-target="#selectGlobalMOdal">
+                        Select Global Category
+                    </button> --}}
                 </div>
             </div>
         </div>
+
         <div class="row">
-            <!-- start message area-->
-            <!-- end message area-->
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header align-items-center d-flex justify-content-between">
-                        <h3>
-                            {{ $page_title }}
-                        </h3>
-                        <div class="">
-                            @if (AuthRole() == 'Admin' && $level == 1)
-                                <a href="{{ route('panel.constant_management.category.create',[$type_id,$level,request('parent_id')]) }}" class="btn btn-icon btn-sm btn-outline-primary" title="Add New Category"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                            @elseif (AuthRole() == 'User' && $level > 1 || AuthRole() == 'Admin' )
-                                <a href="{{ route('panel.constant_management.category.create',[$type_id,$level,request('parent_id')]) }}" class="btn btn-icon btn-sm btn-outline-primary" title="Add New Category"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                            @endif
-                        @if (AuthRole() == 'User' && $level == 1)
-                            <a href="javascript:void(0)" data-target="#editIndustry" data-toggle="modal" class="btn btn-icon btn-sm btn-outline-danger" title="Add Industry"><i class="fa fa-edit" aria-hidden="true"></i></a>
-                        @endif  
-                        @if (AuthRole() == 'Admin' && $level == 1)
-                            <a href="javascript:void(0)" data-target="#categoryBulkModal" data-toggle="modal" class="btn btn-icon btn-sm btn-outline-danger" title="Upload Bulk Category"><i class="fa fa-upload" aria-hidden="true"></i></a>
-                            <a href="{{ route('panel.constant_management.category.change') }}"  class="btn btn-icon btn-sm btn-outline-success" title="Edit categories"><i class="fa fa-edit" aria-hidden="true"></i></a>
-
-                        @endif
-                        </div>
-                    </div>
-                    <div class="card-body ">
-                        <div class="table-responsive">
-                            <table id="category_table" class="table">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">#</th>
-                                        <th>Actions</th>
-                                        <th>Name</th>
-                                        <th>Parent Category</th>
-                                        @if(fetchFirst('App\Models\CategoryType',$type_id,'allowed_level','1') > $level)
-                                            <th>Child Category Count</th> 
-                                        @endif
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    
-                                    @if($category->count() > 0)
-                                        @foreach($category as $item)
-                                        <tr>
-                                            <td class="text-center">MC{{ $item->id }}</td>
-                                          
-                                                <td>
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action<i class="ik ik-chevron-right"></i></button>
-                                                        <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
-                                                                @if($item->user_id == auth()->id())
-                                                                    <li class="dropdown-item p-0"><a href="{{ route('panel.constant_management.category.edit', $item->id)  }}" title="Edit Lead Contact" class="btn btn-sm">Edit</a></li>
-                                                                @endif 
-                                                                @if(AuthRole() == "Admin")
-                                                                <li class="dropdown-item p-0"><a href="{{ route('panel.constant_management.category.delete', $item->id)  }}" title="Delete Category" class="btn btn-sm delete-item">Delete</a></li>
-                                                                @endif
-                                                                <li class="dropdown-item p-0"><a href="{{url('panel/constant-management/category/view/'.$item->category_type_id.'?level='.$nextlevel.'&parent_id='.$item->id)}}" title="Delete Category" class="btn btn-sm">Show</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </td>
-                                           
-
-                                                <td>{{ $item->name }} {{ $item->type == 1 ? "" : "(Self)" }}</td>
-                                                {{-- <td>{{ $item->level }}</td> --}}
-                                                {{-- <td><a href="javascript:void(0);">{{ ucwords(str_replace('_',' ',fetchFirst('App\Models\CategoryType',$item->category_type_id,'name','--'))) }}</a></td> --}}
-                                                <td>
-                                                    {{ $parent->name }}
-                                                </td>
-                                                
-                                                @if(fetchFirst('App\Models\CategoryType',$type_id,'allowed_level','1') > $level)
-                                                    <td>
-                                                        @if($nextlevel <= 3)
-                                                        <a class="btn btn-link"href="{{url('panel/constant-management/category/view/'.$item->category_type_id.'?level='.$nextlevel.'&parent_id='.$item->id)}}">@if (AuthRole() != 'Admin')
-                                                            {{ fetchGetData('App\Models\Category',['category_type_id','level','parent_id','user_id'],[$item->category_type_id,$nextlevel,$item->id,auth()->id()])->count() }}
-                                                        @else
-                                                            {{ fetchGetData('App\Models\Category',['category_type_id','level','parent_id'],[$item->category_type_id,$nextlevel,$item->id])->count() }}
-                                                        @endif
-                                                        </a>
-                                                        @else 
-                                                        ---
-                                                        @endif
-                                                    </td>
-                                                @endif
-                                            </tr>
-                                        @endforeach
-                                    @else
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @if (AuthRole() == 'Admin')
+                @include('backend.constant-management.category.view.admin-view')    
+            @else
+                @include('backend.constant-management.category.view.user-view')
+            @endif
         </div>
+
     </div>
-     @include('backend.constant-management.category.include.modal')
-     @include('backend.constant-management.category.include.industry')
+
+
+      
+
+    @include('backend.constant-management.category.include.modal')
+    @include('backend.constant-management.category.include.select_global')
+    @include('backend.constant-management.category.include.add-category')
+    @include('backend.constant-management.category.include.industry')     
+
     <!-- push external js -->
     @push('script')
-    
+        <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
         <script>
             $(document).ready(function() {
+                    
+                $("#addcategory").animatedModal({
+                    animatedIn: 'lightSpeedIn',
+                    animatedOut: 'lightSpeedOut',
+                    color: 'FFFFFF',
+                    height: '60%',
+                    width: '60%',
+                    top: '24%',
+                    left: '40%',
+                });
+                $("#demo01").click();
 
                 var table = $('#category_table').DataTable({
                     responsive: true,
@@ -200,9 +123,162 @@
                             }
                         }
                     ]
+                });
+
+                
+                $(".editchange").click(function (e) { 
+                    e.preventDefault();
+                    // Enabling Input Value
+                    let box_parent = $(this).data('box-parent');
+                    let box_edit = $(this).data('box-edit');
+                    // Hide text
+                    $("#"+box_parent).addClass('d-none');
+                    $("#"+box_parent).removeClass('d-flex');
+                    // Enable Input
+                    $("#"+box_edit).removeClass('d-none');
+                    $("#"+box_edit).addClass('d-flex');
+                });
+
+
+                $(".discardchange").click(function (e) { 
+                    e.preventDefault();
+                    // Enabling Input Value
+                    let box_parent = $(this).data('box-parent');
+                    let box_text = $(this).data('box-text');
+
+                    // Hide text
+                    $("#"+box_parent).addClass('d-none');
+                    $("#"+box_parent).removeClass('d-flex');
+                    // Enable Input
+                    $("#"+box_text).removeClass('d-none');
+                    $("#"+box_text).addClass('d-flex');
+                });
+
+
+                $(".updatechange").click(function (e) { 
+                    e.preventDefault();
+                    // {{-- ` Input Value  --}}
+                    let input_parent = $(this).data('input-parent'); 
+
+                    // {{-- ` Id Of The Category --}}
+                    let typevalue = $(this).data('typevalue');
+                    let text = $("#text-represent-"+input_parent.split('_')[2]);
+                    let value = $("#"+input_parent).val();
+                    
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ route('panel.constant_management.category.update.ajax') }}",
+                        data: {
+                            'task': 'update_name',
+                            'value': value,
+                            'id': typevalue,
+                            'user_id': '{{ auth()->id()}} '
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            console.log(response);
+                            text.html(value)
+                            $(".discardchange").click();
+                        }
+                    });
+                    
+                });
+
+                                
+                // Add Items
+                $(".additems").click(function (e) { 
+                    e.preventDefault();
+                    let parent = $(this).data('parentdata');
+                    let item = `<div class="col-3 my-2">
+                        <div class="justify-content-between gap-2 d-flex" id="added_item">
+                        <input type="text" name="changeme" class="form-control added_item-${parent}" placeholder="Enter New Value" >
+                    </div>`;
+                    $(`.savebtn[data-parentdata='${parent}']`).removeClass('d-none')
+
+                    $("#"+parent).append(item);
+                });
+
+
+                $(".savebtn").click(function (e) { 
+                    e.preventDefault();
+                    let parent = $(this).data('parentdata');
+                    let valuearr = [];
+
+
+                    let items = document.querySelectorAll(`.added_item-${parent}`);
+                    
+                    items.forEach(element => {
+                        valuearr.push(element.value);
+                    });
+
+                    let typevalue = $(this).data("parent-id");;
+
+
+
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ route('panel.constant_management.category.update.ajax') }}",
+                        data: {
+                            'task': 'add_new',
+                            'value': valuearr,
+                            'id': typevalue,
+                            'user_id': '{{ auth()->id()}} '
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            // console.log(response);
+                            window.location.reload();
+                        }
+                    });
+                });
+
+
+                $(".collapseicon").click(function (e) { 
+
+                    $(this).toggleClass('btn-primary');
+                    $(this).toggleClass('bg-none');
+                    $(this).find('i').toggleClass('fa-angle-right')
+                    $(this).find('i').toggleClass('fa-angle-down')
 
                 });
+
+                $("#newcatname").change(function (e) { 
+                    e.preventDefault();
+                    let newval = $(this).val();
+
+
+                    let newvalue = newval.split(" > ")[1];
+                    
+                    $('#tags').tagsinput('add',newvalue);
+
+
+                    
+                    // $.ajax({
+                    //     type: "GET",
+                    //     url: "{{ route('panel.constant_management.category.check.global') }}",
+                    //     data: {
+                    //         "search": newval
+                    //     },
+                    //     success: function (response) {
+                    //         response = JSON.parse(response);
+                    //         console.table(response);
+                    //         if (response['status'] === 'SUCCESS') {
+                    //             console.log("SuccessFULL");
+
+                    //             console.log(response['DATA']);
+                    //             $("#tags").val(response['DATA']);
+                                
+                    //             $('#tags').tagsinput('refresh');
+
+                    //         }
+                    //     }
+                    // });
+
+                });
+
+
             });
         </script>
     @endpush
+
 @endsection

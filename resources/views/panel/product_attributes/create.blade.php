@@ -14,7 +14,7 @@
  * @link        https://121.page/
  */
 $breadcrumb_arr = [
-    ['name'=>'Add Product Attribute', 'url'=> "javascript:void(0);", 'class' => '']
+    ['name'=>'Add Product Properties', 'url'=> "javascript:void(0);", 'class' => '']
 ]
 
 @endphp
@@ -41,7 +41,7 @@ $breadcrumb_arr = [
                     <div class="page-header-title">
                         <i class="ik ik-mail bg-blue"></i>
                         <div class="d-inline">
-                            <h5>Add Product Attribute</h5>
+                            <h5>Add Product Properties</h5>
                             {{-- <span>Create a record for Product Attribute</span> --}}
                         </div>
                     </div>
@@ -52,13 +52,16 @@ $breadcrumb_arr = [
             </div>
         </div>
         <div class="row">
+            <div class="col-12">
+                <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_ide={{ encrypt(auth()->id()) }}&properties=true" class="btn btn-secondary">Back</a>
+            </div>
             <div class="col-md-8 mx-auto">
                 <!-- start message area-->
                @include('backend.include.message')
                 <!-- end message area-->
                 <div class="card ">
                     <div class="card-header">
-                        <h3>Create Product Attribute</h3>
+                        <h3>Create Product Properties</h3>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('panel.product_attributes.store') }}" method="post" enctype="multipart/form-data" id="ProductAttributeForm">
@@ -113,8 +116,8 @@ $breadcrumb_arr = [
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
         <script src="{{ asset('backend/js/form-advanced.js') }}"></script>
         <script>
-        $('#ProductAttributeForm').validate();
-        $('#tags').tagsinput('items');                                      
-    </script>
+            $('#ProductAttributeForm').validate();
+            $('#tags').tagsinput('items');                                      
+        </script>
     @endpush
 @endsection

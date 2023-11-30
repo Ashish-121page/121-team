@@ -23,12 +23,21 @@ use App\Models\UserShop;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-
-
+use function GuzzleHttp\Promise\all;
 
 class UserShopItemController extends Controller
 {
 
+    public function __construct(Request $request) {
+
+        if ($request->has('type_ide')) {
+            $request['type_id'] = decrypt($request->type_ide);
+    
+        }
+        
+        // return;
+    }
+    
     /**
      * Display a listing of the resource.
      *
@@ -91,6 +100,7 @@ class UserShopItemController extends Controller
 
             $access_data = null;
             $access_id = $request->get('type_id') ?? 0;
+
             if($request->has('type') && $request->get('type') != null && $request->has('type_id') && $request->get('type_id') != null){
                 $type = $request->get('type');
                 $type_id = $request->get('type_id');
@@ -113,6 +123,9 @@ class UserShopItemController extends Controller
                     }
                     if($request->has('category_id') && $request->get('category_id') != null){
                         $product->where('category_id',$request->get('category_id'));
+                    }
+                    if($request->has('sub_category_id') && $request->get('sub_category_id') != null){
+                        $product->where('sub_category',$request->get('sub_category_id'));
                     }
                     
                     $scoped_products = $product->whereBrandId($type_id)->groupBy('sku')->latest()->get();
@@ -146,6 +159,10 @@ class UserShopItemController extends Controller
                     if($request->has('category_id') && $request->get('category_id') != null){
                         $product->where('category_id',$request->get('category_id'));
                     }
+                    if($request->has('sub_category_id') && $request->get('sub_category_id') != null){
+                        $product->where('sub_category',$request->get('sub_category_id'));
+                    }
+                    
                     if($request->type_id != auth()->id()){
                         $product->where('is_publish',1);
                     }
@@ -161,17 +178,13 @@ class UserShopItemController extends Controller
 
                     $qr_products = $product->whereIn('id', $scoped_items->pluck('product_id'))->latest()->paginate($length);
                     
-                    $categories = Category::whereIn('id',$scoped_items->pluck('category_id'))->get();
-
+                    $categories = Category::whereIn('id',$scoped_items->pluck('category_id'))->orderBy('name','ASC')->get();
                    
                     $parent_shop = getShopDataByUserId(@$supplier->id);
                     $title = $supplier->name ?? '';
 
                     $pinned_products = Product::whereUserId($request->type_id)->whereIn('id', $scoped_items->pluck('product_id'))->where('pinned',1)->orderBy('pinned','DESC')->get();
                     $pinned_items = $pinned_products->pluck('id')->toArray();
-
-
-
                 }
             }else{
                 $scoped_products = [];
@@ -179,16 +192,34 @@ class UserShopItemController extends Controller
                 $title = "Unknown";
                 $qr_products = [];
                 $pinned_items = [];
+                $subcategies = [];
             }
-
-
 
             $brand_record = [];
             $products = Product::query();
             $products = $products->select('*', \DB::raw('count(*) as total'))->groupBy('sku')->latest()->paginate($length);
             
+            if ($request->get('workload') == 'AjaxSearch' ) {
+                
+                if(AuthRole() == "User"){
+                    $user_id = auth()->id();
+                    $user = auth()->user();
+                }else{
+                    $user = User::find(request()->get('user_id'));
+                    $user_id = request()->get('user_id');
+                }
+                $user_shop = UserShop::whereUserId($user_id)->first();
+                
+                return view('panel.user_shop_items.includes.pages.productList',compact('scoped_products','pinned_items','parent_shop','title','categories','access_data','access_id','products','qr_products','type_id','price_group','user_id','user_shop'));
+                
+            }
+            
+            
             return view('panel.user_shop_items.create',compact('scoped_products','pinned_items','parent_shop','title','categories','access_data','access_id','products','qr_products','type_id','price_group'));
-        }catch(Exception $e){            
+
+            
+
+        }catch(\Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -482,18 +513,32 @@ class UserShopItemController extends Controller
                 return redirect()->route('panel.user_shop_items.index')->with('success',$totalProductCount.' Items added to shop  Successfully!');
             }
             
-        }catch(Exception $e){            
+        }catch(\Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
     
+
+    public function linkedasset(Request $request) {
+        
+
+        magicstring($request->all());
+        return;
+    }
+
+
     public function removebulk(Request $request)
     {
         try {
+
+            // magicstring($request->all());
+            // return;            
+            
             $delete_request = $request->delproducts;
             $action = $request->delete_all;
+            $count = 0;
 
-            if ($action) {
+            if ($action) { # Delete All
                 echo "Deleting All Products !! <br>";
                 $result_product = DB::table('products')->where('user_id',$request->user_id)->get();
                 // Starting Loop for Getting All Product Details
@@ -505,8 +550,13 @@ class UserShopItemController extends Controller
                         $media_arr = explode(',',$media);
                         foreach ($media_arr as $value) {
                             $media_dir = DB::table('medias')->where('id',$value)->first();
-                            $del_path = str_replace('storage','public',$media_dir->path);
-                            Storage::delete($del_path);
+                            
+                            if ($request->delete_type == 'with_asset') {
+                                // Deleting File
+                                $del_path = str_replace('storage','public',$media_dir->path);
+                                Storage::delete($del_path);
+                            }
+                            
                             DB::table('medias')->where('id',$media_dir->id)->delete();
                         }
                         // ! Deleting User SHop Item Entry
@@ -528,39 +578,48 @@ class UserShopItemController extends Controller
 
             }else{
                 echo "Deleting Selected Products !! <br>";
+
+                // return;
                 foreach ($delete_request as $delproduct) {
-                    $result_product = DB::table('products')->where('sku',$delproduct)->first();
-                    if ($result_product->user_id != auth()->id()) {
-                        return back()->with('error','These Products are not Owned by You!!');
-                    }
-                    
-                    $usi = DB::table('user_shop_items')->where('product_id',$result_product->id)->get();    
-                    foreach($usi as $user_items){
-                        // Getting Image Path From User Shop Items
-                        $media = $user_items->images;
-                        // Makking rray of Media in Product
-                        $media_arr = explode(',',$media);
-                        
-                        // Starting Loop for Deleting Medias
-                        foreach ($media_arr as $value) {
-                            // Getting File Path
-                            $media_dir = DB::table('medias')->where('id',$value)->first();
-                            // Converting Dir to make it deletable
-                            $del_path = str_replace('storage','public',$media_dir->path);
-                            // Deleting File
-                            Storage::delete($del_path);
-                            // Deleting Media Entry
-                            DB::table('medias')->where('id',$media_dir->id)->delete();
+                    $result_product = DB::table('products')->where('sku',$delproduct)->get();
+
+                    foreach ($result_product as $key => $product) {
+                        if ($product->user_id != auth()->id()) {
+                            return back()->with('error','These Products are not Owned by You!!');
                         }
-                        // Deleting User SHop Item Entry
-                        DB::table('user_shop_items')->where('id',$user_items->id)->delete();
+                        
+                        $usi = DB::table('user_shop_items')->where('product_id',$product->id)->get();    
+                        foreach($usi as $user_items){
+                            // Getting Image Path From User Shop Items
+                            $media = $user_items->images;
+                            // Makking rray of Media in Product
+                            $media_arr = explode(',',$media);
+                            
+                            // Starting Loop for Deleting Medias
+                            foreach ($media_arr as $value) {
+                                // Getting File Path
+                                $media_dir = DB::table('medias')->where('id',$value)->first();
+                                
+                                if ($request->delete_type == 'with_asset') {
+                                    // Deleting File
+                                    $del_path = str_replace('storage','public',$media_dir->path);
+                                    Storage::delete($del_path);
+                                }
+                                
+                                // Deleting Media Entry
+                                DB::table('medias')->where('id',$media_dir->id)->delete();
+                            }
+                            // Deleting User SHop Item Entry
+                            DB::table('user_shop_items')->where('id',$user_items->id)->delete();
+                        }
+                        DB::table('products')->where('id',$product->id)->delete();
+                        // Deleting Product extra info 
+                        ProductExtraInfo::where('product_id',$product->id)->delete();
+                        $count++;
                     }
-                    DB::table('products')->where('id',$result_product->id)->delete();
-                    // Deleting Product extra info 
-                    ProductExtraInfo::where('product_id',$result_product->id)->delete();
                 }
 
-                return back()->with('success',count($delete_request).' Items Deleted to shop Successfully!');
+                return back()->with('success',"$count Item(s) deleted successfully!");
             }
 
         } catch (\Exception $e) {
@@ -571,7 +630,6 @@ class UserShopItemController extends Controller
 
     /**
      * Display the specified resource.
-     *
      * @param    int  $id
      * @return  \Illuminate\Http\Response
      */
@@ -933,5 +991,26 @@ class UserShopItemController extends Controller
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
+    
+    public function checkdisplay(Request $reqest) {
+        $user_shop = getShopDataByUserId(auth()->id());
+        
+        return view('panel.display.index',compact('user_shop'));
+    }
+    
+    public function checkproductdisplay(Request $reqest,$id) {
+
+        $user_shop = getShopDataByUserId(auth()->id());
+
+        // Put Some Session Keys
+        session()->put('at',encrypt(auth()->id()));
+        session()->save();
+        $encid = $id;
+        return view('panel.user_shop_items.includes.view-product',compact('user_shop','encid'));
+    }
+    
+    
+
+
     
 }

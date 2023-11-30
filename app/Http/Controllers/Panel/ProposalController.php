@@ -14,6 +14,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\ProductAttribute;
 use App\Models\AccessCatalogueRequest;
+use App\Models\ExportTemplates;
 use App\User;
 use App\Models\UserShopItem;
 use App\Models\UserShop;
@@ -28,7 +29,8 @@ class ProposalController extends Controller
      */
      public function index(Request $request)
      {
-        
+
+
          $length = 12;
          if(request()->get('length')){
              $length = $request->get('length');
@@ -37,7 +39,7 @@ class ProposalController extends Controller
          
             if($request->get('search')){
                 $proposals->where('id','like','%'.$request->search.'%')
-                                ->orWhere('name','like','%'.$request->search.'%')
+                                ->orWhere('customer_details','like','%'.$request->search.'%')    
                 ;
             }
             
@@ -64,7 +66,24 @@ class ProposalController extends Controller
                 $proposals->whereUserId(0);
             }
 
-            $proposals = $proposals->withCount('items')->paginate($length);
+            if ($request->has('Sent')) {
+                if ($request->get('Sent') == 'draft') {
+                    $proposals->where('status',0);
+                }elseif ($request->get('Sent') == 'sent') {
+                    $proposals->where('status',1);
+                }else{
+                    // No Condition...
+                }
+            }
+            if ($request->has('Buyer_name') && $request->get('Buyer_name')) {
+                $proposals->where('customer_details','LIKE',"%".$request->get('Buyer_name')."%");                
+            }
+
+            $proposals = $proposals->withCount('items')->orderBy('id','DESC')->paginate($length);            
+        
+            
+
+
             if ($request->ajax()) {
                 return view('panel.proposals.load', ['proposals' => $proposals])->render();  
             }
@@ -95,6 +114,8 @@ class ProposalController extends Controller
 
     public function shopProposalIndex(Request $request, $proposal_slug)
     {
+
+        
         $slug = $request->subdomain;
         $user_shop = UserShop::whereSlug($slug)->first();
         $proposal = Proposal::where('slug',$proposal_slug)->first();
@@ -152,14 +173,37 @@ class ProposalController extends Controller
         $product_color = Product::whereIn('id',$product_ids)->get()->pluck('color')->toArray();
         $product_size = Product::whereIn('id',$product_ids)->get()->pluck('size')->toArray();
         $product_desc = Product::whereIn('id',$product_ids)->get()->pluck('description')->toArray();
+
+        $pptTesmplate = '';
+
+        $usertemplates_ppt = ExportTemplates::where('user_id',$proposal->user_id)->where('type','ppt')->where('default',1)->get();
+        $systemtemplates_ppt = ExportTemplates::where('user_id',null)->where('type','ppt')->get();
+
+        if (count($usertemplates_ppt) == 0) {
+            $pptTesmplate = $systemtemplates_ppt;
+        }else{
+            $pptTesmplate = $usertemplates_ppt;
+        }
+
         $cust_details = json_decode($proposal->customer_details,true);
 
+        // $selectedoption = $request->input('chooseprop');
+
+        if ($request->has('optionsforoffer') && $request->get('optionsforoffer') != null) {
+            $selectedProp = [];
+            $selectedProp = $request->get('optionsforoffer');
+        }else{
+            $selectedProp = [];
+        }
+
+        // magicstring($pptTesmplate);
         
-        return view('frontend.micro-site.shop.proposal.index',compact('slug','products','user_shop','cust_details','proposal','proposal_slug','product_ids','product_title','product_model','product_color','product_size','product_desc','newimag'));
+        // return;
+
+        return view('frontend.micro-site.shop.proposal.index',compact('slug','products','user_shop','cust_details','proposal','proposal_slug','product_ids','product_title','product_model','product_color','product_size','product_desc','newimag','pptTesmplate','selectedProp'));
     }
 
-   
-
+    
     /**
      * Show the form for creating a new resource.
      *
@@ -214,7 +258,7 @@ class ProposalController extends Controller
         
         try{ 
             $arr = [
-                'customer_name'=> '',
+                'customer_f'=> '',
                 'customer_mob_no'=> '',
             ];
             $request['customer_details'] = json_encode($arr);
@@ -490,7 +534,7 @@ class ProposalController extends Controller
             // if($request->get('type')){
             //     $article->where('category_id','=',$request->type);
             // }
-            $article->groupBy('proposal_id');
+            $article->groupBy('proposal_id')->sortBy('id','ASC');
 
             $article= $article->paginate($length);
             if ($request->ajax()) {

@@ -338,40 +338,40 @@ class CustomerLoginController extends Controller
         }
         
 
-        
+        // TODO: Using FileManager as Settings
         if ($request->account_type == 'reseller' || $request->account_type == 'customer') {
             $mycustomer = 'no';
-            $mysupplier = 'yes';
-            $Filemanager = 'yes';
+            $mysupplier = 'no';
+            $Filemanager = 'no'; // ` Settings
             $addandedit = 'no'; 
+            $bulkupload = 'no';
+            $pricegroup = 'no';
+            $managegroup = 'no';
+            $manangebrands = 'no';
+            $offers = 'no';
+
+        }elseif ($request->account_type == 'supplier' && $request->account_type == 'exporter') {
+            $mycustomer = 'no';
+            $mysupplier = 'no';
+            $Filemanager = 'no'; // ` Settings
+            $addandedit = 'yes'; 
             $bulkupload = 'no';
             $pricegroup = 'no';
             $managegroup = 'yes';
             $manangebrands = 'no';
-            $offers = 'yes';
-
-        }elseif ($request->account_type == 'supplier' && $request->account_type == 'exporter') {
-            $mycustomer = 'yes';
-            $mysupplier = 'no';
-            $Filemanager = 'yes';
-            $addandedit = 'yes'; 
-            $bulkupload = 'yes';
-            $pricegroup = 'yes';
-            $managegroup = 'yes';
-            $manangebrands = 'no';
-            $offers = 'yes';
+            $offers = 'no';
         }else{
             # If Got Some Error
             // ! Taking as A customer
             $mycustomer = 'no';
-            $mysupplier = 'yes';
-            $Filemanager = 'yes';
-            $addandedit = 'no';  
+            $mysupplier = 'no';
+            $Filemanager = 'no'; // ` Settings
+            $addandedit = 'no'; 
             $bulkupload = 'no';
             $pricegroup = 'no';
-            $managegroup = 'yes';
+            $managegroup = 'no';
             $manangebrands = 'no';
-            $offers = 'yes';
+            $offers = 'no';
         }
 
         $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers ];

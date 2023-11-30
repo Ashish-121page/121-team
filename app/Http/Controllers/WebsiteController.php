@@ -39,12 +39,17 @@ class WebsiteController extends Controller
     {
        // Get Verified Customer Image Data
        $verify_customer = DB::table('user_shops')->where('demo_given','=',1)->get();
-       return view('frontend.website.index',compact('verify_customer'));
+       return view('frontend.website.newhome',compact('verify_customer'));
     }
 
     public function demoform()
     {
         return view('frontend.website.booksession.index');
+    }
+
+     public function formjaya()
+    {
+        return view('frontend.website.booksession.jayaform23');
     }
     
      public function feedbackform()

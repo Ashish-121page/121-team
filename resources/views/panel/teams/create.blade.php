@@ -2,7 +2,7 @@
 @section('title', 'Team')
 @section('content')
 @php
-$usershop = App\Models\Usershop::whereId(request()->get('shop_id'))->first();
+$usershop = App\Models\UserShop::whereId(request()->get('shop_id'))->first();
 $user = App\User::whereId($usershop->user_id)->first();
 $acc_permissions = json_decode($user->account_permission);      
 $acc_permissions->mysupplier = $acc_permissions->mysupplier ?? 'no';

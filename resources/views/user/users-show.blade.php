@@ -216,8 +216,9 @@
                                                 @endphp
                                                 <select name="account_type" id="account_type" class="form-control" disabled>
                                                     <option {{ $chk = ($ekyc->account_type == 'customer') ?  "selected" : "" ; }} value="customer">Customer</option>
-                                                    <option {{ $chk = ($ekyc->account_type == 'supplier') ?  "selected" : "" ; }} value="supplier">Manufacturer / stockest</option>
-                                                    <option {{ $chk = ($ekyc->account_type == 'reseller ') ?  "selected" : "" ; }} value="reseller">Reseller</option>
+                                                    <option {{ $chk = ($user->account_type == 'exporter') ?  "selected" : "" ; }} value="exporter">Exporter</option>
+                                                    <option {{ $chk = ($ekyc->account_type == 'supplier') ?  "selected" : "" ; }} value="supplier">Manufacturer / stockist</option>
+                                                    <option {{ $chk = ($ekyc->account_type == 'reseller') ?  "selected" : "" ; }} value="reseller">Reseller</option>
                                                 </select>
                                             </div>
 

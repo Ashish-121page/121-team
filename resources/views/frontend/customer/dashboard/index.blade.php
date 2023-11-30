@@ -22,6 +22,7 @@
         $acc_permissions->pricegroup  = $acc_permissions->pricegroup  ?? 'no';
         $acc_permissions->managegroup  = $acc_permissions->managegroup  ?? 'no';
         $acc_permissions->bulkupload  = $acc_permissions->bulkupload  ?? 'no';
+        $acc_permissions->Filemanager = $acc_permissions->Filemanager  ?? 'no';
         $user_key = encrypt(auth()->id());
         $slug = App\Models\Usershop::where('user_id',auth()->user()->id)->first()->slug;
         $teamDetails = App\Models\Team::where('contact_number',session()->get('phone'))->first();
@@ -305,7 +306,7 @@
 
                             {{-- @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id")) --}}
 
-                            @if ($acc_permissions->addandedit == 'yes' || $acc_permissions->addandedit == 'Yes')
+                            {{-- @if ($acc_permissions->addandedit == 'yes' || $acc_permissions->addandedit == 'Yes')
                                 @if ($Team_proadd)
                                     <li class="nav-item mt-2">
                                         <a data-active="diaplay" class="nav-link active-swicher rounded" id="diaplay-details" href="{{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ $user->id }}" >
@@ -315,23 +316,22 @@
                                         </a><!--end nav link-->
                                     </li><!--end nav item-->
                                 @endif
-                            @endif
+                            @endif --}}
                             {{-- @endif --}}
 
                             @if ($Team_profile)
 
-                                <li class="nav-item mt-2">
+                                {{-- <li class="nav-item mt-2">
                                     <a data-active="account" class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('active') == "account") active @endif" id="account-details" data-bs-toggle="pill" href="#account" role="tab" aria-controls="account" aria-selected="false">
                                         <div class="text-start py-1 px-3">
                                             <h6 class="mb-0"><i class="uil uil-user h5 align-middle me-2 mb-0"></i>  My Profile</h6>
                                         </div>
-                                    </a><!--end nav link-->
-                                </li><!--end nav item-->
+                                    </a>
+                                </li> --}}
 
                             @endif
 
                             {{-- @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id")) --}}
-                            @if(getUserProgressStatistics(auth()->id()) == 100)
 
                             @if($acc_permissions->Filemanager == "yes")
                                 @if ($Team_setting)
@@ -344,7 +344,6 @@
                                     </li><!--end nav item-->
                                 @endif
                             @endif
-                            @endif
 
                             {{-- @endif --}}
 
@@ -355,19 +354,14 @@
                                             <i class="uil uil-envelope h5 align-middle me-2 mb-0"></i>
                                              Support Ticket</h6>
                                     </div>
-                                </a><!--end nav link-->
-                                {{-- <a data-active="support-ticket" class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('active') == "support-ticket") active @endif" id="support-ticket-tab" data-bs-toggle="pill" href="#support-ticket" role="tab" aria-controls="support-ticket" aria-selected="false">
-                                    <div class="text-start py-1 px-3">
-                                        <h6 class="mb-0">
-                                            <i class="uil uil-envelope h5 align-middle me-2 mb-0"></i>
-                                             Support Ticket</h6>
-                                    </div>
-                                </a><!--end nav link--> --}}
-                            </li><!--end nav item-->
+                                </a>
+                                <!--end nav link-->
+                            </li>
+                            <!--end nav item-->
 
                         </ul><!--end nav pills-->
-                        {{-- <div class="">
-                            @if (!App\Models\AccessCode::where('redeemed_user_id',auth()->id())->first()) --}}
+                        <div class="">
+                            {{-- @if (!App\Models\AccessCode::where('redeemed_user_id',auth()->id())->first()) --}}
                                 {{-- <div class="card ">
                                    <div class="card-body">
                                         <h4 class="text-left">Become 121 Seller!</h4>
@@ -383,14 +377,16 @@
                                 <div class="alert alert-info">
                                     Your Access Code has been submitted, Your profile requires admin approval.
                                 </div>
-                            @else
+                            @else --}}
                                 @if(auth()->user()->is_supplier == 1)
                                     @if (auth()->user()->status == 1)
-                                        <a type="submit" href="{{ route('panel.dashboard') }}" class="btn btn-outline-primary d-block">Open Seller Tools    </a>
+                                        <a type="submit" href="{{ route('panel.dashboard') }}" class="btn btn-outline-primary d-block">Open Seller Tools </a>
                                     @endif
+                                @else
+                                    <a href="{{ url('start') }}" class="btn btn-outline-primary d-block" style="color: white;">Book 7 mins Demo</a>
                                 @endif
-                            @endif
-                        </div> --}}
+                            {{-- @endif --}}
+                        </div>
                     </div>
                 </div><!--end col-->
                 <div class="col-lg-8 col-md-12 col-12">
@@ -415,7 +411,7 @@
                                 @if(getUserProgressStatistics(auth()->id()) != 100)
                                     <div class="row">
                                         <div class="col-12">
-                                            <img src="{{ asset('frontend/assets/img/dashboard_banner.svg') }}" alt="Image" class="img-fluid w-100 rounded">
+                                            {{-- <img src="{{ asset('frontend/assets/img/dashboard_banner.svg') }}" alt="Image" class="img-fluid w-100 rounded"> --}}
                                         </div>
                                     </div>
                                 @endif
@@ -445,8 +441,7 @@
                                     {!! QrCode::size(300)->generate( $url ) !!} --}}
 
                                     @if(getUserProgressStatistics(auth()->id()) != 100)
-
-                                        <div class="col-lg-6 col-md-6 col-12">
+                                        {{-- <div class="col-lg-6 col-md-6 col-12">
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h5 class="text-center">
@@ -548,34 +543,22 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     @endif
-                                    @if(getUserProgressStatistics(auth()->id()) == 100)
+
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="card">
                                             <div class="card-body">
-                                                {{-- <h5 class="">
-                                                    Create Offer
-                                                </h5> --}}
                                                 <div class="text-center mx-auto justify-content-center">
-                                                    <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Make Offer</a>
-                                                </div>
+
+                                                <button class="btn btn-primary mt-2 mx-auto text-center" onclick="location.href='{{ route('customer.dashboard') }}?active=account&subactive=business_profile&upload_gst=true'">
+                                                    {{-- <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "business_profile") active show @endif" id=ekycform"> </a>   --}}
+                                                    Upload GST / IEC
+                                                </button>
+                                            </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-12">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                {{-- <h5 class="">
-                                                    Create Offer
-                                                </h5> --}}
-                                                <div class="text-center mx-auto justify-content-center">
-                                                    <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Scan QR</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endif
+                                    </div> 
 
                                     @if(getUserProgressStatistics(auth()->id()) == 100)
                                         <div class="col-12 border border-danger mt-4">
@@ -724,89 +707,85 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    @endif
 
-                                    @if(getUserProgressStatistics(auth()->id()) == 100)
-
-                                     <!-- statistics -->
-                                     <div class="col-xl-6 col-md-12 mt-3">
-                                        <div class="card table-card-right">
-                                            <div class="card-header">
-                                                <h4>{{ __('Statistics')}}</h4>
-                                                <div class="card-header-right">
-                                                    <ul class="list-unstyled card-option">
-                                                        <li><i class="ik ik-chevron-left action-toggle"></i></li>
-                                                        <li><i class="ik ik-minus minimize-card"></i></li>
-                                                        <li><i class="ik ik-x close-card"></i></li>
-                                                    </ul>
+                                        <!-- statistics -->
+                                        <div class="col-xl-6 col-md-12 mt-3">
+                                            <div class="card table-card-right">
+                                                <div class="card-header">
+                                                    <h4>{{ __('Statistics')}}</h4>
+                                                    <div class="card-header-right">
+                                                        <ul class="list-unstyled card-option">
+                                                            <li><i class="ik ik-chevron-left action-toggle"></i></li>
+                                                            <li><i class="ik ik-minus minimize-card"></i></li>
+                                                            <li><i class="ik ik-x close-card"></i></li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="card-block pb-0 mb-0">
-                                                <div class="table-responsive">
-                                                    <table class="table  without-header">
-                                                        <tbody>
-                                                            <tr style="height:12px">
-                                                                <td class="d-flex align-items-center mt-4 gap-3 mx-auto">
-                                                                    <div class="bg-primary fs-3 mr-2" style="height: 10px;width: 10px; border-radius: 50%;"></div>
-                                                                    <div class="h6">{{ format_price($enquiry_amt) }}</div>
-                                                                    </li>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="h6 mt-4">Samples issued</div>
-                                                                    {{-- <p>Rs. Sample value </p> --}}
-                                                                </td>
-                                                                <!--td class="text-right">
-                                                                    <label class="badge badge-warning">43%</label>
-                                                                </td-->
-                                                            </tr>
-                                                            <tr style="height:12px">
-                                                                <td class="d-flex align-items-center mt-3 gap-3">
-                                                                    <div class="bg-success fs-3 mr-2 " style="height: 10px;width: 10px; border-radius: 50%;"></div>
-                                                                    <div class="h6">{{ $Numbverofoffer ?? 0 }}</div>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="h6 mt-3">No. of Offers</div>
-                                                                    {{-- <p>No. of Offers </p> --}}
-                                                                </td>
-                                                                <!--td class="text-right">
-                                                                    <label class="badge badge-success">58%</label>
-                                                                </td-->
-                                                            </tr>
-                                                            <tr style="height:12px">
-                                                                <td class="d-flex align-items-center mt-3 gap-3">
-                                                                    <div class="bg-warning fs-3 mr-2 " style="height: 10px;width: 10px; border-radius: 50%;"></div>
-                                                                    <div class="h6 mt-3">{{ __('--')}}</div>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="h6 mt-3">Visitors on Display</div>
-                                                                    {{-- <p>Visitors on Display</p> --}}
-                                                                </td>
-                                                                <!--td class="text-right">
-                                                                    <label class="badge badge-danger">30%</label>
-                                                                </td-->
-                                                            </tr>
-                                                            <tr style="height:12px">
-                                                                <td class="d-flex align-items-center mt-3 gap-3 ">
-                                                                    <div class="bg-danger fs-3 mr-2" style="height: 10px;width: 10px; border-radius: 50%;"></div>
-                                                                    <div class="h6 mt-3">{{ $productcount  }}</div>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="h6 mt-3">Products on Display</div>
-                                                                    {{-- <p>Products on Display </p> --}}
-                                                                </td>
-                                                                <!--td class="text-right">
-                                                                    <label class="badge badge-danger">30%</label>
-                                                                </td-->
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                                <div class="card-block pb-0 mb-0">
+                                                    <div class="table-responsive">
+                                                        <table class="table  without-header">
+                                                            <tbody>
+                                                                <tr style="height:12px">
+                                                                    <td class="d-flex align-items-center mt-4 gap-3 mx-auto">
+                                                                        <div class="bg-primary fs-3 mr-2" style="height: 10px;width: 10px; border-radius: 50%;"></div>
+                                                                        <div class="h6">{{ format_price($enquiry_amt) }}</div>
+                                                                        </li>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="h6 mt-4">Samples issued</div>
+                                                                        {{-- <p>Rs. Sample value </p> --}}
+                                                                    </td>
+                                                                    <!--td class="text-right">
+                                                                        <label class="badge badge-warning">43%</label>
+                                                                    </td-->
+                                                                </tr>
+                                                                <tr style="height:12px">
+                                                                    <td class="d-flex align-items-center mt-3 gap-3">
+                                                                        <div class="bg-success fs-3 mr-2 " style="height: 10px;width: 10px; border-radius: 50%;"></div>
+                                                                        <div class="h6">{{ $Numbverofoffer ?? 0 }}</div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="h6 mt-3">No. of Offers</div>
+                                                                        {{-- <p>No. of Offers </p> --}}
+                                                                    </td>
+                                                                    <!--td class="text-right">
+                                                                        <label class="badge badge-success">58%</label>
+                                                                    </td-->
+                                                                </tr>
+                                                                <tr style="height:12px">
+                                                                    <td class="d-flex align-items-center mt-3 gap-3">
+                                                                        <div class="bg-warning fs-3 mr-2 " style="height: 10px;width: 10px; border-radius: 50%;"></div>
+                                                                        <div class="h6 mt-3">{{ __('--')}}</div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="h6 mt-3">Visitors on Display</div>
+                                                                        {{-- <p>Visitors on Display</p> --}}
+                                                                    </td>
+                                                                    <!--td class="text-right">
+                                                                        <label class="badge badge-danger">30%</label>
+                                                                    </td-->
+                                                                </tr>
+                                                                <tr style="height:12px">
+                                                                    <td class="d-flex align-items-center mt-3 gap-3 ">
+                                                                        <div class="bg-danger fs-3 mr-2" style="height: 10px;width: 10px; border-radius: 50%;"></div>
+                                                                        <div class="h6 mt-3">{{ $productcount  }}</div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="h6 mt-3">Products on Display</div>
+                                                                        {{-- <p>Products on Display </p> --}}
+                                                                    </td>
+                                                                    <!--td class="text-right">
+                                                                        <label class="badge badge-danger">30%</label>
+                                                                    </td-->
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+
                                     @endif
-
-
 
 
                                 </div>
@@ -897,7 +876,6 @@
 
 
                         </div><!--end teb pane-->
-                        
                         @if($Team_setting)
                             {{-- Settings Tab --}}
                             <div class="tab-pane fade bg-white shadow rounded p-4 @if(request()->has('active') && request()->get('active') == "settings") active show @endif" id="settings" role="tabpanel" aria-labelledby="order-history">
@@ -905,18 +883,20 @@
                                 <div class="border-bottom"></div>
                                 <div class="card shadow mb-3 border-0" style="width: 100%; overflow-x: auto; flex-wrap: nowrap;">
                                     <ul class="nav custom-pills mb-0 wrapper_pills" id="pills-tab" role="tablist">
-                                        <li class="nav-item" role="presentation">
+                                        {{-- <li class="nav-item" role="presentation">
                                             <button class="btn pills-btn active" id="pills-setting1-tab" data-bs-toggle="pill" data-bs-target="#pills-setting1" type="button" role="tab" aria-controls="pills-setting1" aria-selected="false">Public Access</button>
-                                        </li>
+                                        </li> --}}
                                         <li class="nav-item" role="presentation">
-                                            <button class="btn pills-btn" id="pills-settings2-tab" data-bs-toggle="pill" data-bs-target="#pills-settings2" type="button" role="tab" aria-controls="pills-settings2" aria-selected="false">Passcodes</button>
+                                            <button class="btn pills-btn active" id="pills-settings4-tab" data-bs-toggle="pill" data-bs-target="#pills-settings4" type="button" role="tab" aria-controls="pills-settings4" aria-selected="false">Currencies</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
                                             <button class="btn pills-btn" id="pills-settings3-tab" data-bs-toggle="pill" data-bs-target="#pills-settings3" type="button" role="tab" aria-controls="pills-settings3" aria-selected="false">Team</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            {{-- <button class="btn pills-btn" id="pills-settings4-tab" data-bs-toggle="pill" data-bs-target="#pills-settings4" type="button" role="tab" aria-controls="pills-settings4" aria-selected="false">T&A</button> --}}
+                                            <button class="btn pills-btn" id="pills-settings2-tab" data-bs-toggle="pill" data-bs-target="#pills-settings2" type="button" role="tab" aria-controls="pills-settings2" aria-selected="false">Passcodes</button>
                                         </li>
+                                      
+                                     
                                     </ul>
                                 </div>
 
@@ -924,8 +904,8 @@
                                     <div class="tab-content" id="pills-tabContent">
 
                                         {{-- Display & My Customers List --}}
-                                        <div class="tab-pane fade show active" id="pills-setting1" role="tabpanel" aria-labelledby="pills-setting1-tab" tabindex="0">
-                                            {{-- Display and Customer Section --}}
+
+                                        {{-- <div class="tab-pane fade show active" id="pills-setting1" role="tabpanel" aria-labelledby="pills-setting1-tab" tabindex="0">
                                             <div class="card-body">
                                                 <h5 class="">Public Access</h5>
                                                 <form action="{{ route('customer.update.settings') }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
@@ -983,7 +963,9 @@
                                                     <button type="submit" class="btn btn-success mt-3"> Update </button>
                                                 </form>
                                             </div>
-                                        </div> {{-- End Div --}}
+                                        </div>  --}}
+                                        
+                                        {{-- End Div --}}
 
                                         {{-- Passcodes Only --}}
                                         <div class="tab-pane fade" id="pills-settings2" role="tabpanel" aria-labelledby="pills-settings2-tab" tabindex="0">
@@ -1024,7 +1006,7 @@
                                                             </div>
                                                         </div> --}}
                                                     </div>
-                                                    <button type="submit" class="btn btn-success mt-3"> Update Code</button>
+                                                    <button type="submit" class="btn btn-outline-primary mt-3"> Update </button>
                                                 </form>
                                             </div>
                                         </div>
@@ -1123,12 +1105,12 @@
                                             </div>
                                         </div>
 
-                                        {{-- T&A Only --}}
-                                        {{-- <div class="tab-pane fade" id="pills-settings4" role="tabpanel" aria-labelledby="pills-settings4-tab" tabindex="0">
+                                        {{-- Currencies Only --}}
+                                        <div class="tab-pane fade show active" id="pills-settings4" role="tabpanel" aria-labelledby="pills-settings4-tab" tabindex="0">
                                             <div class="card-body">
-                                                <h5 class="">T&A</h5>
+                                                @include('frontend.customer.dashboard.section.currency-load')
                                             </div>
-                                        </div>  --}}
+                                        </div> 
 
 
                                     </div>
@@ -1139,7 +1121,6 @@
 
                             </div><!--end teb pane-->
                         @endif
-                        
                         <div class="tab-pane fade bg-white shadow rounded p-4 @if(request()->has('active') && request()->get('active') == "enquiry") active show @endif" id="enquirys" role="tabpanel" aria-labelledby="enquiry-history">
                             <div class="d-flex justify-content-between">
                                 <h5 class="mt-1">My Enquiry</h5>
@@ -1424,7 +1405,7 @@
 
                         <div class="tab-pane fade bg-white shadow rounded p-4 @if(request()->has('active') && request()->get('active') == "support-ticket") active show @endif" id="support-ticket" role="tabpanel" aria-labelledby="support-ticket">
                             <div class="d-flex justify-content-between mb-2">
-                                <h5 class="mt-1">Support Ticketssss</h5>
+                                <h5 class="mt-1">Support Ticket</h5>
                                 <a href="javascript:void(0);"  class="btn btn-primary raiseTicket">Raise a Ticket</a>
                             </div>
                            <div class="border-bottom"></div>
@@ -1851,24 +1832,24 @@
                                             <a data-subactive="my_info" class="mr-2 customer_tabs btn pills-btn @if(!request()->get('subactive')  || request()->get('subactive')  == 'my_info') active @endif" >{{ __('Account Info')}}</a>
                                         </li>
 
-                                        <li class="nav-item">
+                                        {{-- <li class="nav-item">
                                             <a data-subactive="site_detail" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'site_detail') active @endif" >{{ __('My Page')}}</a>
-                                        </li>
+                                        </li> --}}
 
                                         <li class="nav-item">
                                             <a data-subactive="business_profile" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'business_profile') active @endif">{{ __('e-KYC')}}</a>
                                         </li>
 
-                                        <li class="nav-item">
+                                        {{-- <li class="nav-item">
                                             <a data-subactive="about_me" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'about_me') active @endif" >{{ __('Brief Intro')}}</a>
-                                        </li>
+                                        </li> --}}
 
-                                        <li class="nav-item">
+                                        {{-- <li class="nav-item">
                                             <a data-subactive="my_address" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'my_address') active @endif">{{ __('My Address')}}</a>
-                                        </li>
-                                        <li class="nav-item">
+                                        </li> --}}
+                                        {{-- <li class="nav-item">
                                             <a  data-subactive="security" class="mr-2 customer_tabs btn pills-btn @if(request()->get('subactive')  == 'security') active @endif">{{ __('Security')}}</a>
-                                        </li>
+                                        </li> --}}
                                     </ul>
                                 </div>
 
@@ -2004,8 +1985,8 @@
                                     </div>
                                 </div>
 
-                                <div class="card shadow mb-3 border-0 card customer_card card-site_detail">
-                                    <div class="card-body">
+                                <div class="card shadow mb-3 border-0 card customer_card card-site_detail d-none">
+                                    <div class="card-body d-none">
                                         {{-- <h5 class="mb-3">My Page</h5> --}}
 
                                         <form action="{{ route('panel.user_shops.updateuser', $user_shop->id) }}" method="post" class="mb-3" enctype="multipart/form-data">
@@ -2018,7 +1999,7 @@
                                             @endphp
 
 
-                                            <div class="row mb-3">
+                                            <div class="row mb-3 d-none">
                                                 <div class="col-md-6 col-12">
                                                     <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                                                         <label for="name" class="control-label">Display Name</label>
@@ -2065,7 +2046,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row mb-2">
+                                            <div class="row mb-2 d-none">
                                                 {{-- <div class="h5">Display Intro</div> --}}
 
                                                 <div class="col-md-6 col-12 mt-lg-0 mt-md-0 mt-">
@@ -2387,11 +2368,11 @@
                                     </div>
                                 </div>
 
-                                <div class="card shadow mb-3 border-0 card-my_address customer_card">
+                                {{-- <div class="card shadow mb-3 border-0 card-my_address customer_card">
                                     <div class="card-body">
-                                        <div class="d-flex justify-content-between mb-3">
+                                        <div class="d-flex justify-content-between mb-3"> --}}
                                             {{-- <h5 class="mt-1">Billing Addresses</h5> --}}
-                                            <a href="javascript:void(0);" class="btn btn-primary addAddress" data-id="{{ auth()->id() }}">Add Address</a>
+                                            {{-- <a href="javascript:void(0);" class="btn btn-primary addAddress" data-id="{{ auth()->id() }}">Add Address</a>
                                         </div>
                                         @if ($addresses->count() > 0)
                                             <div class="row">
@@ -2433,7 +2414,7 @@
                                                 <h6 class="text-muted">No Address Yet!</h6>
                                             </div>
                                         @endif
-                                        <div class="border-bottom mt-3"></div>
+                                        <div class="border-bottom mt-3"></div> --}}
 
                                         {{-- <h5 class="mt-2">Site Addresses</h5>
                                         @php
@@ -2515,14 +2496,14 @@
                                                 <button class="btn btn-primary" type="submit">Update</button>
                                             </div>
                                             <div class="col-12"><hr></div>
-                                        </form>
-                                        --}}
+                                        </form>--}}
+                                        
 
 
-                                    </div>
-                                </div>
+                                    {{-- </div>
+                                </div> --}}
 
-                                <div class="card shadow mb-3 border-0 card-security customer_card">
+                                {{-- <div class="card shadow mb-3 border-0 card-security customer_card">
                                     <div class="card-body">
                                         <h5 class="">Change Password</h5>
                                         <form action="{{ route('panel.update-password', $user->id) }}" method="post">
@@ -2564,7 +2545,7 @@
                                             </div><!--end row-->
                                         </form>
                                     </div>
-                                </div>
+                                </div> --}}
 
 
                             </div><!--end teb pane-->
@@ -2699,6 +2680,8 @@
 @include('frontend.customer.dashboard.includes.modal.send-catalogue')
 @include('frontend.customer.dashboard.includes.modal.survey')
 @include('frontend.customer.dashboard.includes.modal.createTeam')
+@include('frontend.customer.dashboard.includes.modal.add-currencies')
+@include('frontend.customer.dashboard.includes.modal.update-currency')
 @include('backend.seller.modal.catalogue-request')
 @include('panel.user_shops.include.add-numbers')
 
@@ -2732,6 +2715,15 @@
     </script>
 @endif
 
+
+@if (request()->has('upload_gst') && request()->get('upload_gst') == 'true')
+    <script>
+        $(document).ready(function () {
+            $('#ekycVerification').modal('show');
+        });
+    </script>
+@endif
+
 <script>
 
 
@@ -2739,12 +2731,31 @@
         $('.send-request').click(function(){
             $('#sendForCatalogue').modal('show');
         })
+
+        $(".updatecurrencybtn").click(function (e) { 
+            e.preventDefault();
+
+            let crrname = $(this).data('crrname');
+            let crrid = $(this).data('crrid');
+            let crrvalue = $(this).data('crrvalue');
+            
+            $('#currencyname').val(crrname);
+            $('#crrid').val(crrid);
+
+            $('#currencyvalue').val(crrvalue);
+
+
+            $("#updatecurrency").modal('show')
+        });
+
+        $("#addcurrencyopen").click(function (e) { 
+            e.preventDefault();
+            $('#addcurrency').modal('show');
+        });
         $("#addmember").click(function (e) {
             e.preventDefault();
             $("#addTeam").modal("show");
         });
-
-
 
         // $(".openmicrsotesettingmodal").click(function (e) { 
         //     e.preventDefault();
@@ -3320,6 +3331,15 @@
             $('#industry_id').select2();
             $(".select2insidemodal").select2({
                 dropdownParent: $("#addAddressModal")
+            });
+
+            
+            $(".currselect2insidemodal").select2({
+                dropdownParent: $("#addcurrency")
+            });
+
+            $(".curreditselect2insidemodal").select2({
+                dropdownParent: $("#updatecurrency")
             });
 
             $(".select2insidemodaledit").select2({

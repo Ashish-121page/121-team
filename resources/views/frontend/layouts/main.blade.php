@@ -17,7 +17,7 @@
 			@elseif(isset($customer))
 				@include('frontend.customer.dashboard.includes.header')
 			@elseif(isset($microsite))		
-				@include('frontend.micro-site.include.header')	
+				{{-- @include('frontend.micro-site.include.header')	 --}}
 			@elseif(isset($proposal))		
 				@include('frontend.micro-site.include.proposal.header')	
 			@endif
@@ -79,7 +79,6 @@
 						},
 						success: function (response) {
 							window.location.reload(true);
-							console.log(response);
 						}
 					});
 				});

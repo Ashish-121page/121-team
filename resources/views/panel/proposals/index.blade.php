@@ -1,11 +1,21 @@
 @extends('backend.layouts.main') 
-@section('title', 'Proposals')
+@section('title', 'Manage Offers')
 @section('content')
 <style>
     .remove-ik-class{
             -webkit-box-shadow: unset !important;
             box-shadow: unset !important;
         }
+
+    .card-body1{
+            -ms-flex:1 1 auto;
+            flex:1 1 auto;
+            padding:1.25rem;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+       
 </style>
 @php
 /**
@@ -20,7 +30,7 @@
  * @link        https://121.page/
  */
     $breadcrumb_arr = [
-        ['name'=>'Proposals', 'url'=> "javascript:void(0);", 'class' => 'active']
+        ['name'=>'Offers', 'url'=> "javascript:void(0);", 'class' => 'active']
     ]
     @endphp
     <!-- push external head elements to head -->
@@ -28,13 +38,13 @@
     @endpush
 
     <div class="container-fluid">
-    	<div class="page-header">
+    	<div class="page-header d-none">
             <div class="row align-items-end">
                 <div class="col-lg-8">
                     <div class="page-header-title">
                         <i class="ik ik-mail bg-blue"></i>
                         <div class="d-flex">
-                            <h5>Proposals</h5>
+                            <h1>Offers</h1>
                             @if(AuthRole() == 'User')
                                 <span style="margin-top: -10px;">
                                     <i class="ik ik-info fa-2x text-dark ml-2 remove-ik-class" title="help Text"></i>
@@ -57,10 +67,10 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between">
-                            <h3>Proposals</h3>
+                            <h1>Offers</h1>
                             <div class="d-flex justicy-content-right">
                                 @php
-                                    $slug = App\Models\Usershop::where('user_id',auth()->user()->id)->first()->slug;
+                                    $slug = App\Models\UserShop::where('user_id',auth()->user()->id)->first()->slug;
                                 @endphp
                                 @if(AuthRole() != 'User')
                                     <div class="form-group mb-0 mr-2">
@@ -73,122 +83,113 @@
                                     </div>
                                     <button type="submit" class="btn btn-icon btn-sm mr-2 btn-outline-warning" title="Filter"><i class="fa fa-filter" aria-hidden="true"></i></button>
                                     <a href="javascript:void(0);" id="reset" data-url="{{ route('panel.proposals.index') }}" class="btn btn-icon btn-sm btn-outline-danger mr-2" title="Reset"><i class="fa fa-redo" aria-hidden="true"></i></a>
-                               @else
-                                    <a href="{{ route('panel.proposals.create') }}" class="btn btn-icon btn-sm btn-outline-primary" title="Add New Proposal"><i class="fa fa-plus" aria-hidden="true"></i></a>
-
-                                    <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-icon btn-sm btn-outline-danger mx-2 microproposal" title="Add New Proposal With Microsite" target="_blank"><i class="fa fa-minus" aria-hidden="true"></i></a>
-                               @endif  
+                                @else
+                                {{-- // else --}}
+                                @endif  
                             </div>
                         </div>
-                        @if(AuthRole() != 'User')
-                            <div id="ajax-container">
-                                @include('panel.proposals.load')
+                        {{--` Quick action menu --}}
+                <div class="row d-none" id="quickaction">
+                    <div class="col-12 d-flex justify-content-center" style="margin-left:50px">
+                        {{-- @include('panel.user_shop_items.includes.QuickActionMenu') --}}
+                       
+
+                            {{-- For Category --}}
+                                                                                                            
+                                                                                                                                   
+                                      
+                            <div class="top-menu d-flex align-items-center " id="product-action">
+                                {{-- <button class="btn btn-sm btn-outline-primary mx-1" id="export-categrory">Export</button> --}}
+                                {{-- <button class="btn btn-sm btn-outline-primary mx-1" id="delcat_dummy">Delete</button> --}}
+                            
+                                <button class="btn btn-sm btn-outline-primary mx-1" id="deleteproposal">
+                                    Delete
+                                </button>
+                                {{-- <a href="{{ route('panel.constant_management.category.delete', $item->id)  }}" title="Delete Category" class="btn btn-sm delete-item dropdown-item">Delete</a> --}}
                             </div>
-                        @else
-                            <div class="col-md-12">
-                                <div class="card-body bg-white">
-                                    <div class="row mt-3">
-                                        @if ($proposals->count() > 0)
-                                            @foreach ($proposals as $proposal)
-                                                @php
-                                                    $customer_detail = json_decode($proposal->customer_details);
-                                                    $customer_name = $customer_detail->customer_name ?? '--';
-                                                    $customer_mob_no = $customer_detail->customer_mob_no ?? '--';
-                                                    $direct = $proposal->status == 0 ? "?direct=1" : "";
-                                                @endphp
-                                                <div class="col-md-4">
-                                                    {{-- @dump($proposal) --}}
-                                                    <div class="card">
-                                                        <div class="card-body text-center" style="padding: 8px 10px;">
-                                                            <div class="profile-pic mb-20">
-                                                                <div class="row">
-                                                                    <div class="col-3 pr-0">
-                                                                        <img class="supplier-image mt-1" src="{{ $proposal->client_logo != null  ?  asset($proposal->client_logo) : asset('backend/default/default-avatar.png') }}"
-                                                                        style="object-fit: cover; height:60px;width:60px;" alt="" class="rounded mt-2">
-                                                                    </div>
-                                                                    
-                                                                    <div class="col-6 pl-15 pt-1 text-left">
-                                                                        <h6 class="mb-0">
-                                                                            <a href="{{ route('panel.proposals.edit', $proposal->id).$direct }}"> <h6 class="mb-0">#PROID{{ $proposal->id }} </h6></a>
-                                                                            
-                                                                            @php
-                                                                                $user_key = encrypt(auth()->id());
-                                                                            @endphp
-                                                                            <a href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank"> 
-                                                                                <h6 class="mb-0 text-danger my-2">#MiCRO{{ $proposal->id }}</h6>
-                                                                            </a>
-                                                                            
-                                                                        </h6>
-                                                                        <span class="ml-2 mb-1 text-{{ getProposalStatus($proposal->status)['color']}}" style="line-height: 15px;">{{ getProposalStatus($proposal->status)['name']}}</span><br>
-                                                                        <i class="ik ik-user"></i> {{ $customer_name ?? 'Unknown' }}  <br><i class="ik ik-phone"></i> <span>{{ $customer_mob_no ?? "N/A" }}</span>
-                                                                        <br>
-                                                                        <i title="incoming request" class="ik pr-1  ik-corner-up-left"></i>Items: <a href="{{ route('panel.proposals.edit', [$proposal->id,'type' => 'picked']) }}"
-                                                                            class="btn-link" title="Edit Proposal"> {{ $proposal->items_count }}</a><br>
-                                                                                <span>
-                                                                                <i class="ik ik-clock"></i> {{ getFormattedDate($proposal->created_at) }}
-                                                                                </span>
-                                                                    </div>
-                                                                    <div class="col-3">
-                                                                       
-                                                                        <button style="background: transparent;margin-left: -10px;" class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="ik ik-more-vertical pl-1"></i></button>
-                                                                        <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
-                                                                            @if($proposal->status == 1)
-                                                                                <a href="{{ route('panel.proposals.edit', $proposal->id).$direct }}"
-                                                                                    title="Show Proposal" class="dropdown-item">
-                                                                                    <li class=" p-0">Show</li>
-                                                                                </a>
-                                                                            @else  
-                                                                                <a href="{{ route('panel.proposals.destroy', $proposal->id) }}"
-                                                                                    title="Delete Proposal" class="dropdown-item  delete-item">
-                                                                                    <li class=" p-0">Delete</li>
-                                                                                </a>
-                                                                            @endif  
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        @else
-                                            <tr>
-                                                <td class="" colspan="8"><span class="mx-auto">
-                                                    No Proposals yet!</span>
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between">
-                                <div class="pagination">
-                                    {{ $proposals->appends(request()->except('page'))->links() }}
-                                </div>
-                                <div>
-                                    @if ($proposals->lastPage() > 1)
-                                        <label for="">Jump To:
-                                            <select name="page" style="width:60px;height:30px;border: 1px solid #eaeaea;" id="jumpTo">
-                                                @for ($i = 1; $i <= $proposals->lastPage(); $i++)
-                                                    <option value="{{ $i }}" {{ $proposals->currentPage() == $i ? 'selected' : '' }}>
-                                                        {{ $i }}</option>
-                                                @endfor
-                                            </select>
-                                        </label>
-                                    @endif
-                                </div>
-                            </div>
-                        @endif
+                            
+                        {{-- @endif --}}
                     </div>
                 </div>
+                        {{-- @if(AuthRole() != 'User')
+                            <div id="ajax-container">
+                                @include('panel.proposals.load')
+
+                            </div>
+                        @else --}}
+                        <div>
+
+                        </div>
+                        @if (request()->has('view') && request()->get('view') == 'listview')
+                            @include('panel.proposals.pages.table')
+                        @elseif(request()->has('view') && request()->get('view') == 'gridview')
+                            @include('panel.proposals.pages.grid')                    
+                        @else
+                            @include('panel.proposals.pages.table')
+                        @endif
+
+                            {{-- @include('panel.proposals.pages.table') --}}
+                            {{-- @include('panel.proposals.pages.oldView') --}}
+                            {{-- @include('panel.proposals.pages.grid') --}}
+
+                        {{-- @endif --}}
+                    </div>
+                </div>
+                {{--` Paste table style--}}
+                {{-- <div class="row">
+                    <div class="col-lg-6 col-md-12  col-12 my-2">
+                        <div class="one" style="display: flex; align-items: center; justify-content: flex-start;">
+                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}"
+                                class="btn btn-outline-primary mx-1 
+                                @if (!request()->has('products') && !request()->has('assetsafe') && !request()->has('properties') && !request()->has('productsgrid')) active @endif
+                                ">
+                                Categories
+                            </a>
+                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&productsgrid=true"
+                                class="btn btn-outline-primary mx-1 @if (request()->has('products') OR request()->has('productsgrid')) active @endif">
+                                Products
+                            </a>
+                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&properties=true"
+                                class="btn btn-outline-primary mx-1 @if (request()->has('properties')) active @endif">
+                                Properties
+                            </a>
+                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&assetsafe=true"
+                                class="btn btn-outline-primary mx-1 @if (request()->has('assetsafe')) active @endif">
+                                Assets Safe
+                            </a>
+                        </div>
+                    </div> --}}
+                
+                    {{--` This Menu is Always Visible --}}
+                    {{-- <div class="col-lg-6 col-md-12 col-12 my-2">        
+                        <div class="two" style="display: flex; align-items: center; justify-content: flex-end;">
+                            @include('panel.user_shop_items.includes.action_menu')
+                        </div>
+                    </div> --}}
+                {{-- </div> --}}
+                
+            
             </div>
         <form>
+            <form action="{{ route('panel.proposals.index') }}" method="GET">
+                <input type="hidden" name="Sent" id="status_sent">
+                <input type="hidden"  id="buyer" name="Buyer_name">
+
+                <button type="submit" class="d-none" id="jhgfdsare"></button>
+            
+            </form>
     </div>
     <!-- push external js -->
     @push('script')
     <script src="{{ asset('backend/js/index-page.js') }}"></script>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
-        <script>
+    <script src="{{ asset('backend/plugins/jquery.repeater/jquery.repeater.min.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+        <script src="{{asset('backend/plugins/mohithg-switchery/dist/switchery.min.js') }}"></script>
+        <script src="{{asset('backend/js/form-advanced.js') }}"></script>
+        <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
+    <script>
            
         function html_table_to_excel(type)
         {
@@ -217,34 +218,43 @@
             window.history.pushState("", "", url);
             $('#TableForm').trigger("reset");
         });
-        </script>
+    </script>
 
 
-        <script>
-              $(document).on('click','.microproposal',function(e){
+    <script>
+        $(document).ready(function () {
+            $("#makeoffer").click(function (e) { 
                 e.preventDefault();
                 var url = $(this).attr('href');
-                var msg = "<b>Step 1: </b>Set Approx Margin <input type='text' id='margin' class=' w-25' placeholder='Ex: 10'> % <div class='mt-1' > <b>Step 2: </b>Search and Shortlist</div><div class='mt-1' ><b>Step 3: </b>Review % Markup one-by-one</div><div class='mt-1' ><b>Step 4: </b>Send or Share</div>";
+                // var msg = "<input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Name'> <br> <input type='text' id='offeremail' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Email (Optional)'> <br> <input type='number' maxlength='10' id='offerphone' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Phone (Optional)'>";
+                var msg = "<input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Buyer Name'> <br> <input type='text' id='alias' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Alias (optional)'> <br> <input type='text' id='offeremail' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Email (Optional)'> <br> <input type='number' maxlength='10' id='offerphone' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Phone (Optional)'>";
 
                 $.confirm({
                     draggable: true,
-                    title: 'Create New Proposal',
+                    title: 'Offer for',
                     content: msg,
                     type: 'blue',
                     typeAnimated: true,
                     buttons: {
                         tryAgain: {
-                            text: 'Confirm',
-                            btnClass: 'btn-blue',
+                            text: 'Next',
+                            btnClass: 'btn-primary',
 
                             action: function(){
                                     let margin = $('#margin').val();
+                                    let offeremail = $('#offeremail').val();
+                                    let offerphone = $('#offerphone').val();
+
+                                    let alias = $('#alias').val();
+                                    let personname = $('#offerpersonname').val();
+
                                     if (!margin) {
                                         $.alert('provide a valid name');
                                         return false;
                                     }
-                                    url = url+"&margin="+margin;
-                                    window.location.href = url;                             
+                                    url = url+"&offerfor="+margin+"&offerphone="+offerphone+"&offeremail="+offeremail+"&offeralias="+alias+"&offerpersonname="+personname;
+                                    window.location.href = url;               
+                                    // console.log(url);
                             }
                         },
                         close: function () {
@@ -252,7 +262,213 @@
                     }
                 });
             });
+
+
             
-        </script>
+ 
+            function copyTextToClipboard(text) {
+                        if (!navigator.clipboard) {
+                            fallbackCopyTextToClipboard(text);
+                            return;
+                        }
+                    
+                        navigator.clipboard.writeText(text).then(function()
+                    
+                    {
+                            $.toast({
+                                heading: 'SUCCESS',
+                                text: "Offer link copied.",
+                                showHideTransition: 'slide',
+                                icon: 'success',
+                                loaderBg: '#f96868',
+                                position: 'top-right'
+                            });
+                        }, function(err) {
+                            console.error('Failed to copy text to clipboard:', err);
+                        });
+                    }
+                    
+                    $(".copybtn").click(function(e) {
+                        e.preventDefault();
+                        var link = $(this).val();
+                        copyTextToClipboard(link);
+                    });
+
+            // function copyTextToClipboard(text) {
+            //         if (!navigator.clipboard) {
+            //             fallbackCopyTextToClipboard(text);
+            //             return;
+            //         }
+            //         navigator.clipboard.writeText(text).then(function() {
+            //         }, function(err) {
+            //         });
+            //         $.toast({
+            //             heading: 'SUCCESS',
+            //             text: "Offer link copied.",
+            //             showHideTransition: 'slide',
+            //             icon: 'success',
+            //             loaderBg: '#f96868',
+            //             position: 'top-right'
+            //         });
+            // }
+
+            // $(".copybtn").click(function (e) {
+            //     e.preventDefault();
+            //     var link = $(this).val();
+            //     copyTextToClipboard(link);
+            
+            // });
+
+
+            
+        });
+        
+    </script>
+
+<script>
+    $(document).ready(function () {
+        // product-action
+        function myfunc() {
+            if ($(".input-check:checked").length > 0) {
+                // any one is checked
+                $("#quickaction").removeClass('d-none');
+                getValues()
+            } else {
+                $("#quickaction").addClass('d-none');
+            }
+        }
+
+        function getValues(){
+            let selected = []
+            let record = document.querySelectorAll(".input-check:checked");
+            record.forEach(element => {
+                selected.push(element.dataset.record);
+            });
+            $(".selectedbtn").html(selected.length+' selected')
+            return selected;
+        }
+
+        $("#printQrbtn").click(function (e) { 
+            e.preventDefault();
+            $("#needqr").val(getValues());
+            $("#qrform").submit()
+            
+        });
+
+
+        $("#exportproductbtn").click(function (){
+            $("#products_export").val(getValues());
+            $("#products_exportform").submit();
+        })
+
+
+        $(".input-check").change(function (e) { 
+            myfunc()
+        });
+
+
+        $("#checkallinp").change(function (e) { 
+            $('.input-check').click();                
+        });
+
+        $("#export-categrory").click(function (e) { 
+            e.preventDefault();
+            
+            let forminput = $('#choose_cat_ids');
+            let form = $('#export_category_product');
+            let arr = [];
+
+            if ($(".input-check:checked").length > 0) {
+                $.each($(".input-check:checked"), function (indexInArray, valueOfElement) { 
+                    arr.push(valueOfElement.value);  
+                });
+                console.log(arr);
+                forminput.val(arr)
+                form.submit()
+            }
+            
+
+        });
+        
+        
+
+        $("#deletecatbtn").click(function (e) { 
+            e.preventDefault();
+            let forminput = $('#delete_ids');
+            let form = $('#categoryDeleteForm');
+            let arr = [];
+
+            if ($(".input-check:checked").length > 0) {
+                $.each($(".input-check:checked"), function (indexInArray, valueOfElement) { 
+                    arr.push(valueOfElement.value);  
+                });
+                console.log(arr);
+                forminput.val(arr)
+                form.submit()
+            }
+        });
+
+        $("#deleteproposal").click(function (e) { 
+            e.preventDefault();
+            let forminput = $('#delete_ids');
+            let form = $('#ProposalDeleteForm');
+            let arr = [];
+            
+            if ($(".input-check:checked").length > 0) {
+                $.each($(".input-check:checked"), function (indexInArray, valueOfElement) { 
+                    arr.push(valueOfElement.value);  
+                });
+                console.log(arr);
+                forminput.val(arr)
+                form.submit()
+            }
+        });
+
+        
+        $('#status_check').change(function (e) { 
+            let valsdue = $(this).val();
+            $("#status_sent").val(valsdue);
+            $("#jhgfdsare").click();
+            location.reload()
+            
+        });
+
+        $('#search_buyer').on('input', function () {
+            let val2 = $(this).val();
+            $("#buyer").val(val2);
+            $("#jhgfdsare").click();
+            location.reload()            
+            
+            });
+
+            // function copyTextToClipboard(text) {
+            //         if (!navigator.clipboard) {
+            //             fallbackCopyTextToClipboard(text);
+            //             return;
+            //         }
+            //         navigator.clipboard.writeText(text).then(function() {
+            //         }, function(err) {
+            //         });
+            //         $.toast({
+            //             heading: 'SUCCESS',
+            //             text: "Offer link copied.",
+            //             showHideTransition: 'slide',
+            //             icon: 'success',
+            //             loaderBg: '#f96868',
+            //             position: 'top-right'
+            //         });
+            // }
+
+            // $(".copybtn").click(function (e) {
+            //     e.preventDefault();
+            //     var link = $(this).val();
+            //     copyTextToClipboard(link);
+            // });
+
+                               
+                
+        
+    });
+</script>
     @endpush
 @endsection

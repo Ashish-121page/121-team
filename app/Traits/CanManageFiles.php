@@ -56,9 +56,7 @@ trait CanManageFiles
         $this->destination = storage_path() . '/app/public/' . $this->dir;
         $this->uploadedFileName = $this->saveFileName;
         $this->uploadedFilePath = 'storage/' . $this->dir . $this->saveFileName;
-
         $this->file->move($this->destination, $this->saveFileName);
-
         return $this;
     }
 

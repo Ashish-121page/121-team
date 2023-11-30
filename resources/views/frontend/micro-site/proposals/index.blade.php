@@ -353,6 +353,15 @@
             padding: 0 0 20px 0;
         }
 
+        .modal-content custom-spacing{
+            overflow-y: hidden!important;
+            overflow-x: hidden!important
+        }
+        /* filter alignment */
+        .accordion-body {
+            padding: 0 0 !important
+        }
+
 </style>
 
 <section class="section p-0">
@@ -361,8 +370,18 @@
     {{-- Over The Layer Content --}}
     @if ( isset($proposalid) && $proposalid != -1)
         <div class="ydfgwej">
-            <button class="btn btn-primary btn-sm" type="button" id="select-all">Select All</button>
-            <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-primary btn-sm" target="">Next</a>
+            <button class="btn btn-outline-primary" type="button" id="select-all">
+                <span class="d-none d-md-none d-sm-none">Select All</span>
+                <span class="d-block d-md-block d-sm-block">
+                    <i class="fas fa-check-double"></i>
+                </span>
+            </button>
+            <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-outline-primary" target="">
+                <span class="d-none d-md-none d-sm-none">Next</span>
+                <span class="d-block d-md-block d-sm-block">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+            </a>
         </div>
     @endif
     
@@ -375,43 +394,42 @@
             <div class="col-12 col-md-12 bdhxzc" >
                 <div class="row">
                     <div class="col-12 d-flex justify-content-between align-items-center">
-                        <div class="">
-                            @if ( isset($proposalid) && $proposalid != -1)
-                                <button class="btn btn-outline-secondary" id="openqr" type="button">Scan QR Codes</button>
-
-                            @else
-                                @if ($manage_offer_guest || $manage_offer_verified)
-                                    @if (auth()->id() == 155)
-                                        @if ($manage_offer_guest)
+                            <div class="col-3 d-flex justify-content-start ">
+                                @if ( isset($proposalid) && $proposalid != -1)
+                                    <button class="btn btn-outline-secondary" id="openqr" type="button">Scan QR Codes</button>
+    
+                                @else
+                                    @if ($manage_offer_guest || $manage_offer_verified)
+                                        @if (auth()->id() == 155)
+                                            @if ($manage_offer_guest)
+                                                <a class="btn mt-2 d-block btn-outline-primary w-auto float-end makeoffer" href="{{ route('pages.proposal.create') }}?shop={{$user_shop->id}}" style="width: max-content !important;">
+                                                    Make Offer
+                                                </a>
+                                            @endif
+                                        @else
                                             <a class="btn mt-2 d-block btn-outline-primary w-auto float-end makeoffer" href="{{ route('pages.proposal.create') }}?shop={{$user_shop->id}}" style="width: max-content !important;">
                                                 Make Offer
                                             </a>
                                         @endif
-                                    @else
-                                        <a class="btn mt-2 d-block btn-outline-primary w-auto float-end makeoffer" href="{{ route('pages.proposal.create') }}?shop={{$user_shop->id}}" style="width: max-content !important;">
-                                            Make Offer
-                                        </a>
                                     @endif
                                 @endif
-                            @endif
-                                
-                        </div>
+                                    
+                            </div>
+    
+                            <div class="col-9 d-flex justify-content-start">
+                                <div class="input-group border rounded">
+                                    <input type="text" id="quicktitle" value="{{ request()->get('title') }}" name="title" class="form-control border-0" placeholder="Quick Search : Name or Model Code">
+                                    <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit"><i class="uil uil-search"></i></button>
+                                </div>
+                            </div>
 
-
-
-                        <div class="input-group border rounded w-50">
-                            <input type="text" id="quicktitle" value="{{ request()->get('title') }}" name="title" class="form-control border-0"  placeholder="Quick Search : Name or Model Code">
-                            <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit"><i class="uil uil-search"></i></button>
-                        </div>
-
-                        
-                        @if (isset($proposalid) && $proposalid != -1 )
+                        {{-- @if (isset($proposalid) && $proposalid != -1 )
                             <div class="">
                                 <button type="button" class="btn btn-outline-primary">
                                     Collection <span>4</span>
                                 </button>
                             </div>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
                 <div class="row my-2">
@@ -453,22 +471,6 @@
                         @endforeach
 
                     </div>
-
-                    @if (count($currency_record) != 0)
-                        <div class="col-md-4 col-12 mt-sm-0 pt-2 pt-sm-0 mb-3">
-                            <div class="container" id="selector">
-                                <select class="form-control select_box" id="changeCurrency" name="Currency">
-                                    <option aria-readonly="true" disabled>Change Currency</option>
-                                    @foreach ($currency_record as $item)
-                                    <option value="{{ $item->id }}" @if ($item->id == (Session::get('Currency_id') ?? 'INR')) selected @endif > {{ $item->currency }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    @endif
-                        
-
-
                 </div>
             </div>
             {{-- Fixed NAvigation Bar End --}}
@@ -493,8 +495,8 @@
 
                             <h6 class="widget-title mt-2">Price</h6>
                                 <div class="mx-2 d-flex">
-                                    <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" ₹ Min">
-                                    <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder="₹ Max">
+                                    <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" Min  ">
+                                    <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder=" Max ">
                                     <button class="price_go_btn ms-2" type="submit">GO</button>
                                 </div>
                             
@@ -510,7 +512,7 @@
                                         </h2>
                                         <div id="collapscatrgory" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                                         <div class="accordion-body">
-                                <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
+                                <ul class="list-unstyled mt-1 mb-0 custom-scrollbar" style="padding-left:1rem">
                                     <li>
                                         <h5 class="form-check">
                                             <input class="form-check-input" type="radio" @if(!request()->has('category_id') ||request()->get('category_id') == null ) checked @endif  value="" id="categoryAll" name="category_id">
@@ -524,9 +526,9 @@
                                             $sub_category = App\Models\Category::whereId(request()->get('sub_category_id'))->first();
                                             @endphp
                                             <li>
-                                                <h5 class="form-check">
+                                                <h5 class="form-check" style="display: flex;align-items: center;gap: 6px;">
                                                     <input class="form-check-input filterCategory" type="radio" value="{{ $item->id }}" id="category{{ $item->id }}" name="category_id" @if((request()->has('category_id') && request()->get('category_id') ==  $item->id )) checked @endif>
-                                                    <label for="category{{ $item->id }}" class="form-check-label fltr-lbl   ">
+                                                    <label for="category{{ $item->id }}" class="form-check-label fltr-lbl mt-2">
                                                         {{$item->name}} 
                                                         {{--  Category Count --}}
                                                         <span style="font-size: 11px">({{ getProductCountViaCategoryId($item->id,$user_shop->user_id) }})</span>
@@ -536,12 +538,12 @@
                                             @if(request()->has('category_id') && request()->get('category_id') ==  $item->id )
                                                 @php
                                                     $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
-                                                @endphp 
-                                                <div style="padding-left: 25px">
+                                                @endphp                                                 
+                                                    <div style="padding-left: 25px; display: flex;align-items: center;gap: 6px;">
                                                     <ul class="list-unstyled custom-scrollbar">
                                                         @foreach ($subcategories as $subcategorie)
                                                             <li>        
-                                                                <h6 class="form-check">
+                                                                <h5 class="form-check">
                                                                     <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
                                                                     <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
                                                                         {{$subcategorie->name}}
@@ -550,7 +552,7 @@
                                                                             ({{ getProductCountViaSubCategoryId($subcategorie->id,$user_shop->user_id) }})
                                                                         </span>
                                                                     </label>
-                                                                </h6>
+                                                                </h5>
                                                             </li>
                                                         @endforeach
                                                     </ul>
@@ -643,7 +645,10 @@
                             {{-- Applying scoobooo layout in color and other attri --}}
                                 @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
                                     @foreach ($additional_attribute as $key => $item)
-                                        @if (getAttruibuteById($item)->visibility == 1)
+                                        @php
+                                            $testchk = getAttruibuteById($item);
+                                        @endphp
+                                        @if ( isset($testchk) && getAttruibuteById($item)->visibility == 1)
                                             <div class="container mt-3">
                                                 <!-- Collapsible Button -->
                                                 <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#AttributeList_{{$key}}" aria-expanded="false" aria-controls="AttributeList_{{$key}}">
@@ -679,37 +684,48 @@
                                     @endforeach
                                 @endif
                             {{-- Applying scoobooo layout in color and other attri End --}}
-                        {{-- Exclusive Products --}}
+                            {{-- Exclusive Products --}}
 
-                        {{-- <h6 class="widget px-2">Exclusive Products</h6> --}}
-                        <div class="mx-2 d-flex">
-                            <input type="checkbox" class="form-check-input visually-hidden" name="exclusive" id="exclusive" @if ($request->get('exclusive')) checked @endif>
-                            <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
-                            @if ($request->get('exclusive') == 'on')
-                                <div class="text-success" style="font-weight: bolder">
-                                    <i class="uil-check-circle" style="font-size: 20px"></i>
-                                </div>
-                            @else
-                                {{-- <div class="text-danger" style="font-weight: bolder"> OFF </div> --}}
-                            @endif
+                            {{-- <h6 class="widget px-2">Exclusive Products</h6> --}}
+                            <div class="mx-2 d-flex">
+                                <input type="checkbox" class="form-check-input visually-hidden" name="exclusive" id="exclusive" @if ($request->get('exclusive')) checked @endif>
+                                <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
+                                @if ($request->get('exclusive') == 'on')
+                                    <div class="text-success" style="font-weight: bolder">
+                                        <i class="uil-check-circle" style="font-size: 20px"></i>
+                                    </div>
+                                @else
+                                    {{-- <div class="text-danger" style="font-weight: bolder"> OFF </div> --}}
+                                @endif
+                            </div>
+
+                            <div class="mx-2 d-flex my-3">
+                                <input type="checkbox" class="form-check-input " name="pinned" id="pinned" @if ($request->get('pinned')) checked @endif>
+                                <label class="form-check-label mx-2" id="pinnedbtn" for="pinned">Pinned Items Only</label>
+                                @if ($request->get('pinned') == 'on')
+                                    <div class="text-success" style="font-weight: bolder">
+                                        <i class="uil-check-circle" style="font-size: 20px"></i>
+                                    </div>
+                                @else
+                                    {{-- <div class="text-danger" style="font-weight: bolder"> OFF </div> --}}
+                                @endif
+                            </div>
+
+                            {{-- Exclusive Products --}}
+
+
 
                         </div>
-
-                        {{-- Exclusive Products --}}
-
-
-
-                        </div>
-                        <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn">Filter</button>
-                        @if (isset($proposalid) && $proposalid != -1 )
-                            <a class="btn mt-2 d-block btn-primary w-100" href="{{ route('pages.proposal.edit',['proposal' => $proposalid,'user_key' => $user_key]) }}?margin=0" id="resetButton">Reset</a>
-                        @else
-                            <a class="btn mt-2 d-block btn-primary w-100" href="{{route('pages.shop-index')}}" id="resetButton">Reset</a>
-                        @endif
-
-
                     </form>
                 </div>
+
+                <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn" form="searchform">Filter</button>
+                @if (isset($proposalid) && $proposalid != -1 )
+                    <a class="btn mt-2 d-block btn-primary w-100" href="{{ route('pages.proposal.edit',['proposal' => $proposalid,'user_key' => $user_key]) }}?margin=0" id="resetButton">Reset</a>
+                @else
+                    <a class="btn mt-2 d-block btn-primary w-100" href="{{route('pages.shop-index')}}" id="resetButton">Reset</a>
+                @endif
+
                 
             </div><!--end col-->
 
@@ -718,15 +734,21 @@
             <div class="col-lg-9 col-md-8 col-12 pt-2 mt-sm-0 pt-sm-0">
 
                     <div class="row align-items-center">
-                        <div class="col-4 col-md-4">
-                            <div class="m-2 d-flex gap-2">
-                                <button id="gridview" class="btn btn-outline-primary"><i class="fas fa-th-large"></i></button>
-                                <button id="card" class="btn btn-outline-primary active"> <i class="fas fa-list"></i></button>
+
+                        @if (count($currency_record) != 0)
+                            <div class="col-md-4 col-6 mt-sm-0 pt-2 pt-sm-0 mb-3">
+                                <div class="container" id="selector">
+                                    <select class="form-control select_box" id="changeCurrency" name="Currency">
+                                        <option aria-readonly="true" disabled>Change Currency</option>
+                                        @foreach ($currency_record as $item)
+                                        <option value="{{ $item->id }}" @if ($item->id == (Session::get('Currency_id') ?? 'INR')) selected @endif > {{ $item->currency }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                
+                        @endif
                         
-                        <div class="col-8 col-md-8">
+                        <div class="col-12 col-md-4">
                             <div class="container" id="selector">
                                 <select class="form-control input-lg select_box" id="productSort" name="sort">
                                     <option @if(request()->get('sort') == 2) selected @endif value="2">Price: low to high</option>
@@ -734,6 +756,14 @@
                                     <option @if(request()->get('sort') == 3) selected @endif value="3">Price: high to low</option>
                                 </select>
                                 <i class="fa fa-chevron-down"></i>
+                            </div>
+                        </div>
+
+                        
+                        <div class="col-6 col-md-4 d-flex justify-content-end ">
+                            <div class="m-2 d-flex gap-2">
+                                <button id="gridview" class="btn btn-outline-primary"><i class="fas fa-th-large"></i></button>
+                                <button id="card" class="btn btn-outline-primary active"> <i class="fas fa-list"></i></button>
                             </div>
                         </div>
 

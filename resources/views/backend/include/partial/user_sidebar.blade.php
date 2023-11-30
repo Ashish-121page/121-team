@@ -126,52 +126,61 @@
         <a href="{{ route('panel.admin.enquiry.index') }}" class="menu-item a-item">{{ __('Product Request')}}</a>
     </div>
 </div> --}}
-<div class="nav-item {{ activeClassIfRoutes(['panel.user_shop_items.create','panel.user_shop_items.index','panel.seller.category.index','panel.products.create','panel.filemanager.index','panel.products.index','panel.products.inventory.index','panel.groups.index','panel.product_attributes.index','panel.product_attributes.edit','panel.product_attributes.create','panel.product_attributes.show','panel.currency.manage.index'] ,'active open' ) }} has-sub">
-    <a href="#"><i class="ik ik-shopping-bag"></i><span>{{ 'Display' }}</span></a>
-    <div class="submenu-content" style="">
 
-        @if($acc_permissions->addandedit == "yes")
+{{-- <div class="nav-item {{ activeClassIfRoutes(['panel.user_shop_items.create','panel.user_shop_items.index','panel.seller.category.index','panel.products.create','panel.filemanager.index','panel.products.index','panel.products.inventory.index','panel.groups.index','panel.product_attributes.index','panel.product_attributes.edit','panel.product_attributes.create','panel.product_attributes.show','panel.currency.manage.index'] ,'active open' ) }} has-sub">
+    <a href="#"><i class="ik ik-shopping-bag"></i><span>{{ 'Display' }}</span></a>
+    <div class="submenu-content" style=""> --}}
+
+        {{-- @if($acc_permissions->addandedit == "yes")
             @if ($Team_proadd)
                 <a href="{{ route('panel.products.create') }}?action=nonbranded" class="menu-item a-item">{{ __('Add/Edit')}}</a>
             @endif
-        @endif
+        @endif --}}
 
         
-        @if($acc_permissions->bulkupload == "yes")
-            @if ($Team_bulkupload)
+        {{-- @if($acc_permissions->bulkupload == "yes") --}}
+            {{-- @if ($Team_bulkupload)
                 <a href="{{ route('panel.filemanager.index') }}" class="menu-item a-item">{{ __('File Manager')}}</a>   
-            @endif
-        @endif
+            @endif --}}
+        {{-- @endif --}}
 
 
         {{-- <a href="{{ route('panel.products.index') }}?action=nonbranded" class="menu-item a-item">{{ __('Manage')}}</a> --}}
-        <a href="{{ route('panel.products.inventory.index') }}?action=nonbranded" class="menu-item a-item">{{ __('Inventory')}}</a>
+
+        {{-- <a href="{{ route('panel.products.inventory.index') }}?action=nonbranded" class="menu-item a-item">{{ __('Inventory')}}</a> --}}
+        
         {{-- <a href="{{ route('panel.user_shop_items.create') }}" class="menu-item a-item">{{ __('Add Items')}}</a> --}}
 
-        <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_id=".auth()->id() }}" class="menu-item a-item {{ activeClassIfRoutes(['panel.user_shop_items.create'] ,'active open' ) }}">{{ __('On site products')}}</a>
+        {{-- <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_id=".auth()->id() }}" class="menu-item a-item {{ activeClassIfRoutes(['panel.user_shop_items.create'] ,'active open' ) }}">{{ __('On site products')}}</a> --}}
 
 
-        @if($acc_permissions->managegroup == "yes")
+        {{-- @if($acc_permissions->managegroup == "yes")
             @if ($Team_categorygroup)
                 <a href="{{ route('panel.seller.category.index','13') }}" class="menu-item a-item">{{ __('Manage Categories')}}</a>
             @endif
-        @endif
+        @endif --}}
 
-        <a href="{{ route('panel.product_attributes.index') }}" class="menu-item a-item {{ activeClassIfRoutes(['panel.product_attributes.index','panel.product_attributes.edit','panel.product_attributes.create','panel.product_attributes.show'] ,'active open' ) }}">{{ __('Product Attributes')}}</a>
+        {{-- <a href="{{ route('panel.product_attributes.index') }}" class="menu-item a-item {{ activeClassIfRoutes(['panel.product_attributes.index','panel.product_attributes.edit','panel.product_attributes.create','panel.product_attributes.show'] ,'active open' ) }}">{{ __('Product Attributes')}}</a> --}}
 
 
-        <a href="{{ route('panel.currency.manage.index')."?user=". auth()->id()}}" class="menu-item a-item" >Currencies</a>
+        {{-- <a href="{{ route('panel.currency.manage.index')."?user=". auth()->id()}}" class="menu-item a-item" >Currencies</a>
         
 
         @if($acc_permissions->pricegroup == "yes")
             @if ($Team_pricegroup)
                 <a href="{{ route('panel.groups.index')."?user=". auth()->id()}}" class="menu-item a-item" >Price Group</a>
             @endif
-        @endif
+        @endif --}}
         
-        
-    </div>
+    {{-- </div>
+</div> --}}
+
+
+<div class="nav-item {{ activeClassIfRoutes(['panel.user_shop_items.create'] ,'active open' ) }}">
+    <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_id=".auth()->id() }}" class="a-item" ><i class="ik ik-shopping-bag"></i><span>{{ 'Display' }}</span></a>
 </div>
+
+
 {{-- <div class="nav-item {{ ($segment2 == 'orders') ? 'active' : '' }}">
     <a href="{{ route('panel.orders.index')}}" class="a-item" ><i class="ik ik-shopping-cart"></i><span>{{ 'Orders' }}</span></a>
 </div> --}}

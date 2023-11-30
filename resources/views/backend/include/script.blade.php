@@ -204,7 +204,7 @@
     });
 </script>
 <script>
-    $(document).ready(function () {
+    // $(document).ready(function () {
         // $(window).resize(function (e) { 
         //     e.preventDefault();
         //     width = $(this).innerWidth();

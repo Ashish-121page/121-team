@@ -48,7 +48,7 @@
                             @if($price == 0)
                                     <span>{{ __("Ask For Price") }}</span>
                             @elseif($price)
-                                {{ number_format(round($price,2)) }}
+                                {{ round($price,2) }}
                             @else
                                 <span>{{ __("Ask For Price") }}</span>
                             @endif
@@ -97,7 +97,7 @@
                         @if($price == 0)
                                 <span>{{ __("Ask For Price") }}</span>
                         @elseif($price)
-                            {{ number_format(round($price,2)) }}
+                            {{ round($price,2) }}
                         @else
                             <span>{{ __("Ask For Price") }}</span>
                         @endif

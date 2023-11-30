@@ -26,7 +26,15 @@ use Carbon\Doctrine\CarbonDoctrineType;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 use PhpParser\Node\Stmt\Else_;
+use Intervention\Image\Facades\Image;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 use function GuzzleHttp\Promise\all;
 
@@ -141,16 +149,16 @@ class Microproposals extends Controller
         $manage_offer_verified = $temdata->manage_offer_verified ?? 0;
         
         
-        if ($manage_offer_guest == 0) {
-            if (auth()->id() == 155) {
-                return back()->with('error',"You Didn't Have Access to Make Offer");
-            }
-        }
-        if ($manage_offer_verified == 0) {
-            if (auth()->id() != 155 && auth()->id() != $user_shop->user_id) {
-                return back()->with('error',"You Didn't Have Access to Make Offer");
-            }
-        } 
+        // if ($manage_offer_guest == 0) {
+        //     if (auth()->id() == 155) {
+        //         return back()->with('error',"You Didn't Have Access to Make Offer");
+        //     }
+        // }
+        // if ($manage_offer_verified == 0) {
+        //     if (auth()->id() != 155 && auth()->id() != $user_shop->user_id) {
+        //         return back()->with('error',"You Didn't Have Access to Make Offer");
+        //     }
+        // } 
         
         
         // Show All Suppliers
@@ -252,8 +260,14 @@ class Microproposals extends Controller
 
         // Filter Data
         if(request()->has('title') && request()->get('title') != null || request()->has('model_code') && request()->get('model_code') != null){
-            $master_products->where('title','like','%'.request()->get('title').'%')->orwhere('model_code','like','%'.request()->get('model_code').'%')->whereIn('user_id',(array) $related);
+            $master_products->where('title','like','%'.request()->get('title').'%')->orwhere('model_code','like','%'.request()->get('model_code').'%')->orwhere('search_keywords','like','%'.request()->get('model_code').'%')
+            ->whereIn('user_id',(array) $related);
+
+            
+            
         }
+
+        
 
         if(request()->has('category_id') && request()->get('category_id') != null){
              $master_products->where('category_id', request()->get('category_id'));
@@ -312,14 +326,18 @@ class Microproposals extends Controller
        }
 
         if($request->has('to') && ($request->has('from'))){
+            $from = request()->get('from') * session()->get('Currency_exchange') ?? request()->get('from');
+            $to = request()->get('to') * session()->get('Currency_exchange') ?? request()->get('to');
+
             // return dd('h');
             if($request->get('to') != null && ($request->get('from')) != null){
-                $master_products->whereBetween('price',[$request->get('from'),$request->get('to')]);
+                $master_products->whereBetween('price',[$from,$to]);
             }elseif($request->get('to') == null && ($request->get('from')) != null){
-                $master_products->where('price','>=',$request->get('from'));
+                $master_products->where('price','>=',$from);
             }elseif($request->get('to') != null && ($request->get('from')) == null){
-                $master_products->where('price','<=',$request->get('to'));
+                $master_products->where('price','<=',$to);
             }
+            
         }
         
         if(request()->has('sort') && request()->get('sort') != null){
@@ -474,10 +492,12 @@ class Microproposals extends Controller
         $currency_record = UserCurrency::where('user_id',$user_shop->user_id)->get();
 
         
-        return view('frontend.micro-site.proposals.move',compact('added_products','excape_items','proposal','slug','user','my_resellers','offerPasscode','aval_atrribute','currency_record'));
+        return view('frontend.micro-site.proposals.move',compact('added_products','excape_items','proposal','slug','user','my_resellers','offerPasscode','aval_atrribute','currency_record','user_key'));
 
 
     }
+
+    
 
     public function updatePrice(Request $request,Proposal $proposal)
     {
@@ -554,9 +574,8 @@ class Microproposals extends Controller
             'customer_name'     => 'required',
             'user_shop_id'     => 'required'
         ]);
-
         
-
+        
 
         if($request->customer_mob_no != null){
             $this->validate($request, [
@@ -617,6 +636,7 @@ class Microproposals extends Controller
                 }
 
                 $request['currency_record'] = json_encode($Current_currency_record);                
+                $request['user_shop_id'] = getShopDataByUserId(auth()->id() ?? 155)->id;
 
                 $options_arr = ["show_Description" => $show_desc ?? 0,"Show_notes" => $show_notes ?? 0,"show_Attrbute" => $show_attrbute ?? 0];
 
@@ -625,7 +645,9 @@ class Microproposals extends Controller
                 $request['type'] = $request->get('offer_type') ?? 0;
                                 
                 $proposal = $proposal->update($request->all());
+                // magicstring($currency_record);    
                 // magicstring($request->all());    
+                // return;
                 
                 return back()->with('success','Preview offer and share.');
             }
@@ -955,6 +977,50 @@ class Microproposals extends Controller
         return("Record Updated!!");
     }
 
+
+
+    function exportexcel(Request $request){
+
+                 // Example data
+        $data = [
+            ['name' => 'Item 1', 'description' => 'Description 1', 'image' => storage_path('storage/files/174/4.jpg')],
+            ['name' => 'Item 2', 'description' => 'Description 2', 'image' => storage_path('storage/files/174/4.jpg')],
+            // ... Add more data
+        ];
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $row = 1;
+        foreach ($data as $item) {
+            $sheet->setCellValue('A' . $row, $item['name']);
+            $sheet->setCellValue('B' . $row, $item['description']);
+
+            if (file_exists($item['image'])) {
+                $drawing = new Drawing();
+                $drawing->setPath($item['image']);
+                $drawing->setCoordinates('C' . $row);
+                $drawing->setOffsetX(5);
+                $drawing->setOffsetY(5);
+                $drawing->setWorksheet($sheet);
+            }
+
+            $row++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'export.xlsx';
+        
+        // Prepare download
+        $temp_file = tempnam(sys_get_temp_dir(), $fileName);
+        $writer->save($temp_file);
+
+        return response()->download($temp_file, $fileName, ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'])->deleteFileAfterSend(true);
+
+
+
+    }
+        
 
     
 }

@@ -9,10 +9,10 @@
         $contact_info = json_decode($user_shop->contact_info);
         if(isset($user_shop->payment_deatils) && $user_shop->payment_deatils != null  && $user_shop->payment_deatils != 'null'){
         $payment_deatils = json_decode($user_shop->payment_deatils,true);
-        }
+        } 
     @endphp
     @if(isset($user_shop))
-        <div class="col-xl-4 col-lg-4 col-md-12 col-12">
+        {{-- <div class="col-xl-4 col-lg-4 col-md-12 col-12">
                 <div class="card">
                     @if($user_shop->slug == auth()->user()->phone)
                         <div class="card-header d-flex justify-content-between">
@@ -89,7 +89,7 @@
                                         <a href="javascript:void(0)" id="download-qr" class="btn btn-outline-primary mt-2">Download QR</a>
                                    </div>
                                    <div>
-                                        {{-- <a href="javascript:void(0);" onclick="copyTextToClipboard('{{ inject_subdomain('home', $user_shop->slug)}}')" class=" copy-link-btn btn btn-outline-light mt-2 text-dark">Copy Link</a> --}}
+                                        <a href="javascript:void(0);" onclick="copyTextToClipboard('{{ inject_subdomain('home', $user_shop->slug)}}')" class=" copy-link-btn btn btn-outline-light mt-2 text-dark">Copy Link</a>
                                         <a href="javascript:void(0);" onclick="exportpdf()" class="copy-link-btn btn btn-outline-light mt-2 text-dark">Export PDF</a>
                                         <br>
                                     </div>
@@ -126,81 +126,106 @@
                         </div>
                     @endif
                 </div>
-        </div>
+        </div> --}}
+        {{-- @if(getSellerProgressStatistics(auth()->id()) != 100 || $user_shop->slug == auth()->user()->phone) --}}
+        @php
+            // ` Current Progress
+            $first =  (auth()->user()->ekyc_status == 1) ? true : false;
+            $second = ($first) ? ((count(App\Models\Category::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
+            $third =  ($second) ? ((count(App\Models\Product::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
+            $forth =  ($third) ? ((count(App\Models\Proposal::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
+            $fifth =  false;
 
-        {{-- @if(getSellerProgressStatistics(auth()->id()) != 100 || $user_shop->slug == auth()->user()->phone)
-            <div class="col-xl-6 col-lg-6 col-md-12 col-12">
-                <div class="card latest-update-card">
-                    <div class="card-header">
-                        <h3>Account Setup</h3>
-                    </div>
-                    <div class="card-block p-0">
-                        <div class="scroll-widget mt-3">
-                            <div class="latest-update-box">
-                                <div class="row pt-20 pb-30">
-                                    <div class="col-auto text-right update-meta pr-0">
-                                        <i class="@if(isset( $user->ekyc_info) && $user->ekyc_info != null)  b-success @else b-danger @endif  update-icon ring"></i>
-                                    </div>
-                                    <div class="col pl-5">
-                                    <h6 class="d-inline">Kyc</h6>
-                                        
-                                    </div>
+        @endphp
+        
+            <div class="col-xl-12 col-lg-12 col-md-12 col-12 justify-content-center">
+                <div class="progressmeter">
+                    <div class="h4">Progress</div>
+                    <div class="row">
+                        {{-- Step 1  --}}
+                        <div class="col bg-white shadow m-1">
+                            <a href="@if ($first) #complted @else {{ route('customer.dashboard') }}?active=account&subactive=business_profile&upload_gst=true @endif">
+                                
+                                <div class="circle @if ($first) bg-success @else bg-primary @endif text-white">
+                                    <span>
+                                        @if ($first) <i class="fas fa-check-circle"></i> @else 1 @endif
+                                    </span>
                                 </div>
-                                <div class="row pb-30">
-                                    <div class="col-auto text-right update-meta pr-0">
-                                        <i class="@if($user_shop->slug != auth()->user()->phone)  b-success @else b-danger @endif update-icon ring"></i>
-                                    </div>
-                                    <div class="col pl-5">
-                                        <h6 class="d-inline">Site Name</h6>
-                                    </div>
-                                </div> --}}
-                              {{--  <div class="row pb-30">
-                                    <div class="col-auto text-right update-meta pr-0">
-                                        <i class="@if(isset($testimonial_rec) && $testimonial_rec)  b-success @else b-primary @endif update-icon ring"></i>
-                                    </div>
-                                    <div class="col pl-5">
-                                        <h6 class="d-inline">Testimonial</h6>
-                                    </div>
+                                <div class="h6 my-2"><b>Upload GST / IEC</b></div>
+                                <p>Kindly upload to activate your account</p>
+                            </a>
+                        </div>
+
+                        {{-- Step 2 --}}
+                        <div class="col bg-white shadow m-1"  @if (!$second) title="Complete step 1" @endif>
+                            <a href="@if ($first && $second) #complted @elseif($first) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }} @else #pending @endif" @if(!$first) style="cursor: not-allowed !important" @endif>
+                                <div class="circle text-white
+                                @if ($first && $second) bg-success @elseif($first) bg-primary @else bg-secondary @endif
+                                ">
+                                    <span>
+                                        @if ($first && $second) <i class="fas fa-check-circle"></i>  @else 2 @endif
+                                    </span>
                                 </div>
-                                <div class="row pb-30">
-                                    <div class="col-auto text-right update-meta pr-0">
-                                        <i class="@if(isset($user_shop->payment_details) &&  $user_shop->payment_details != null)  b-success @else b-primary @endif update-icon ring"></i>
-                                    </div>
-                                    <div class="col pl-5">
-                                        <h6 class="d-inline">Payment QR</h6>
-                                    </div>
-                                </div> --}}
-                                {{-- <div class="row pb-30">
-                                    <div class="col-auto text-right update-meta pr-0">
-                                        <i class="@if(isset($access_cat_req) && $access_cat_req)  b-success @else b-primary @endif update-icon ring"></i>
-                                    </div>
-                                    <div class="col pl-5">
-                                        <h6 class="d-inline">Link to a Supplier</h6>
-                                    </div>
-                                </div> --}}
+                                <div class="h6 my-2"><b>Add category</b></div>
+                                <p>Create new category best suited for your products</p>    
+                            </a>
+                        </div>
+
+                        {{-- Step 3  --}}
+                        <div class="col bg-white shadow m-1"  @if (!$third) title="Complete step 2" @endif>
                             
-                            {{-- </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Account Progress</h3>
-                    </div>
-                    <div class="card-block">
-                        <div class="progress-box mt-5 mb-3 px-3">
-                            <div class="progress-value d-block text-muted h6">Progress <strong>({{getSellerProgressStatistics(auth()->id())}}%)</strong></div>
-                            <div class="progress">
-                                <div class="progress-bar position-relative bg-primary" 
-                                style="width: {{ getSellerProgressStatistics(auth()->id()) }}">  
+                            <a href="@if ($first && $second && $third) #completed @elseif($first && $second ) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true @else #pending @endif" @if(!$second) style="cursor: not-allowed !important" @endif>
+
+                                <div class="circle @if ($first && $second && $third) bg-success @elseif($first && $second) bg-primary @else bg-secondary @endif text-white">
+                                    
+                                    <span>
+                                        @if ($first && $second && $third) <i class="fas fa-check-circle"></i> @else 3 @endif
+                                    </span>
                                 </div>
-                            </div>
+                                <div class="h6 my-2"><b>Add Product</b></div>
+                                <p>Create new product with minimum of image and model code</p>
+                            </a>
                         </div>
+
+                        {{-- Step 4  --}}
+                        <div class="col bg-white shadow m-1"  @if (!$forth) title="Complete step 3" @endif>
+                            <a href="@if ($first && $second && $third && $forth) #completed @elseif($first && $second && $third) {{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }} @else #pending @endif " @if(!$third) style="cursor: not-allowed !important" @endif>
+                                <div class="circle @if ($first && $second && $third && $forth) bg-success @elseif($first && $second && $third) bg-primary @else bg-secondary @endif text-white">
+                                    <span>
+                                        @if ($first && $second && $third && $forth) <i class="fas fa-check-circle"></i> @else 4 @endif
+                                    </span>
+                                </div>
+                                
+                                <div class="h6 my-2"><b>Make Offer</b></div>
+                                
+                                <p>Create fast offers for Buyers in any of ppt, pdf, excel formats</p>
+                            </a>
+                        </div>
+
+                        {{-- Step 5  --}}
+                        <div class="col bg-white shadow m-1"  @if (!$fifth) title="Complete step 4" @endif>
+                            <a href="{{ route('panel.settings.index',encrypt(auth()->id())) }}"@if ($first && $second && $third && $forth && $fifth) #completed>
+                            @elseif($first && $second && $third && $forth) 
+                                <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank">
+                            @else 
+                                <a href="{{ route('panel.settings.index',encrypt(auth()->id())) }}" @if(!$forth) style="cursor: not-allowed !important" @endif>
+                            @endif
+                                    <div class="circle @if ($first && $second && $third && $forth && $fifth) bg-success @elseif($first && $second && $third && $forth) bg-primary @else bg-secondary @endif text-white">
+                                        <span>
+                                            @if ($first && $second && $third && $forth && $fifth) <i class="fas fa-check-circle"></i> @else 5 @endif
+                                        </span>
+                                    </div>
+                                    <div class="h6 my-2"><b>Set Template</b></div>
+                                    <p>Share your templates for customising your offer</p>
+                            </a>
+                        </div>
+
                     </div>
+                    <div class="bar"></div>
                 </div>
             </div>
-        @else
-            <div class="col-xl-8 col-lg-8 col-md-12 col-12 statistics_count">
+        {{-- @else
+            <div class="col-xl-12 col-lg-12 col-md-12 col-12 statistics_count">
                 <div class="card">
                     <div class="card-header">
                         <h3>Overview</h3>
@@ -272,7 +297,7 @@
                         <div class="row">
                             
                             @foreach ($statistics_1 as $statistic_1)
-                                <a class="col-xl-4 col-md-12 p-2" href="{{ $statistic_1['link'] }}">
+                                <a class="col-xl-3 col-md-12 p-2" href="{{ $statistic_1['link'] }}">
                                     <div class="card proj-t-card mb-1">
                                         <div class="card-body">
                                             <div class="row align-items-center mb-30">
@@ -300,7 +325,7 @@
                             @endforeach
                             
                             @foreach ($statistics_2 as $statistic_2)
-                                <a class="col-xl-4 col-md-6 p-2" href="{{ $statistic_2['link'] }}">
+                                <a class="col-xl-3 col-md-6 p-2" href="{{ $statistic_2['link'] }}">
                                     <div class="card ticket-card mb-1">
                                         <div class="card-body">
                                             <p class="mb-30 bg-{{ $statistic_2['color'] }} lbl-card"><i class="fas fa-folder-open"></i> {{ $statistic_2['title'] }}</p>
@@ -314,7 +339,7 @@
                             @endforeach
 
                             @foreach ($statistics_3 as $statistic_3)
-                                <a class="col-xl-4 col-md-6 p-2" href="{{ $statistic_3['link'] }}">
+                                <a class="col-xl-3 col-md-6 p-2" href="{{ $statistic_3['link'] }}">
                                     <div class="card prod-p-card card-{{ $statistic_3['color'] }}">
                                         <div class="card-body">
                                             <div class="row align-items-center mb-30">

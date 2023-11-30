@@ -27,7 +27,7 @@ $breadcrumb_arr = [
     @endpush
 
     <div class="container-fluid">
-    	<div class="page-header">
+    	<div class="page-header d-none">
             <div class="row align-items-end">
                 <div class="col-lg-8">
                     <div class="page-header-title">
@@ -44,6 +44,9 @@ $breadcrumb_arr = [
             </div>
         </div>
         <div class="row">
+            <div class="col-12">
+                <a href="{{ url()->previous() }}" class="btn btn-secondary"> Back </a>
+            </div>
             @php
                 $get_value = App\Models\ProductAttributeValue::where('parent_id',$product_attribute->id)->orderBy('attribute_value','ASC')->get();
             @endphp
@@ -79,7 +82,7 @@ $breadcrumb_arr = [
                                 </div>
 
                                 @if ($product_attribute->user_id == auth()->id() || AuthRole() == 'Admin')
-                                    <div class="col-md-4 col-12"> 
+                                    <div class="col-md-4 col-12 d-none"> 
                                         <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
                                             <label for="visibility">
                                                 visibility
@@ -100,7 +103,7 @@ $breadcrumb_arr = [
                                     <div class="form-group">
                                         <input type="text" id="tags" class="form-control w-100" name="newval" value="" placeholder="Enter New Values" pattern="^[a-zA-Z0-9_]*$">
                                     </div>
-                                    <div class="form-group d-flex justify-content-end">
+                                    <div class="form-group d-flex justify-content-center">
                                         <button type="submit" class="btn btn-outline-primary" name="newvalbtn">Add New </button>
                                     </div>
                                 </div>
@@ -108,7 +111,7 @@ $breadcrumb_arr = [
 
                                 @foreach ($get_value as $item)
                                     @if ($item->user_id == null || $item->user_id == auth()->id() || AuthRole() == 'Admin')
-                                        <div class="col-md-6 col-sm-6 col-lg-4 col-12"> 
+                                        <div class="col-md-6 col-sm-6 col-lg-3 col-12"> 
                                             <div class="form-group d-flex align-items-center justify-content-center">
                                                 <input class="form-control" type="text" id="name_{{$item->id}}" name="{{ "$item->id" }}" value="{{$item->attribute_value}}" placeholder="Enter Name" readonly>
                                                 @if ($item->user_id == auth()->id() || AuthRole() == 'Admin')
@@ -127,7 +130,7 @@ $breadcrumb_arr = [
 
                             </div>
                             <div class="col-12">
-                                <div class="form-group d-flex justify-content-end">
+                                <div class="form-group d-flex justify-content-center">
                                     <button type="submit" class="btn btn-outline-primary" name="updatevalbtn">Update</button>
                                 </div>
                             </div>

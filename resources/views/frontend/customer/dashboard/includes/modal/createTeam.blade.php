@@ -65,8 +65,8 @@
 
                             <div class="col-md-6 col-12 my-2"> 
                                 <div class="form-group {{ $errors->has('contact_number') ? 'has-error' : ''}}">
-                                    <label for="contact_number" class="control-label">Contact Number</label>
-                                    <input  class="form-control contact_number" name="contact_number" type="number" id="contact_number" placeholder="Enter Contact Number" value="">
+                                    <label for="contact_number" class="control-label">Contact Number<span class="text-danger">*</span> </label>
+                                    <input required  class="form-control contact_number" name="contact_number" type="number"  id="contact_number" placeholder="Enter Contact Number" value="">
                                 </div>
                             </div>
 
