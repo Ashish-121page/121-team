@@ -61,11 +61,7 @@
                     <div class="row">
                         <div class="col-12">
                             {{-- ` Pagination --}}
-<<<<<<< HEAD
                             <nav aria-label="Page navigation example">
-=======
-                            <nav aria-label="Page navigation" style="width: 100%;border: 1px solid;overflow: hidden;overflow-x: auto;">
->>>>>>> main
                                 <ul class="pagination">
                                     
                                     @php
@@ -105,17 +101,10 @@
                                     Results per page
                                   </button>
                                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-<<<<<<< HEAD
                                     <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt=10">10</a></li>
                                     <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt=25">25</a></li>
                                     <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt=50">50</a></li>
                                     <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt=100">100</a></li>
-=======
-                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt32=10">10</a></li>
-                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt32=25">25</a></li>
-                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt32=50">50</a></li>
-                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt32=100">100</a></li>
->>>>>>> main
                                   </ul>
                                 </div>
                             </div>  

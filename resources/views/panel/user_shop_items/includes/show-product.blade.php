@@ -36,11 +36,7 @@
                 </div>
             </div>
             @if(request()->get('type_id') != auth()->id())
-<<<<<<< HEAD
                 <div class="d-flex justify-content-end">
-=======
-                {{-- <div class="d-flex justify-content-end">
->>>>>>> main
                     <div class="input-group border-0">
                         <span class="input-group-prepend">
                             <label class="input-group-text">Mark-up on sale price</label>
@@ -55,11 +51,7 @@
                                 <option @if(request()->get('length') == 10) selected @endif value="10">10</option>
                                 <option @if(request()->get('length') == 50) selected @endif value="50">50</option>
                                 <option @if(request()->get('length') == 100) selected @endif value="100">100</option>
-<<<<<<< HEAD
                                 {{-- <option @if(request()->get('length') == 500) selected @endif value="500">500</option> --}}
-=======
-                                <option @if(request()->get('length') == 500) selected @endif value="500">500</option>
->>>>>>> main
                             </select>
                             <input type="number"  name="length" value="{{request()->get('length')}}" class="form-control" placeholder="Enter Length">
                             <div class="ml-2">
@@ -76,13 +68,8 @@
                             <i class="ik ik-info fa-2x  ml-2 remove-ik-class" title="Selecting or unselecting will only work with selected products on this page"></i>
                         </span>
                     </div>
-<<<<<<< HEAD
                 </div>
                 @endif
-=======
-                </div> --}}
-            @endif
->>>>>>> main
                 
             @if (request()->has('category_id') && request()->get('category_id') != '')
 

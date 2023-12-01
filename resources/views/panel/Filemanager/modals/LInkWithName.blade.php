@@ -62,27 +62,19 @@
                                     
                                     <tr>
                                         <th scope="col">Sno.</th>
-<<<<<<< HEAD
                                         <th scope="col" id="usdhgn">One</th>
                                         <th scope="col" id="sdhfjn">Two</th> 
-=======
-                                        <th scope="col" id="usdhgn">Modal Code</th>
-                                        <th scope="col" id="sdhfjn">Filename</th> 
->>>>>>> main
                                     </tr>
                                     
                                 </thead>
                                 <tbody id="yetsidh">
                                     
-<<<<<<< HEAD
                                     <tr>
                                         <td>1</td>    
                                         <td>One</td>    
                                         <td>Two</td>    
                                     </tr>                                                                            
                                     
-=======
->>>>>>> main
                                 </tbody>
                             </table>
                         </div>

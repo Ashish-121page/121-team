@@ -151,10 +151,7 @@
                 bottom: ;
                 left: ;
             }
-<<<<<<< HEAD
             
-=======
->>>>>>> main
         </style>
     @endpush
 
@@ -165,11 +162,7 @@
                     <div class="page-header-title">
                         <i class="ik ik-mail bg-blue"></i>
                         <div class="d-flex">
-<<<<<<< HEAD
                             {{-- <h5>Add/Edit</h5> --}}
-=======
-                            <h5>Add/Edit</h5>
->>>>>>> main
                             @if (AuthRole() == 'User')
                                 <span style="margin-top: -10px;">
                                     <i class="ik ik-info fa-2x text-dark ml-2 remove-ik-class" title="help Text"></i>
@@ -178,15 +171,9 @@
                         </div>
                     </div>
                 </div>
-<<<<<<< HEAD
                 {{-- <div class="col-lg-4">
                     @include('backend.include.breadcrumb')
                 </div> --}}
-=======
-                <div class="col-lg-4">
-                    @include('backend.include.breadcrumb')
-                </div>
->>>>>>> main
             </div>
         </div>
 
@@ -636,7 +623,6 @@
                 });
 
                 
-<<<<<<< HEAD
             });
 
 
@@ -830,180 +816,6 @@
                 }
             });
 
-=======
-            });
-
-
-        </script>       
-       
-        
-        <script>
-            $(document).ready(function() {
-
-                $("#check_all").click(function(e) {
-                    $(".my_attribute").click();
-                });
-
-                $(".my_attribute").click(function(e) {
-                    let keyindex = $(this).data('index');
-                    let tag = `<div class="form-group" id="parent_${$(this).data('index')}">
-                        <input type="checkbox" value="${$(this).val()}" id="${$(this).attr('id')}" class="selected_prop m-2 d-none" checked data-parent="parent_${$(this).data('index')}">
-                        <label for="${$(this).attr('id')}" class="form-label" style="font-size: 12.8px;user-select: none;">${$(this).val()}</label>
-                    </div>`;
-
-                    if ($(this).is(":checked")) {
-                        $(".selected_tag").append(tag);
-                    } else {
-                        $(`#parent_${$(this).data('index')}`).remove();
-                    }
-
-                    myfunc();
-                });
-                
-                function myfunc() {
-                    if ($(".my_attribute:checked").length > 0) {
-                        // any one is checked
-                        $("#tableselected").removeClass('invisible');
-                    } else {
-                        $("#tableselected").addClass('invisible');
-                    }
-                }
-
-                
-            });
-        </script>
-
-
-        <script>
-            //demo 01
-            $("#demo01").animatedModal({
-                animatedIn: 'lightSpeedIn',
-                animatedOut: 'bounceOutDown',
-                color: '#f3f3f3',
-
-            });
-
-
-            $('tags').tagsinput('items');
-            var options = {
-                filebrowserImageBrowseUrl: "{{ url('/laravel-filemanager?type=Images') }}",
-                filebrowserImageUploadUrl: "{{ url('/laravel-filemanager/upload?type=Images&_token=' . csrf_token()) }}",
-                filebrowserBrowseUrl: "{{ url('/laravel-filemanager?type=Files') }}",
-                filebrowserUploadUrl: "{{ url('/laravel-filemanager/upload?type=Files&_token=' . csrf_token()) }}"
-            };
-            $(window).on('load', function() {
-                CKEDITOR.replace('description', options);
-            });
-
-            $('#ProductForm').validate();
-
-
-            $(document).ready(function() {
-
-                $('#import-btn').on('click', function() {
-                    $('.import').removeClass('d-none')
-                    $('.export').addClass('d-none')
-                    $('.import-div').removeClass('d-none')
-                    $('.export-div').addClass('d-none')
-                    $('#export-btn').removeClass('btn-primary')
-                    $(this).addClass('btn-primary')
-                });
-                $('#export-btn').on('click', function() {
-                    $('.export').removeClass('d-none')
-                    $('.import').addClass('d-none')
-                    $('.import-div').addClass('d-none')
-                    $('#import-btn').removeClass('btn-primary')
-                    $('#import-btn').addClass('')
-                    $(this).addClass('btn-primary')
-                });
-
-
-
-
-                // enable Shortcutkey for ( Ctrl + <- ) TO Back
-                // $(document).keydown(function (e) {
-                //     if (e.ctrlKey && e.which == 37) {
-                //         $(".back_btn").click()
-                //     }
-                // });
-
-            });
-
-
-            $('.getSingleProduct').on('click', function() {
-                $('.product_boxes').addClass('d-none');
-                $('.show_single_prouduct').removeClass('d-none');
-                $('.back_btn').removeClass('d-none');
-            })
-
-            $('.getcustomProduct').on('click', function() {
-                $('.product_boxes').addClass('d-none');
-                $('.get_custom_Product').removeClass('d-none');
-                $('.back_btn').removeClass('d-none');
-            })
-
-            $('.updateproducts').on('click', function() {
-                $('.update_products').removeClass('d-none')
-                $('.product_boxes').addClass('d-none');
-                $('.back_btn').removeClass('d-none');
-            });
-
-
-
-            $('.back_btn').on('click', function() {
-                $('.product_boxes').removeClass('d-none');
-                $('.show_single_prouduct').addClass('d-none');
-                $('.get_custom_Product').addClass('d-none');
-                $('.update_products').addClass('d-none');
-                $('.bulk_product').addClass('d-none');
-                $(this).addClass('d-none');
-            })
-            $('.bulk_upload_btn').on('click', function() {
-                $('.product_boxes').addClass('d-none');
-                $('.show_single_prouduct').addClass('d-none');
-                $('.bulk_product').removeClass('d-none');
-                $('.back_btn').removeClass('d-none');
-            });
-
-            $('#category_id').change(function() {
-                var id = $(this).val();
-                if (id) {
-                    $.ajax({
-                        url: "{{ route('panel.user_shop_items.get-category') }}",
-                        method: "get",
-                        datatype: "html",
-                        data: {
-                            id: id
-                        },
-                        success: function(res) {
-                            $('#sub_category').html(res);
-                        }
-                    })
-                }
-            });
-
-            $('.TAGGROUP').tagsinput('items');
-
-
-            $('#bulk_category_id').change(function() {
-                var id = $(this).val();
-                if (id) {
-                    $.ajax({
-                        url: "{{ route('panel.user_shop_items.get-category') }}",
-                        method: "get",
-                        datatype: "html",
-                        data: {
-                            id: id
-                        },
-                        success: function(res) {
-                            console.log(res);
-                            $('#bulk_sub_category').html(res);
-                        }
-                    })
-                }
-            });
-
->>>>>>> main
             $(document).ready(function() {
                 $("#manage_inventory").click(function() {
                     if ($(this).is(':checked')) {

@@ -52,11 +52,6 @@ class WebsiteController extends Controller
         return view('frontend.website.booksession.jayaform23');
     }
     
-    public function dtask()
-    {
-        return view('frontend.website.booksession.Dtask');
-    }
-    
      public function feedbackform()
     {
         return view('frontend.website.feedback.index');

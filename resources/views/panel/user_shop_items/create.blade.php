@@ -393,10 +393,6 @@
         </div>
     </div>
 
-<<<<<<< HEAD
-=======
-    @include('backend.constant-management.category.include.add-category')
->>>>>>> main
     
     
     <!-- push external js -->
@@ -412,54 +408,6 @@
         <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
         <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
         <script>
-<<<<<<< HEAD
-=======
-
-            $("#addcategory").animatedModal({
-                animatedIn: 'lightSpeedIn',
-                animatedOut: 'lightSpeedOut',
-                color: 'FFFFFF',
-                height: '60%',
-                width: '60%',
-                top: '24%',
-                left: '40%',
-            });
-
-
-            $("#newcatname").change(function (e) { 
-                    e.preventDefault();
-                    let newval = $(this).val();
-
-
-                    let newvalue = newval.split(" > ")[1];
-                    
-                    $('#tags').tagsinput('add',newvalue);
-
-
-                    
-                    // $.ajax({
-                    //     type: "GET",
-                    //     url: "{{ route('panel.constant_management.category.check.global') }}",
-                    //     data: {
-                    //         "search": newval
-                    //     },
-                    //     success: function (response) {
-                    //         response = JSON.parse(response);
-                    //         console.table(response);
-                    //         if (response['status'] === 'SUCCESS') {
-                    //             console.log("SuccessFULL");
-
-                    //             console.log(response['DATA']);
-                    //             $("#tags").val(response['DATA']);
-                                
-                    //             $('#tags').tagsinput('refresh');
-
-                    //         }
-                    //     }
-                    // });
-
-                });
->>>>>>> main
             
             function html_table_to_excel(type)
             {
@@ -672,12 +620,8 @@
                     }
                 });
                 $('.categoryFilter').click(function(e){
-<<<<<<< HEAD
                 e.preventDefault();
             
-=======
-                    e.preventDefault();
->>>>>>> main
                     var categoryId = $(this).data('category_id');
                     $('#categoryId').val(categoryId);
                     var length = $('#lengthField').val();
@@ -690,10 +634,6 @@
                     $('#lengthInput').val(length);
                     $('#filterRecordsForm').submit();
                 })
-<<<<<<< HEAD
-=======
-
->>>>>>> main
                 function replaceUrlParam(paramName, paramValue) {
                     var url = window.location.href;
                     if (paramValue == null) {
@@ -706,10 +646,6 @@
                     url = url.replace(/[?#]$/, '');
                     return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
                 }
-<<<<<<< HEAD
-=======
-                
->>>>>>> main
                 $('#lengthField').on('change',function(){
                     var value = $(this).val();
                     window.history.pushState({}, '', replaceUrlParam('length', value));
@@ -717,10 +653,6 @@
                     $('#lengthInput').val(length);
                     $('#filterRecordsForm').submit();
                 })
-<<<<<<< HEAD
-=======
-                
->>>>>>> main
                 $('.validateMargin').on('click', function(e){
                     if($('#hike').val() > 99){
                         $('#hike').val(99);
@@ -737,7 +669,6 @@
                 });
                 
             $(document).on('click','#delete_all_dummy',function(e){
-<<<<<<< HEAD
             e.preventDefault();
             var msg = $(this).data('msg') ?? "All Product will be Deleted, And You won't be able to revert back!";
             $.confirm({
@@ -868,77 +799,6 @@
         //         }
         //     });
         // });
-=======
-                e.preventDefault();
-                var msg = $(this).data('msg') ?? "All Product will be Deleted, And You won't be able to revert back!";
-                $.confirm({
-                    draggable: true,
-                    title: 'Are You Sure!',
-                    content: msg,
-                    type: 'red',
-                    typeAnimated: true,
-                    buttons: {
-                        tryAgain: {
-                            text: 'Confirm',
-                            btnClass: 'btn-red',
-                            action: function(){
-                                $("#delete_all").click();
-                            }
-                        },
-                        close: function () {
-                        }
-                    }
-                });
-            });
-
-            $("#delproduct_dummy").click(function (e) { 
-                e.preventDefault();
-                let selected = $(".input-check:checked").length;
-                let delete_type_INPUT = $("#delete_type");
-                var msg = `
-                <span class="text-danger">You are about to Delete ${selected} Products</span> <br/>
-                <span>This action cannot be undone. To confirm type <b>DELETE</b></span>
-                <br><br>
-                <input type="checkbox" value="with_product" id="with_product"/>
-                <label for="with_product">Delete jpeg, video, design assets</label>
-                <input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='DELETE'>`;
-
-                $.confirm({
-                    draggable: true,
-                    title: `Delete ${selected} products`,
-                    content: msg,
-                    type: 'purple',
-                    typeAnimated: true,
-                    buttons: {
-                        
-                        tryAgain: {
-                            text: 'DELETE',
-                            btnClass: 'btn-danger', 
-                            action: function(){
-                                let margin = $('#margin').val();
-                                if (margin == 'DELETE') {
-                                    // If text matches, change button to danger
-                                    $('.btn-secondary').removeClass('btn-secondary').addClass('btn-danger');
-
-                                    if (document.getElementById("with_product").checked == true) {
-                                        delete_type_INPUT.val("with_asset")
-                                    } else {
-                                        delete_type_INPUT.val("without_asset")
-                                    }
-
-                                    $("#delproduct").click();
-                                } else {
-                                    $.alert('Type DELETE to Proceed');
-                                }
-                            }
-                        },
-                        cancel: function () {
-
-                        }
-                    }
-                });
-            });
->>>>>>> main
 
         </script>
 
@@ -1112,10 +972,6 @@
                 
             });
         </script>
-<<<<<<< HEAD
-=======
-
->>>>>>> main
         <script>
             $("#demo01").animatedModal({
                 animatedIn: 'lightSpeedIn',
@@ -1124,13 +980,8 @@
                 width: "30%",
                 height: "30%",
                 transform: "translate(3%, -47%)",
-<<<<<<< HEAD
                 top: "70%",
                 left: "70%",
-=======
-                top: "35%",
-                left: "35%",
->>>>>>> main
                 overflow: 'none',
 
             });
@@ -1141,10 +992,7 @@
                 $("#old_name").val($(this).data('catname'))                
                 $("#demo01").click()
             });
-<<<<<<< HEAD
             // $("#demo01").click()
-=======
->>>>>>> main
 
         </script>
 

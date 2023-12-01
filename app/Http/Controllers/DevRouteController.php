@@ -33,10 +33,6 @@ class DevRouteController extends Controller
 
         //` Uncomment Below Line to Check Available Sessions..
         // magicstring(session()->all());
-<<<<<<< HEAD
-=======
-        // phpinfo();
->>>>>>> main
         // return;
         
 

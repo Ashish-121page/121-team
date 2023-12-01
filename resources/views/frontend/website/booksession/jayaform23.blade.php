@@ -260,13 +260,6 @@ $no_footer = 1;
             font-size: 1.8rem;
         }
 
-
-        /* .hero form .inpbx:nth-child(odd) {
-            height: 40vh;
-        } */
-        .form-check-input{
-
-        }
     
 
     }
@@ -280,113 +273,64 @@ $no_footer = 1;
             <div class="progress-bar" id="myBar"></div>
         </div>
 
-        <span class=" text-break my-3 px-3 h3 ti">New DTask</span>
 
-        <form
-            action="forms/d/e/1FAIpQLSecMyXvlfocH8rJJ0KNVA1xy9tjXVZFBW7EfdlbycdVw98Zig/formResponse" 
-            method="post">
+        <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSecMyXvlfocH8rJJ0KNVA1xy9tjXVZFBW7EfdlbycdVw98Zig/formResponse" method="post">
 
             <!-- Hidden Section -->
 
             <div class="hidden_content">
-                <input type="hidden" name="entry.975582590" id="assign">
-                <input type="hidden" name="entry.1652210707" id="highPriorityCheckbox">
-                <input type="hidden" name="" id="ogyear">
-                <input type="hidden" name="entry.879293343" id="refr">
-                <input type="hidden" name="entry.112864257" id="work1">
-                <input type="hidden" name="entry.857368045" id="ogname">
-                <!---Name-->
-                <input type="hidden" name="entry.348108511" id="ogphone">
-                <!---phone-->
-                <input type="hidden" name="entry.479807686" id="ogmail">
-                <!---Email-->
-            </div>
+                <input type="hidden" name="entry.137550352" value="D. Task"> <!-- For Dtask -->
+                       
+            </div>        
 
-            <!-- Hidden Section -->
-
-
-
-            <!-- Section 1 -->
-
-
-
-            <!-- Section 2 -->
             <div class="cols p1 active">
                 <div class="inpbx">
                     <div class="row">
-                    <label for="work1">Add D.Task</label>
-                    <small>What is The Work <span class="text-red">*</span> </small>
-                    <input type="text" placeholder=". . . ." name="work1" class="my-2 form-control" id="work1" required> 
+                    
+                    <label>What is The Work <span class="text-red">*</span> </label>
+                    <input type="text" placeholder=". . . ." name="entry.112864257" class="my-2 form-control" id="work1" required> 
                 </div>
                 <div class="row mt-4">
                     <label for="refr">Reference</label>             
                    
-                    <input type="text" placeholder="" name="refr" class="my-2 form-control" id="refr" required>  
+                    <input type="text" placeholder="" name="entry.879293343" class="my-2 form-control" id="refr" required>  
                 </div> 
+                {{-- https://docs.google.com/forms/d/e/1FAIpQLSeEpw0l1apLLTJGPdRG3_WR84ZEH4GmIpCnmzGZvJG4Mym19A/viewform?usp=pp_url&entry.975582590=sda --}}
+                
                 <div class="row mt-4">
-                    <label for="assign">Assign to </label>               
-                    <select name="assign" class="my-2 form-control " id="assign" required>
-                        <option value="choose">Choose</option>
-                        <option value="option1">Ashish</option>
-                        <option value="option2">Dolly</option>
-                        <option value="option3">Harish</option>
-                        <option value="option4">Jaya</option>
-                        <option value="option5">Saurabh</option>
-                        <option value="option6">Waitlist</option>
-                        <option value="option7"></option>
+                    <label for="assign">Assign to <span class="text-red">*</span></label>               
+                    <select name="entry.975582590" style="width: 50%" class="my-2 form-control " id="assign">
+                        <option value="">Choose</option>
+                        <option value="Ashish">Ashish</option>
+                        <option value="Dolly">Dolly</option>
+                        <option value="Harish">Harish</option>
+                        <option value="Jaya">Jaya</option>
+                        <option value="Saurabh">Saurabh</option>
+                        <option value="Waitlist">Waitlist</option>
                     </select> 
                 </div>               
                                   
                 </div>              
             </div>
 
-            {{-- <div class="cols p2 ">
-                <div class="inpbx">
-                    <label for="refr">Reference                
-                    </label>
-                    <input type="text" placeholder=". . . ." name="refr" class="my-2 form-control" id="refr" required>                   
-                </div>                
-            </div> --}}
-
-            {{-- <div class="cols p3 ">
-                <div class="inpbx"> --}}
-                  {{-- <label for="assign">Assign to
-                  
-                  </label>
-                  <select name="assign" class="my-2 form-control " id="assign" required>
-                    <option value="choose">Choose</option>
-                    <option value="option1">Ashish</option>
-                    <option value="option2">Dolly</option>
-                    <option value="option3">Harish</option>
-                    <option value="option4">Jaya</option>
-                    <option value="option5">Saurabh</option>
-                    <option value="option6">Waitlist</option>
-                    <option value="option7"></option>
-                  </select> --}}
-                  {{-- <button type="button" class="btn btn-primary" onclick="next()">Ok <i
-                    class="uil-check fs-5"></i></button> --}}
-                {{-- </div>
-            </div> --}}
-
               <div class="cols p2">
                 <div class="inpbx">
                     <div class="row">
                         <label for="startdate">Work Start Date<span class="text-red">*</span></label>
-                        <small>Date</small>
-                        <input type="date" name="startdate" id="startdate" class="my-2 form-control" required min="2023-08-16"> 
+                        <input type="date" name="entry.448684861" id="startdate" class="my-2 form-control" required min="2023-08-16"> 
                     </div>
-                    <div class="row">
+                    <div class="row mt-4">
                         <label for="pdate">Plan Date</label>
-                        <small>Date</small>
-                        <input type="date" name="pdate" id="pdate" class="my-2 form-control" required min="2023-08-16"> 
+                        <input type="date" name="entry.323973282" id="pdate" class="my-2 form-control" required min="2023-08-16"> 
                     </div>
-                    <div class="row"> 
+                    <div class="row mt-4">
                         <label for="highPriorityCheckbox">Priority<span class="text-red">*</span></label>
-                        <div class="form-group" >
-                            <input class="form-check-input" type="checkbox" value="high" id="highPriorityCheckbox" >
-                            <label class="form-check-label" style="width:90%;" for="highPriorityCheckbox">High Priority</label>                                                           
+                        <div class="form-group d-flex align-items-center">
+                            <label class="form-check-label mr-2" for="highPriorityCheckbox">High</label>
+                            <input type="checkbox" style="width: 15rem; height:1rem;" value="high" name="entry.1652210707" id="highPriorityCheckbox">
                         </div>
                     </div>
+                    
                     <div class="mt-5 align-items-center ">
                         <button type="submit" class="btn btn-primary submit ">Submit</button>
                     </div>
@@ -407,11 +351,7 @@ $no_footer = 1;
 
 
 </section>
-{{-- <form id="resendOtpForm"   action="{{ route('user-enquiry.questions.store') }}" method="post">
-<input type="hidden" name="phone" value="">
-</form> --}}
-<!--end section-->
-<!-- End -->
+
 @endsection
 @section('InlineScript')
 <script>
@@ -420,13 +360,13 @@ $no_footer = 1;
   function moveToNextField(currentField, nextField) {
     $(currentField).removeClass('active'); // Remove 'active' class from current field
     $(nextField).addClass('active'); // Add 'active' class to next field
-    $(nextField).find('input, select').first().focus(); // Focus on the first input/select in the next field
+    $(nextField).find('#highPriorityCheckbox, #work1').first().focus(); // Focus on the first input/select in the next field
   }
 
   // Listen for keyup event on input fields and select dropdown
 
   $("#assign").change(function (e) { 
-    e.preventDefault();
+    // e.preventDefault();
     $("#Nextbtn").click();
 });
 
@@ -440,11 +380,11 @@ $("#highPriorityCheckbox")
     if (nextField.length !== 0) {
       moveToNextField(currentField, nextField);
     } else {
-      $('form').submit(); // Submit the form if there are no more fields
+    //   $('form').submit(); // Submit the form if there are no more fields
     }
   });
 
-//   // Functionality for the 'Previous' button click
+   // Functionality for the 'Previous' button click
   $('#prev').on('click', function(){
     var currentField = $('.cols.active');
     var prevField = currentField.prev('.cols');
@@ -456,50 +396,6 @@ $("#highPriorityCheckbox")
 });
 
 
-// $(document).ready(function(){
-//   // Function to move to the next field
-//   function moveToNextField(currentField, nextField) {
-//     $(currentField).removeClass('active'); // Remove 'active' class from current field
-//     $(nextField).addClass('active'); // Add 'active' class to next field
-//     $(nextField).find('input, select').first().focus(); // Focus on the first input/select in the next field
-//   }
-
-//   // Listen for keyup event on input fields and select dropdown
-//   $('input, select').on('keyup, change', function(e){
-//     if (e.keyCode === 13 || e.keyCode === 9 || e.type === 'change') { // Check for Enter key (keyCode 13), Tab key (keyCode 9), or change event
-//       var currentField = $(this).closest('.cols');
-//       var nextField = currentField.next('.cols');
-
-//       if (nextField.length !== 0) {
-//         moveToNextField(currentField, nextField);
-//       } else {
-//         $('form').submit(); // Submit the form if there are no more fields
-//       }
-//     }
-//   });
-
-//   // Functionality for the 'Next' button click
-//   $('#next').on('click', function(){
-//     var currentField = $('.cols.active');
-//     var nextField = currentField.next('.cols');
-
-//     if (nextField.length !== 0) {
-//       moveToNextField(currentField, nextField);
-//     } else {
-//       $('form').submit(); // Submit the form if there are no more fields
-//     }
-//   });
-
-//   // Functionality for the 'Previous' button click
-//   $('#prev').on('click', function(){
-//     var currentField = $('.cols.active');
-//     var prevField = currentField.prev('.cols');
-
-//     if (prevField.length !== 0) {
-//       moveToNextField(currentField, prevField);
-//     }
-//   });
-// });
 
    
 // </script>
