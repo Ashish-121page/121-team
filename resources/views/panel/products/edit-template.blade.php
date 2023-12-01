@@ -169,22 +169,6 @@
         <div class="row m-2">
             <div class="col-12" style="display: flex;align-items: center;justify-content: center;gap: 10px;margin: 40px 0;">
                 {{-- 1st Column --}}
-<<<<<<< HEAD
-                <div class="col-md-6 col-12 " style="overflow: auto; max-height: 80vh">
-
-                    <h5>Select Properties You Wish to Edit</h5>
-                    <div class="">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Template Name" required name="template_name" id="template_name" value="{{ $template->template_name }}">
-                        </div>
-                    </div>
-                    {{-- <p>These Values will be Updated on All selected Products</p> --}}
-
-                    {{-- <div class="form-group w-100">
-                        <input type="checkbox" id="check_all" class=" m-2" @if (count((array) $col_list) == count(json_decode($template->columns_values)))checked @endif>
-                        <label for="check_all"  style="font-size: large;user-select: none;">Select All</label>
-                    </div>   --}}
-=======
                 <div class="col-md-6 col-12 my-3" style="overflow: auto; max-height: 80vh">
 
                     <h5>Select Properties You Wish to Edit</h5>
@@ -194,7 +178,6 @@
                         <input type="checkbox" id="check_all" class=" m-2" @if (count((array) $col_list) == count(json_decode($template->columns_values)))checked @endif>
                         <label for="check_all"  style="font-size: large;user-select: none;">Select All</label>
                     </div>  
->>>>>>> main
 
                     {{-- All Attributes Except System --}}
                     <div class="accordion-item">
@@ -206,13 +189,6 @@
                         </h2>
                         <div id="collapseallattribute" class="accordion-collapse show" data-bs-parent="#accordionExample">
                             <div class="accordion-body" style="max-height:80%; overflow:hidden;overflow-y:auto;">
-<<<<<<< HEAD
-                                <div class="form-group w-100" style="margin-bottom:0rem">
-                                    <input type="checkbox" id="check_all" class=" m-2" @if (count((array) $col_list) == count(json_decode($template->columns_values)))checked @endif>
-                                    <label for="check_all"  style="font-size: 14px; font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">Select All</label>
-                                </div> 
-=======
->>>>>>> main
 
                                 <div class="table-responsive" style="max-height:40vh; overflow:hidden;overflow-y:auto;">
                                     <table class="table">
@@ -222,15 +198,8 @@
                                                     <tr class="">
                                                         <td scope="row" style="padding:0px! important">
                                                             <div class="form-group h-100" style="cursor: pointer; margin-bottom:0rem!important; ">
-<<<<<<< HEAD
-                                                                {{-- <input type="checkbox" value="{{$item}}" style="10%" id="attri_{{$item}}" class="my_attribute mx-1" name="myfields[]" data-index="{{ $key }}" @if (in_array($item,json_decode($template->columns_values))) checked @endif> --}}
-                                                                <input type="checkbox" value="{{$item}}" id="attri_{{$item}}" class="my_attribute d-none mx-1" name="myfields[]" data-index="{{ $key }}" @if (in_array($item,json_decode($template->columns_values))) checked @endif>
-                                                                <label for="attri_{{$item}}" class="form-label w-100" style="font-size: 12.8px;font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">{{$item}}</label>
-                                                                {{-- <label for="attri_{{$item}}" class="form-label" style="font-size: 12.8px;user-select: none; width:90%">{{$item}}</label> --}}
-=======
                                                                 <input type="checkbox" value="{{$item}}" style="10%" id="attri_{{$item}}" class="my_attribute mx-1" name="myfields[]" data-index="{{ $key }}" @if (in_array($item,json_decode($template->columns_values))) checked @endif>
                                                                 <label for="attri_{{$item}}" class="form-label" style="font-size: large;user-select: none; width:90%">{{$item}}</label>
->>>>>>> main
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -296,11 +265,7 @@
 
                     </div> --}}
 
-<<<<<<< HEAD
-                    <div class="actionbtn mt-2 d-flex justify-content-between align-items-center my-2">
-=======
                     <div class="actionbtn border mt-2 d-flex justify-content-between align-items-center my-2">
->>>>>>> main
                         
                         <a class="btn btn-outline-primary px-5 close-button" href="{{ route('panel.products.create') }}?action=nonbranded&bulk_product">Cancel</a>
 
@@ -310,11 +275,7 @@
 
                 {{-- 2nd column --}}
                 <div class="col-md-6 col-12 h-100 invisible" style="overflow: auto; max-height: 80vh" id="tableselected">
-<<<<<<< HEAD
-                    <div class="accordion-item" style="margin-top: 5rem">
-=======
                     <div class="accordion-item">
->>>>>>> main
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsesystemattri"
                                 aria-expanded="false" aria-controls="collapsesystemattri">
@@ -330,15 +291,9 @@
                                             @forelse ($col_list as $item => $key)
                                                 @if (in_array($item,$default_property))
                                                     <tr class="">
-<<<<<<< HEAD
-                                                        <td scope="row" style="padding:0px! important">
-                                                            <div class="form-group h-100" style="margin-bottom: 0rem!important;">
-                                                                <label for="attri_{{$item}}" class="form-label" style="font-size: 12.8px; font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">{{$item}}</label>
-=======
                                                         <td scope="row">
                                                             <div class="form-group">
                                                                 <label for="attri_{{$item}}" class="form-label" style="font-size: large;user-select: none;">{{$item}}</label>
->>>>>>> main
                                                                 <input type="checkbox" value="{{$item}}" id="attri_{{$item}}" class="sys_attribute m-2 invisible" checked name="systemfiels[]">
                                                             </div>
                                                         </td>
@@ -362,18 +317,6 @@
 
                     </div>
 
-<<<<<<< HEAD
-                    {{-- <div class="my-3">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Template Name" required name="template_name" id="template_name" value="{{ $template->template_name }}">
-                        </div>
-                    </div> --}}
-                    <div class="d-flex flex-column gap-3 align-items-start justify-content-start">
-                        <div class="heading w-100" style="background-color: #f6f8fb; color:#879099;">
-                            <h5>Selected Tags</h5>
-                        </div>
-                        <div class="selected_tag" style="width:100%">
-=======
                     <div class="my-3">
                         <div class="form-group">
                             <input type="text" class="form-control" placeholder="Template Name" required name="template_name" id="template_name" value="{{ $template->template_name }}">
@@ -384,7 +327,6 @@
                             <h5>Selected Tags</h5>
                         </div>
                         <div class="selected_tag">
->>>>>>> main
                             {{-- Append Element Are shown Here --}}
                         </div>
                     </div>
@@ -417,21 +359,6 @@
 
             $(".my_attribute").click(function (e) { 
 
-<<<<<<< HEAD
-                let tag = `<div class="form-group" id="parent_${$(this).data('index')}"style="margin-bottom:0rem;">
-                    <input type="checkbox" value="${$(this).val()}" id="${$(this).attr('id')}" class="selected_prop m-2" checked data-parent="parent_${$(this).data('index')}">
-                    <label for="${$(this).attr('id')}" class="form-label" style="font-size: 12.8px;font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">${$(this).val()}</label>
-                    <span class="close-icon" style=" width:20%;" data-parent="parent_${$(this).data('index')}">&times;</span>   
-                </div>`;
-
-                if ($(this).is(":checked")) {
-                    $(`label[for="${$(this).attr('id')}"]`).css({"background-color": "#6666cc", "color": "#fff"});       
-                    $(".selected_tag").append(tag);
-                    
-                }else{
-                    $(`#parent_${$(this).data('index')}`).remove();
-                    $(`label[for="${$(this).attr('id')}"]`).css({"background-color": "#fff", "color": "#000000"});
-=======
                 let tag = `<div class="form-group" id="parent_${$(this).data('index')}">
                     <input type="checkbox" value="${$(this).val()}" id="${$(this).attr('id')}" class="selected_prop m-2" checked data-parent="parent_${$(this).data('index')}">
                     <label for="${$(this).attr('id')}" class="form-label" style="font-size: large;user-select: none;">${$(this).val()}</label>
@@ -441,7 +368,6 @@
                     $(".selected_tag").append(tag);
                 }else{
                     $(`#parent_${$(this).data('index')}`).remove();
->>>>>>> main
                 }
                 
             });
@@ -456,30 +382,6 @@
                     let index = elem.dataset.index;
                     let eleid = elem.id;
                     
-<<<<<<< HEAD
-                    let tag = `<div class="form-group" id="parent_${index}" style="margin-bottom: 0rem;">
-                            <input type="checkbox" value="${value}" id="${eleid}" class="selected_prop m-2" checked data-parent="parent_${index}">
-                            <label for="${eleid}" class="form-label" style="font-size: 12.8px;font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">${value}</label>
-                            <span class="close-icon" style=" width:20%;" data-parent="parent_${$(this).data('index')}">&times;</span>
-                        </div>`;
-                    
-                    if ($(this).is(":checked")) {
-                        let labelId = $(this).attr("for");
-                        $(`label[for="${eleid}"]`).css({
-                            "background-color": "#6666cc",
-                            "color": "#fff"
-                    });
-                        
-                        $(".selected_tag").append(tag);
-                        
-                    }else{
-                        $(`#parent_${$(this).data('index')}`).remove();
-                        $(`label[for="${eleid}"]`).css({
-                            "background-color": "#fff",
-                            "color": "#000000"
-                    });
-                        
-=======
                     let tag = `<div class="form-group" id="parent_${index}">
                             <input type="checkbox" value="${value}" id="${eleid}" class="selected_prop m-2" checked data-parent="parent_${index}">
                             <label for="${eleid}" class="form-label" style="font-size: large;user-select: none;">${value}</label>
@@ -489,7 +391,6 @@
                         $(".selected_tag").append(tag);
                     }else{
                         $(`#parent_${$(this).data('index')}`).remove();
->>>>>>> main
                     }
                 }
                 myfunc();

@@ -45,15 +45,9 @@
                     Back
                 </a>
                 <div class="d-flex">
-<<<<<<< HEAD
-                    <a class="btn btn-outline-primary mx-1" id="addcategory" href="#animatedModal" role="button">
-                        <i class="fa fa-plus" aria-hidden="true"></i> Create Category
-                    </a>
-=======
                     {{-- <a class="btn btn-outline-primary mx-1" id="addcategory" href="#animatedModal" role="button">
                         <i class="fa fa-plus" aria-hidden="true"></i> Create Category
                     </a> --}}
->>>>>>> main
                     {{-- <button type="button" class="btn btn-outline-primary openglobal mx-1" data-bs-toggle="modal" data-bs-target="#selectGlobalMOdal">
                         Select Global Category
                     </button> --}}
@@ -76,26 +70,16 @@
 
     @include('backend.constant-management.category.include.modal')
     @include('backend.constant-management.category.include.select_global')
-<<<<<<< HEAD
-    @include('backend.constant-management.category.include.add-category')
-    @include('backend.constant-management.category.include.industry')     
-=======
     {{-- @include('backend.constant-management.category.include.add-category') --}}
     @include('backend.constant-management.category.include.industry')
->>>>>>> main
 
     <!-- push external js -->
     @push('script')
         <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
         <script>
-<<<<<<< HEAD
-            $(document).ready(function() {
-                    
-=======
 
             $(document).ready(function() {                      
                 
->>>>>>> main
                 $("#addcategory").animatedModal({
                     animatedIn: 'lightSpeedIn',
                     animatedOut: 'lightSpeedOut',
@@ -105,11 +89,7 @@
                     top: '24%',
                     left: '40%',
                 });
-<<<<<<< HEAD
-                $("#demo01").click();
-=======
                 // $("#demo01").click();
->>>>>>> main
 
                 var table = $('#category_table').DataTable({
                     responsive: true,

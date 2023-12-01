@@ -396,9 +396,10 @@ class UserController extends Controller
         $manangebrands = $request->manangebrands;
         $managegroup = $request->managegroup;
         $offers = $request->offers;
+        $articleManage = $request->articleManage;
 
 
-        $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers ];
+        $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers,'articleManage' => $articleManage ];
 
 
 

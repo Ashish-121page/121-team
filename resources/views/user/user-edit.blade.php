@@ -190,6 +190,7 @@
                                             $permi->mysupplier = $permi->mysupplier ?? 'no';                                             
                                             $permi->manangebrands = $permi->manangebrands ?? 'no';
                                             $permi->offers = $permi->offers ?? 'no';
+                                            $permi->articleManage = $permi->articleManage ?? 'no';
                                         @endphp
 
 
@@ -347,6 +348,21 @@
                                                         </td>
                                                       </tr>
 
+
+                                                      <tr>
+                                                        <th scope="row" class="sno"></th>
+                                                        <td>Manage 121 Article</td>
+                                                        <td>
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" type="radio" value="yes" id="articlesyes" name="articleManage" {{ $permi->articleManage == 'yes' ? 'checked' : '' }}>
+                                                          </div>
+                                                        </td>
+                                                        <td>
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" type="radio" value="no" id="articleno" name="articleManage" {{ $permi->articleManage == 'no' ? 'checked' : '' }}>
+                                                          </div>
+                                                        </td>
+                                                      </tr>
 
                                                       <tr>
                                                         <td colspan="2">

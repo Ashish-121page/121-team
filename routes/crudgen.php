@@ -141,11 +141,7 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
         Route::get('delete/product/image/{id}', ['uses' => 'ProductController@deleteImage', 'as' => 'deleteImage']);
         Route::get('/upload/qr/code', ['uses' => 'ProductController@updateProductSku', 'as' => 'update.qr']);
 
-<<<<<<< HEAD
-        Route::get('/delete/sku/{productid}/{attribute_value_id}', ['uses' => 'ProductController@deleteSKu', 'as' => 'delete.sku']);
-=======
         Route::get('/delete/sku/{productid}', ['uses' => 'ProductController@deleteSKu', 'as' => 'delete.sku']);
->>>>>>> main
 
         Route::get('edit/template/{template}', ['uses' => 'ProductController@edittemplate', 'as' => 'edit.template']);
         Route::post('update/template/{template}', ['uses' => 'ProductController@updatetemplate', 'as' => 'update.template']);

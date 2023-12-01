@@ -28,6 +28,20 @@
 
 </style>
 
+@php
+    $user = auth()->user();  
+    $acc_permissions = json_decode($user->account_permission);
+    $acc_permissions->mysupplier = $acc_permissions->mysupplier ?? 'no';
+    $acc_permissions->offers = $acc_permissions->offers ?? 'no';
+    $acc_permissions->addandedit  = $acc_permissions->addandedit  ?? 'no';
+    $acc_permissions->manangebrands  = $acc_permissions->manangebrands  ?? 'no';
+    $acc_permissions->pricegroup  = $acc_permissions->pricegroup  ?? 'no';
+    $acc_permissions->managegroup  = $acc_permissions->managegroup  ?? 'no';
+    $acc_permissions->bulkupload  = $acc_permissions->bulkupload  ?? 'no';
+    $acc_permissions->articleManage  = $acc_permissions->articleManage  ?? 'no';
+    
+@endphp
+
 
 
 <header class="header-top" header-theme="light" style="background-color: #1e1e2d">
@@ -96,52 +110,16 @@
                                 <span>{{ 'Quotes' }}</span>
                             </a>
                         </div>
-                        {{-- <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.users.show','panel.user_shops.edit'] ,'active' ) }}">
-                            <a href="{{ route('panel.user_shops.edit',[$user_shop->id ?? 0,'active'=>'shop-details']) }}" class="a-item" style="color:#ccd3e4;" >
-                                <i class="ik ik-user"></i>
-                                <span>{{ 'Profile' }}</span>
-                            </a>
-                        </div> --}}
 
-
-                        
-                        {{-- <div class="nav-item dropdown ml-4 {{ activeClassIfRoutes(['panel.users.show','panel.user_shops.edit'] ,'active open' ) }} "> 
-                            <a href="{{route('panel.users.show','panel.user_shops.edit')}}"class="nav-item dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" style="color:#ccd3e4;">
-                                <i class="ik ik-user"></i>
-                                <span>{{ 'Profile' }}</span>
-                            </a>
-                           <div class="dropdown-menu" style="">
-                               <a href="{{ route('panel.user_shops.edit',[$user_shop->id ?? 0,'active'=>'my-info']) }}" class="dropdown-item a-item" >{{ __('My Info')}}</a> 
-                               <a href="{{ route('panel.seller.enquiry.index') }}" class="dropdown-item a-item" >{{ __('Contact')}}</a> 
-                               <a href="{{ route('panel.users.show', [auth()->id(),'active'=>'my-info'])}}" class="dropdown-item a-item" >{{ __('Account')}}</a>
-                           </div>
-                        </div> --}}
-                        
-
-                        {{-- <div class="nav-item {{ ($segment2 == 'orders') ? 'active' : '' }}">
-                                <a href="{{ route('panel.orders.index')}}" class="a-item" ><i class="ik ik-shopping-cart"></i><span>{{ 'Orders' }}</span></a>
-                            </div> --}}
-                           
-
-                         {{-- <div class="nav-item {{ activeClassIfRoutes(['panel.users.show','panel.user_shops.edit'] ,'active open' ) }}">
-                            <a href="{{ route('panel.user_shops.edit',[$user_shop->id ?? 0,'active'=>'shop-details']) }}" class="a-item" ><i class="ik ik-user"></i><span>{{ 'Profile' }}</span></a>
-                        </div> --}}
-
-                        {{-- <div class="nav-item {{ ($segment2 == 'contact') ? 'active' : '' }}">
-                            <a href="{{ route('contact.index')}}" class="a-item" ><i class="ik ik-help-circle"></i><span>{{ '121 Support' }}</span></a>
-                        </div> --}}
-
-
-                        {{-- <div class="nav-item {{ ($segment2 == 'contact') ? 'active' : '' }}"> --}}
-                            {{-- <a href="https://forms.gle/JKe6p6bic7gjnuJq5" class="a-item" ><i class="ik ik-mail"></i><span>{{ '121 Support' }}</span></a> --}}
-                            {{-- <a href="{{ route('panel.support_ticket.index') }}" class="a-item" ><i class="ik ik-mail"></i><span>{{ '121 Support' }}</span></a> --}}
-                        {{-- </div> --}}
-
-                        {{-- <div class="nav-item {{ ($segment2 == 'subscription') ? 'active' : '' }}">
-                            <a href="{{ route('panel.subscription.index') }}" class="a-item" ><i class="ik ik-check-square"></i><span>{{ 'Subscription Plan' }}</span></a>
-                        </div> --}}
-                        {{-- @endcan --}}
-                        {{-- @endif     --}}
+                        @if ($acc_permissions->articleManage == 'yes')
+                            <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.panel.user_shop_items.create'] ,'active' ) }}">
+                                <a href="{{ route('panel.constant_management.article.index') }}" class="a-item" style="color:#ccd3e4; padding: 17px" >
+                                    {{-- <i class="ik ik-archive"></i> --}}
+                                    <span>{{ '121 Blog' }}</span>
+                                </a>
+                            </div>
+                        @endif
+                    
                     </ul>
 
                 </div>

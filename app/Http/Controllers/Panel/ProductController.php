@@ -2215,14 +2215,6 @@ class ProductController extends Controller
             $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
 
 
-<<<<<<< HEAD
-            $productVarients = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_id')->pluck('attribute_id');
-
-            $attribute_value_id = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
-            
-        
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video'));
-=======
             // echo $product->sku;
             // return;
 
@@ -2257,7 +2249,6 @@ class ProductController extends Controller
             $available_products = ProductExtraInfo::where('group_id',$product->sku)->groupBy('product_id')->pluck('product_id')->toArray();
             
             return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','leastRepeated'));
->>>>>>> main
 
         }catch(\Exception $e){            
             // return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -2644,15 +2635,6 @@ class ProductController extends Controller
     }
 
 
-<<<<<<< HEAD
-    public function deleteSKu(Request $request,$productid,$attribute_value_id) {
-        
-        try {
-            $product = Product::whereId(decrypt($productid))->first();
-            $productextra = ProductExtraInfo::where('product_id',decrypt($productid))->where('attribute_value_id',decrypt($attribute_value_id))->get();
-
-            $count = 0;
-=======
     public function deleteSKu(Request $request,$productid) {
         
         try {
@@ -2667,21 +2649,10 @@ class ProductController extends Controller
             $count = 0;
 
             // ! Deleting Product Extra Info
->>>>>>> main
             foreach ($productextra as $key => $value) {
                 $value->delete();
                 $count++;
             }
-<<<<<<< HEAD
-
-
-
-            return back()->with("success","$count Property of the Product Deleted Successfully!!");
-            
-        } catch (\Throwable $th) {
-            throw $th;
-            // return back()->with('error',"Oops There was and Error.");
-=======
             
             // ! Deleting Proposal Items
             $proposalItems = ProposalItem::where('product_id',$product->id)->get();
@@ -2709,7 +2680,6 @@ class ProductController extends Controller
         } catch (\Throwable $th) {
             // throw $th;
             return back()->with('error',"Oops There was and Error.");
->>>>>>> main
         }
     }
 

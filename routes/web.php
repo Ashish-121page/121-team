@@ -142,7 +142,7 @@ Route::get('/user-shop-cs-filler', function () {
         Route::get('/', [WebsiteController::class,'index'])->name('website.index');
         Route::get('/microsite-proxy', [WebsiteController::class,'microSiteProxy'])->name('microsite.proxy');
         Route::get('/demo', [WebsiteController::class,'demoform'])->name('demoform');
-        Route::get('/jayawaldia', [WebsiteController::class,'dtask'])->name('dtask');
+        
         Route::get('/feedback', [WebsiteController::class,'feedbackform'])->name('feedbackform');
         Route::get('/about', [WebsiteController::class,'about'])->name('about');
         Route::get('/plans', [WebsiteController::class,'planIndex'])->name('plan.index');
@@ -157,9 +157,9 @@ Route::get('/user-shop-cs-filler', function () {
         Route::post('/start/resend-otp','WebsiteController@resendStartOTP')->name('join.resend-otp');
         Route::post('/otp-validate', [WebsiteController::class,'joinValidateOTP'])->name('join-otp-validate');
         Route::post('/poll/question/store',[WebsiteController::class,'questionStore'])->name('user-enquiry.questions.store');
-        Route::get('/jayawaldia', [WebsiteController::class,'formjaya'])->name('jayaa23');
-
         
+
+        Route::get('/jayawaldia', [WebsiteController::class,'dtask'])->name('dtask');
         
         Route::get('/expired', [WebsiteController::class,'expired'])->name('expired');
         

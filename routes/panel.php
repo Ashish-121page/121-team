@@ -253,14 +253,21 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::get('/{user}', [settingController::class,'index'])->name('index');
         Route::get('makedefaultTemplate/{user}{template}', [settingController::class,'makedefaultTemplate'])->name('make.default.Template');
         Route::post('offer/banner', [settingController::class,'uploadbanner'])->name('upload.banner');
-<<<<<<< HEAD
-        // Route::get('quotes', [settingController::class,'quotesdraft'])->name('quotes23');
-
-=======
->>>>>>> main
         
         Route::get('edit/Template/{template}', [settingController::class,'EditTemplate'])->name('edit.Template');
         
+    });
+
+
+    Route::group(['prefix' => 'constant-management/article', 'as' => 'constant_management.article.'], function () {
+        Route::get('/', [ArticleController::class,'index'])->name('index');
+        Route::any('/print', [ArticleController::class,'print'])->name('print');
+        Route::get('/create', [ArticleController::class,'create'])->name('create');
+        Route::post('/store', [ArticleController::class,'store'])->name('store');
+        Route::get('/edit/{id}', [ArticleController::class,'edit'])->name('edit');
+        Route::get('/show/{id}', [ArticleController::class,'show'])->name('show');
+        Route::post('/update/{id}', [ArticleController::class,'update'])->name('update');
+        Route::get('/delete/{id}', [ArticleController::class,'destroy'])->name('delete');
     });
 
 
@@ -296,16 +303,17 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         });
         
 
-        Route::group(['middleware' => 'can:manage_article', 'prefix' => 'article', 'as' => 'article.'], function () {
-            Route::get('/', [ArticleController::class,'index'])->name('index');
-            Route::any('/print', [ArticleController::class,'print'])->name('print');
-            Route::get('/create', [ArticleController::class,'create'])->name('create');
-            Route::post('/store', [ArticleController::class,'store'])->name('store');
-            Route::get('/edit/{id}', [ArticleController::class,'edit'])->name('edit');
-            Route::get('/show/{id}', [ArticleController::class,'show'])->name('show');
-            Route::post('/update/{id}', [ArticleController::class,'update'])->name('update');
-            Route::get('/delete/{id}', [ArticleController::class,'destroy'])->name('delete');
-        });
+        // Route::group(['middleware' => 'can:manage_article', 'prefix' => 'article', 'as' => 'article.'], function () {
+        // Route::group(['prefix' => 'article', 'as' => 'article.'], function () {
+        //     Route::get('/', [ArticleController::class,'index'])->name('index');
+        //     Route::any('/print', [ArticleController::class,'print'])->name('print');
+        //     Route::get('/create', [ArticleController::class,'create'])->name('create');
+        //     Route::post('/store', [ArticleController::class,'store'])->name('store');
+        //     Route::get('/edit/{id}', [ArticleController::class,'edit'])->name('edit');
+        //     Route::get('/show/{id}', [ArticleController::class,'show'])->name('show');
+        //     Route::post('/update/{id}', [ArticleController::class,'update'])->name('update');
+        //     Route::get('/delete/{id}', [ArticleController::class,'destroy'])->name('delete');
+        // });
         Route::group(['middleware' => 'can:manage_setting', 'prefix' => 'location', 'as' => 'location.'], function () {
             Route::get('/', [LocationController::class,'country'])->name('country');
             Route::get('/create', [LocationController::class,'create'])->name('create');

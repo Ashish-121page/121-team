@@ -22,19 +22,6 @@ class settingController extends Controller
         $currency_record = UserCurrency::where('user_id',$user->id)->get();
         $acc_permissions = json_decode($user->account_permission);
 
-<<<<<<< HEAD
-        // magicstring($acc_permissions);
-        
-        // return;
-
-        return view("panel.settings.index",compact('templates','user','user_shop','currency_record','acc_permissions'));
-    }
-
-    //  public function quotesdraft()
-    // {
-    //     return view("panel.settings.quotes23");
-    // }
-=======
         $length = 20;
         $industries = Category::where('parent_id',null)->get();
 
@@ -78,7 +65,6 @@ class settingController extends Controller
 
         return view("panel.settings.index",compact('templates','user','user_shop','currency_record','acc_permissions','category','industries','category_global','sub_category'));
     }
->>>>>>> main
     
     
     public function makedefaultTemplate(Request $request,$user,$template) {
