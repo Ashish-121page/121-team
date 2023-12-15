@@ -170,10 +170,10 @@ $breadcrumb_arr = [
                 changeval.attr('readonly',false);
             });
 
-
             $("input").keyup(function (e) {
                 let text = $(this).val().length - 1;
                 let notin = ['@',"!","#","$","%","^","&","*","(",")","'","?","/","<",">","|","}","{","[","]","~","`","-","_","=","+",";",":",".",",",'"']
+
 
                 if (notin.includes($(this).val()[text])) {
                     let newval = $(this).val().replace($(this).val()[text],"")

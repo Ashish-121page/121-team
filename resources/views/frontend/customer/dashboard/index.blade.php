@@ -92,6 +92,7 @@
 <link href="{{ asset('frontend/assets/css/simplebar.css') }}" rel="stylesheet">
 
 <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
 <style>
 
@@ -2671,6 +2672,7 @@
 
 <button type="button" class="btn btn-sm btn-outline-primary animate__animated " id="installBtn" style="position: absolute;top: 82%;left: 50%;">Install App</button>
 
+
 @include('frontend.customer.dashboard.includes.modal.ekyc')
 @include('frontend.customer.dashboard.includes.modal.raise-ticket')
 @include('frontend.customer.dashboard.includes.modal.access-code')
@@ -2685,6 +2687,7 @@
 @include('frontend.customer.dashboard.includes.modal.createTeam')
 @include('frontend.customer.dashboard.includes.modal.add-currencies')
 @include('frontend.customer.dashboard.includes.modal.update-currency')
+{{-- @include('frontend.customer.dashboard.includes.modal.install-pwa') --}}
 @include('backend.seller.modal.catalogue-request')
 @include('panel.user_shops.include.add-numbers')
 
@@ -2717,7 +2720,6 @@
         });
     </script>
 @endif
-
 
 @if (request()->has('upload_gst') && request()->get('upload_gst') == 'true')
     <script>
@@ -3525,6 +3527,20 @@
 <script>
      // OTP Check
 
+     $(document).ready(function () {
+        // $("#installpwa").modal('show');
+        $("#installBtn").addClass('animate__bounceInRight')
+        setTimeout(function() {
+            $('#installBtn').removeClass('animate__bounceInRight');
+            $('#installBtn').addClass('animate__bounceOutRight');
+        }, 10000);
+
+        
+     });
+     
+
+     
+
      $('#otpButton').on('click',function(e){
                 e.preventDefault();
                 var number = $('.contact_number').val();
@@ -3602,4 +3618,36 @@
                 })
             })
 </script>
+
+    <script>
+        // PWA Script
+        $(document).ready(function () {
+            $("#installBtn").click()
+        });
+        
+        let deferredPrompt;
+        const installButton = document.getElementById('installBtn');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            modal.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', async () => {
+            modal.style.display = 'none';
+            if (deferredPrompt !== null) {
+                deferredPrompt.prompt();
+                await deferredPrompt.userChoice;
+                deferredPrompt = null;
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            // installButton.style.display = 'none';
+            alert("App Installed Successfully");
+        });
+        
+    </script>
+
 @endsection
