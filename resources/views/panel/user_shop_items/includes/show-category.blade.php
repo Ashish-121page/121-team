@@ -1,9 +1,9 @@
-<div class="card-body1">
-   <div class="d-flex gap-2 flex-wrap">
+<div class="card-body1 mt-5" style="padding:30px  0px ! important;">
+   <div class=" col-md-12 col-lg-12  d-flex gap-5 flex-wrap" style="padding: 0px ;">
 
         @if($acc_permissions->managegroup == "yes")
             @if ($Team_categorygroup)
-            <div class="cardbx m-1 col-4 product-card product-box d-flex flex-column border bg-white"  style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
+            <div class="cardbx mx-2 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white"  style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
                 {{-- <a href="{{ route('panel.seller.category.index','13') }}" class="bg-primary text-danger" style="color:white;height: 100%;width: 100%;display: flex;align-items: center;justify-content: center;font-size: larger;background-color: #6e6ee683;"> --}}
                     
                 {{-- <a href="{{ route('panel.seller.category.index','13') }}" class="text-dark btn btn-outline-primary" style="display: block;height: 100%;width: 100%;position: absolute;left: 0;text-align: center;">
@@ -19,19 +19,19 @@
         @endif
 
         @foreach ($categories as $item)
-            <div class="cardbx m-1 col-4 product-card product-box d-flex flex-column border bg-white m-1"  style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
-                <div class="head d-flex justify-content-between mx-3 my-2">
-                    <div class="one">
-                        <div style="font-weight: bold"> {{ $item->name }} </div>
-                        <small class="text-muted"> {{ getProductCountViaCategoryIdOwner($item->id,auth()->id(),1) }} Product</small>
+            <div class="cardbx mx-3 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white m-1"  style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
+                <div class="head d-flex justify-content-between  my-2" style="font-size: .rem !important;">
+                    <div class="one col-10">
+                        <div style="font-weight: bold; font-size: large !important;" > {{ $item->name }} </div>
+                        <small class="text-muted" style="font-size: medium;"> {{ getProductCountViaCategoryIdOwner($item->id,auth()->id(),1) }} Products</small>
                     </div>
-                    <div class="two">
-                        <a href="#one" class="btn text-primary btn-sm invisible">
+                    <div class="two col-2 d-flex flex-column justify-content-start align-items-start" col-2 d-flex flex-column justify-content-start align-items-start">
+                        {{-- <a href="#one" class="btn text-primary btn-sm invisible">
                             <i class="fas fa-edit"></i>
                         </a>
                         <a href="#one" class="btn text-primary btn-sm invisible">
                             <i class="fas fa-trash"></i>
-                        </a>
+                        </a> --}}
                         @if (auth()->id() == $item->user_id)
                             <a href="#edit" class="btn text-primary border border-primary btn-icon btn-sm opencateedit" data-catidchange="{{ $item->id }}"  data-catname="{{ $item->name }}">
                                 <i class="fas fa-pencil-alt"></i>
@@ -43,14 +43,14 @@
                     </div>
                 </div>
 
-                <div class="cardbody d-flex gap-2 p-4">
+                <div class="cardbody d-flex gap-2" style="padding-bottom: 1rem; padding-top: 1rem;">
                     {{-- getting Last 3 Record of Product --}}
                     @php
                         $last_Records = App\Models\Product::where('category_id',$item->id)->orderBy('id','DESC')->limit(3)->get();
                     @endphp
 
                     @foreach ($last_Records as $last_Record)
-                        <div style="height: 100px; width: 100px;object-fit: contain">
+                        <div class="col-6 col-md-4 col-lg-4" style="height: 100px; width: 100px;object-fit: contain; padding:0px;">
                             <img src="{{ asset(getShopProductImage($last_Record->id)->path ?? '')  ?? ''}}"  class="img-fluid p-1" style="border-radius: 10px;height: 100%; width: 100%;">
                         </div>    
                     @endforeach                    
@@ -79,16 +79,16 @@
         @endphp
         
         @foreach ($own_categories as $item)            
-            <div class="cardbx m-1 col-4 product-card product-box d-flex flex-column border bg-white" style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
-                <div class="head d-flex justify-content-between mx-3 my-2">
-                    <div class="one">
+            <div class="cardbx mx-2 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white" style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
+                <div class="head d-flex justify-content-between my-2">
+                    <div class="one col-10">
                         <div style="font-weight: bold"> {{ $item->name }} </div>
                         <small class="text-muted"> {{ getProductCountViaCategoryIdOwner($item->id,auth()->id(),1) }} Product</small>
                     </div>
-                    <div class="two">
-                        <a href="#one" class="btn text-primary btn-sm invisible">
+                    <div class="two col-2 d-flex flex-column justify-content-start align-items-start"">
+                        {{-- <a href="#one" class="btn text-primary btn-sm invisible">
                             <i class="fas fa-edit"></i>
-                        </a>
+                        </a> --}}
                         @if (auth()->id() == $item->user_id)
                             <a href="#edit" class="btn text-primary border border-primary btn-icon btn-sm opencateedit" data-catidchange="{{ $item->id }}"  data-catname="{{ $item->name }}">
                                 <i class="fas fa-pencil-alt"></i>
@@ -100,13 +100,13 @@
                     </div>
                 </div>
 
-                <div class="cardbody d-flex gap-2 p-4">
+                <div class="cardbody d-flex gap-2" style="padding-bottom: 1rem; padding-top: 1rem;">
                     {{-- getting Last 3 Record of Product --}}
                     @php
                         $last_Records = App\Models\Product::where('category_id',$item->id)->groupBy('model_code')->orderBy('id','DESC')->limit(3)->get();
                     @endphp
                     @foreach ($last_Records as $last_Record)
-                        <div style="height: 100px; width: 100px;object-fit: contain">
+                        <div class=" col-6 col-md-5 col-lg-3" style="height: 100px; width: 100px;object-fit: contain">
                             <img src="{{ asset(getShopProductImage($last_Record->id)->path) }}"  class="img-fluid p-1" style="border-radius: 10px;height: 100%; width: 100%;">
                         </div>    
                     @endforeach                    
@@ -141,4 +141,10 @@
 
 </div>
 <a class="btn btn-outline-primary d-none" id="demo01" href="#animatedModal" role="button"></a>
-@include('panel.user_shop_items.modal.edit-category')
+
+@if($acc_permissions->managegroup == "yes")
+    @if ($Team_categorygroup)
+        @include('panel.user_shop_items.modal.edit-category')
+        @include('backend.constant-management.category.include.add-category')
+    @endif
+@endif

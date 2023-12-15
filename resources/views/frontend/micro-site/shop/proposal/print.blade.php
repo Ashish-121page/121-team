@@ -11,7 +11,7 @@
                     @endforeach
                 @endif
                 <th scope="col">Price</th>
-                <th scope="col">Image</th>
+                <th scope="col">image</th>
             </tr>
         </thead>
         <tbody>
@@ -22,25 +22,25 @@
                                 <td>
                                      {{-- @if($product->user_id == auth()->id()) --}}
                                         {{ $product->model_code }}
-                                    {{-- @else 
+                                    {{-- @else
                                         {{ isset($usi) ? $usi->id : '' }}
                                     @endif   --}}
                                 </td>
                                 <td scope="row"> {{ $product->title }} </td>
                                 <td> {{ $product->description ?? '--' }} </td>
                                 @if ($selectedProp != [] && $selectedProp != null)
-                                
+
                                     @foreach ($selectedProp as $index => $item)
                                     @php
                                         $ids_attri = getParentAttruibuteValuesByIds($item,[$product->id]);
                                         $attri_count = count($ids_attri);
-                                    @endphp                                       
+                                    @endphp
                                         @if ($attri_count != 0)
                                             @foreach ($ids_attri as $key1 => $value)
                                                 <td>
                                                     {{ trim(getAttruibuteValueById($value)->attribute_value) }}
                                                     @if ($attri_count != 1 && $key1 < $attri_count-1 )
-                                                        , 
+                                                        ,
                                                     @endif
                                                 </td>
                                             @endforeach
@@ -67,9 +67,9 @@
                                     $HomeCurrency = 1;
                                     $currency_symbol = $proposal->offer_currency ?? 'INR';
                                 @endphp
-                                <td> 
+                                <td>
                                     {{ $currency_symbol }}
-                                    {{number_format(round(exchangerate($price,$exhangerate,$HomeCurrency)),2) }}    
+                                    {{number_format(round(exchangerate($price,$exhangerate,$HomeCurrency)),2) }}
                                 </td>
                                 <td>
                                     @php
@@ -81,15 +81,15 @@
                                         //     $proposal_pro->save();
                                         // }
                                         @endphp
-                                        <img src="{{ $url }}" alt="" style="height:150px">
-                                </td> 
+                                        {{$url}}
+                                </td>
                             </tr>
                         @endforeach
                     @else
                     <div class="col-lg-6 mx-auto text-center mt-3">
                             <div class="card">
                                 <div class="card-body">
-                                    
+
                                     <i class="fa text-primary fa-lg fa-shopping-cart">
                                     </i>
                                     <p class="mt-4">No Products added yet!</p>
@@ -100,4 +100,4 @@
         </tbody>
     </table>
 </div>
- 
+

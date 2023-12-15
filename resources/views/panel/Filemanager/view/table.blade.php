@@ -1,28 +1,31 @@
 <div class="col-md-12 col-12">
-    <table class="table">
+    <table class="table ">
         <thead class="bg-primary">
             <tr>
                 <th scope="col" class="text-light">
                     <input type="checkbox" id="checkall">
                 </th>
-                <th scope="col" class="text-light">
+                <th   scope="col" class="text-light">
                     Thumbnail
                 </th>
-                <th scope="col" class="text-light">
+                <th colspan="2" scope="col" class="text-light" style="width:150px">
                     Asset Name
                     <i class="fas fa-arrow-up filterbtn @if(request()->get('filtertype') == 'ASC' && request()->get('filtername') == 'name') active @endif" data-filteraname="name" data-filtertype="ASC"></i>
                     <i class="fas fa-arrow-down filterbtn  @if(request()->get('filtertype') == 'DESC' && request()->get('filtername') == 'name') active @endif" data-filteraname="name" data-filtertype="DESC"></i>
                 </th>
-                <th scope="col" class="text-light">
-                    Size
-                    <i class="fas fa-arrow-up filterbtn @if(request()->get('filtertype') == 'ASC' && request()->get('filtername') == 'size') active @endif" data-filteraname="size" data-filtertype="ASC"></i>
-                    <i class="fas fa-arrow-down filterbtn  @if(request()->get('filtertype') == 'DESC' && request()->get('filtername') == 'size') active @endif" data-filteraname="size" data-filtertype="DESC"></i>
+                <th  scope="col" class="text-light">
+                    Size 
+                    <span>   </span>
+
+
+                    {{-- <i class="fas fa-arrow-up filterbtn @if(request()->get('filtertype') == 'ASC' && request()->get('filtername') == 'size') active @endif" data-filteraname="size" data-filtertype="ASC"></i> --}}
+                    {{-- <i class="fas fa-arrow-down filterbtn  @if(request()->get('filtertype') == 'DESC' && request()->get('filtername') == 'size') active @endif" data-filteraname="size" data-filtertype="DESC"></i> --}}
                 </th>
                 <th scope="col" class="text-light">Extension</th>
-                <th scope="col" class="text-light">
+                <th  scope="col" class="text-light">
                     Linked Items
-                    <i class="fas fa-arrow-up filterbtn @if(request()->get('filtertype') == 'ASC' && request()->get('filtername') == 'attachment') active @endif" data-filteraname="attachment" data-filtertype="ASC"></i>
-                    <i class="fas fa-arrow-down filterbtn  @if(request()->get('filtertype') == 'DESC' && request()->get('filtername') == 'attachment') active @endif" data-filteraname="attachment" data-filtertype="DESC"></i>
+                    {{-- <i class="fas fa-arrow-up filterbtn @if(request()->get('filtertype') == 'ASC' && request()->get('filtername') == 'attachment') active @endif" data-filteraname="attachment" data-filtertype="ASC"></i> --}}
+                    {{-- <i class="fas fa-arrow-down filterbtn  @if(request()->get('filtertype') == 'DESC' && request()->get('filtername') == 'attachment') active @endif" data-filteraname="attachment" data-filtertype="DESC"></i> --}}
                 </th>
                 <th scope="col" class="text-light">
                     Last Modified
@@ -52,12 +55,12 @@
                         @endif
                         
                     </td>
-                    <td>
+                    <td colspan="2">
                         <span class="filename" data-oldname="{{ basename($file) }}">
                             {{ basename($file) }}
                         </span>
                     </td>
-                    <td>
+                    <td style="width:100px !important;" >
                         {{ number_format(Storage::size($file)/ (1024 * 1024),2) }} MB
                     </td>
                     <td  class="text-uppercase">

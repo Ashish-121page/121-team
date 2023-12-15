@@ -46,10 +46,10 @@ class WebsiteController extends Controller
     {
         return view('frontend.website.booksession.index');
     }
-    
-    public function dtask()
+
+     public function formjaya()
     {
-        return view('frontend.website.booksession.Dtask');
+        return view('frontend.website.booksession.jayaform23');
     }
     
      public function feedbackform()

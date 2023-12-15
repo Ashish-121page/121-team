@@ -1,12 +1,12 @@
-<div id="animatedModal12">
-    <div class="modal-content custom-spacing" style="hweight: 100%;display: flex;align-items: center;justify-content: center;">
+<div id="animatedModal12" style="overflow: hidden">
+    <div class="modal-content custom-spacing" style="hweight: 100%;display: flex;align-items: center;justify-content: center;padding: 10px">
         
         <div class="d-flex justify-content-between w-100 ">
-            <div id="btn-close-modal" class="close-animatedModal12 d-flex justify-content-between w-100  custom-spacing"
+            <div class="h5 m-3">Add New Category</div>
+            {{-- <div id="btn-close-modal" class="close-animatedModal12 d-flex justify-content-between w-100  custom-spacing"
             style="color:black;font-size: x-large;margin: 10px;display: flex;justify-content: space-between;background-color: white">
-                <h5>Add New Categroy</h5>
                 <i class="far fa-times-circle fa-rotate-270 fa-lg "></i>
-            </div>
+            </div> --}}
         </div>
 
 
@@ -19,7 +19,7 @@
             <input type="hidden" name="shop_id" value="{{ encrypt(getShopDataByUserId(auth()->id())->id) }}">
 
             
-            <div class="row">               
+            <div class="row" style="width: 37rem"> 
                 <div class="col-md-12 col-12"> 
                     <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
                         <label for="name" class="control-label">Category Name<span class="text-danger">*</span></label>
@@ -58,8 +58,8 @@
                     
                 </div>
                                             
-                <div class="col-md-12 ml-auto d-flex justify-content-between align-items-center close-animatedModal12 ">
-                    <button type="button" class="btn btn-outline-primary">Cancel</button>
+                <div class="col-md-12 ml-auto d-flex justify-content-between align-items-center ">
+                    <button type="button" class="btn btn-outline-primary close-animatedModal12">Cancel</button>
                     <button type="submit" class="btn btn-outline-primary">Create</button>
                 </div>
             </div>

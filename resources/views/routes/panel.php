@@ -55,8 +55,12 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         return view('user.profile');
     });
     Route::get('/invoice', function () {
-        return view('pages.invoice');
+        return view('panel.invoice.index');
     });
+
+    // Route::get('/secondview', function () {
+    //     return view('panel.invoice.secondview');
+    // });
         Route::group([ 'namespace' => 'Admin\Manage','prefix' => 'admin/manage/enquiry', 'as' => 'admin.enquiry.'], function () {
          
             Route::post('/api/token', [EnquiryController::class,'token'])->name('api.token');

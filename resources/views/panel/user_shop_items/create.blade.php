@@ -84,7 +84,9 @@
 
     <!-- push external head elements to head -->
     @push('head')
-   
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
     <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/normalize.min.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}">
@@ -296,7 +298,7 @@
                         </div>
                     </div>
 
-                    <div class="" id="contentbx">
+                    <div class="col-md-12 col-lg-12" id="contentbx">
                         
                         @if (request()->has('products'))
                             @include('panel.user_shop_items.includes.show-productTable')
@@ -391,10 +393,7 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    @include('backend.constant-management.category.include.add-category')
-    
+    </div>     
     
     <!-- push external js -->
     @push('script')
@@ -415,7 +414,7 @@
                 animatedOut: 'lightSpeedOut',
                 color: 'FFFFFF',
                 height: '60%',
-                width: '60%',
+                width: 'max-content',
                 top: '24%',
                 left: '40%',
             });
@@ -424,10 +423,7 @@
             $("#newcatname").change(function (e) { 
                     e.preventDefault();
                     let newval = $(this).val();
-
-
                     let newvalue = newval.split(" > ")[1];
-                    
                     $('#tags').tagsinput('add',newvalue);
 
 
@@ -679,7 +675,6 @@
                     $('#lengthInput').val(length);
                     $('#filterRecordsForm').submit();
                 })
-
                 function replaceUrlParam(paramName, paramValue) {
                     var url = window.location.href;
                     if (paramValue == null) {
@@ -959,14 +954,13 @@
                 
             });
         </script>
-
         <script>
             $("#demo01").animatedModal({
                 animatedIn: 'lightSpeedIn',
                 animatedOut: 'bounceOutDown',
                 color: '#F6F7FB',
-                width: "30%",
-                height: "30%",
+                width: "max-content",
+                height: "max-content",
                 transform: "translate(3%, -47%)",
                 top: "35%",
                 left: "35%",

@@ -2668,6 +2668,9 @@
     <input type="hidden" name="active" value="my-offers-sent" id="active">
     <input type="hidden" name="sortoffer" value="" id="shorid">
 </form>
+
+<button type="button" class="btn btn-sm btn-outline-primary animate__animated " id="installBtn" style="position: absolute;top: 82%;left: 50%;">Install App</button>
+
 @include('frontend.customer.dashboard.includes.modal.ekyc')
 @include('frontend.customer.dashboard.includes.modal.raise-ticket')
 @include('frontend.customer.dashboard.includes.modal.access-code')

@@ -105,7 +105,7 @@ class FileManager extends Controller
             // Getting Folder Size
             $formattedSize = 0;
             $user_shop_item = UserShopItem::where('user_id',auth()->id())->pluck('product_id');
-            $limit = $request->get('pageliimt32',8);
+            $limit = $request->get('pageliimt',5);
 
             $Products = Product::whereIn('id',$user_shop_item)->paginate($limit);
             $Products_attribute = ProductExtraInfo::whereIn('product_id',$user_shop_item)->groupBy('attribute_value_id')->get();
@@ -113,8 +113,7 @@ class FileManager extends Controller
 
             if ($request->ajax() && $request->workload == 'linkproductsearch') {
                 // $limit = $request->get('pageliimt',5);
-                $Products = Product::whereIn('id',$user_shop_item)->where('model_code',"LIKE","%".$request->searchCode."%")->orwhere('title',"LIKE","%".$request->searchCode."%")->paginate($limit);
-                
+                $Products = Product::whereIn('id',$user_shop_item)->where('title',"LIKE","%".$request->searchCode."%")->orwhere('model_code',"LIKE","%".$request->searchCode."%")->paginate($limit);
                 $Products_attribute = ProductExtraInfo::whereIn('product_id',$user_shop_item)->groupBy('attribute_value_id')->get();
                 return view('panel.Filemanager.modals.ProductList',compact('Products','Products_attribute'));
             }
@@ -237,11 +236,17 @@ class FileManager extends Controller
         $user_id = auth()->id();
         
         $folderPath = "public/files/$user_id";
+
+        $existingFile = Storage::exists("$folderPath/{$file->getClientOriginalName()}");
         
         $fileName = $file->getClientOriginalName() ?? Str::random(10);
+        
+        if ($existingFile) {
+            return response()->json(['message' => "File Exist",'Filename' => $fileName,'path' => '']);
+        }
+        $path = $file->storeAs($folderPath, $fileName);
     
-        $path = $file->storeAs($folderPath, $fileName);        
-        return response()->json(['path' => $path,'Filename' => $fileName]);
+        return response()->json(['path' => $path,'Filename' => $fileName,'message' => "New File",]);
     }
 
 

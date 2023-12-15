@@ -8,12 +8,50 @@
 
     <!-- push external head elements to head -->
     @push('head')
-    
+
+    <style>
+        .cust_input label {
+            height: 75px;
+            width: 95px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+            margin: 10px;
+            transition: 0.3s;
+            cursor: pointer;
+            gap: 10px;
+        }
+
+        .active{
+            background-color: #6666cc;
+            color: white;
+        }
+        .active svg path{
+            fill: white;
+        }
+
+        .cust_input input {
+            display: none;
+        }
+
+        .cust_input label:hover {
+            background-color: #6666cc;
+            color: white;
+            fill: white;
+        }
+
+        .cust_input label:active {
+            transform: scale(0.8);
+        }
+
+    </style>
 
     @endpush
 
     <div class="container-fluid">
-        
+
         <div class="row">
             <div class="col-md-6 col-12 my-2">
                 <div class="one" style="display: flex;align-items: center;justify-content: flex-start;">
@@ -30,6 +68,9 @@
                     <a href="{{ request()->url() }}?open=category" class="btn btn-outline-primary @if (request()->get('open') == 'category') active @endif mx-1">
                         Category
                     </a>
+                    <a href="{{ request()->url() }}?open=custinp" class="btn btn-outline-primary @if (request()->get('open') == 'custinp') active @endif mx-1">
+                        Custom Input
+                    </a>
 
 
                 </div>
@@ -37,15 +78,15 @@
 
 
             {{-- ` This Menu is Always Visible  --}}
-            
-            <div class="col-md-6 col-12 my-2">        
-                @if (!request()->has('open')) 
+
+            <div class="col-md-6 col-12 my-2">
+                @if (!request()->has('open'))
                     <div class="two" style="display: flex;align-items: center;justify-content: flex-end;">
                         <a href="https://forms.gle/W7xxYt9gwzamse9TA" target="_blank" class="btn btn-outline-primary mx-1">
                             Create New
-                        </a>                    
+                        </a>
                     </div>
-                @endif    
+                @endif
             </div>
 
 
@@ -59,6 +100,8 @@
                 @include('panel.settings.pages.Team')
             @elseif (request()->has('open') && request()->get('open') == 'category')
                 @include('backend.constant-management.category.view.user-view')
+            @elseif (request()->has('open') && request()->get('open') == 'custinp')
+                @include('panel.settings.pages.CustomField')
             @else
                 @include('panel.settings.pages.Template')
             @endif
@@ -66,24 +109,24 @@
 
     </div>
 
-    
+
 @include('frontend.customer.dashboard.includes.modal.add-currencies')
 @include('frontend.customer.dashboard.includes.modal.update-currency')
 @include('frontend.customer.dashboard.includes.modal.createTeam')
-    
-    
-    
+
+
+
     <!-- push external js -->
     @push('script')
         <script>
             $(document).ready(function () {
-                $(".updatecurrencybtn").click(function (e) { 
+                $(".updatecurrencybtn").click(function (e) {
                     e.preventDefault();
 
                     let crrname = $(this).data('crrname');
                     let crrid = $(this).data('crrid');
                     let crrvalue = $(this).data('crrvalue');
-                    
+
                     $('#currencyname').val(crrname);
                     $('#crrid').val(crrid);
 
@@ -93,7 +136,7 @@
                     $("#updatecurrency").modal('show')
                 });
 
-                $("#addcurrencyopen").click(function (e) { 
+                $("#addcurrencyopen").click(function (e) {
                     e.preventDefault();
                     $('#addcurrency').modal('show');
                 });
@@ -195,8 +238,8 @@
             });
         </script>
 
-        <script>                    
-            $(".editchange").click(function (e) { 
+        <script>
+            $(".editchange").click(function (e) {
                 e.preventDefault();
                 // Enabling Input Value
                 let box_parent = $(this).data('box-parent');
@@ -209,7 +252,7 @@
                 $("#"+box_edit).addClass('d-flex');
             });
 
-            $(".discardchange").click(function (e) { 
+            $(".discardchange").click(function (e) {
                 e.preventDefault();
                 // Enabling Input Value
                 let box_parent = $(this).data('box-parent');
@@ -223,16 +266,16 @@
                 $("#"+box_text).addClass('d-flex');
             });
 
-            $(".updatechange").click(function (e) { 
+            $(".updatechange").click(function (e) {
                 e.preventDefault();
                 // {{-- ` Input Value  --}}
-                let input_parent = $(this).data('input-parent'); 
+                let input_parent = $(this).data('input-parent');
 
                 // {{-- ` Id Of The Category --}}
                 let typevalue = $(this).data('typevalue');
                 let text = $("#text-represent-"+input_parent.split('_')[2]);
                 let value = $("#"+input_parent).val();
-                
+
                 $.ajax({
                     type: "GET",
                     url: "{{ route('panel.constant_management.category.update.ajax') }}",
@@ -249,11 +292,11 @@
                         $(".discardchange").click();
                     }
                 });
-                
+
             });
 
             // Add Items
-            $(".additems").click(function (e) { 
+            $(".additems").click(function (e) {
                 e.preventDefault();
                 let parent = $(this).data('parentdata');
                 let item = `<div class="col-3 my-2">
@@ -263,16 +306,28 @@
                 $(`.savebtn[data-parentdata='${parent}']`).removeClass('d-none')
 
                 $("#"+parent).append(item);
+
+                $("input").keypress(function (e) {
+                    console.log(e.target.value);
+                    var keyCode = e.which;
+                    var keyChar = String.fromCharCode(keyCode);
+                    var specialChars = ["#",'$','=','{','}','|','\\',';','"',"'",'?','/','~','`','!']; // Array of special characters
+
+                    if (specialChars.includes(keyChar)) {
+                        e.preventDefault(); // Prevent entering special characters
+                    }
+                });
+
             });
 
-            $(".savebtn").click(function (e) { 
+            $(".savebtn").click(function (e) {
                 e.preventDefault();
                 let parent = $(this).data('parentdata');
                 let valuearr = [];
 
 
                 let items = document.querySelectorAll(`.added_item-${parent}`);
-                
+
                 items.forEach(element => {
                     valuearr.push(element.value);
                 });
@@ -298,7 +353,7 @@
                 });
             });
 
-            $(".collapseicon").click(function (e) { 
+            $(".collapseicon").click(function (e) {
 
                 $(this).toggleClass('btn-primary');
                 $(this).toggleClass('bg-none');
@@ -306,7 +361,7 @@
                 $(this).find('i').toggleClass('fa-angle-down')
 
             });
-            
+
         </script>
 
 

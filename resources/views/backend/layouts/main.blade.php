@@ -8,6 +8,12 @@
 	<title>@yield('title','') | {{ getSetting('app_name') }}</title>
 	<!-- initiate head with meta tags, css and script -->
 	@include('backend.include.head')
+		<style>
+			.sidebar-mini .main-content, .sidebar-mini .header-top{
+				padding-left: 0 !important;
+			}
+			
+		</style>
 
 	@yield('firebase_head')
 </head>

@@ -11,7 +11,7 @@ use App\Models\UserShop;
 
 class GroupProductController extends Controller
 {
-    
+
 
     /**
      * Display a listing of the resource.
@@ -25,7 +25,7 @@ class GroupProductController extends Controller
             $length = $request->get('length');
          }
          $group_products = GroupProduct::query();
-         
+
             if($request->get('search')){
                 $group_products->where('id','like','%'.$request->search.'%')
                 ->orWhere('price','like','%'.$request->search.'%')
@@ -33,7 +33,7 @@ class GroupProductController extends Controller
                 ->orWhere('product_id','like','%'.$request->search.'%')
                 ;
             }
-            
+
             if($request->get('from') && $request->get('to')) {
                 $group_products->whereBetween('created_at', [\Carbon\carbon::parse($request->from)->format('Y-m-d'),\Carbon\Carbon::parse($request->to)->format('Y-m-d')]);
             }
@@ -52,18 +52,18 @@ class GroupProductController extends Controller
             }
             $group_products = $group_products->latest()->paginate($length);
             if ($request->ajax()) {
-                return view('panel.group_products.load', ['group_products' => $group_products])->render();  
+                return view('panel.group_products.load', ['group_products' => $group_products])->render();
             }
             $group = Group::whereId(request()->get('id'))->first();
- 
+
         return view('panel.group_products.index', compact('group_products','group'));
     }
 
-    
+
         public function print(Request $request){
             $group_products = collect($request->records['data']);
-                return view('panel.group_products.print', ['group_products' => $group_products])->render();  
-           
+                return view('panel.group_products.print', ['group_products' => $group_products])->render();
+
         }
 
     /**
@@ -75,7 +75,7 @@ class GroupProductController extends Controller
     {
         try{
             return view('panel.group_products.create');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -97,12 +97,12 @@ class GroupProductController extends Controller
                 'product_id'     => 'required',
                 'price'     => 'required',
             ]);
-        
+
         try{
 
             $group_product = GroupProduct::create($request->all());
             return back()->with('success','Group Product Created Successfully!');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -114,7 +114,7 @@ class GroupProductController extends Controller
             $url = inject_subdomain('shop?pg='.$request->group_id, $user_shop->slug);
             $html = \QrCode::size(170)->generate($url);
             return response($html,200);
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -129,7 +129,7 @@ class GroupProductController extends Controller
     {
         try{
             return view('panel.group_products.show',compact('group_product'));
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -141,11 +141,11 @@ class GroupProductController extends Controller
      * @return  \Illuminate\Http\Response
      */
     public function edit(GroupProduct $group_product)
-    {   
+    {
         try{
-            
+
             return view('panel.group_products.edit',compact('group_product'));
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -164,17 +164,17 @@ class GroupProductController extends Controller
                         'product_id'     => 'required',
                         'price'     => 'sometimes',
                     ]);
-                
+
         try{
-            $group_product = GroupProduct::find($request->id);       
+            $group_product = GroupProduct::find($request->id);
             if($group_product){
-                       
+
                 $chk = $group_product->update($request->all());
 
                 return back()->with('success','Record Updated!');
             }
             return back()->with('error','Group Product not found')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -189,7 +189,7 @@ class GroupProductController extends Controller
     {
         try{
             if($group_product){
-                                      
+
                 $group_product->delete();
                 return back()->with('success','Group Product deleted successfully');
             }else{

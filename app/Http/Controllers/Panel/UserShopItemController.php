@@ -116,6 +116,7 @@ class UserShopItemController extends Controller
                     if($request->has('search') && $request->get('search') != null){
                         $product->where('title','like', '%' . $request->get('search') . '%')
                                 ->orWhere('model_code','like', '%' . $request->get('search') . '%')
+                                ->orWhere('search_keywords','like', '%' . $request->get('search') . '%')
                                 ->orWhere('id','like', '%' . $request->get('search') . '%')
                                 ->orWhereHas('product_items',function($q) use($request){
                                     $q->where('id','like', '%' . $request->get('search') . '%');
@@ -130,9 +131,7 @@ class UserShopItemController extends Controller
                     
                     $scoped_products = $product->whereBrandId($type_id)->groupBy('sku')->latest()->get();
                     $qr_products = $product->whereBrandId($type_id)->latest()->get();
-
                     $categories = Category::whereIn('id',$scoped_products->pluck('category_id'))->groupBy('name')->get();
-                    
                     $title = getBrandRecordByBrandId($request->get('type_id'))->name ?? '';
                 }elseif($type == 'direct'){
                     // Check Access
@@ -152,6 +151,7 @@ class UserShopItemController extends Controller
                     if($request->has('search') && $request->get('search') != null){
                         $product->where('title','like', '%' . $request->get('search') . '%')
                                 ->orWhere('model_code','like', '%' . $request->get('search') . '%')
+                                ->orWhere('search_keywords','like', '%' . $request->get('search') . '%')    
                                 ->orWhere('id','like', '%' . $request->get('search') . '%') 
                                 ->orWhereHas('product_items',function($q) use($request){
                                     $q->where('id','like', '%' . $request->get('search') . '%');
@@ -181,16 +181,6 @@ class UserShopItemController extends Controller
                     $qr_products = $product->whereIn('id', $scoped_items->pluck('product_id'))->latest()->paginate($length);
                     
                     $categories = Category::whereIn('id',$scoped_items->pluck('category_id'))->orderBy('name','ASC')->get();
-
-                    // magicstring($scoped_items->pluck('category_id'));
-                    if (request()->has('debug')) {
-                        $scoped_categories = $scoped_items->pluck('category_id')->unique();
-                        magicstring($scoped_categories);
-                        echo $type_id;
-
-                        // magicstring(User::whereId($type_id)->first());
-                        return;
-                    }
                    
                     $parent_shop = getShopDataByUserId(@$supplier->id);
                     $title = $supplier->name ?? '';
