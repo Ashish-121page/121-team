@@ -25,8 +25,6 @@ Route::group(['middleware' => 'can:manage_dev', 'prefix' => 'dev'], function(){
 	
     // API Documentation
     Route::get('/rest-api', function () { return view('api'); }); 
-
-		
 	Route::get('/invoice', function () { return view('pages.invoice'); });
 
 	//form-controls
@@ -88,6 +86,14 @@ Route::group(['middleware' => 'can:manage_dev', 'prefix' => 'dev'], function(){
 	Route::get('/rating', function () { return view('pages.ui.rating'); });
 	Route::get('/session-timeout', function () { return view('pages.ui.session-timeout'); });
 	Route::get('/pricing', function () { return view('pages.pricing'); });
+
+
+
+	// Test Images API URLS
+	Route::get('/removebg', ['uses' => 'DevRouteController@removebg', 'as' => 'removebg']);
+	Route::any('/sendremovebg', ['uses' => 'DevRouteController@postremovebg', 'as' => 'sendremovebg']);
+
+
 
 });
 

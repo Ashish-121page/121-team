@@ -7,6 +7,7 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
 use App\Models\shorturl;
 use App\Models\TimeandActionModal;
+use App\Models\CustomFields;
 use Carbon\Carbon;
 use Twilio\Rest\Client;
 // from shn
@@ -1209,12 +1210,12 @@ if(!function_exists('getProductCountViaCategoryId')){
             $shop_items_ids = App\Models\UserShopItem::where('category_id',$categoryId)->
                                 where('user_id',$userId)->
                                 pluck('product_id');
-            
+
         }else{
             $shop_items_ids = App\Models\UserShopItem::where('category_id',$categoryId)->whereIsPublished(1)->where('user_id',$userId)->pluck('product_id');
 
         }
-        
+
 
         return App\Models\Product::whereIn('id', $shop_items_ids)->where('exclusive',0)->where('is_publish',1)->groupBy('sku')->get()->count();
     }
@@ -1227,12 +1228,12 @@ if(!function_exists('getProductCountViaCategoryIdOwner')){
             $shop_items_ids = App\Models\UserShopItem::where('category_id',$categoryId)->
                                 where('user_id',$userId)->
                                 pluck('product_id');
-            
+
         }else{
             $shop_items_ids = App\Models\UserShopItem::where('category_id',$categoryId)->whereIsPublished(1)->where('user_id',$userId)->pluck('product_id');
 
         }
-        
+
 
         return App\Models\Product::whereIn('id', $shop_items_ids)->where('is_publish',1)->groupBy('sku')->get()->count();
     }
@@ -1691,7 +1692,7 @@ if(!function_exists('shrinkurl')){
         if ($destination_url == "" || $destination_url == null) {
             return "Invailed Request";
         }
-        
+
         if ($url_key == null) {
             $url_key = generateRandomStringNative(10);
         }
@@ -1975,6 +1976,19 @@ if (!function_exists('getParentAttruibuteValuesByIds')) {
     }
 }
 
+if (!function_exists('getCustomFieldValueById')) {
+    // ! In This Case i Am Using Relational ID As Custom Field Value ID
+    function getCustomFieldValueById($id,$product_id) {
+        return CustomFields::where('relatation_name',$id)->where('product_id',$product_id)->first();
+    }
+}
+
+if (!function_exists("is_html")) {
+    function is_html($string) {
+        return $string != strip_tags($string);
+    }
+}
+
 
 // Gettign Product Attribute Name
 if (!function_exists('getAttruibuteById')) {
@@ -1982,6 +1996,40 @@ if (!function_exists('getAttruibuteById')) {
         return ProductAttribute::whereId($id)->first();
     }
 }
+
+if (!function_exists('countRepetitions')) {
+    function countRepetitions($numbers) {
+        $repetitionCount = array();
+        foreach ($numbers as $num) {
+            if (array_key_exists($num, $repetitionCount)) {
+                $repetitionCount[$num]++;
+            } else {
+                $repetitionCount[$num] = 1;
+            }
+        }
+        return $repetitionCount;
+    }
+}
+
+
+if (!function_exists('getMaxNumberWithIndex')) {
+    function getMaxNumberWithIndex($arr) {
+        arsort($arr);
+        $maxIndex = '';
+        $maxKey = '';
+        $count = 0;
+        foreach($arr as $key => $item){
+            if($count == 0){
+                $maxIndex = $key;
+                $maxKey = $item;
+            }
+            $count++;
+        }
+
+        return [$maxKey=>$maxIndex];
+    }
+}
+
 
 if (!function_exists('findLeastRepeatedNumber')) {
     function findLeastRepeatedNumber($arr) {
@@ -2052,7 +2100,7 @@ if (!function_exists("combinationofSKu")) {
 if (!function_exists('debugtext')) {
     function debugtext($debuging_mode = 0,$str,$color = 'red',$background = 'pink'){
         if ($debuging_mode) {
-            echo "<code style='color: $color; font-weight:800;padding: 8px; background-color: $background; margin:8px;display:block'>$str</code>".newline(); 
+            echo "<code style='color: $color; font-weight:800;padding: 8px; background-color: $background; margin:8px;display:block'>$str</code>".newline();
         }
     }
 }
@@ -2075,7 +2123,7 @@ if (!function_exists('exchangerate')) {
     function exchangerate($Cost_Price,$exhange_currency_rate,$Home_currency_rate = 1) {
 
         $difference = $Home_currency_rate/$exhange_currency_rate;
-        $result = $Cost_Price*$difference;  
+        $result = $Cost_Price*$difference;
 
         return $result;
     }

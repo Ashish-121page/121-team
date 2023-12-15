@@ -2670,7 +2670,8 @@
     <input type="hidden" name="sortoffer" value="" id="shorid">
 </form>
 
-<button type="button" class="btn btn-sm btn-outline-primary animate__animated " id="installBtn" style="position: fixed;top: 50%;right: 1.5%;font-size: smaller;">Install App</button>
+<button type="button" class="btn btn-sm btn-outline-primary animate__animated " id="installBtn" style="position: absolute;top: 82%;left: 50%;">Install App</button>
+
 
 @include('frontend.customer.dashboard.includes.modal.ekyc')
 @include('frontend.customer.dashboard.includes.modal.raise-ticket')

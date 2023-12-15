@@ -181,6 +181,7 @@ class BulkController extends Controller
 
         $productObj = null;
         $master_obj = collect($master);
+
       // Check Subcategory
         if(AuthRole() == "User"){
             $scoped_category = getProductCategoryByUserIndrustry(auth()->user()->industry_id);

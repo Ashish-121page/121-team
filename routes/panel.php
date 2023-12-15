@@ -34,9 +34,11 @@ use App\Http\Controllers\Backend\CaseWorkstreamMessageController;
 use App\Http\Controllers\Backend\CaseWorkstreamAttachmentController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\invoiceController;
 use App\Http\Controllers\NewBulkController;
 use App\Http\Controllers\Panel\ProposalController;
 use App\Http\Controllers\Panel\UserShopItemController;
+use App\Http\Controllers\Panel\ImageController;
 use App\Http\Controllers\settingController;
 use App\Models\UserShopItem;
 
@@ -59,25 +61,25 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::get('/profile', function () {
         return view('user.profile');
     });
-    Route::get('/invoice', function () {
-        return view('pages.invoice');
-    });
+    // Route::get('/invoice', function () {
+    //     return view('pages.invoice');
+    // });
         Route::group([ 'namespace' => 'Admin\Manage','prefix' => 'admin/manage/enquiry', 'as' => 'admin.enquiry.'], function () {
-         
+
             Route::post('/api/token', [EnquiryController::class,'token'])->name('api.token');
             Route::post('/api/sendmessage', [EnquiryController::class,'sendMessage'])->name('api.sendMessage');
         });
     // dashboard route
     Route::get('/dashboard', [HomeController::class,'dashboard'])->name('dashboard');
-    
+
 
     //only those have manage_user permission will get access
     Route::group(['namespace' => 'Admin\Message','middleware' => 'can:manage_chats','prefix' => 'chats','as' =>'chats.'], function () {
         Route::get('index', ['uses' => 'ChatController@index', 'as' => 'index']);
     });
-  
-    
-    
+
+
+
     //only those have manage_user permission will get access
     Route::group(['middleware' => 'can:access_by_brand','prefix' => 'brands','as' =>'brands.'], function () {
         Route::group(['prefix' => 'products','as' =>'products.'], function () {
@@ -119,19 +121,19 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
         Route::get('/user/bulk', [UserController::class,'bulkuserimportshow'])->name('create.user.bulk');
         Route::post('/user/bulk', [BulkController::class,'bulkuserimportadd'])->name('create.user.bulk');
-        
+
 
         Route::get('/user/{id}', [UserController::class,'edit']);
         Route::post('/user/update/{id}', [UserController::class,'update'])->name('update-user');
         Route::post('/user/update', [UserController::class,'update']);
         Route::get('/user/delete/{id}', [UserController::class,'delete']);
-        Route::get('/user/login-as/{id}', [UserController::class,'loginAs']);        
+        Route::get('/user/login-as/{id}', [UserController::class,'loginAs']);
         Route::get('/user/status/{id}/{s}', [UserController::class,'status'])->name('user.status.update');
         Route::get('/user-log/{u_id}/{role?}', [UserController::class,'userlog'])->name('user_log.index');
         Route::post('/ekyc-status', [UserController::class,'updateEkycStatus'])->name('update-ekyc-status');
     });
     Route::get('/users-show/{id?}', [UserController::class,'userShow'])->name('users.show');
-    
+
     Route::post('', 'ProfileController@updatePassword')->name('backend.password.update');
     //only those have manage_role permission will get access
     Route::group(['middleware' => 'can:manage_role'], function () {
@@ -152,10 +154,10 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     });
 
 
-        
+
     // get permissions
     Route::get('get-role-permissions-badge', [PermissionController::class,'getPermissionBadgeByRole']);
-        
+
     Route::group(['namespace' => 'Admin\WebsiteSetting','middleware' => 'can:manage_setting', 'prefix' => 'website-setting', 'as' => 'website_setting.'], function () {
         Route::get('header', ['uses' => 'HeaderController@index', 'as' => 'header']);
         Route::post('header', ['uses' => 'HeaderController@storeHeader', 'as' => 'header.store']);
@@ -181,8 +183,8 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::post('cookies-store', ['uses' => 'AppearanceController@storeCookies', 'as' => 'cookies.store']);
         Route::post('script-store', ['uses' => 'AppearanceController@storeCustomScript', 'as' => 'script.store']);
         Route::post('style-store', ['uses' => 'AppearanceController@storeCustomStyles', 'as' => 'style.store']);
-       
-       
+
+
         Route::get('social-login', ['uses' => 'SocialLoginController@index', 'as' => 'social-login']);
         Route::post('social-login', ['uses' => 'SocialLoginController@store', 'as' => 'social-login.store']);
     });
@@ -210,7 +212,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::get('registration', ['uses' => 'SettingController@registration', 'as' => 'registration']);
         Route::post('registration', ['uses' => 'SettingController@registrationStore', 'as' => 'registration.store']);
     });
-    
+
     Route::group(['namespace' => 'Admin\ConstantManagement','prefix' => 'constant-management', 'as' => 'constant_management.'], function () {
 
         Route::group(['middleware' => 'can:manage_category', 'prefix' => 'category', 'as' => 'category.'], function () {
@@ -241,7 +243,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
         });
 
-      
+
     });
     Route::group(['middleware' => 'auth', 'prefix' => 'constant-management/notification', 'as' => 'constant_management.notification.'], function () {
         Route::get('/', [NotificationController::class,'index'])->name('index');
@@ -253,9 +255,8 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::get('/{user}', [settingController::class,'index'])->name('index');
         Route::get('makedefaultTemplate/{user}{template}', [settingController::class,'makedefaultTemplate'])->name('make.default.Template');
         Route::post('offer/banner', [settingController::class,'uploadbanner'])->name('upload.banner');
-        
         Route::get('edit/Template/{template}', [settingController::class,'EditTemplate'])->name('edit.Template');
-        
+        Route::post('custom/fields', [settingController::class,'customfields'])->name('custom.fields');
     });
 
 
@@ -281,7 +282,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
             Route::post('/update/{id}', [MailSmsTemplateController::class,'update'])->name('update');
             Route::get('/delete/{id}', [MailSmsTemplateController::class,'destroy'])->name('delete');
         });
-      
+
            Route::group(['middleware' => 'can:manage_category_type', 'prefix' => 'category-type', 'as' => 'category_type.'], function () {
                 Route::get('/', [CategoryTypeController::class,'index'])->name('index');
                 Route::get('/create', [CategoryTypeController::class,'create'])->name('create');
@@ -301,7 +302,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
             Route::post('/update/{id}', [UserEnquiryController::class,'update'])->name('update');
             Route::get('/delete/{id}', [UserEnquiryController::class,'destroy'])->name('delete');
         });
-        
+
 
         // Route::group(['middleware' => 'can:manage_article', 'prefix' => 'article', 'as' => 'article.'], function () {
         // Route::group(['prefix' => 'article', 'as' => 'article.'], function () {
@@ -330,7 +331,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
             Route::get('/delete/{id}', [LocationController::class,'destroy'])->name('delete');
         });
 
-       
+
         Route::group(['middleware' => 'can:manage_article', 'prefix' => 'support_ticket', 'as' => 'support_ticket.'],
         function () {
             Route::get('/', [SupportTicketController::class,'AdminIndex'])->name('index');
@@ -360,7 +361,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
             Route::get('/show/{id}', [TicketConversationController::class,'show'])->name('show');
             Route::post('/update/{id}', [TicketConversationController::class,'update'])->name('update');
             Route::get('/delete/{id}', [TicketConversationController::class,'destroy'])->name('delete');
-            
+
         });
     });
 
@@ -421,7 +422,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
             Route::post('/claim/{brand_id}/reply/', [BrandUserController::class,'claimReplyStore'])->name('seller.claim.rejection.store');
         });
-        
+
         Route::get('/access-catalogue-requests', [AccessCatalogueRequest::class,'accessCatalogueReq'])->name('catalogue-request');
     // Seller Dashboard
         Route::group(['middleware' => 'check_access_code','prefix' => 'seller', 'as' => 'seller.'], function () {
@@ -449,11 +450,12 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
             Route::get('/deleteacr/{id}',[AccessCatalogueRequest::class,'deleteacr'])->name('delete.acr');
            
 
+
         });
 
         // workstream routes
 
-    
+
     Route::group(['prefix' => 'case-work-stream', 'as' => 'case_work_stream.'], function () {
         Route::get('index/{id?}', [CaseWorkstreamController::class,'index'])->name('index');
         Route::get('/create/{id?}', [CaseWorkstreamController::class,'create'])->name('create');
@@ -515,10 +517,10 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::get('/export/inventoryNew', [BulkController::class,'inventoryExportDownload'])->name('product.inventoryExport');
     Route::get('/export/deliveryNew', [BulkController::class,'DeliveryExportDownload'])->name('product.deliveryExport');
     Route::post('/update/delivery-group/bulk', [BulkController::class,'DeliveryGroupBulkUpdate'])->name('delivery.group.bulk-update');
-    
+
     Route::get('/display',[UserShopItemController::class,'checkdisplay'])->name('check.display');
     Route::get('/display/product/{id}',[UserShopItemController::class,'checkproductdisplay'])->name('view.product');
-    
+
 
     Route::group(['middleware' => 'auth','namespace' => '/currency', 'prefix' => '/', 'as' => 'currency.'], function () {
         Route::get('/manage/Currency', [CurrencyController::class,'index'])->name('manage.index');
@@ -527,16 +529,16 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::get('/download/bulkcurrency/', [NewBulkController::class,'exportfileCurrency'])->name('exportfileCurrency.bulk');
         Route::post('/upload/bulkcurrency/{user}', [NewBulkController::class,'uploadCurrency'])->name('upload.bulk');
 
-        Route::post('/upload/single/bulkcurrency/{user}', [CurrencyController::class,'uploadCurrency'])->name('upload.single');        
+        Route::post('/upload/single/bulkcurrency/{user}', [CurrencyController::class,'uploadCurrency'])->name('upload.single');
         Route::post('/update/bulkcurrency/{user}', [NewBulkController::class,'updateCurrency'])->name('update.bulk');
 
         Route::post('/update/singlecurrency', [CurrencyController::class,'update'])->name('update.single');
-        
+
     });
 
 
 
-    // @ Group Route for Bulk Sheet 
+    // @ Group Route for Bulk Sheet
     Route::group(['middleware' => 'auth','namespace' => '/bulk', 'prefix' => '/', 'as' => 'bulk.'], function () {
 
         Route::post('/product-upload', [NewBulkController::class,'productUpload'])->name('product-upload');
@@ -551,7 +553,18 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         // ` Update Bulk Excel For Users Upload Admin Start
         Route::get('/manage-bulk', [NewBulkController::class,'updateExcelShow'])->name('manage.bulk');
         Route::post('/update-bulk-excel', [NewBulkController::class,'updateExcel'])->name('update.bulk.excel');
-        // ` Update Bulk Excel For Users Upload Admin End        
+        // ` Update Bulk Excel For Users Upload Admin End
+    });
+
+
+
+    Route::group(['middleware' => 'auth', 'prefix' => '/invoice', 'as' => 'invoice.'], function () {
+        Route::get('/',[invoiceController::class,'index'])->name('index');
+    });
+
+    Route::group(['middleware' => 'auth', 'namespace' => 'panel', 'prefix' => '/image', 'as' => 'image.'], function () {
+        Route::any('/removebg',[ImageController::class,'removeBg'])->name('removebg');
+        Route::any('/changebg',[ImageController::class,'changebg'])->name('changebg');
     });
 
 
@@ -560,9 +573,9 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
 
 
-    
-    // For Exporting User Deatils    
-    Route::get('/export/user-bulk', [BulkController::class,'exportUserData'])->name('user.bulk-export'); 
+
+    // For Exporting User Deatils
+    Route::get('/export/user-bulk', [BulkController::class,'exportUserData'])->name('user.bulk-export');
     Route::post('/update/user-bulk', [BulkController::class,'UserBulkUpdate'])->name('user.bulk-update');
 
 

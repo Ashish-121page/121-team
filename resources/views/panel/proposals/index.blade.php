@@ -14,6 +14,7 @@
             max-height: 65vh;
             overflow-y: auto;
         }
+    
 
        
 </style>
@@ -64,7 +65,7 @@
             <div class="row">
                 <!-- start message area-->
                 <!-- end message area-->
-                <div class="col-md-12">
+                <div class="col-md-12 col-lg-12">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between">
                             <h1>Offers</h1>
@@ -264,29 +265,60 @@
             });
 
 
+            
+ 
             function copyTextToClipboard(text) {
-                    if (!navigator.clipboard) {
-                        fallbackCopyTextToClipboard(text);
-                        return;
+                        if (!navigator.clipboard) {
+                            fallbackCopyTextToClipboard(text);
+                            return;
+                        }
+                    
+                        navigator.clipboard.writeText(text).then(function()
+                    
+                    {
+                            $.toast({
+                                heading: 'SUCCESS',
+                                text: "Offer link copied.",
+                                showHideTransition: 'slide',
+                                icon: 'success',
+                                loaderBg: '#f96868',
+                                position: 'top-right'
+                            });
+                        }, function(err) {
+                            console.error('Failed to copy text to clipboard:', err);
+                        });
                     }
-                    navigator.clipboard.writeText(text).then(function() {
-                    }, function(err) {
+                    
+                    $(".copybtn").click(function(e) {
+                        e.preventDefault();
+                        var link = $(this).val();
+                        copyTextToClipboard(link);
                     });
-                    $.toast({
-                        heading: 'SUCCESS',
-                        text: "Offer link copied.",
-                        showHideTransition: 'slide',
-                        icon: 'success',
-                        loaderBg: '#f96868',
-                        position: 'top-right'
-                    });
-            }
 
-            $(".copybtn").click(function (e) {
-                e.preventDefault();
-                var link = $(this).val();
-                copyTextToClipboard(link);
-            });
+            // function copyTextToClipboard(text) {
+            //         if (!navigator.clipboard) {
+            //             fallbackCopyTextToClipboard(text);
+            //             return;
+            //         }
+            //         navigator.clipboard.writeText(text).then(function() {
+            //         }, function(err) {
+            //         });
+            //         $.toast({
+            //             heading: 'SUCCESS',
+            //             text: "Offer link copied.",
+            //             showHideTransition: 'slide',
+            //             icon: 'success',
+            //             loaderBg: '#f96868',
+            //             position: 'top-right'
+            //         });
+            // }
+
+            // $(".copybtn").click(function (e) {
+            //     e.preventDefault();
+            //     var link = $(this).val();
+            //     copyTextToClipboard(link);
+            
+            // });
 
 
             
@@ -409,6 +441,31 @@
             location.reload()            
             
             });
+
+            // function copyTextToClipboard(text) {
+            //         if (!navigator.clipboard) {
+            //             fallbackCopyTextToClipboard(text);
+            //             return;
+            //         }
+            //         navigator.clipboard.writeText(text).then(function() {
+            //         }, function(err) {
+            //         });
+            //         $.toast({
+            //             heading: 'SUCCESS',
+            //             text: "Offer link copied.",
+            //             showHideTransition: 'slide',
+            //             icon: 'success',
+            //             loaderBg: '#f96868',
+            //             position: 'top-right'
+            //         });
+            // }
+
+            // $(".copybtn").click(function (e) {
+            //     e.preventDefault();
+            //     var link = $(this).val();
+            //     copyTextToClipboard(link);
+            // });
+
                                
                 
         

@@ -17,14 +17,14 @@
             <div class="d-flex justify-content-end mb-3">
                 {{-- <h5>Catalogue ({{$scoped_products->count()}})</h5> --}}
                 <div class="d-flex">
-                    <div class="d-flex">
+                    <div class=" input-group">
                         @if (request()->get('type_id') == auth()->id())                        
                             <button type="submit" name="delproduct" id="delproduct" class="btn btn-sm btn-danger mr-2  d-none validateMargin">Delete Products</button>
                             {{-- Delete All Button --}}
                             <input type="submit" name="delete_all" id="delete_all" value="Delete All Products" class="btn btn-outline-primary d-none"> 
                         @endif
                         {{-- <a href="{{ asset('instructions/instructions.pdf') }}" download="instructions.pdf" class="btn btn-outline-primary m-1">Download Instruction</a> --}}
-                        <input type="text" placeholder="Type and Enter" id="searchValue" name="search" value="{{ request()->get('search') }}"  class="form-control">
+                        <input type="text" placeholder="Quick Search : Name, Model Code, Keywords" id="searchValue" name="search" value="{{ request()->get('search') }}" style= "width: 350px !important;" class="form-control">
                         {{-- <div class="d-flex ml-2">
                             <button type="submit" id="filterBtn" class="btn btn-icon btn-outline-warning " title="submit"><i class="fa fa-filter" aria-hidden="true"></i></button>
                             <a href="{{ route('panel.user_shop_items.create',['type' => request()->get('type'),'type_id' => request()->get('type_id')]) }}" class="btn btn-icon btn-outline-danger ml-2" title="Refresh"><i class="fa fa-redo" aria-hidden="true"></i></a>

@@ -1,12 +1,8 @@
-<?php 
+<?php
 /**
  *
-
- *
- * @ref zCURD
  * @author  GRPL
  * @license 121.page
- * @version <GRPL 1.1.0>
  * @link    https://121.page/
  */
 
@@ -16,7 +12,7 @@ use App\Models\Test;
 
 class TestController extends Controller
 {
-   
+
     private $resultLimit;
 
     public function __construct(){
@@ -48,14 +44,14 @@ class TestController extends Controller
     public function store(Request $request)
     {
         try{
-                        
+
             if($request->hasFile("test_file")){
                 $request['test'] = $this->uploadFile($request->file("test_file"), "tests")->getFilePath();
             } else {
                 return $this->error("Please upload an file for test");
             }
 
-                
+
             $test = Test::create($request->all());
 
             if($test){
@@ -84,7 +80,7 @@ class TestController extends Controller
             return $this->error("Error: " . $e->getMessage());
         }
     }
-   
+
 
     /**
      * Update the specified resource in storage.
@@ -96,15 +92,15 @@ class TestController extends Controller
      public function update(Request $request, Test $test)
     {
         try{
-            
-            
+
+
             if($request->hasFile("test_file")){
                 $request['test'] = $this->uploadFile($request->file("test_file"), "tests")->getFilePath();
                 $this->deleteStorageFile($test->test);
             } else {
                 $request['test'] = $test->test;
             }
-                
+
             $test = $test->update($request->all());
 
             return $this->success($test, 201);
@@ -118,20 +114,20 @@ class TestController extends Controller
      *
      * @param    int  $id
      * @return  \Illuminate\Http\Response
-     */    
+     */
      public function destroy($id)
      {
          try{
             $test = Test::findOrFail($id);
-             
+
                  $this->deleteStorageFile($test->test);
-                                 
+
              $test->delete();
- 
+
              return $this->successMessage("Test deleted successfully!");
          } catch(\Exception $e){
              return $this->error("Error: " . $e->getMessage());
          }
      }
-    
+
 }

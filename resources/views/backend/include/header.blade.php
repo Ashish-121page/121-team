@@ -20,10 +20,10 @@
         content: '';
         background-color: #8484f8;
         height: 3px;
-        width: 100%;
+        width: 120%;
         position: absolute;
-        bottom: 9px;
-        left: 0px;
+        bottom: -7px;
+        left: -4px;
 }
 
 </style>
@@ -74,7 +74,7 @@
                             <li class="nav-item">
 
                                 <div class="nav-item  {{ activeClassIfRoutes(['panel.dashboard'] ,'active' ) }}" >
-                                <a href="{{route('panel.dashboard')}}" class="a-item {{ activeClassIfRoutes(['panel.dashboard'] ,'active' ) }}" style="color:#ccd3e4; padding: 17px" ><i class="ik ik-bar-chart-4"></i><span>{{ __('Home')}}</span></a>                       
+                                <a href="{{route('panel.dashboard')}}" class="a-item px-lg-3 {{ activeClassIfRoutes(['panel.dashboard'] ,'active' ) }}" style="color:#ccd3e4; " ><i class="ik ik-bar-chart-4"></i><span>{{ __('Home')}}</span></a>                       
                                 </div>
                             </li>
 
@@ -82,7 +82,7 @@
 
 
                         <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.user_shop_items.create'] ,'active' ) }}">
-                            <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" style="color:#ccd3e4; padding: 17px; " >
+                            <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item px-lg-3" style="color:#ccd3e4;  " >
                                 {{-- <i class="ik ik-shopping-bag"></i> --}}                                
                                 <span>{{ 'Manage' }}</span>
                                 {{-- Products --}}
@@ -90,24 +90,24 @@
                         </div>
 
                         <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.check.display'] ,'active' ) }}">
-                            <a href="{{ route('panel.check.display') }}" class="a-item" style="color:#ccd3e4; padding: 17px ">
+                            <a href="{{ route('panel.check.display') }}" class="a-item px-lg-3" style="color:#ccd3e4; ">
                                 {{-- <i class="ik ik-upload"></i> --}}
                                 <span>{{ 'Display' }}</span>
                             </a>
                         </div>
 
                         <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.proposals.index','pages.proposal.picked'] ,'active' ) }}">
-                            <a href="{{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" style="color:#ccd3e4; padding: 17px">                           
+                            <a href="{{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item px-lg-3" style="color:#ccd3e4; ">                           
                                 {{-- <i class="ik ik-tag"></i> --}}
                                 <span>{{ 'Offer' }}</span>
                             </a>
                         </div>
                         
                         
-                        <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.panel.user_shop_items.create'] ,'active' ) }}">
-                            <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item" style="color:#ccd3e4; padding: 17px" >
+                        <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.invoice.index'] ,'active' ) }}">
+                            <a href="{{ route('panel.invoice.index')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item px-lg-3" style="color:#ccd3e4; " >
                                 {{-- <i class="ik ik-archive"></i> --}}
-                                <span>{{ 'Quotes' }}</span>
+                                <span>{{ 'Documentation' }}</span>
                             </a>
                         </div>
 
@@ -140,7 +140,7 @@
             
             <div class="top-menu d-flex align-items-center">
                 <div class="nav-item ml-4">
-                    <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank" class="a-item" style="color:#ccd3e4;">
+                    <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank" class="a-item px-lg-3" style="color:#ccd3e4;">
                         <i class="uil uil-envelope h5 align-middle me-2 mr-3"></i>
                         <span style="align-items: flex-end">{{ '121 Support' }}</span>
                     </a>

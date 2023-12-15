@@ -418,7 +418,7 @@
     
                             <div class="col-9 d-flex justify-content-start">
                                 <div class="input-group border rounded">
-                                    <input type="text" id="quicktitle" value="{{ request()->get('title') }}" name="title" class="form-control border-0" placeholder="Quick Search : Name or Model Code">
+                                    <input type="text" id="quicktitle" value="{{ request()->get('title') }}" name="title" class="form-control border-0" placeholder="Quick Search : Name, Model Code, Keywords">
                                     <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit"><i class="uil uil-search"></i></button>
                                 </div>
                             </div>
@@ -481,7 +481,7 @@
         
         <div class="row">
             {{-- Side Bar --}}
-            <div class="col-lg-3 col-md-4 col-12 adwas">
+            <div class="col-md-4 col-lg-3  col-12 adwas">
                 <div class="text-right pl-3 filterMobile" style="margin-top: 10%;">
                     <i title="filter" class="uil uil-bars up_arrow show_mobile_filter" style="font-size: 23px;"></i>
                     <i class="uil uil-times down_arrow close_mobile_filter" style="font-size: 23px;"></i>
@@ -718,13 +718,22 @@
                         </div>
                     </form>
                 </div>
-
-                <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn" form="searchform">Filter</button>
+            {{-- <div class="col-md-3 col-lg-4"> --}}
+                <div class="row justify-content-between">
+                    <div class="col-md-6 col-lg-6">
+                        <button type="submit" class="btn btn-sm mt-2 d-block btn-primary w-100" id="filterBtn" form="searchform">Filter</button>
+                    </div>
+                    <div class="col-md-6 col-lg-6">
+                        <a class="btn btn-sm mt-2 d-block btn-primary w-100" href="{{ route('pages.shop-index')}}" id="resetButton">Reset</a>
+                    </div>
+                </div>
+                {{-- <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn" form="searchform">Filter</button>
                 @if (isset($proposalid) && $proposalid != -1 )
                     <a class="btn mt-2 d-block btn-primary w-100" href="{{ route('pages.proposal.edit',['proposal' => $proposalid,'user_key' => $user_key]) }}?margin=0" id="resetButton">Reset</a>
                 @else
                     <a class="btn mt-2 d-block btn-primary w-100" href="{{route('pages.shop-index')}}" id="resetButton">Reset</a>
-                @endif
+                @endif --}}
+            {{-- </div> --}}
 
                 
             </div><!--end col-->
@@ -736,7 +745,9 @@
                     <div class="row align-items-center">
 
                         @if (count($currency_record) != 0)
-                            <div class="col-md-4 col-6 mt-sm-0 pt-2 pt-sm-0 mb-3">
+                            {{-- <div class="col-md-4 col-6 mt-sm-0 pt-2 pt-sm-0 mb-3"> --}}
+                            <div class="col-md-6 col-6 mt-sm-0 pt-2 pt-sm-0 mb-3">
+
                                 <div class="container" id="selector">
                                     <select class="form-control select_box" id="changeCurrency" name="Currency">
                                         <option aria-readonly="true" disabled>Change Currency</option>
@@ -748,7 +759,9 @@
                             </div>
                         @endif
                         
-                        <div class="col-12 col-md-4">
+                        {{-- <div class="col-12 col-md-4"> --}}
+                        <div class="col-6 col-md-6">
+
                             <div class="container" id="selector">
                                 <select class="form-control input-lg select_box" id="productSort" name="sort">
                                     <option @if(request()->get('sort') == 2) selected @endif value="2">Price: low to high</option>
@@ -794,7 +807,7 @@
                                 </div>
                             </div> --}}
                         </div>
-                    </div>
+            </div>
 
 
             <!--end col-->

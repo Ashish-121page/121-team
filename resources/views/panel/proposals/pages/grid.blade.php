@@ -3,7 +3,7 @@
 
 <!-- Bootstrap CSS -->
 {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
-<div class="col-12">
+<div class="col-md-12 col-lg-12">
   <div class="row">
       <div class="col-6 d-flex justify-content-between align-items-center">
 
@@ -38,9 +38,9 @@
 
   </div>
 </div>
-
-  <div class="card-body1">
-    <div class="d-flex gap-2 flex-wrap"> 
+<div class="col-md-12 col-lg-12">
+  <div class="card-body1">    
+      <div class="d-flex gap-2 flex-wrap"> 
         @if ($proposals->count() > 0)
           @foreach ($proposals as $proposal)
               @php
@@ -54,7 +54,7 @@
 
               @endphp
 
-              <div class="cardbx m-1 col-4 product-card product-box d-flex flex-column border bg-white m-1" style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
+              <div class="cardbx m-1 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white m-1" style="width: 25rem;;max-width: 18rem; min-height: 12rem;max-height: 15rem;">
                   <div class="head d-flex justify-content-between mx-3 my-2">
                       <div class="one">
                         <div style="font-weight: bold">
@@ -76,56 +76,58 @@
                       </div>
                   </div>
 
-                  <div class ="cardbody d-flex gap-2 p-4 justify-content-between">
+                  <div class ="cardbody d-flex gap-2  justify-content-between" style="gap:10px;">
                     @foreach ($productItems as $key => $item)
                       @if ($key < 3)
                           @php
                               $mediarecord = App\Models\Media::where('type_id',$item->product_id)->where('tag','Product_Image')->first();
                           @endphp
                           @if ($mediarecord != null)   
-                                           
+                                          
                             <div style="height: 100px; width: 100px;object-fit: contain; ">
-                              <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid p-1" style="border-radius: 10px;height: 100%; width: 100%; background-color:grey; gap:10px;">
+                              <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid " style="border-radius: 10px;height: 80%; width: 100%; background-color:rgb(186, 183, 183); gap:10px; padding:0.15rem">
                             </div>   
                                         
                           @endif                                                                    
                       @endif
                     @endforeach
-                  </div>
-
-                  <div class="d-flex float-end justify-content-between">                    
-                      <a class="btn btn-primary w-fit mx-1" href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: none; margin-bottom: 10px ">
-                        <i class="uil uil-comment-alt-edit h6"></i> Edit
+                  </div>                  
+                  <div class="d-flex float-end justify-content-between">  
+                    
+                    <a class="btn btn-transparent w-fit" href="{{ inject_subdomain('proposal/picked/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?type=send" target="_blank" style="text-decoration: none; padding:6px 0px;">
+                      <i class="fas fa-download" style="color:#6666cc"></i> 
+                    </a>                    
+                      <a class="btn btn-transparent w-fit " href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: none; padding:6px 0px; ">
+                        <i class="fas fa-edit fa-lg" style="color:#6666cc; margin-right:0px;"></i> 
                       </a>                      
                       
                     @if ($proposal->status == 1)                     
                       @if ($product_count != 0)                                               
-                          <a class="btn-link text-primary copybtnw-fit mx-1"  href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline;">
+                          <button class="btn-link text-primary copybtn w-fit mx-1"  value="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline; border:none; padding: 0px;">
                               <i class="uil-link-alt"></i> Copy Link
-                          </a>                                                
+                          </button>                                                
                       @endif                                            
-                          <a class="btn-link text-primary w-fit mx-1" href="{{inject_subdomain('make-copy/'.$proposal->id,$slug) }}" class="" style="text-decoration: underline;">
+                          <a class="btn-link text-primary w-fit mx-1" href="{{inject_subdomain('make-copy/'.$proposal->id,$slug) }}" class="" style="text-decoration: underline; margin-top:6px; border:none;">
                               <i class="uil-copy"></i> Duplicate
                           </a> 
                     @endif
                     @if ($proposal->status == 1)                                                                                  
-                      <a href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="text-danger delete-item mx-3" style="text-decoration: underline;">
-                          <i class="uil uil-trash h6"></i> Delete
-                      </a>                                                                                   
+                      <button href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="text-danger delete-item mx-1" style="text-decoration: underline;  border:none;background-color:#ffff">
+                          <i class="fas fa-trash"></i>
+                      </button>                                                                                   
                     @endif 
 
-                      <a class="btn btn-transparent w-fit" href="{{ inject_subdomain('proposal/picked/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?type=send" target="_blank" style="text-decoration: none; margin-bottom: 10px; color:primary ">
-                        <i class="fas fa-download" style="color:#6666cc"></i> 
-                      </a>                                                                                        
-                                                   
+                                                                                                          
+                                                  
                   </div>
             
-               </div>
-             
+              </div>
+            
           @endforeach
         @endif      
-    </div>      
+      </div>         
   </div>
+</div> 
 
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

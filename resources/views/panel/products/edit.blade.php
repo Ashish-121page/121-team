@@ -1,5 +1,5 @@
 @extends('backend.layouts.main')
-@section('title', 'Product')
+@section('title', 'Product Edit')
 @section('content')
     @php
     /**
@@ -11,14 +11,16 @@
      * @author    GRPL
      * @license  121.page
      * @version  <GRPL 1.1.0>
-     * @link        https://121.page/
+     * @link   https://121.page/
      */
     $breadcrumb_arr = [['name' => 'Edit Product', 'url' => 'javascript:void(0);', 'class' => '']];
     @endphp
     <!-- push external head elements to head -->
     @push('head')
-    <link rel="stylesheet" href="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">    
-        <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
+<link rel="stylesheet" href="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/assets/css/normalize.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}">
         <style>
             .error {
                 color: red;
@@ -54,7 +56,7 @@
                 outline: none;
                 border-bottom: 1px solid #6666cc;
             }
-            
+
         </style>
     @endpush
 
@@ -79,7 +81,7 @@
         <div class="hoverbtn">
             <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_id={{auth()->id()}}&productsgrid=true" class="btn btn-xl btn-outline-secondary">Discard</a>
         </div>
-        
+
         <div class="row">
             <div class="col-md-12">
                 <div class="row">
@@ -90,11 +92,14 @@
                         <form action="{{ route('panel.products.update', $product->id) }}" method="post" enctype="multipart/form-data" id="ProductForm">
                             @csrf
                             <input type="hidden" name="brand_id" value="{{$product->brand_id}}">
+                            @if (request()->has('type') && decrypt(request()->get('type')) == 'editmainksku')
+                                <input type="hidden" name="type_main" value="{{$product->sku}}">
+                            @endif
                             <div class="row mb-5">
                                 <div class="col-6" style="margin-bottom: 4%">
                                     <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_ide={{ encrypt(auth()->id()) }}&productsgrid=true" class="btn btn-secondary">Back</a>
                                 </div>
-                                
+
                                 <div class="col-6">
                                     <a href="{{ route('panel.products.update.qr') }}?product_ids={{$product->id}}" target="_blank" class="btn btn-outline-primary btn-sm mx-1">Get QR</a>
 
@@ -109,17 +114,17 @@
                                 </div>
                             </div> --}}
 
-                    
+
 
                             <div class="row stepper-actions">
                                 <div class="col-lg-4">
-                                    <a href="#" class="btn btn-outline-primary previous_btn d-none">Previous</a>
+                                    {{-- <a href="#" class="btn btn-outline-primary previous_btn d-none">Previous</a> --}}
                                </div>
                                 <div class="col-lg-4 d-flex form-group justify-content-center">
                                     <button type="submit" class="btn btn-primary btn-md update_btn ">Save & Exit</button>
                                 </div>
                                 <div class="col-lg-4 d-flex form-group justify-content-end">
-                                    <a href="#" class="btn btn-primary next_btn" >Next</a>
+                                    {{-- <a href="#" class="btn btn-primary next_btn" >Next</a> --}}
                                 </div>
                             </div>
 
@@ -149,17 +154,18 @@
                                     <div class="md-step-bar-left"></div>
                                     <div class="md-step-bar-right"></div>
                                 </div>
-                            
+
                             </div> --}}
                             <div class="orange mt-5" style="display: flex;margin: 0 auto;width: 100%;gap : 10px;align-items: center;justify-content: center;">
                                 <div class="md-step  btn active done custom_active_add-0" data-step="0"> Product Info </div>
                                 <div class="md-step btn  editable custom_active_add-1" data-step="1"> Assets </div>
                                 <div class="md-step  btn editable custom_active_add-2" data-step="2"> Internal - Reference </div>
                                 <div class="md-step btn  editable custom_active_add-4" data-step="3"> Internal - Production </div>
-                            
+                                <div class="md-step btn  editable custom_active_add-5" data-step="4"> Variants </div>
                             </div>
                             {{--  Stepper End  --}}
                            
+
 
                             @php
                                 $image_ids = $user_shop_item->images != null ? explode(',',$user_shop_item->images) : [];
@@ -167,10 +173,10 @@
 
                             <div class="row">
                                 {{-- Side Bar --}}
-                                <div class="col-4">
+                                <div class="col-md-5 col-lg-4">
                                     <div class="row">
                                         <div class="col-12">
-                                            <img src="{{ asset(getMediaByIds($image_ids)->path ?? asset('frontend/assets/img/placeholder.png')) }}" class="img-fluid " style="height: 250px;width: 100%;object-fit: contain;" alt="">                                        
+                                            <img src="{{ asset(getMediaByIds($image_ids)->path ?? asset('frontend/assets/img/placeholder.png')) }}" class="img-fluid " style="height: 250px;width: 100%;object-fit: contain;" alt="">
                                         </div>
                                         <div class="col-12">
 
@@ -183,23 +189,24 @@
 
                                             <div class="row my-1">
                                                 <div class="col-4">
-                                                    Title: 
+                                                    Title:
                                                 </div>
                                                 <div class="col-8">
                                                     <input  class="form-control" name="title" type="text" id="title" value="{{$product->title}}" required >
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="row my-1">
                                                 <div class="col-4">
-                                                    Group Id: 
+                                                    Group Id:
                                                 </div>
                                                 <div class="col-8">
-                                                    <select name="Cust_tag_group" class="form-control changegroup" id="Cust_tag_group">
+                                                    <input type="text"  name="Cust_tag_group" class="form-control" placeholder="" >
+                                                    {{-- <select name="Cust_tag_group" class="form-control changegroup" id="Cust_tag_group">
                                                         @foreach ($groupIds_all as $key => $item)
                                                             <option value="{{$key ?? ''}}" @if (in_array($item,$groupIds,true)) selected @endif>{{$item}}</option>
                                                         @endforeach
-                                                    </select>
+                                                    </select> --}}
                                                 </div>
                                             </div>
 
@@ -208,58 +215,77 @@
                                                     <span>Modified </span>
                                                 </div>
                                                 <div class="col-8">
-                                                    <input type="datetime" class="form-control" value="{{ $product->updated_at }}" style="border: none">                                                    
+                                                    <input type="datetime" readonly class="form-control" value="{{ $product->updated_at }}" style="border: none;background-color: #fff;">
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="row my-1">
                                                 <div class="col-4">
                                                     <span>Created</span>
                                                 </div>
                                                 <div class="col-8">
-                                                    <input type="datetime" class="form-control" value="{{ $product->created_at }}" style="border: none">
+                                                    <input type="datetime" readonly class="form-control" value="{{ $product->created_at }}" style="border: none;background-color: #fff;`">
                                                 </div>
                                             </div>
 
-                                            <div class="row my-1">
+                                            <div class="row my-1 mb-3">
                                                 <div class="col-4">
                                                     Variants Basis
                                                 </div>
                                                 <div class="col-8">
-                                                    {{ getAttruibuteById( getAttruibuteValueById($leastRepeated)->parent_id)->name ?? '' }}
+                                                    @foreach ($varient_basis as $key => $item)
+                                                        @if ($item > 1)
+                                                            {{ getAttruibuteById($key)->name }} ({{$item}}) ,
+                                                        @endif
+                                                    @endforeach
                                                 </div>
                                             </div>
-
                                         </div>
+
+
+
                                         <div class="col-12">
-                                            <h5>Variants</h5>
-                                            <table class="table">
+                                            {{-- <h5>Variants</h5> --}}
+                                            <table class="table ">
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Variants</th>
-                                                        <th scope="col">Edit</th>
+                                                        <th scope="col">
+                                                            {{-- <a href="{{ route('panel.products.create') }}?action=nonbranded" class="btn btn-outline-primary" id="createvariant">Add New Variant</a> --}}
+                                                            <a id="createvariant" href="#animatedModal12" role="button" class="text-dark btn btn-outline-primary"> + Add New Variant </a>
+                                                        </th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>    
+                                                <tbody>
+                                                    <tr>
+                                                        <td> 1 </td>
+                                                        <td> Main SKU </td>
+                                                        <td>
+                                                            <a href="{{ route('panel.products.edit',$product->id) }}?type={{encrypt('editmainksku')}}" class="btn btn-outline-primary @if ($product->id == $product->id && request()->has('type') && request()->get('type') != null)
+                                                                active
+                                                            @endif">
+                                                                Edit SKU <i class="fa fa-pen"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
                                                        @foreach ($product_variant_combo as $product_variant)
                                                             <tr>
-                                                                <td> {{ $loop->iteration }} </td>
+                                                                <td> {{ $loop->iteration + 1 }} </td>
                                                                 <td>
                                                                     @foreach ($product_variant as $key => $item)
-                                                                        {{ getAttruibuteValueById($item)->attribute_value }}
-                                                                        @if ($key < count($product_variant) - 1)
-                                                                            , 
-                                                                        @endif
+                                                                        {{ getAttruibuteValueById($item)->attribute_value ?? '' }} ,
                                                                     @endforeach
                                                                 </td>
                                                                 <td>
                                                                     @php
                                                                        $proid =  App\Models\ProductExtraInfo::whereIn('attribute_value_id',$product_variant)->wherein('product_id',$available_products)->where('user_id',$product->user_id)->where('group_id',$product->sku)->first();
-                                                                       @endphp
+                                                                    @endphp
                                                                     @if ($proid != null)
-                                                                        <a href="{{ route('panel.products.edit',$proid->product_id) }}" class="btn btn-outline-primary">
-                                                                            View / Edit
+                                                                        <a href="{{ route('panel.products.edit',$proid->product_id) }}" class="btn btn-outline-primary @if ($product->id == $proid->product_id  && !request()->has('type') && request()->get('type') == null)
+                                                                            active
+                                                                        @endif ">
+                                                                            <i class="fa fa-pen"></i>
                                                                         </a>
                                                                         <a href="{{ route('panel.products.delete.sku',encrypt($proid->product_id)) }}" class="btn btn-outline-danger delete-btn">
                                                                             <i class="fa fa-trash"></i>
@@ -273,14 +299,62 @@
                                                                     $available_products = array_diff($available_products, [$proid->product_id]);
                                                                 }
                                                             @endphp
-                                                       @endforeach                                                      
+                                                       @endforeach
                                                 </tbody>
                                             </table>
+
+                                            {{-- <div class="h6">Variate Basis Only</div>
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Variant</th>
+                                                        <th>Edit</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @php
+                                                        $count = 1;
+                                                    @endphp
+
+                                                    @foreach ($leastRepeated as $key => $item)
+                                                        @if ($item > 1)
+
+                                                            @php
+                                                                $temp_product = App\Models\ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',$key)->get();
+                                                            @endphp
+
+                                                            @foreach ($temp_product as $value)
+                                                                <tr>
+                                                                    <td>{{ $count }}</td>
+                                                                    <td>{{ getAttruibuteValueById($value->attribute_value_id)->attribute_value ?? '' }}</td>
+                                                                    <td>
+                                                                        <a href="#" class="btn btn-outline-primary">
+                                                                            View / Edit
+                                                                        </a>
+                                                                        <a href="#" class="btn btn-outline-danger delete-btn">
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+
+                                                                @php
+                                                                    $count++;
+                                                                @endphp
+                                                            @endforeach
+
+                                                        @endif
+
+                                                    @endforeach
+
+                                                </tbody>
+                                            </table> --}}
+
                                         </div>
                                     </div>
-    
+
                                 </div>
-                                <div class="col-8">
+                                <div class="col-md-7 col-lg-8">
                                     <div class="row">
                                         <div class="stepper" data-index="1">
                                             <div class="card ">
@@ -288,8 +362,7 @@
                                                     {{-- <h3>Edit Product</h3> --}}
                                                 </div>
                                                 <div class="card-body">
-                                                    <div class="row">                                                       
-                                                
+                                                    <div class="row">
                                                          <div class="col-md-6 col-12">
                                                             <div class="form-group {{ $errors->has('category_id') ? 'has-error' : ''}}">
                                                                 <label for="category_id">Category<span class="text-danger">*</span></label>
@@ -317,7 +390,7 @@
                                                         {{-- --Moved --}}
                                                         <div class="col-12 my-2">
                                                             <div class="card-header">
-                                                                <h3>Sale Pricing</h3>
+                                                                <h6>Sale Pricing</h6>
                                                             </div>
                                                         </div>
 
@@ -332,7 +405,7 @@
                                                                     @forelse ($currencies as $item)
                                                                         <option value="{{ $item->currency }}" @if ($product->base_currency == $item->currency) selected @endif>{{ $item->currency }}</option>
                                                                     @empty
-                                                                        <option value="INR">INR</option>
+                                                                        <option value="{{ $product->base_currency }}">{{ $product->base_currency }}</option>
                                                                     @endforelse
                                                                 </select>
                                                             </div>
@@ -349,17 +422,17 @@
                                                                 <input class="form-control" name="min_sell_pr_without_gst" type="number" id="min_sell_pr_without_gst" value="{{ $product->min_sell_pr_without_gst ?? '' }}" >
                                                             </div>
                                                         </div>
-            
+
                                                         @php
                                                             $vip_group = getPriceGroupByGroupName(auth()->id(),"VIP");
                                                             $reseller_group = getPriceGroupByGroupName(auth()->id(),"Reseller");
                                                         @endphp
-            
-                                                        
+
+
                                                         <div class="col-md-4 col-4 d-none">
                                                             <div class="form-group ">
                                                                 <label for="vip_group" class="control-label">VIP Customer Price, without GST  </label>
-                                                
+
                                                                 <input  class="form-control" name="vip_group" type="number" id="vip_group" value="{{ getPriceByGroupIdProductId($vip_group->id,$product->id,0) ?? '0' }}" >
                                                             </div>
                                                         </div>
@@ -374,9 +447,9 @@
                                                                 <label for="mrp" class="control-label">MRP Incl. tax </label>
                                                                 <input  class="form-control" name="mrp" type="number" id="mrp" value="{{ $product->mrp  }}" >
                                                             </div>
-                                                        </div>                                               
-            
-            
+                                                        </div>
+
+
                                                         <div class="col-md-4 col-4">
                                                             <div class="form-group {{ $errors->has('hsn') ? 'has-error' : ''}}">
                                                                 <label for="hsn" class="control-label">HSN Tax</label>
@@ -389,17 +462,18 @@
                                                                 <input  class="form-control" name="hsn_percent" type="number" id="hsn_percent" value="{{$product->hsn_percent}}" >
                                                             </div>
                                                         </div>
-                                                        
+
 
 
 
                                                         {{-- --Moved --}}
                                                         <div class="col-12 my-2">
                                                             <div class="card-header">
-                                                                <h3>Properties</h3>
+                                                                <h6>Properties</h6>
                                                             </div>
                                                         </div>
                                                         {{-- ` PRODUCT WEIGHT GROUP --}}
+
                                                         <div class="col-12">
                                                             <div class="row mb-3">
                                                                 <div class="col-12">
@@ -407,8 +481,8 @@
                                                                     <label for="weightbox">
                                                                         <div class="h6">Product Weight</div>
                                                                     </label> &nbsp;&nbsp;&nbsp;
-            
-            
+
+
                                                                     <input type="checkbox" data-open="weightboxbtn" id="weightbox" class="hiddenbxbtn" @if ($shipping->gross_weight ?? '' != '' || $shipping->weight ?? '' != '' ) checked @endif>
                                                                 </div>
                                                             </div>
@@ -419,14 +493,14 @@
                                                                         <input  class="form-control" name="gross_weight" type="text" id="gross_weight" value="{{ $shipping->gross_weight ?? ''}}" >
                                                                     </div>
                                                                 </div>
-                
+
                                                                 <div class="col-md-4 col-4">
-                                                                    <label class="">{{ __('Weight')}}</label>
+                                                                    <label class="">{{ __('Net Weight')}}</label>
                                                                     <div class="form-group">
                                                                         <input class="form-control" name="weight" type="nnumber" id="weight" value="{{ $shipping->weight ?? ''}}" >
                                                                     </div>
                                                                 </div>
-                
+
                                                                 <div class="col-md-4 col-4">
                                                                     <label class="">{{ __('Weight UOM')}}</label>
                                                                     {{-- Drop Down --}}
@@ -441,7 +515,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-            
+
                                                         {{-- ` PRODUCT DIMENSION GROUP --}}
                                                         <div class="col-12">
                                                             <div class="row mb-3">
@@ -454,7 +528,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="row d-none" id="productdimensionsbox">
-                                                                
+
                                                                 <div class="col-md-6 col-12">
                                                                     <label class="Length">{{ __('Length')}}</label>
                                                                     <div class="form-group">
@@ -473,7 +547,7 @@
                                                                             <input class="form-control" name="height" type="nnumber" id="height" value="{{$shipping->height ?? ''}}" >
                                                                         </div>
                                                                     </div>
-            
+
                                                                 <div class="col-md-6 col-12">
                                                                     <label class="">{{ __('LWH UOM')}}</label>
                                                                     {{-- DropDown --}}
@@ -489,10 +563,10 @@
                                                                         {{-- <input class="form-control" name="length_unit" type="nnumber" id="length_unit" value="{{$shipping->length_unit ?? ''}}" > --}}
                                                                     </div>
                                                                 </div>
-            
+
                                                             </div>
                                                         </div>
-            
+
                                                         {{--`PRODUCT PACKING--}}
                                                         <div class="col-12">
                                                             <div class="row mb-3">
@@ -504,7 +578,7 @@
                                                                     <input type="checkbox" data-open="productpackingbox" id="productpackingbx" class="hiddenbxbtn" @if ($carton_details->standard_carton ?? '' != '' || $carton_details->carton_weight ?? '' != '' || $carton_details->carton_length ?? '' != '' || $carton_details->carton_width ?? '' != '' || $carton_details->carton_height ?? '' != '' ) checked @endif>
                                                                 </div>
                                                             </div>
-            
+
                                                             <div class="row d-none" id="productpackingbox">
                                                                 <div class="col-md-6 col-12">
                                                                     <label class="">{{ __('Standard Carton Pcs')}}</label>
@@ -518,44 +592,44 @@
                                                                             <input class="form-control" name="carton_weight" type="number" id="carton_weight" value="{{$carton_details->carton_weight ?? ''}}" >
                                                                         </div>
                                                                     </div>
-                
+
                                                                     <div class="col-md-6 col-12">
                                                                         <label class="">{{ __('Carton Length')}}</label>
                                                                         <div class="form-group">
                                                                             <input class="form-control" name="carton_length" type="number" id="carton_length" value="{{$carton_details->carton_length ?? ''}}" >
                                                                         </div>
                                                                     </div>
-                
+
                                                                     <div class="col-md-6 col-12">
                                                                         <label class="">{{ __('Carton Width')}}</label>
                                                                         <div class="form-group">
                                                                             <input class="form-control" name="carton_width" type="number" id="carton_width" value="{{$carton_details->carton_width ?? ''}}" >
                                                                         </div>
                                                                     </div>
-                
+
                                                                     <div class="col-md-6 col-12">
                                                                         <label class="">{{ __('Carton Height')}}</label>
                                                                         <div class="form-group">
                                                                             <input class="form-control" name="carton_height" type="number" id="carton_height" value="{{$carton_details->carton_height ?? ''}}" >
                                                                         </div>
                                                                     </div>
-                
+
                                                                     <div class="col-md-6 col-12">
                                                                         <label class="">{{ __('Carton Dimension Unit')}}</label>
                                                                         <div class="form-group">
                                                                         {{-- <input class="form-control" name="Carton_Dimensions_unit" type="nnumber" id="Carton_Dimensions_unit" value="{{$carton_details->Carton_Dimensions_unit ?? ''}}" > --}}
-            
+
                                                                         <select name="Carton_Dimensions_unit" class="select2" id="Carton_Dimensions_unit">
                                                                             <option value="mm">mm</option>
                                                                             <option value="cms">cms</option>
                                                                             <option value="inches">inches</option>
                                                                             <option value="feet">feet</option>
                                                                         </select>
-            
+
                                                                         </div>
                                                                     </div>
-                
-                                                                    
+
+
                                                                     <div class="col-md-6 col-12">
                                                                         <label class="">{{ __('UOM')}}</label>
                                                                         {{-- DropDown --}}
@@ -570,9 +644,9 @@
                                                                     </div>
                                                             </div>
                                                         </div>
-            
+
                                                         {{--`Shipping Details--}}
-            
+
                                                         <div class="col-12">
                                                             <div class="row mb-3">
                                                                 <div class="col-12">
@@ -580,7 +654,7 @@
                                                                     <label for="productshippingbx">
                                                                         <div class="h6">Shipping Details</div>
                                                                     </label> &nbsp;&nbsp;&nbsp;
-                                                                    <input type="checkbox" data-open="productshippingbox" id="productshippingbx" class="hiddenbxbtn" @if ($prodextra->CBM ?? ''  != '' || $prodextra->production_time ?? '' != '' || $prodextra->MBQ ?? '0' != '' || $prodextra->MBQ_unit ?? '0' != '' || $prodextra->remarks ?? '' != '' ) checked @endif>
+                                                                    <input type="checkbox" data-open="productshippingbox" id="productshippingbx" class="hiddenbxbtn" @if (($prodextra->CBM ?? '')  != '' || ($prodextra->production_time ?? '') != '' || ($prodextra->MBQ ?? '0') != '' || ($prodextra->MBQ_unit ?? '0') != '' || ($prodextra->remarks ?? '') != '' ) checked @endif>
                                                                 </div>
                                                             </div>
                                                             <div class="row d-none" id="productshippingbox">
@@ -616,7 +690,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-            
+
                                                         <div class="col-12">
                                                             <div class="row mb-3">
                                                                 {{-- <div class="col-12">
@@ -624,24 +698,24 @@
                                                                         Used
                                                                     </div>
                                                                 </div> --}}
-            
+
                                                                 {{-- custom variations --}}
                                                                 @foreach ($custom_attribute as $item)
-                                                                
+
                                                                 @php
-                                                                $tmp_var = []; 
-            
+                                                                $tmp_var = [];
+
                                                                 if (is_object($prodextra) && property_exists($prodextra, 'Cust_tag_group')){
                                                                     $myvar = App\Models\ProductExtraInfo::where('Cust_tag_group',$prodextra->Cust_tag_group)->where('attribute_id',$item->id)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
-                                                                    // $tmp_var = []; 
-                                                                    
-            
+                                                                    // $tmp_var = [];
+
+
                                                                     foreach ($myvar as $key => $value) {
                                                                         array_push($tmp_var,getAttruibuteValueById($value)->attribute_value);
                                                                     }
                                                                 }
-            
-                                                                @endphp                                           
+
+                                                                @endphp
                                                                     @if (!empty($tmp_var))
                                                                         <div class="col-md-4 col-12">
                                                                             <div class="form-group ">
@@ -653,91 +727,68 @@
                                                                 @endforeach
                                                             </div>
                                                         </div>
-                                                    
-            
-                                                        <div class="col-12">
-                                                            <div class="row mb-3 mx-1">
+
+                                                        {{-- -- Custom Fields of User 1 ` --}}
+                                                        @if (in_array('1',$fileds_sections))
                                                                 <div class="col-12">
-                                                                    <hr class="text-primary">
-                                                                    <label for="productpropertiesbx">
-                                                                        <div class="h6">Properties</div>
-                                                                    </label> &nbsp;&nbsp;&nbsp;
-                                                                    <input type="checkbox" data-open="productpropertiesbox" id="productpropertiesbx" class="hiddenbxbtn" @if ($attribute_value_id != null) checked @endif>
+                                                                    <div class="h5">Custom Cols</div>
                                                                 </div>
-                                                                <div class="row d-none" id="productpropertiesbox">                                                                  
-                                                                    @foreach ($user_custom_col_list as $key => $item)
-                                                                        {{-- ` Getting Product Property Values --}}
-                                                                        @php
-                                                                            $system = App\Models\ProductAttribute::where('name',$item)->where('user_id',null)->first();
-                                                                            $own = App\Models\ProductAttribute::where('name',$item)->where('user_id',auth()->id())->first();
-                                                                            if ($system != null) {
-                                                                                $records = $system;
-                                                                            }else{
-                                                                                $records = $own;
-                                                                            }
-                                                                            $records = App\Models\ProductAttributeValue::where('parent_id',$records->id)->get();
-                                                                        @endphp
-                                                                        
-                                                                        <div class="col-md-6 col-12">
-                                                                            <div class="form-group">
-                                                                                <label for="properties_{{$key}}">{{ $item }}</label>
-                                                                                {{-- <select name="{{$item}}[]" id="properties_{{$key}}" class="select2" multiple> --}}
-                                                                                <select name="properties[]" id="properties_{{$key}}" class="select2" multiple>
-                                                                                    <option value="">Select One</option>
-                                                                                    @foreach ($records as $record)
-                                                                                        <option value="{{ $record->id }}" @if (in_array($record->id,$attribute_value_id))
-                                                                                            selected
-                                                                                        @endif >{{ $record->attribute_value }}</option>
-                                                                                    @endforeach
-                                                                                </select>
-                                                                                
-                                                                            </div>
-                                                                        </div>
-                                        
-                                                                    @endforeach                                                                
+                                                                @if ($user_custom_fields != null)
+                                                                <div class="col-12">
+                                                                    <div class="row">
+                                                                        @foreach ($user_custom_fields as $user_custom_field)
+                                                                            @if ($user_custom_field['ref_section'] === '1')
+                                                                                <div class="col-6">
+                                                                                    <div class="form-group">
+                                                                                        <label for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
+                                                                                        {!! $user_custom_field['tag'] !!}
+                                                                                    </div>
+                                                                                </div>
+                                                                            @endif
+                                                                        @endforeach
+                                                                    </div>
                                                                 </div>
-                                                            </div>                           
-                                                        </div>
-                                                    
-                                                        
+                                                            @endif
+                                                        @endif
+
                                                         <div class="col-md-4 col-4 d-none">
                                                             <div class="form-group ">
                                                                 <label for="allow_resellers" class="control-label mx-2">Allow Resellers  <span class="text-danger">*</span> </label>
-            
-                                                                <input  class="form-control" value="no" name="allow_resellers" type="checkbox" id="allow_resellers" 
+
+                                                                <input  class="form-control" value="no" name="allow_resellers" type="checkbox" id="allow_resellers"
                                                                 checked required>
-                                                                
-                                                            </div> 
+
+                                                            </div>
                                                         </div>
-                                                        
+
                                                         <div class="col-md-4 col-4 d-none">
                                                             <div class="form-group">
                                                                 <label for="is_publish" class="control-label mx-2">Live / Active </label>
                                                                 <input class="form-control" name="is_publish" type="checkbox" id="is_publish" value="1" checked required>
                                                             </div>
                                                         </div>
-                                                        
+
                                                         <div class="col-md-4 col-4 d-none">
                                                             <div class="form-check form-switch">
-                                                                <label class="control-label mx-2">Inventory</label>            
+                                                                <label class="control-label mx-2">Inventory</label>
                                                                 <input type="checkbox" name="manage_inventory" class="js-keepinventory" value="1">
                                                             </div>
                                                         </div>
-            
+
                                                         <div class="col-md-4 col-12 d-none">
                                                             <div class="form-group {{ $errors->has('price') ? 'has-error' : ''}}">
                                                                 <label for="price" class="control-label">Price</label>
                                                                 <input  class="form-control" name="price" type="number" id="price" value="{{ $product->price ?? 0}}" >
                                                             </div>
                                                         </div>
-            
+
                                                         <div class="col-md-6 col-12 d-none">
                                                             <div class="form-group {{ $errors->has('mrp') ? 'has-error' : ''}}">
                                                                 <label for="mrp" class="control-label">General Price , without GST </label>
                                                                 <input class="form-control" name="mrp" type="number" id="mrp" value="{{ $product->mrp ?? old('mrp') }}" >
                                                             </div>
                                                         </div>
-                                                        
+
                                                         @if ($product->user_id != null)
                                                             <input type="hidden" name="user_id" value="{{$product->user_id}}">
                                                         @else
@@ -766,8 +817,8 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>            
-            
+                                            </div>
+
                                         </div>
                                         {{-- ` Asset Safe --}}
                                         <div class="stepper w-100 d-none" data-index="2">
@@ -782,14 +833,14 @@
                                                                 <input class="form-control" name="img[]" multiple type="file" id="img" value="{{$product->img}}">
                                                             </div>
                                                         </div>
-                                                    </div>  
+                                                    </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="card ">
                                                 <div class="row">
-                                                    <div class="col-4">
-            
+                                                    <div class="col-md-12 col-lg-6">
+
                                                       <table class="table">
                                                         <thead>
                                                           <tr>
@@ -821,11 +872,11 @@
                                                           </tr>
                                                         </tbody>
                                                       </table>
-            
+
                                                     </div>
-                                              
-                                              
-                                                    <div class="col-8 justify-content-between">
+
+
+                                                    <div class="col-md-12 col-lg-6 justify-content-between">
                                                         <table class="table table-bordered d-none" id="tableimage">
                                                             <thead>
                                                                 <tr>
@@ -839,16 +890,16 @@
                                                                 @forelse ($medias as $media)
                                                                     @php
                                                                         $path = str_replace("storage","public",$media->path);
-                                                                        if (Storage::exists($path)) {   
-                                                                            $filename = basename($path);                                                                
+                                                                        if (Storage::exists($path)) {
+                                                                            $filename = basename($path);
                                                                         }else{
                                                                             continue;
                                                                         }
-            
+
                                                                         if ($media->file_type != "Image") {
                                                                             continue;
                                                                         }
-            
+
                                                                     @endphp
                                                                     <tr>
                                                                         <th scope="row">
@@ -865,21 +916,21 @@
                                                                         </td>
                                                                         <td>
                                                                             <a href="{{ asset($media->path) }}" download="{{ $media->file_name }}" class="btn btn-link">Download</a>
-            
+
                                                                             <a href="{{ route('panel.products.unlink.asset',[encrypt($product->id),encrypt($media->path) ]) }}?product={{ encrypt($product->id) }}" class="btn btn-link">Unlink</a>
-                                                                            
-                                                                            
-                                                                            
+
+
+
                                                                             <button type="button" class="btn btn-link deletebtn" data-filepath="{{ encrypt($path) }}">Delete</button>
                                                                             </div>
                                                                         </td>
                                                                     </tr>
                                                                 @empty
-                                                                    
+
                                                                 @endforelse
                                                             </tbody>
                                                         </table>
-                                                        
+
                                                         <table class="table table-bordered d-none" id="tableattchment">
                                                             <thead>
                                                                 <tr>
@@ -890,16 +941,16 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-            
+
                                                                 @forelse ($mediaAssets as $media)
                                                                     @php
                                                                         $path = str_replace("storage","public",$media->path);
-                                                                        if (Storage::exists($path)) {   
-                                                                            $filename = basename($path);                                                                
+                                                                        if (Storage::exists($path)) {
+                                                                            $filename = basename($path);
                                                                         }else{
                                                                             continue;
                                                                         }
-                                                                                                                               
+
                                                                     @endphp
                                                                     <tr>
                                                                         <th scope="row">
@@ -922,11 +973,11 @@
                                                                         </td>
                                                                     </tr>
                                                                 @empty
-                                                                    
+
                                                                 @endforelse
                                                             </tbody>
                                                         </table>
-            
+
                                                         <table class="table table-bordered d-none" id="tablegif">
                                                             <thead>
                                                                 <tr>
@@ -937,20 +988,20 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-            
+
                                                                 @forelse ($medias_gif as $media)
                                                                     @php
                                                                         $path = str_replace("storage","public",$media->path);
-                                                                        if (Storage::exists($path)) {   
-                                                                            $filename = basename($path);                                                                
+                                                                        if (Storage::exists($path)) {
+                                                                            $filename = basename($path);
                                                                         }else{
                                                                             continue;
                                                                         }
-                                                                        
+
                                                                         if (explode("/",\Storage::mimeType($path))[1] != 'gif') {
                                                                             continue;
                                                                         }
-                                                                                                                               
+
                                                                     @endphp
                                                                     <tr>
                                                                         <th scope="row">
@@ -973,11 +1024,11 @@
                                                                         </td>
                                                                     </tr>
                                                                 @empty
-                                                                    
+
                                                                 @endforelse
                                                             </tbody>
                                                         </table>
-            
+
                                                         <table class="table table-bordered d-none" id="tablevideo">
                                                             <thead>
                                                                 <tr>
@@ -988,20 +1039,20 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-            
+
                                                                 @forelse ($media_Video as $media)
                                                                     @php
                                                                         $path = str_replace("storage","public",$media->path);
-                                                                        if (Storage::exists($path)) {   
-                                                                            $filename = basename($path);                                                                
+                                                                        if (Storage::exists($path)) {
+                                                                            $filename = basename($path);
                                                                         }else{
                                                                             continue;
                                                                         }
-                                            
+
                                                                         if (explode("/",\Storage::mimeType($path))[0] != 'video') {
                                                                             continue;
                                                                         }
-            
+
                                                                     @endphp
                                                                     <tr>
                                                                         <th scope="row">
@@ -1024,19 +1075,19 @@
                                                                         </td>
                                                                     </tr>
                                                                 @empty
-                                                                    
+
                                                                 @endforelse
                                                             </tbody>
                                                         </table>
                                                     </div>
-            
+
                                                 </div>
-                                                                
-                                                                                                    
+
+
                                             </div>
-                                            
-                                        </div> 
-                                        
+
+                                        </div>
+
                                         <div class="stepper d-none" data-index="3">
                                             <div class="card">
                                                 <div class="card-header">
@@ -1051,31 +1102,55 @@
                                                                     <textarea name="description" class="form-control" id="description" cols="30" rows="10">{{ $product->description }}</textarea>
                                                                 </div>
                                                             </div>
-            
+
                                                             <div class="col-md-4 col-4">
                                                                 <div class="form-group ">
                                                                     <label for="search_keywords" class="control-label">Search keywords</label>
                                                                     <input  class="form-control TAGGROUP" name="search_keywords" type="text" id="search_keywords" value="{{$product->search_keywords ?? ''}}" >
                                                                 </div>
                                                             </div>
-                                                            
-                                                            
-            
+
+
+
                                                             <div class="col-md-4 col-4">
                                                                 <div class="form-group ">
                                                                     <label for="brand_name" class="control-label">Brand Name</label>
                                                                     <input  class="form-control" name="brand_name" type="text" id="brand_name" value="{{$prodextra->brand_name ?? ''}}" >
                                                                 </div>
                                                             </div>
-                                                            
+
+
+                                                            {{-- -- Custom Fields of User 4 ` --}}
+                                                            @if (in_array('4',$fileds_sections))
+                                                                    <div class="col-12">
+                                                                        <div class="h5">Custom Cols</div>
+                                                                    </div>
+                                                                    @if ($user_custom_fields != null)
+                                                                    <div class="col-12">
+                                                                        <div class="row">
+                                                                            @foreach ($user_custom_fields as $user_custom_field)
+                                                                                @if ($user_custom_field['ref_section'] === '4')
+                                                                                    <div class="col-6">
+                                                                                        <div class="form-group">
+                                                                                            <label for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
+                                                                                            {!! $user_custom_field['tag'] !!}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                @endif
+                                                                            @endforeach
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
+                                                            @endif
+
                                                             <div class="col-md-4 col-4 d-none">
                                                                 <div class="form-group">
                                                                     <label for="video_url">Video Url </label>
                                                                     <input type="url" name="video_url" class="form-control" value="{{ $product->video_url }}" id="video_url">
                                                                 </div>
                                                             </div>
-                                                            
-                                                            
+
+
                                                             <div class="col-md-4 col-4 d-none">
                                                                 <div class="form-group {{ $errors->has('artwork_url') ? 'has-error' : ''}}">
                                                                     <label for="artwork_url" class="control-label">Art Work Reference</label>
@@ -1083,7 +1158,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>                                           
+                                                    </div>
                                                 </div>
                                             </div>
                                             {{-- plotting basic header fields end --}}
@@ -1116,9 +1191,9 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>                                
-                                        </div> 
-                                            
+                                            </div>
+                                        </div>
+
                                         <div class="stepper d-none" data-index="4">
                                             <div class="card ">
                                                 <div class="col-12 d-none">
@@ -1136,23 +1211,23 @@
                                                                 <div class="col-md-6 col-12">
                                                                     <div class="form-check pl-0">
                                                                         <label for="exclubtn" class="mr-3">
-                                                                            Copyright/ Exclusive item  
+                                                                            Copyright/ Exclusive item
                                                                             <span class="text-danger">*</span>
-                                                                        </label>                                      
+                                                                        </label>
                                                                         <input type="checkbox" class="custom-control-input" id="exclubtn" data-open="productexclusivebuyernamebox" value="1" name="exclusive" @if($product->exclusive == 1) checked @endif required>
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                     <div class="col-md-6 col-12 @if($product->exclusive != 1) d-none @endif" id="productexclusivebuyernamebox">
                                                                         <div class="form-group">
                                                                             <label for="exclusive_buyer_name">Exclusive Buyer Name</label>
-                                                                            <input  class="form-control" name="exclusive_buyer_name" type ="col-md-6 col-12"text" id="exclusive_buyer_name" value="{{$prodextra->exclusive_buyer_name ?? '' }}" >                                                       
+                                                                            <input  class="form-control" name="exclusive_buyer_name" type ="col-md-6 col-12"text" id="exclusive_buyer_name" value="{{$prodextra->exclusive_buyer_name ?? '' }}" >
                                                                         </div>
                                                                     </div>
                                                             </div>
                                                         </div>
-                                                
-                                                
+
+
                                                 {{-- ` PRODUCT SAMPLE DETAILS GROUP --}}
                                                 <div class="col-12">
                                                     <div class="row mb-3">
@@ -1162,10 +1237,10 @@
                                                                 <div class="h6">Sample Details</div>
                                                             </label>
                                                             <br>
-                                                            <input type="checkbox" data-open="productsamplebox" id="productsamplebx" class="hiddenbxbtn" @if ($prodextra->sample_available ?? '' != '' || $prodextra->sampling_time ?? ''!= '')checked  @endif >
+                                                            <input type="checkbox" data-open="productsamplebox" id="productsamplebx" class="hiddenbxbtn" @if (($prodextra->sample_available ?? '') != '' || ($prodextra->sampling_time ?? '') != '')checked  @endif >
                                                         </div>
                                                     </div>
-            
+
                                                     <div class="row d-none" id="productsamplebox">
                                                         <div class="col-md-4 col-4">
                                                             <div class="form-group ">
@@ -1194,9 +1269,9 @@
                                                             <div class="form-group ">
                                                                 <label for="sample_month" class="control-label">Sample Month</label>
                                                                 {{-- <input  class="form-control" name="sample_month" type="text" id="sample_month" value="{{$prodextra->sample_month ?? ''}}" > --}}
-            
+
                                                                 <select name="sample_month" id="sample_month" class="select2">
-                                                                    
+
                                                                     <option value="">Select Sample Month</option>
                                                                         @php
                                                                             $selectedMonth = $prodextra->sample_month ?? '';
@@ -1218,7 +1293,7 @@
                                                                             <option value="{{ $monthValue }}" @if ($selectedMonth == $monthValue) selected @endif>{{ $monthName }}</option>
                                                                         @endforeach
                                                                 </select>
-            
+
                                                             </div>
                                                         </div>
                                                         <div class="col-md-4 col-4">
@@ -1227,10 +1302,10 @@
                                                                 <input  class="form-control" name="sampling_time" type="text" id="sampling_time" value="{{$prodextra->sampling_time ?? ''}}" >
                                                             </div>
                                                         </div>
-                                                        
+
                                                     </div>
                                                 </div>
-            
+
                                                 <div class="col-12">
                                                     <div class="row mb-3">
                                                         <div class="col-12">
@@ -1239,10 +1314,10 @@
                                                                 <div class="h6">Sourced from Outside</div>
                                                             </label>
                                                             <br>
-                                                            <input type="checkbox" data-open="productsourcedbox" id="productsourcedbx" class="hiddenbxbtn" @if ($prodextra->vendor_sourced_from ?? '' != '' || $prodextra->vendor_price ?? '' != ''  || $prodextra->vendor_currency ?? ''!= '' || $prodextra->product_cost_unit ?? '' != '' ) checked  @endif>
+                                                            <input type="checkbox" data-open="productsourcedbox" id="productsourcedbx" class="hiddenbxbtn" @if (($prodextra->vendor_sourced_from ?? '') != '' || ($prodextra->vendor_price ?? '') != ''  || ($prodextra->vendor_currency ?? '') != '' || ($prodextra->product_cost_unit ?? '') != '' ) checked  @endif>
                                                         </div>
                                                     </div>
-                                                    <div class="row d-none" id="productsourcedbox">                                                   
+                                                    <div class="row d-none" id="productsourcedbox">
                                                         <div class="col-md-4 col-4">
                                                             <div class="form-group ">
                                                                 <label for="vendor_sourced_from" class="control-label">Vendor Sourced from</label>
@@ -1283,15 +1358,15 @@
                                                                     @endfor
                                                                 </select>
                                                             </div>
-                                                        </div>                                                   
+                                                        </div>
                                                         <div class="col-md-4 col-4">
                                                             <div class="form-group ">
                                                                 <label for="sourcing_month" class="control-label">Sourcing Month</label>
                                                                 {{-- <input  class="form-control" name="sourcing_month" type="text" id="sourcing_month" value="{{$prodextra->sourcing_month ?? '' }}" > --}}
-            
+
                                                                 <select name="sourcing_month" id="sourcing_month" class="select2">
                                                                     <option >Select Sourcing Month</option>
-                                                                    @php
+                                                                        @php
                                                                             $selectedMonth = $prodextra->sourcing_month ?? '';
                                                                         @endphp
                                                                         @foreach ([
@@ -1309,7 +1384,7 @@
                                                                             'December' => 'December',
                                                                         ] as $monthValue => $monthName)
                                                                             <option value="{{ $monthValue }}" @if ($selectedMonth == $monthValue) selected @endif>{{ $monthName }}</option>
-                                                                        @endforeach      
+                                                                        @endforeach
                                                                     {{-- <option value="January" @if (($prodextra->sourcing_month ?? '') == 'January' ) checked @endif>January</option>
                                                                     <option value="February"  @if (($prodextra->sourcing_month ?? '') == 'February' ) checked @endif>February</option>
                                                                     <option value="March" @if (($prodextra->sourcing_month ?? '') == 'March' ) checked @endif>March</option>
@@ -1323,19 +1398,19 @@
                                                                     <option value="November" @if (($prodextra->sourcing_month ?? '') == 'November' ) checked @endif>November</option>
                                                                     <option value="December" @if (($prodextra->sourcing_month ?? '') == 'December' ) checked @endif>December</option> --}}
                                                                 </select>
-            
-            
+
+
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>  
+                                                </div>
                                                  {{--`Theme Collection from essentials  --}}
                                                  <div class="card">
                                                     <div class="card-header">
-                                                        <h3>Theme Collection</h3>
+                                                        <h6>Theme Collection</h6>
                                                     </div>
                                                     <div class="card-body">
-                                                        <div class="row">  
+                                                        <div class="row">
                                                                 <div class="col-md-4 col-4"required >
                                                                     <div class="form-group ">
                                                                         <label for="collection_name" class="control-label">Theme / Collection Name</label >
@@ -1386,18 +1461,100 @@
                                                                                 <option value="{{ $i }}" @if ($selectedYear == $i) selected @endif>{{ $i }}</option>
                                                                             @endfor
                                                                         </select>
-                                                                               
-                                                                        
-                                                                        
-                
+
+
+
+
                                                                     </div>
-                                                                </div>                                          
+                                                                </div>
                                                         </div>
                                                     </div>
                                                 </div>
+
+
+                                                {{-- -- Custom Fields of User 5 ` --}}
+                                                @if (in_array('5',$fileds_sections))
+                                                        <div class="col-12">
+                                                            <div class="h5">Custom Cols</div>
+                                                        </div>
+                                                        @if ($user_custom_fields != null)
+                                                        <div class="col-12">
+                                                            <div class="row">
+                                                                @foreach ($user_custom_fields as $user_custom_field)
+                                                                    @if ($user_custom_field['ref_section'] === '5')
+                                                                        <div class="col-6">
+                                                                            <div class="form-group">
+                                                                                <label for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
+                                                                                {!! $user_custom_field['tag'] !!}
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endif
                                             </div>
                                         </div>
-                                           
+
+
+                                        <div class="stepper d-none" data-index="5">
+                                            <div class="card">
+                                                <div class="col-12">
+                                                    <div class="row mb-3 mx-1">
+                                                        <div class="col-12">
+                                                            <hr class="text-primary">
+                                                            <label for="productpropertiesbx">
+                                                                <div class="h6">Properties</div>
+                                                            </label> &nbsp;&nbsp;&nbsp;
+                                                            <input type="checkbox" data-open="productpropertiesbox" id="productpropertiesbx" class="hiddenbxbtn" @if ($attribute_value_id != null) checked @endif>
+                                                        </div>
+
+                                                        <div class="row d-none" id="productpropertiesbox">
+                                                            @foreach ($user_custom_col_list as $key => $item)
+                                                                {{-- ` Getting Product Property Values --}}
+                                                                @php
+                                                                    $system = App\Models\ProductAttribute::where('name',$item)->where('user_id',null)->first();
+                                                                    $own = App\Models\ProductAttribute::where('name',$item)->where('user_id',auth()->id())->first();
+                                                                    if ($system != null) {
+                                                                        $records = $system;
+                                                                    }else{
+                                                                        $records = $own;
+                                                                    }
+                                                                    $records = App\Models\ProductAttributeValue::where('parent_id',$records->id)->get();
+
+                                                                @endphp
+                                                                <div class="col-md-6 col-12">
+                                                                    <div class="form-group">
+                                                                        <label for="properties_{{$key}}">{{ $item }}</label>
+                                                                        <select name="properties[]" id="properties_{{$key}}" class="select2"
+                                                                        @if ($product->id == $product->id && request()->has('type') && decrypt(request()->get('type')) == 'editmainksku')
+                                                                        multiple
+                                                                        @endif
+                                                                        >
+                                                                            <option value="">Select One</option>
+                                                                            @foreach ($records as $record)
+                                                                                <option value="{{ $record->id }}" @if (in_array($record->id,$attribute_value_id))
+                                                                                    selected
+                                                                                @endif >{{ $record->attribute_value }}</option>
+                                                                            @endforeach
+                                                                        </select>
+
+                                                                    </div>
+                                                                </div>
+
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+
                                         @if ($product->user_id != null)
                                             <input type="hidden" name="user_id" value="{{$product->user_id}}">
                                         @else
@@ -1424,12 +1581,12 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        
+
                                         {{-- <div class="stepper d-none" data-index="7">
                                             <div class="card ">
                                                 <div class="row d-flex justify-content-center">
                                                     <div class="col-md-10 col-12">
-                                        
+
                                                         <table class="table">
                                                             <thead>
                                                                 <tr>
@@ -1438,7 +1595,7 @@
                                                                     <th scope="col">Edit</th>
                                                                 </tr>
                                                             </thead>
-                                                            <tbody>    
+                                                            <tbody>
                                                                    @foreach ($product_variant_combo as $product_variant)
                                                                         <tr>
                                                                             <td> {{ $loop->iteration }} </td>
@@ -1446,7 +1603,7 @@
                                                                                 @foreach ($product_variant as $key => $item)
                                                                                     {{ getAttruibuteValueById($item)->attribute_value }}
                                                                                     @if ($key < count($product_variant) - 1)
-                                                                                        , 
+                                                                                        ,
                                                                                     @endif
                                                                                 @endforeach
                                                                             </td>
@@ -1458,37 +1615,37 @@
                                                                                     <a href="{{ route('panel.products.delete.sku',encrypt($proid->product_id)) }}" class="btn btn-outline-danger delete-btn">
                                                                                         Delete
                                                                                     </a>
-            
+
                                                                                     <a href="{{ route('panel.products.edit',$proid->product_id) }}" class="btn btn-outline-primary">
                                                                                         Edit
                                                                                     </a>
                                                                                 @endif
                                                                             </td>
                                                                         </tr>
-            
+
                                                                         @php
                                                                             if ($proid != null) {
                                                                                 $available_products = array_diff($available_products, [$proid->product_id]);
                                                                             }
                                                                         @endphp
-                                                                   @endforeach                                                      
+                                                                   @endforeach
                                                             </tbody>
                                                         </table>
                                                     </div>
-                                                </div>                                                                                                                                                                       
+                                                </div>
                                                 </div>
                                         </div> --}}
-                                            
+
                                         <div class="alert alert-info d-none">
                                             <p class="mb-0">Changing any field will result in unpublishing SKUs from all linked sellers.</p>
                                         </div>
-            
+
                                     </div>
                                 </div>
                             </div>
 
 
-                           
+
 
                         </form>
                         <div class="row mt-4 d-none">
@@ -1589,7 +1746,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
 
                             @foreach ($productVarients as $item)
                             @php
@@ -1610,11 +1767,11 @@
                                 </tr>
                             @endforeach
 
-                            
-                            
-                            
+
+
+
                             @endforeach
-                            
+
                     </tbody>
                 </table>
             </div>
@@ -1628,7 +1785,8 @@
         </form>
 
     </div>
-     @include('panel.products.include.varient',['product_id'=>$product->id])
+    @include('panel.products.include.varient',['product_id'=>$product->id])
+    @include('panel.products.include.singleProduct')
     <!-- push external js -->
     @push('script')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
@@ -1638,10 +1796,19 @@
         <script src="https://cdn.ckeditor.com/4.14.1/full/ckeditor.js"></script>
         <script src="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
         <script src="{{ asset('backend/js/jquery.editable.js') }}"></script>
+        <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
+
         <script>
             $(document).ready(function () {
 
-        
+
+                $("#createvariant").animatedModal({
+                    nimatedIn:'lightSpeedIn',
+                    animatedOut:'bounceOutDown',
+                    color:'#fff',
+                });
+
+
               $(".click1").click(function () {
 
                   $.each($(".click1"), function (indexInArray, valueOfElement) {
@@ -1680,18 +1847,18 @@
 
 
               // {{--` Delete Item --}}
-              $(".deletebtn").click(function (e) { 
+              $(".delete-btn").click(function (e) {
                     e.preventDefault();
-                    let selected = $(this).data('filepath');
-                    
+                    var url = $(this).attr('href');
+
                     var msg = `
-                    <span class="text-danger">You are about to delete 1 asset(s)</span> <br/>
+                    <span class="text-danger">You are about to delete variant of product</span> <br/>
                     <span>This action cannot be undone. To confirm type <b>DELETE</b></span>
                     <input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='DELETE'>`;
 
                     $.confirm({
                         draggable: true,
-                        title: `Delete 1 asset(s)`,
+                        title: `Delete`,
                         content: msg,
                         type: 'blue',
                         typeAnimated: true,
@@ -1702,16 +1869,10 @@
                                 action: function(){
                                     let margin = $('#margin').val();
                                     if (margin == 'DELETE') {
-
-                                        $("#filesId").val(selected);
-                                        $("#action").val('deleteFile');
-                                        $("#deletefileform").submit();
-                                        
+                                        window.location.href = url;
                                     } else {
                                         $.alert('Type DELETE to Proceed');
                                     }
-
-                                    
                                 }
                             },
                             close: function () {
@@ -1721,7 +1882,7 @@
                     });
                 });
 
-        
+
 
 
 
@@ -1732,14 +1893,14 @@
 
             $('.TAGGROUP').tagsinput('items');
             $(document).ready(function () {
-                
-                // $(".changegroup").change(function (e) { 
+
+                // $(".changegroup").change(function (e) {
                 //     e.preventDefault();
                 //     let key = $(this).val();
                 //     let url = "http://{{ ENV('APP_URL') }}/panel/products/edit/"+key;
                 //     window.location.href = url;
                 // });
-            });      
+            });
 
             var options = {
                   filebrowserImageBrowseUrl: "{{ url('/laravel-filemanager?type=Images') }}",
@@ -1748,7 +1909,7 @@
                   filebrowserUploadUrl: "{{ url('/laravel-filemanager/upload?type=Files&_token='.csrf_token()) }}"
               };
               $(window).on('load', function (){
-                  
+
                   CKEDITOR.replace('description', options);
               });
             $('#ProductForm').validate();
@@ -1859,17 +2020,17 @@
             });
 
 
-            
 
 
-            $(".hiddenbxbtn").change(function (e) { 
+
+            $(".hiddenbxbtn").change(function (e) {
                 e.preventDefault();
                 let hiddenbx = $(this).data('open');
                 $("#"+hiddenbx).toggleClass('d-none');
             });
 
-            $.each($(".hiddenbxbtn"), function (indexInArray, valueOfElement) { 
-                
+            $.each($(".hiddenbxbtn"), function (indexInArray, valueOfElement) {
+
                  if (valueOfElement.checked == true) {
                     let hiddenbx = $(this).data('open');
                     $("#"+hiddenbx).toggleClass('d-none');
@@ -1944,35 +2105,35 @@
             });
 
 
-            
-            $(".md-step").click(function (e) { 
+
+            $(".md-step").click(function (e) {
                 e.preventDefault();
 
                 let stepindex = $(this).data('step');
                 let newwindow = $(`[data-index="${stepindex+1}"]`);
                 activeIndex = stepindex+1;
 
-                
+
                 $.each($('.md-step'), function (i, v) {
                      $(this).removeClass('active');
                 });
-                
 
-                
+
+
                 $(this).addClass('active');
                 $(".stepper").addClass('d-none');
                 $('.stepper-actions').find('.previous_btn').addClass('d-none');
-                
+
                 if (activeIndex != 1) {
                     $('.stepper-actions').find('.previous_btn').removeClass('d-none');
                 }
-                
+
                 if(activeIndex == steps){
                     $(".next_btn").addClass('d-none');
                 }
-                
+
                 $(".next_btn").removeClass('d-none');
-                newwindow.removeClass('d-none')            
+                newwindow.removeClass('d-none')
             });
 
             $('.stepper-actions').on('click', '.previous_btn', function (e) {
@@ -1988,9 +2149,81 @@
                     $(this).addClass('d-none');
                 }
             });
-    
+
         });
         </script>
-        
+
+        <script>
+            // {{--` Updating Product Custom Fields Values --}}
+            $(document).ready(function () {
+                var myarrval = "{{ implode(',',$fileds_sections_names) }}".split(",");
+                var myarrid = "{{ implode(',',$fileds_sections_ids) }}".split(",");
+
+                console.log(myarrid);
+                console.log(myarrval);
+
+
+                $.each(myarrval, function (indexInArray, valueOfElement) {
+                    var element = $(`[name="${myarrid[indexInArray]}"]`);
+
+                    if (isBase64(valueOfElement)) {
+
+                        let valu = JSON.parse(atob(valueOfElement));
+
+                        if (isJson(atob(valueOfElement))) {
+                            for (const key in valu) {
+                                if (valu.hasOwnProperty(key)) {
+
+                                    // console.log(`${key}: ${valu[key]}`);
+                                    let inde = myarrid[indexInArray];
+
+                                    var element = $(`[name="${inde[key]}"]`);
+
+                                    console.log(key);
+
+
+                                    console.log(element);
+                                    element.val(valu);
+                                }
+                            }
+
+                        }else{
+                            console.log("NO JSON");
+                            let valu = JSON.parse(atob(valueOfElement));
+                            element.val(valu);
+
+                        }
+
+                        // console.log("Element");
+                        // console.log(valu);
+
+                        // console.log("Parsed Value");
+                        // console.log(valu);
+                    }
+
+
+                    $(".select2").trigger('change')
+                });
+
+            });
+
+
+            function isBase64(str) {
+                const base64Regex = /^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$/;
+                return base64Regex.test(str);
+            }
+
+            function isJson(str) {
+                try {
+                    JSON.parse(str);
+                } catch (e) {
+                    return false;
+                }
+                return true;
+            }
+
+
+        </script>
+
     @endpush
 @endsection

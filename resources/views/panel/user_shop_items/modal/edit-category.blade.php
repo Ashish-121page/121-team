@@ -1,8 +1,5 @@
 <div id="animatedModal">
-    <div id="btn-close-modal" class="close-animatedModal custom-spacing" style="color:black;font-size: 1.3rem;cursor: pointer;">
-        <i class="far fa-times-circle fa-rotate-270 fa-lg "></i>
-    </div>
-    <div class="modal-content custom-spacing bg-transparent" style="border: none !important;">
+    <div class="modal-content custom-spacing bg-transparent" style="border: none !important; padding: 10px">
         <form method="POST" action="{{ route('panel.constant_management.category.rename',auth()->id()) }}">
             <input type="hidden" name="catid" value="" id="catid">
             <div class="row justify-content-center ">

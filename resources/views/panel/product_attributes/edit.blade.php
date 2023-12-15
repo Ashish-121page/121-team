@@ -1,4 +1,4 @@
-@extends('backend.layouts.main') 
+@extends('backend.layouts.main')
 @section('title', 'Product Attribute')
 @section('content')
 @php
@@ -22,7 +22,7 @@ $breadcrumb_arr = [
         .bootstrap-tagsinput{
             width: 100% !important;
         }
-        
+
     </style>
     @endpush
 
@@ -51,7 +51,7 @@ $breadcrumb_arr = [
                 $get_value = App\Models\ProductAttributeValue::where('parent_id',$product_attribute->id)->orderBy('attribute_value','ASC')->get();
             @endphp
 
-            
+
             <div class="col-md-10 mx-auto">
                 <!-- start message area-->
                @include('backend.include.message')
@@ -70,9 +70,9 @@ $breadcrumb_arr = [
 
                             <div class="row asded">
                                 @if ($product_attribute->user_id == auth()->id() || AuthRole() == 'Admin')
-                                    <div class="col-md-8 col-12"> 
+                                    <div class="col-md-8 col-12">
                                 @else
-                                    <div class="col-md-12 col-12"> 
+                                    <div class="col-md-12 col-12">
                                 @endif
 
                                     <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
@@ -82,7 +82,7 @@ $breadcrumb_arr = [
                                 </div>
 
                                 @if ($product_attribute->user_id == auth()->id() || AuthRole() == 'Admin')
-                                    <div class="col-md-4 col-12 d-none"> 
+                                    <div class="col-md-4 col-12 d-none">
                                         <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
                                             <label for="visibility">
                                                 visibility
@@ -94,12 +94,12 @@ $breadcrumb_arr = [
                                     </div>
                                 @endif
 
-                                <div class="col-md-12 col-12"> 
+                                <div class="col-md-12 col-12">
                                     <div class="h6">Values</div>
                                 </div>
-                    
 
-                                <div class="col-md-12 col-12"> 
+
+                                <div class="col-md-12 col-12">
                                     <div class="form-group">
                                         <input type="text" id="tags" class="form-control w-100" name="newval" value="" placeholder="Enter New Values" pattern="^[a-zA-Z0-9_]*$">
                                     </div>
@@ -111,15 +111,15 @@ $breadcrumb_arr = [
 
                                 @foreach ($get_value as $item)
                                     @if ($item->user_id == null || $item->user_id == auth()->id() || AuthRole() == 'Admin')
-                                        <div class="col-md-6 col-sm-6 col-lg-3 col-12"> 
+                                        <div class="col-md-6 col-sm-6 col-lg-3 col-12">
                                             <div class="form-group d-flex align-items-center justify-content-center">
                                                 <input class="form-control" type="text" id="name_{{$item->id}}" name="{{ "$item->id" }}" value="{{$item->attribute_value}}" placeholder="Enter Name" readonly>
                                                 @if ($item->user_id == auth()->id() || AuthRole() == 'Admin')
                                                     <a href="#edit" class="btn btn-outline-primary mx-1 text-center editpen" data-hold="name_{{$item->id}}">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    
-                                                    <a href="{{ route('panel.product_attributes.destroy.value',$item->id) }}" class="btn btn-outline-danger mx-1 text-center delete-item">
+
+                                                    <a href="{{ route('panel.product_attributes.destroy.value',$item->id) }}" class="btn btn-outline-danger mx-1 text-center delete-btn">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 @endif
@@ -144,7 +144,7 @@ $breadcrumb_arr = [
                 </div>
             </div>
         </div>
-    </div>    
+    </div>
     <!-- push external js -->
     @push('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
@@ -162,18 +162,18 @@ $breadcrumb_arr = [
         $('#tags').tagsinput('items');
 
         $(document).ready(function () {
-            $(".editpen").click(function (e) { 
+            $(".editpen").click(function (e) {
                 e.preventDefault();
                 let hold = "#"+ $(this).data('hold');
                 let changeval =  $(hold);
-                
+
                 changeval.attr('readonly',false);
             });
 
+            $("input").keyup(function (e) {
+                let text = $(this).val().length - 1;
+                let notin = ['@',"!","#","$","%","^","&","*","(",")","'","?","/","<",">","|","}","{","[","]","~","`","-","_","=","+",";",":",".",",",'"']
 
-            $("input").keyup(function (e) { 
-                let text = $(this).val().length - 1; 
-                let notin = ['@',"!","#","$","%","^","&","*","(",")","'",'"',"?","/","<",">","|","}","{","[","]","~","`","-","_","=","+",";",":",".",","]
 
                 if (notin.includes($(this).val()[text])) {
                     let newval = $(this).val().replace($(this).val()[text],"")
@@ -181,20 +181,58 @@ $breadcrumb_arr = [
                     alert(" No special characters allowed in Product Property values")
                 }
             });
-            
-            
+
             var acr_btn = document.querySelector('#visibility');
             var switchery = new Switchery(acr_btn, {
                 color: '#6666CC',
                 jackColor: '#fff'
             });
-            
-            
-            
+
+
+
+
+            $(".delete-btn").click(function (e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+
+                var msg = `
+                <span class="text-danger">You are about to delete property.</span> <br/>
+                <span>This action cannot be undone. To confirm type <b>DELETE</b></span>
+                <input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='DELETE'>`;
+
+                $.confirm({
+                    draggable: true,
+                    title: `Delete`,
+                    content: msg,
+                    type: 'blue',
+                    typeAnimated: true,
+                    buttons: {
+                        tryAgain: {
+                            text: 'DELETE',
+                            btnClass: 'btn-danger',
+                            action: function(){
+                                let margin = $('#margin').val();
+                                if (margin == 'DELETE') {
+                                    window.location.href = url;
+                                } else {
+                                    $.alert('Type DELETE to Proceed');
+                                }
+                            }
+                        },
+                        close: function () {
+
+                        }
+                    }
+                });
+            });
+
+
+
+
         });
-        
-        
-        
+
+
+
     </script>
     @endpush
 @endsection

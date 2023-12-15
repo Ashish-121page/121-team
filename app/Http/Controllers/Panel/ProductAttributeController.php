@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use App\Models\ProductAttribute;
+use App\Models\ProductExtraInfo;
 use App\Models\ProductAttributeValue;
 use App\User;
 
@@ -242,6 +243,12 @@ class ProductAttributeController extends Controller
 
     public function deletevalue(Request $request,$product_attribute_value) {
 
+        $chk = ProductExtraInfo::where('attribute_value_id',$product_attribute_value)->get();
+
+        if ($chk->count() > 0) {
+            return back()->with('error','Delete property from associated products before removing the product property.');
+        }
+        
         $user = auth()->user();
         $chk = ProductAttributeValue::where('user_id',$user->id)->whereId($product_attribute_value)->get();
         $name = '';
@@ -269,6 +276,12 @@ class ProductAttributeController extends Controller
         try{
             if($product_attribute){
                                       
+                $chk = ProductExtraInfo::where('attribute_value_id',$product_attribute->id)->get();
+
+                if ($chk->count() > 0) {
+                    return back()->with('error','Delete property from associated products before removing the product property.');
+                }
+
                 $product_attribute->delete();
                 ProductAttributeValue::where('parent_id',$product_attribute->id)->delete();
 

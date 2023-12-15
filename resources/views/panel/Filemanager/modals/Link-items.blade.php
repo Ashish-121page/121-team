@@ -30,7 +30,7 @@
                                             </svg>
                                         </span>
                                         <input type="text" class="form-control" id="searchinlinking" placeholder="Search product by sku or label" aria-label="Search" aria-describedby="basic-addon1" autofocus="true">
-                                      </div>
+                                    </div>
 
                                 </div>
 

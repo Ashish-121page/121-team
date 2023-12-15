@@ -1,4 +1,5 @@
-{{--` Start table --}}
+{{--`Start table--}}
+
 <div class="row">
     <div class="col-12">
         <div class="row">
@@ -14,15 +15,15 @@
                 @endphp
                 @endforeach 
                 <div class=" mx-1">          
-                    <input type="text" class="form-control" id="search_buyer" name="search" placeholder="Buyer Search">
+                    <input type="text" class="form-control" id="search_buyer" name="search" placeholder="Buyer Search" value="{{ request()->get('Buyer_name','') }}">
                 </div>                
                        
 
-                <div class=" mx-1">
+                <div class=" mx-1">                                        
                     <select name="" id="status_check" class="form-control" style="padding-right: 40px !important;">
-                        <option value="status">All</option>
-                        <option value="sent">Sent</option>
-                        <option value="draft">Draft</option>
+                        <option value="status" @if(request()->get('Sent') == '' ) selected @endif>All</option>
+                        <option value="sent" @if(request()->get('Sent') == 'sent' ) selected @endif>Sent</option>
+                        <option value="draft" @if(request()->get('Sent') == 'draft' ) selected @endif>Draft</option>
                     </select>
                 </div>
                       
@@ -31,19 +32,19 @@
                 <a href="?view=listview" class="btn btn-outline-primary mx-1 @if(request()->get('view') == 'listview' ) active @endif"><i class="fas fa-list"></i></a>
                 <a href="?view=gridview" class="btn btn-outline-primary mx-1 @if(request()->get('view') == 'gridview' ) active @endif"><i class="fas fa-th-large"></i></a>
                 <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-outline-primary mx-1" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Make Offer</a>
-            </div>
+        </div>
 
         </div>
     </div>
     <div class="col-12">
         <div class="table-responsive mt-3">
             <table id="table" class="table">
-                <thead class="h5 text-muted">
+                <thead class="h6 text-muted">
                         <tr>
                             <td class="no-export action_btn"> 
                                 {{-- <input type="checkbox" id="checkallinp"> --}}
                             </td> 
-                            <td>Sent to</td>
+                            <td>Buyer Name</td>
                             <td>Created on</td>
                             <td>Total Products</td>
                             <td>Status</td>
@@ -72,10 +73,10 @@
                                     {{-- @endif --}}
                                 </td>   
                                 <td class="d-flex justify-content-between">
-                                    <span style="mr-3;">
+                                    <span style="mr-3; margin-top: 30px;">
                                         {{ $customer_name }}
                                     </span>
-                                    <div class="d-flex justify-content-between" style="gap:10px;">
+                                    <div class="d-lg-flex d-none justify-content-between" style="gap:10px;">
                                         
                                             @foreach ($productItems as $key => $item)
                                                 @if ($key < 3)
@@ -84,7 +85,7 @@
                                                     @endphp 
                                                     @if ($mediarecord != null)   
                                                         <div style="height: 60px;width: 60px; object-fit: contain;justify-content-end;">                                                                                                                                                                                                                                                                                                                                                           
-                                                        <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid p-1" style="border-radius: 10px;height: 100%;width: 100%;background-color: gray;align-items: center;">
+                                                        <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid " style="border-radius: 10px;height: 100%;width: 100%;background-color: gray;align-items: center; padding:2px;">
                                                         </div>   
                                                                     
                                                     @endif                                                                    
@@ -109,45 +110,42 @@
                                 </td>
                   
                                 <td>
-                                    {{-- <a class="btn btn-outline-primary" href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="border-radius: 10%">
-                                        <i class="uil uil-comment-alt-edit h6"></i> Edit
-                                    </a> --}}
-                                    @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == "" || $proposal->user_id == auth()->id())
-                                        {{-- <div style="display: flex;gap: 15px;font-size: 1.6vh;text-align: center !important;"> --}}
+                                    
+                                    @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == "" || $proposal->user_id == auth()->id())                                        
                                         @php
                                             $product_count = App\Models\ProposalItem::where('proposal_id',$proposal->id)->get()->count();
-                                        @endphp
-
-                                    
+                                        @endphp                                    
                                         {{-- <button class="btn btn-outline-primary my-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             More <i class="uil-angle-right"></i>
                                         </button> --}}
-                                      
-                                        @if ($proposal->status == 1)
-                                            @if ($product_count != 0)                                               
-                                                <a class="btn-link text-primary copybtn mx-3"  href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline;">
-                                                    <i class="uil-link-alt"></i> Copy Link
-                                                </a>                                                
-                                            @endif                                            
-                                                <a class="btn-link text-primary mx-3" href="{{inject_subdomain('make-copy/'.$proposal->id,$slug) }}" class="" style="text-decoration: underline;">
-                                                    <i class="uil-copy"></i> Duplicate
-                                                </a>                                                                                        
-                                        @endif                                                                                  
-                                            <a class="btn-link text-primary mx-3" href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: underline;">
-                                                <i class="uil uil-comment-alt-edit h6"></i> Edit ( {{ $product_count }} ) 
-                                            </a>                                        
-                                        
-                                        {{-- @if ($proposal->status == 1)                                            
-                                                <a href="{{ route('customer.lock.enquiry',$proposal->id) }}" class="dropdown-item">
-                                                    <i class="uil-lock-alt h6"></i> 
-                                                </a>                                        
-                                        @endif --}}
+                                        <div class=" float-end justify-content-between"> 
+
+                                            <a class="btn btn-transparent w-fit" href="{{ inject_subdomain('proposal/picked/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?type=send" target="_blank" style="text-decoration: none;  color:primary; padding:4px 10px!important;">
+                                                <i class="fas fa-download" style="color:#6666cc"></i> 
+                                            </a> 
+
+                                            <a class="btn-link text-primary" href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: underline; padding:4px 10px!important;">
+                                                <i class="fas fa-edit fa-lg" style="color:#6666cc"></i>
+                                            </a> 
+                                            
+                                                @if ($proposal->status == 1)
+                                                    @if ($product_count != 0)                                               
+                                                        <button class="btn-link text-primary copybtn"  value="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline; border:none; margin-bottom:22px; padding:0px">
+                                                            <i class="uil-link-alt"></i> Copy Link
+                                                        </button>                                                
+                                                    @endif                                            
+                                                                                                                                       
+                                                @endif      
+                                              <a class="btn-link text-primary " href="{{inject_subdomain('make-copy/'.$proposal->id,$slug) }}" class="" style="text-decoration: underline;">
+                                                <i class="uil-copy"></i> Duplicate
+                                            </a>                                                                                                                       
 
                                         @if ($proposal->status == 1)                                                                                  
-                                                <a href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="text-danger delete-item mx-3" style="text-decoration: underline;">
-                                                    <i class="uil uil-trash h6"></i> Delete
+                                                <a href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="text-danger delete-item" style="text-decoration: underline;">
+                                                    <i class="fas fa-trash"></i>
                                                 </a>                                                                                   
-                                        @endif                                                              
+                                        @endif  
+                                        </div>                                                            
                                     @endif
                                 </td>
                             </tr>
