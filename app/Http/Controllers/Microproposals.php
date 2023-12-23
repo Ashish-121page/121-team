@@ -138,13 +138,14 @@ class Microproposals extends Controller
      */
     function edit(Request $request, Proposal $proposal, $user_key) {
 
+
         if (!Auth::check()) {
             auth()->loginUsingId(155);
         }
 
-
         $slug = $request->subdomain;
         $user_shop = UserShop::whereSlug($slug)->first();
+
 
         $temdata = json_decode($user_shop->team);
         $manage_offer_guest = $temdata->manage_offer_guest ?? 0;
@@ -479,8 +480,15 @@ class Microproposals extends Controller
 
         $slug = $request->subdomain;
         $user_shop = UserShop::whereSlug($slug)->first();
-        if (!Auth::check()) {
-            auth()->loginUsingId(155);
+
+        if (ENV('APP_DEBUG') == 'TRUE') {
+            if (!Auth::check()) {
+                auth()->loginUsingId($user_shop->user_id);
+            }
+        }else{
+            if (!Auth::check()) {
+                auth()->loginUsingId(155);
+            }
         }
 
         // if($proposal->user_id != auth()->id()){

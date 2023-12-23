@@ -76,7 +76,38 @@ class invoiceController extends Controller
         return view('panel.Documents.Quotation');
     }
 
+    public function quotation2() {
+        return view('panel.Documents.quotation2');
+    }
+
+    public function quotation3() {
+
+        $user_id = auth()->id();
+        $user = auth()->user();
+        $user_shop = getShopDataByUserId($user->id);
+
+        $user_shop = UserShop::whereUserId($user_id)->first();
 
 
-    
+        $length = request()->get('pagelength',19);
+        $scoped_products = Product::whereUserId($user_id)->paginate($length);
+
+        $supplier = User::whereId(auth()->id())->first();
+
+        $access_data = AccessCatalogueRequest::whereUserId(auth()->id())->whereNumber($supplier->phone)->whereStatus(1)->first();
+
+        $pinned_items = [];
+        return view('panel.Documents.quotation3', compact('user_id','user','user_shop','scoped_products','access_data','pinned_items'));
+    }
+
+    public function quotation4() {
+        return view('panel.Documents.quotation4');
+    }
+
+    public function quotationpdf() {
+        return view('panel.Documents.quotationpdf');
+    }
+
+
+
 }

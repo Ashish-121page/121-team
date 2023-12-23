@@ -2810,7 +2810,7 @@ class NewBulkController extends Controller
                 $carton_details = [
                     'standard_carton' => $value[$standard_carton_pcsOIndex],
                     'carton_weight' => $value[$carton_weight_actualIndex],
-                    'carton_unit' => $value[$unitIndex],
+                    'carton_unit' => $value[$unitIndex] ?? '',
                     'carton_length' => $value[$CartonlengthIndex],
                     'carton_width' => $value[$CartonwidthIndex],
                     'carton_height' => $value[$CartonheightIndex],

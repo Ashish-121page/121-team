@@ -257,6 +257,10 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::post('offer/banner', [settingController::class,'uploadbanner'])->name('upload.banner');
         Route::get('edit/Template/{template}', [settingController::class,'EditTemplate'])->name('edit.Template');
         Route::post('custom/fields', [settingController::class,'customfields'])->name('custom.fields');
+
+        Route::post('update/custom/fields', [settingController::class,'Updatecustomfields'])->name('update.custom.fields');
+        Route::get('remove/custom/fields/{fieldId}', [settingController::class,'removecustomfields'])->name('remove.custom.fields');
+
     });
 
 
@@ -551,12 +555,9 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::group(['middleware' => 'auth', 'namespace' => 'panel', 'prefix' => '/image', 'as' => 'image.'], function () {
         Route::any('/removebg',[ImageController::class,'removeBg'])->name('removebg');
         Route::any('/changebg',[ImageController::class,'changebg'])->name('changebg');
+        Route::post('/crop/image',[ImageController::class,'cropimage'])->name('crop.image');
+
     });
-
-
-
-
-
 
 
 

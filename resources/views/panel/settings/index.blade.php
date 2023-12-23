@@ -2,14 +2,23 @@
 @section('title', 'Settings')
 @section('content')
 
-    <link rel="stylesheet" href="{{ asset('backend/plugins/select2/dist/css/select2.min.css') }}">
-    <link href="{{ asset('frontend/assets/css/simplebar.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('backend/plugins/select2/dist/css/select2.min.css') }}">
+        <link href="{{ asset('frontend/assets/css/simplebar.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
 
     <!-- push external head elements to head -->
     @push('head')
 
     <style>
+
+.bootstrap-tagsinput .tag{
+            text-transform: none !important;
+        }
+        .bootstrap-tagsinput{
+            width: 100% !important;
+        }
+
         .cust_input label {
             height: 75px;
             width: 95px;
@@ -112,12 +121,16 @@
 
 @include('frontend.customer.dashboard.includes.modal.add-currencies')
 @include('frontend.customer.dashboard.includes.modal.update-currency')
-@include('frontend.customer.dashboard.includes.modal.createTeam')
-
+@include('frontend.customer.dashboard.includes.modal.update-currency')
+@include('panel.settings.pages.Edit-customField')
 
 
     <!-- push external js -->
     @push('script')
+
+        <script src="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
+        <script src="{{asset('backend/js/form-advanced.js') }}"></script>
+
         <script>
             $(document).ready(function () {
                 $(".updatecurrencybtn").click(function (e) {
@@ -197,44 +210,44 @@
                     }
                 });
 
-        $('#verifyOTP').on('click',function(e){
-            e.preventDefault();
-            $('#saveBtn').attr('disabled',false);
-            $('.check-icon').removeClass('d-none');
-            var verifyOTP = $('#otp_num').val();
-            $.ajax({
-                url: "{{ route('panel.user.verify-otp') }}",
-                method: 'GET',
-                data: {
-                    "otp": verifyOTP
-                },
-                success: function(response) {
-                    console.log(response);
-                    if(response.title == 'Error'){
-                        $.toast({
-                            heading: response.title,
-                            text: response.message,
-                            showHideTransition: 'slide',
-                            icon: 'error',
-                            loaderBg: '#f2a654',
-                            position: 'top-right'
-                        });
-                    }else{
-                        $.toast({
-                            heading: response.title,
-                            text: response.message,
-                            showHideTransition: 'slide',
-                            icon: 'success',
-                            loaderBg: '#f96868',
-                            position: 'top-right'
-                        });
-                        $(this).addClass('d-none');
+            $('#verifyOTP').on('click',function(e){
+                e.preventDefault();
+                $('#saveBtn').attr('disabled',false);
+                $('.check-icon').removeClass('d-none');
+                var verifyOTP = $('#otp_num').val();
+                $.ajax({
+                    url: "{{ route('panel.user.verify-otp') }}",
+                    method: 'GET',
+                    data: {
+                        "otp": verifyOTP
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        if(response.title == 'Error'){
+                            $.toast({
+                                heading: response.title,
+                                text: response.message,
+                                showHideTransition: 'slide',
+                                icon: 'error',
+                                loaderBg: '#f2a654',
+                                position: 'top-right'
+                            });
+                        }else{
+                            $.toast({
+                                heading: response.title,
+                                text: response.message,
+                                showHideTransition: 'slide',
+                                icon: 'success',
+                                loaderBg: '#f96868',
+                                position: 'top-right'
+                            });
+                            $(this).addClass('d-none');
 
-                        $("#TeamForm").submit();
+                            $("#TeamForm").submit();
+                        }
                     }
-                }
+                })
             })
-        })
             });
         </script>
 
@@ -363,6 +376,76 @@
             });
 
         </script>
+
+        <script>
+            $(document).ready(function () {
+
+                $('#custtags').tagsinput('items');
+
+                $(".editCust").click(function (e) {
+                    e.preventDefault();
+                    let values = $(this).data('values');
+                    let custname = $(this).data('custname');
+                    let custid = $(this).data('custid');
+                    let attr_section = $(this).data('attr_section');
+                    let custreq = $(this).data('required');
+                    let data_type = $(this).data('data_type');
+
+                    $("#custtags").tagsinput('add', values)
+                    $("#custattr_section").val(attr_section);
+                    $("#custname").val(custname);
+                    $("#custid").val(custid);
+                    $("#custreq").val(custreq)
+
+
+                    $("#EditCustField").modal('show')
+                    $(".select2").trigger("change")
+                    $('#custtags').tagsinput('refresh');
+
+                });
+
+
+                $(".delete-btn").click(function(e) {
+                    e.preventDefault();
+                    var url = $(this).attr('href');
+
+                    var msg =
+                        `
+                    <span class="text-danger">You are about to delete Custom Field</span> <br/>
+                    <span>This action cannot be undone. To confirm type <b>DELETE</b></span>
+                    <input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='DELETE'>`;
+
+                    $.confirm({
+                        draggable: true,
+                        title: `Delete`,
+                        content: msg,
+                        type: 'blue',
+                        typeAnimated: true,
+                        buttons: {
+                            tryAgain: {
+                                text: 'DELETE',
+                                btnClass: 'btn-danger',
+                                action: function() {
+                                    let margin = $('#margin').val();
+                                    if (margin == 'DELETE') {
+                                        window.location.href = url;
+                                    } else {
+                                        $.alert('Type DELETE to Proceed');
+                                    }
+                                }
+                            },
+                            close: function() {
+
+                            }
+                        }
+                    });
+                });
+
+
+            });
+
+        </script>
+
 
 
     @endpush

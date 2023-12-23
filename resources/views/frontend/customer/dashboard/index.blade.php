@@ -285,54 +285,6 @@
                             {{-- @endif --}}
 
 
-
-
-                            {{-- <li class="nav-item mt-2">
-                                <a data-active="enquiry" class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('active') == "enquiry") active @endif" id="enquiry-history" data-bs-toggle="pill" href="#enquirys" role="tab" aria-controls="enquirys" aria-selected="false">
-                                    <div class="text-start py-1 px-3">
-                                        <h6 class="mb-0"><i class="uil uil-hipchat h5 align-middle me-2 mb-0"></i> My Enquiry</h6>
-                                    </div>
-                                </a>
-                                <!--end nav link-->
-                            </li> --}}
-
-                            {{-- <li class="nav-item mt-2">
-                                <a data-active="order" class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('active') == "order") active @endif" id="order-history" data-bs-toggle="pill" href="#orders" role="tab" aria-controls="orders" aria-selected="false">
-                                    <div class="text-start py-1 px-3">
-                                        <h6 class="mb-0"><i class="uil uil-shopping-cart h5 align-middle me-2 mb-0"></i>  My Orders</h6>
-                                    </div>
-                                </a><!--end nav link-->
-                            </li><!--end nav item--> --}}
-
-                            {{-- @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id")) --}}
-
-                            {{-- @if ($acc_permissions->addandedit == 'yes' || $acc_permissions->addandedit == 'Yes')
-                                @if ($Team_proadd)
-                                    <li class="nav-item mt-2">
-                                        <a data-active="diaplay" class="nav-link active-swicher rounded" id="diaplay-details" href="{{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ $user->id }}" >
-                                            <div class="text-start py-1 px-3">
-                                                <h6 class="mb-0"><i class="uil uil-sitemap h5 align-middle me-2 mb-0"></i>  Display </h6>
-                                            </div>
-                                        </a><!--end nav link-->
-                                    </li><!--end nav item-->
-                                @endif
-                            @endif --}}
-                            {{-- @endif --}}
-
-                            @if ($Team_profile)
-
-                                {{-- <li class="nav-item mt-2">
-                                    <a data-active="account" class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('active') == "account") active @endif" id="account-details" data-bs-toggle="pill" href="#account" role="tab" aria-controls="account" aria-selected="false">
-                                        <div class="text-start py-1 px-3">
-                                            <h6 class="mb-0"><i class="uil uil-user h5 align-middle me-2 mb-0"></i>  My Profile</h6>
-                                        </div>
-                                    </a>
-                                </li> --}}
-
-                            @endif
-
-                            {{-- @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id")) --}}
-
                             @if($acc_permissions->Filemanager == "yes")
                                 @if ($Team_setting)
                                     <li class="nav-item mt-2">
@@ -558,7 +510,7 @@
                                             </div>
                                             </div>
                                         </div>
-                                    </div> 
+                                    </div>
 
                                     @if(getUserProgressStatistics(auth()->id()) == 100)
                                         <div class="col-12 border border-danger mt-4">
@@ -566,22 +518,8 @@
                                             <div class="row clearfix">
                                                 <div class="col-lg-6 col-md-12 mt-3 ">
                                                     <div class="card">
-                                                        {{-- <div class="d-flex justify-content-end mt-1 ">
-                                                            <select class="form-control w-25 mx-3 mt-1">
-                                                                <option selected="">Today</option>
-                                                                <option value="1">Last Week</option>
-                                                                <option value="2">Last Month</option>
-                                                            </select>
-                                                        </div> --}}
                                                         <div class="card-header">
                                                             <h4>Feeds</h4>
-                                                            {{--<div class="d-flex align-right">
-                                                                <select class="form-control w-80 ml-80">
-                                                                    <option selected="">Today</option>
-                                                                    <option value="1">Last Week</option>
-                                                                    <option value="2">Last Month</option>
-                                                                </select>
-                                                            </div>--}}
                                                             <div class="card-header-right">
                                                                 <ul class="list-unstyled card-option">
                                                                     <li><i class="ik ik-chevron-left action-toggle"></i></li>
@@ -895,77 +833,15 @@
                                         <li class="nav-item" role="presentation">
                                             <button class="btn pills-btn" id="pills-settings2-tab" data-bs-toggle="pill" data-bs-target="#pills-settings2" type="button" role="tab" aria-controls="pills-settings2" aria-selected="false">Passcodes</button>
                                         </li>
-                                      
-                                     
+
+
                                     </ul>
                                 </div>
 
                                 <div class="border-bottom bg-light  p-3" id="bro">
                                     <div class="tab-content" id="pills-tabContent">
 
-                                        {{-- Display & My Customers List --}}
 
-                                        {{-- <div class="tab-pane fade show active" id="pills-setting1" role="tabpanel" aria-labelledby="pills-setting1-tab" tabindex="0">
-                                            <div class="card-body">
-                                                <h5 class="">Public Access</h5>
-                                                <form action="{{ route('customer.update.settings') }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
-                                                    @csrf
-                                                    <input type="hidden" name="type" value="setting1">
-                                                    <input type="hidden" name="user_shop" value="{{ $user_shop->id }}">
-                                                    <div class="row mb-3 align-items-end">
-                                                        <div class="col-md-6 col-12 mt-3">
-                                                            <div class="form-group">
-                                                                <label for="slug" class="control-label">{{ __('Page Finder')}}<span class="text-danger">*</span></label>
-                                                                <input type="text" placeholder="Page FInder" class="form-control" name="slug" id="slug" value="{{ $slug }}" @if ($slug != $user->phone) readonly @endif>
-                                                            </div>
-                                                        </div>
-
-                                                        @if ($slug != $user->phone)
-                                                            <div class="col-md-6 col-12 mb-1">
-                                                                <a href="javascript:void(0)" id="download-qr" class="btn btn-outline-primary">Download QR</a>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                    
-                                                    @php
-                                                        $teamdata = json_decode($user_shop->team);
-                                                        $teamdata->team_visiblity = $teamdata->team_visiblity ?? 0;
-                                                        $teamdata->manage_offer_guest = $teamdata->manage_offer_guest ?? 0;
-                                                        $teamdata->manage_offer_verified = $teamdata->manage_offer_verified ?? 0;
-                                                    @endphp
-                                                    
-                                                    <div class="row mb-2">
-                                                        <div class="col-12 col-md-6 col-sm-12 mt-2">
-                                                            <label for="">Public Display</label> <br>
-                                                            <input type="checkbox" @if($user_shop->shop_view == 1) checked @endif value="1" name="shop_view" id="js-single" class="js-single"/>
-                                                        </div>
-
-                                                        <div class="col-12 col-md-6 col-sm-12 mt-2 d-none2 maneg_offer">
-                                                            <label for="">Guest Offer <span><i class="uil-info-circle" title="Can Guest User Make Offer"></i></span></label> <br>
-                                                            <input type="checkbox" @if($teamdata->manage_offer_guest == 1) checked @endif value="1" name="shop_view_guest" class="js-two"/>
-                                                        </div>
-
-                                                        <div class="col-12 col-md-6 col-sm-12 mt-2 d-none2 maneg_offer">
-                                                            <label for="">Verified User Offer <span><i class="uil-info-circle" title="Can Verified 121 User Make Offer"></i></span></label> <br>
-                                                            <input type="checkbox" @if($teamdata->manage_offer_verified == 1) checked @endif value="1" name="shop_view_login" class="js-three"/>
-                                                        </div>
-
-                                                        <div class="col-12 col-md-6 col-sm-12 mt-2">
-                                                            <label for="auto_acr" title="Enable You A Feature That Auto Accepting Catelogue Request">Auto Accept Request</label> <br>
-                                                            <input type="checkbox" @if($user_shop->auto_acr == 1) checked @endif value="1" name="auto_acr" id="auto_acr" class="js-acr"/>
-                                                        </div>
-
-                                                        <div class="col-12 col-md-6 col-sm-12 mt-2">
-                                                            <label for="public_about" title="Enable You A Feature That Auto Accepting Catelogue Request py-2">Public Team</label> <br>
-                                                            <input type="checkbox" @if (isset($teamdata) && $teamdata != null && $teamdata->team_visiblity) checked @endif value="1" name="public_about" id="public_about" class="js-about"/>
-                                                        </div>
-                                                    </div>
-                                                    <button type="submit" class="btn btn-success mt-3"> Update </button>
-                                                </form>
-                                            </div>
-                                        </div>  --}}
-                                        
-                                        {{-- End Div --}}
 
                                         {{-- Passcodes Only --}}
                                         <div class="tab-pane fade" id="pills-settings2" role="tabpanel" aria-labelledby="pills-settings2-tab" tabindex="0">
@@ -993,18 +869,6 @@
                                                                 <input type="text" placeholder="Enter Offers Passcode" class="form-control" name="offers_passcode" id="offers_passcode" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->offers_passcode ?? '' }}@endif" required>
                                                             </div>
                                                         </div>
-                                                        {{-- <div class="col-md-6 col-12 mt-3">
-                                                            <div class="form-group">
-                                                                <label for="reseller_pass" class="control-label">{{ __('Reseller Passcode')}}<span class="text-danger">*</span></label>
-                                                                <input type="text" placeholder="Enter Reseller Passcode" class="form-control" name="reseller_pass" id="reseller_pass" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->reseller_pass ?? '' }}@endif" required>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6 col-12 mt-3">
-                                                            <div class="form-group">
-                                                                <label for="vip_pass" class="control-label">{{ __('VIP Passcode')}}<span class="text-danger">*</span></label>
-                                                                <input type="text" placeholder="Enter VIP Passcode" class="form-control" name="vip_pass" id="vip_pass" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->vip_pass ?? '' }}@endif"  required>
-                                                            </div>
-                                                        </div> --}}
                                                     </div>
                                                     <button type="submit" class="btn btn-outline-primary mt-3"> Update </button>
                                                 </form>
@@ -1110,7 +974,7 @@
                                             <div class="card-body">
                                                 @include('frontend.customer.dashboard.section.currency-load')
                                             </div>
-                                        </div> 
+                                        </div>
 
 
                                     </div>
@@ -1558,7 +1422,7 @@
                                                                             {{-- @if ($proposal->status == 1)
                                                                                 <li>
                                                                                     <a href="{{ route('customer.lock.enquiry',$proposal->id) }}" class="dropdown-item">
-                                                                                        <i class="uil-lock-alt h6"></i> 
+                                                                                        <i class="uil-lock-alt h6"></i>
                                                                                     </a>
                                                                                 </li>
                                                                             @endif --}}
@@ -1779,7 +1643,7 @@
                                                                      {{-- @if ($proposal->status == 1)
                                                                          <li>
                                                                              <a href="{{ route('customer.lock.enquiry',$proposal->id) }}" class="dropdown-item">
-                                                                                 <i class="uil-lock-alt h6"></i> 
+                                                                                 <i class="uil-lock-alt h6"></i>
                                                                              </a>
                                                                          </li>
                                                                      @endif --}}
@@ -2164,7 +2028,7 @@
                                                 <button class="ekyc btn btn-outline-danger btn-md  text-right">Fill Now</button>
                                         </div>
                                     {{--to make brief intro visible visible --}}
-                                    
+
                                         @if($ekyc && isset($ekyc->admin_remark))
                                             <div class="alert alert-info">
                                             Admin Remark: {{$ekyc->admin_remark}}
@@ -2497,7 +2361,7 @@
                                             </div>
                                             <div class="col-12"><hr></div>
                                         </form>--}}
-                                        
+
 
 
                                     {{-- </div>
@@ -2735,13 +2599,13 @@
             $('#sendForCatalogue').modal('show');
         })
 
-        $(".updatecurrencybtn").click(function (e) { 
+        $(".updatecurrencybtn").click(function (e) {
             e.preventDefault();
 
             let crrname = $(this).data('crrname');
             let crrid = $(this).data('crrid');
             let crrvalue = $(this).data('crrvalue');
-            
+
             $('#currencyname').val(crrname);
             $('#crrid').val(crrid);
 
@@ -2751,7 +2615,7 @@
             $("#updatecurrency").modal('show')
         });
 
-        $("#addcurrencyopen").click(function (e) { 
+        $("#addcurrencyopen").click(function (e) {
             e.preventDefault();
             $('#addcurrency').modal('show');
         });
@@ -2760,7 +2624,7 @@
             $("#addTeam").modal("show");
         });
 
-        // $(".openmicrsotesettingmodal").click(function (e) { 
+        // $(".openmicrsotesettingmodal").click(function (e) {
         //     e.preventDefault();
         //     $("#micrsotesettingmodal").modal('show')
         // });
@@ -3336,7 +3200,7 @@
                 dropdownParent: $("#addAddressModal")
             });
 
-            
+
             $(".currselect2insidemodal").select2({
                 dropdownParent: $("#addcurrency")
             });

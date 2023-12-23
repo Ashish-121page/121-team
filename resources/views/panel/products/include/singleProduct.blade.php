@@ -8,7 +8,7 @@
                 <i class="far fa-times-circle fa-rotate-270 fa-lg "></i>
             </div>
         </div>
-        <iframe id="myIframe" src="{{ route('panel.products.create') }}?action=nonbranded&single_product&viewid={{ encrypt($product->id) }}&encid={{encrypt($prodextra->id)}}"
+        <iframe id="myIframe" src="{{ route('panel.products.create') }}?action=nonbranded&single_product&viewid={{ encrypt($product->id) }}&encid={{encrypt($prodextra->id ?? '' )}}"
             style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>
     </div> {{-- Modal Body End --}}
 </div>

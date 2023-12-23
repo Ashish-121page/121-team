@@ -12,7 +12,7 @@ use App\User;
 
 class ProductAttributeController extends Controller
 {
-    
+
 
     /**
      * Display a listing of the resource.
@@ -26,13 +26,13 @@ class ProductAttributeController extends Controller
              $length = $request->get('length');
          }
          $product_attributes = ProductAttribute::query();
-         
+
             if($request->get('search')){
                 $product_attributes->where('id','like','%'.$request->search.'%')
                 ->orWhere('name','like','%'.$request->search.'%')
                 ;
             }
-            
+
             if(AuthRole() != 'Admin') {
                 $product_attributes->where('user_id',auth()->id())->orWhere('user_id');
             }
@@ -50,17 +50,17 @@ class ProductAttributeController extends Controller
             $product_attributes = $product_attributes->paginate($length);
 
             if ($request->ajax()) {
-                return view('panel.product_attributes.load', ['product_attributes' => $product_attributes])->render();  
-                return view('panel.user_shop_items.includes.Properties', ['product_attributes' => $product_attributes])->render();  
+                return view('panel.product_attributes.load', ['product_attributes' => $product_attributes])->render();
+                return view('panel.user_shop_items.includes.Properties', ['product_attributes' => $product_attributes])->render();
             }
- 
+
         return view('panel.product_attributes.index', compact('product_attributes'));
     }
 
         public function print(Request $request){
             $product_attributes = collect($request->records['data']);
-                return view('panel.product_attributes.print', ['product_attributes' => $product_attributes])->render();  
-           
+                return view('panel.product_attributes.print', ['product_attributes' => $product_attributes])->render();
+
         }
 
     /**
@@ -72,7 +72,7 @@ class ProductAttributeController extends Controller
     {
         try{
             return view('panel.product_attributes.create');
-        }catch(\Exception $e){            
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -85,15 +85,17 @@ class ProductAttributeController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         // return magicstring($request->all());
         $this->validate($request, [
                         'name'     => 'required',
                         'type'     => 'sometimes',
                         'value'     => 'sometimes',
                     ]);
-        
+
         try{
+
+
             $UserRole = AuthRole();
             if ($UserRole != 'Admin') {
                 // `  Start Creating Custom Attribute....
@@ -103,7 +105,7 @@ class ProductAttributeController extends Controller
 
                 // + creating Array for Adding in User Record
                 if ($custom_arr_old != null) {
-                    $upload_arr = array_merge((array) $custom_arr_old,$custom_arr_new); 
+                    $upload_arr = array_merge((array) $custom_arr_old,$custom_arr_new);
                 }else{
                     $upload_arr = $custom_arr_new;
                 }
@@ -114,34 +116,49 @@ class ProductAttributeController extends Controller
             }else{
                 $type = 0; // Admin Define Attribute
             }
- 
+
+
+            if (request()->has('type') && request()->get('type') != 'any_value') {
+                $value = 'any_value';
+            }else{
+                $value = null;
+            }
+
+            // echo $value;
+            // return;
+
             $chkCount = ProductAttribute::where('name',$request->name)->where('user_id',$request->user_id)->get();
-            if (count($chkCount) == 0) {   
+            if (count($chkCount) == 0) {
                 // ! Uploading Attributes
                 $AttributValue = ProductAttribute::create([
                     'name' => $request->get('name'),
                     'type' => $type,
-                    'value' => null,
+                    'value' => $value ?? NULL,
                     'user_id' => $request->get('user_id') ?? null,
                     'user_shop_id' => $request->get('user_shop_id') ?? null,
-                ]);   
-                
-                // - Checking Values
-                foreach (explode(",",$request->value[0]) as $key => $items) {
-                    ProductAttributeValue::create([
-                        'parent_id' => $AttributValue->id,
-                        'user_id' => $request->get('user_id') ?? null,
-                        'attribute_value' => $items,
-                    ]);
+                ]);
+
+                if ($value != 'any_value') {
+                    // - Checking Values
+                    foreach (explode(",",$request->value[0]) as $key => $items) {
+                        ProductAttributeValue::create([
+                            'parent_id' => $AttributValue->id,
+                            'user_id' => $request->get('user_id') ?? null,
+                            'attribute_value' => $items,
+                        ]);
+                    }
                 }
+
+
+
             }else{
                 return back()->with('error',"$request->name Property already exists in your Account.");
             }
-                
+
             return redirect()->route('panel.product_attributes.index')->with('success','Product Attribute Created Successfully!');
-        }catch(\Exception $e){            
+        }catch(\Exception $e){
             // return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
-            echo $e->getMessage();
+            throw $e;
         }
     }
 
@@ -155,7 +172,7 @@ class ProductAttributeController extends Controller
     {
         try{
             return view('panel.product_attributes.show',compact('product_attribute'));
-        }catch(\Exception $e){            
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -167,16 +184,16 @@ class ProductAttributeController extends Controller
      * @return  \Illuminate\Http\Response
      */
     public function edit(ProductAttribute $product_attribute)
-    {   
+    {
         try{
-            
+
             if (AuthRole() != 'Admin') {
                 if ($product_attribute->user_id != auth()->id() && $product_attribute->user_id != null) {
                     return back()->with('error',"Something went wrong.");
                 }
             }
             return view('panel.product_attributes.edit',compact('product_attribute'));
-        }catch(\Exception $e){            
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -190,18 +207,18 @@ class ProductAttributeController extends Controller
      */
     public function update(Request $request,ProductAttribute $product_attribute)
     {
-        
+
         // $this->validate($request, [
         //         '*' => 'required|alpha_num:ascii'
         //     ]);
-                
+
         try{
             $newrecord = 0;
-            $loopcount = 0; 
+            $loopcount = 0;
 
             //` Create New Values
             if (request()->has('newval') && request()->get('newval') != null) {
-                foreach (explode(",",request()->get('newval')) as $key => $items) {    
+                foreach (explode(",",request()->get('newval')) as $key => $items) {
                     $chk = ProductAttributeValue::where('attribute_value',$items)->where('parent_id',$product_attribute->id)->get();
                     if (count($chk) == 0) {
                         echo "New Value";
@@ -214,16 +231,16 @@ class ProductAttributeController extends Controller
                     }
                 }
             }
-            
+
             // Updating Existing Value
             foreach ($request->except(['_token','user_id','user_shop_id','name','newval']) as $key => $value) {
                 echo $value.newline();
                 ProductAttributeValue::where('id',$key)->update([
                     'attribute_value' => trim($value),
                 ]);
-                $loopcount++; 
+                $loopcount++;
             }
-            
+
 
             $product_attribute->visibility = $request->visibility ?? 0;
             $product_attribute->save();
@@ -232,7 +249,7 @@ class ProductAttributeController extends Controller
             $msg = "$newrecord are Created and $loopcount are Updated !!";
             // return back()->with('success',"Product Attribute Values Updated")->withInput($request->all());
             return back()->with('success',$msg)->withInput($request->all());
-        }catch(\Throwable $e){            
+        }catch(\Throwable $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
             // throw $e;
         }
@@ -248,11 +265,11 @@ class ProductAttributeController extends Controller
         if ($chk->count() > 0) {
             return back()->with('error','Delete property from associated products before removing the product property.');
         }
-        
+
         $user = auth()->user();
         $chk = ProductAttributeValue::where('user_id',$user->id)->whereId($product_attribute_value)->get();
         $name = '';
-        
+
         if (count($chk) == 0) {
             return back()->with('error',"Value doesn't exist, or isn't linked with your account!!");
         }else{
@@ -275,7 +292,7 @@ class ProductAttributeController extends Controller
     {
         try{
             if($product_attribute){
-                                      
+
                 $chk = ProductExtraInfo::where('attribute_value_id',$product_attribute->id)->get();
 
                 if ($chk->count() > 0) {
@@ -288,7 +305,7 @@ class ProductAttributeController extends Controller
                 $user = User::find(auth()->id());
                 $arr = json_decode($user->custom_attriute_columns);
                 $index = array_search($product_attribute->name,$arr);
-                
+
                 unset($arr[$index]);
                 $user->custom_attriute_columns = json_encode($arr);
                 $user->save();

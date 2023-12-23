@@ -1983,6 +1983,34 @@ if (!function_exists('getCustomFieldValueById')) {
     }
 }
 
+
+if (!function_exists('getFieldNameById')) {
+    function getFieldNameById($user_id,$fieldid){
+        $user = App\User::whereId($user_id)->first();
+        $custom_fields = $user->custom_fields;
+        $custom_fields = json_decode($custom_fields);
+
+        foreach ($custom_fields as $key => $value) {
+            if ($value->id == $fieldid) {
+                return $value->text;
+            }
+        }
+
+    }
+}
+
+if (!function_exists('is_base64_encoded')) {
+    function is_base64_encoded($data) {
+        if (preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $data)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+}
+
+
 if (!function_exists("is_html")) {
     function is_html($string) {
         return $string != strip_tags($string);

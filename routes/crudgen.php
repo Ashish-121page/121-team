@@ -143,6 +143,12 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
 
         Route::get('/delete/sku/{productid}', ['uses' => 'ProductController@deleteSKu', 'as' => 'delete.sku']);
 
+
+        Route::any('/search/assets', ['uses' => 'ProductController@searchassets', 'as' => 'search.assets']);
+
+
+        Route::get('/delete/sku/varient/{productid}', ['uses' => 'ProductController@deletevariant', 'as' => 'delete.variant']);
+
         Route::get('edit/template/{template}', ['uses' => 'ProductController@edittemplate', 'as' => 'edit.template']);
         Route::post('update/template/{template}', ['uses' => 'ProductController@updatetemplate', 'as' => 'update.template']);
         Route::get('download/template/{template}', ['uses' => 'ProductController@downloadtemplate', 'as' => 'download.template']);
@@ -383,6 +389,15 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
 
         Route::get('/Quotation', ['uses' => 'invoiceController@Quotation', 'as' => 'Quotation']);
 
+        Route::get('/quotation2', ['uses' => 'invoiceController@quotation2', 'as' => 'quotation2']);
+
+        Route::get('/quotation3', ['uses' => 'invoiceController@quotation3', 'as' => 'quotation3']);
+
+        Route::get('/quotation4', ['uses' => 'invoiceController@quotation4', 'as' => 'quotation4']);
+
+        Route::get('/quotationpdf', ['uses' => 'invoiceController@quotationpdf', 'as' => 'quotationpdf']);
+
+
     });
 
 
@@ -453,16 +468,11 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
     // Route::get('', ['uses' => 'FileManager@index', 'as' => 'index']);
     Route::get('', ['uses' => 'FileManager@newview', 'as' => 'index']);
     Route::get('/new', ['uses' => 'FileManager@newview', 'as' => 'new.view']);
-
     Route::any('/rename', ['uses' => 'FileManager@renamefile', 'as' => 'rename']);
     Route::get('/delete', ['uses' => 'FileManager@destroyfile', 'as' => 'delete']);
     Route::post('/upload', ['uses' => 'FileManager@store', 'as' => 'upload']);
-
     Route::post('/downloadZip', ['uses' => 'FileManager@downloadZip', 'as' => 'downloadZip']);
     Route::post('/linkproduct/{user_id}', ['uses' => 'FileManager@linkproduct', 'as' => 'link.product']);
-
     Route::post('/delimeter/Link', ['uses' => 'FileManager@productsaperator', 'as' => 'link.saperator']);
-
-
 
 });

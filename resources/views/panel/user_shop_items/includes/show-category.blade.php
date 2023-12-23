@@ -3,9 +3,9 @@
 
         @if($acc_permissions->managegroup == "yes")
             @if ($Team_categorygroup)
-            <div class="cardbx mx-2 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white"  style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
+            <div class="cardbx mx-3 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white m-1"  style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
                 {{-- <a href="{{ route('panel.seller.category.index','13') }}" class="bg-primary text-danger" style="color:white;height: 100%;width: 100%;display: flex;align-items: center;justify-content: center;font-size: larger;background-color: #6e6ee683;"> --}}
-                    
+
                 {{-- <a href="{{ route('panel.seller.category.index','13') }}" class="text-dark btn btn-outline-primary" style="display: block;height: 100%;width: 100%;position: absolute;left: 0;text-align: center;">
                     <span style="height: 100%;display: flex;width: 100%;justify-content: center;align-items: center;">+ Add Category</span>
                 </a> --}}
@@ -52,10 +52,10 @@
                     @foreach ($last_Records as $last_Record)
                         <div class="col-6 col-md-4 col-lg-4" style="height: 100px; width: 100px;object-fit: contain; padding:0px;">
                             <img src="{{ asset(getShopProductImage($last_Record->id)->path ?? '')  ?? ''}}"  class="img-fluid p-1" style="border-radius: 10px;height: 100%; width: 100%;">
-                        </div>    
-                    @endforeach                    
-                    
-                    
+                        </div>
+                    @endforeach
+
+
                 </div>
                 {{-- <div class="custom-chk prdct-checked" style="display: flex;align-items: flex-end;justify-content: end;margin: 10px;">
                     <input type="checkbox" name="editcat" class="input-check" id="editcat" value="{{ $item->id }}">
@@ -77,9 +77,9 @@
         @php
             $own_categories = App\Models\Category::whereNotIn('id',$categories->pluck('id'))->where('user_id',auth()->id())->where('level',2)->orderBy('name','ASC')->get();
         @endphp
-        
-        @foreach ($own_categories as $item)            
-            <div class="cardbx mx-2 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white" style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
+
+        @foreach ($own_categories as $item)
+            <div class="cardbx mx-3 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white m-1" style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
                 <div class="head d-flex justify-content-between my-2">
                     <div class="one col-10">
                         <div style="font-weight: bold"> {{ $item->name }} </div>
@@ -108,18 +108,18 @@
                     @foreach ($last_Records as $last_Record)
                         <div class=" col-6 col-md-5 col-lg-3" style="height: 100px; width: 100px;object-fit: contain">
                             <img src="{{ asset(getShopProductImage($last_Record->id)->path) }}"  class="img-fluid p-1" style="border-radius: 10px;height: 100%; width: 100%;">
-                        </div>    
-                    @endforeach                    
-                    
-                    
+                        </div>
+                    @endforeach
+
+
                 </div>
                 <label class="custom-chk prdct-checked" data-select-all="boards" style="bottom: 0; right: 20px; display: block  ">
                     <input type="checkbox" name="editcat" class="input-check d-none" id="editcat" value="{{ $item->id }}">
                     <span class="checkmark"></span>
-                </label>             
+                </label>
             </div>
         @endforeach
-        
+
    </div>
 
 
@@ -127,7 +127,7 @@
         <input type="hidden" name="delete_ids" id="delete_ids">
     </form>
 
-    
+
 
 
     <form id="export_category_product" action="{{ route('panel.bulk.product.bulk-export',auth()->id()) }}">

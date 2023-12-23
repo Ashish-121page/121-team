@@ -531,6 +531,7 @@
             </div>
         </div>
         @include('panel.products.include.create_template')
+        @include('panel.products.include.LInke-assets')
 
 
 
@@ -548,6 +549,9 @@
 
         <script>
             $(document).ready(function () {
+
+
+
                 $(".hiddenbxbtn").click(function (e) {
                     $("#"+$(this).data('open')).toggleClass('d-none');
                 });

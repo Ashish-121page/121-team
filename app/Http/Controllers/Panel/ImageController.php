@@ -22,6 +22,7 @@ class ImageController extends Controller
             'file', file_get_contents($file), $filename
         )->post($url,[
             'Myfilename' => $filename,
+            'api_key' => 'AtTdiK0f3M1iTAU6aGMm7B9T5GjdUS53'
         ]);
 
 
@@ -89,7 +90,7 @@ class ImageController extends Controller
         }
 
 
-        $bgcolor = convertColorStringToArray(request()->get('bgcolor'));
+        $bgcolor = convertColorStringToArray(request()->get('bgcolor')) ?? 'rgb(255,255,255)';
         $output_path =$path = str_replace('public','storage',request()->get('output_path'));
 
 
@@ -102,8 +103,29 @@ class ImageController extends Controller
         ];
         return response()->json($response);
 
-        // return back()->with('success','Background Changed Successfully');
 
     }
+
+    public function cropimage(Request $request)
+    {
+        $dataUrl = $request->input('image');
+        $oldFilePath =$request->input('old_path');
+
+        list($type, $data) = explode(';', $dataUrl);
+        list(, $data) = explode(',', $data);
+
+
+        $imageData = base64_decode($data);
+
+        $disk = 'public';
+        $fullOldFilePath = $disk . '/' . $oldFilePath;
+        if (Storage::exists($fullOldFilePath)) {
+            Storage::delete($fullOldFilePath);
+        }
+
+        Storage::put($oldFilePath, $imageData, 'public');
+        return response()->json(['message' => 'Image replaced successfully']);
+    }
+
 
 }

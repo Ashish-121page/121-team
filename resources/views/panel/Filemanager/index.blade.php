@@ -6,8 +6,18 @@
     @push('head')
     {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/dropzone.min.css"> --}}
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/dropzone.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"> --}}
         <style>
+            .btn{
+                transition: 0.3s
+            }
+
+            .btn:active {
+                transform: scale(0.8)
+            }
             .preview-img {
                 height: 70px;
                 width: 70px;
@@ -86,6 +96,25 @@
                 border-radius: 50%;
                 box-shadow: 1px 1px 3px 0px grey;
             }
+
+            .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: #09f;
+
+            animation: spin 1s ease infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
         </style>
 
@@ -651,7 +680,7 @@
         <script>
             function changeColor(color){
                 $("#editpreviewimage").css("background-color", color);
-                console.log(`Background color changed to ${color}`);
+                // console.log(`Background color changed to ${color}`);
             }
 
             function readycolor(){
@@ -660,6 +689,7 @@
                     $(this).css("background-color", color);
                 });
             }
+
 
         </script>
         <script>
@@ -693,7 +723,7 @@
                             'output_path': output_path
                         },
                         success: function (response) {
-                            console.log(response);
+                            // console.log(response);
                             let result = response;
                             if (result.status == 'success') {
                                 // alert("Background Changed Successfully !!");
@@ -702,10 +732,7 @@
                             }
                         }
                     });
-
-
                 });
-
 
                 // Opeing Image Editor Modal
                 $(".editImagebtn").click(function (e) {
@@ -714,10 +741,12 @@
                     let old_path = $(this).data('old_path');
                     $("#editOgimage_path").attr('src',image_path);
                     $("#old_path").val(old_path);
-
-                    $("#editpreview").addClass('d-none');
+                    // $("#editpreview").addClass('d-none');
+                    $("#editpreviewimage").addClass('d-none');
+                    $(".needhidemodal").addClass('invisible');
                     $("#editpreviewimage").attr('src','');
 
+                    // $("#removebgbtn").click();
 
                     $("#editImage").modal('show');
                 });
@@ -726,6 +755,9 @@
                 $("#removebgbtn").click(function (e) {
                     e.preventDefault();
                     let editOgimage_path = $("#editOgimage_path").attr('src');
+
+                    $(".savebtn").addClass('d-none');
+                    $("#downloadimage").removeClass('d-none');
                     $.ajax({
                         type: "POST",
                         url: "{{ route('panel.image.removebg') }}",
@@ -733,17 +765,21 @@
                             'image_path':editOgimage_path,
                         },
                         success: function (response) {
-                            console.log(response);
+                            // console.log(response);
                             let result = JSON.parse(response);
+
+                            $("#editpreviewimage").removeClass('d-none');
                             $("#editpreviewimage").attr('src',result.url);
-                            $("#editpreview").removeClass('d-none');
+                            $(".spinner-box").addClass('d-none');
+                            $("#canvasfilter").addClass('d-none');
+
                             $("#editpreview").addClass('d-block');
+                            $(".needhidemodal").removeClass('invisible');
+
+                            changeColor("#ffffff");
+
                         }
                     });
-
-
-
-
                 });
 
             });
