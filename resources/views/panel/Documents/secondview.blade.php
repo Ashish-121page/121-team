@@ -80,7 +80,7 @@
 
                                                       <label for="expotername" style="width:100%">Exporter Name</label>
                                                       <br>
-                                                      <input type="text" style="width:100%" placeholder="Enter">
+                                                      <input class="form-control" type="text" style="width:100%" placeholder="Enter">
 
                                                   </div>
                                               </div>
@@ -88,7 +88,7 @@
                                                   <div class="" style="display:block; width:100% !important;">
                                                       <label for="expotername" style="width:100%">Email id</label>
                                                       <br>
-                                                      <input type="text" style="width:100%" placeholder="Enter">
+                                                      <input class="form-control" type="text" style="width:100%" placeholder="Enter">
                                                   </div>
                                               </div>
 
@@ -96,21 +96,21 @@
                                                   <div class="" style="display:block; width:100% !important;">
                                                       <label for="expotername" style="width:100%">Other Reference</label>
                                                       <br>
-                                                      <input type="text" style="width:100%" placeholder="Enter">
+                                                      <input class="form-control" type="text" style="width:100%" placeholder="Enter">
                                                   </div>
                                               </div>
                                               <div class="row mt-3">
                                                   <div class="" style="display:block; width:100% !important;">
                                                       <label for="expotername" style="width:100%">Address</label>
                                                       <br>
-                                                      <input type="text" style="width:100%" placeholder="Enter">
+                                                      <input class="form-control" type="text" style="width:100%" placeholder="Enter">
                                                   </div>
                                               </div>
                                               <div class="row mt-3">
                                                   <div style="display:block ;width:100% !important;">
                                                       <label for="country" style="width:100%">Country</label>
                                                       <br>
-                                                      <select id="country" name="country" style="width:100%">
+                                                      <select class="form-control" id="country" name="country" style="width:100%">
                                                           <option value="">Select a country</option>
                                                           <option value="India">India</option>
                                                           <option value="United States">United States</option>
@@ -126,7 +126,7 @@
                                                       <label for="expotername" style="width:100%">Exporter Reference
                                                           Id(IEC Code)</label>
                                                       <br>
-                                                      <input type="text" style="width:100%" placeholder="Enter">
+                                                      <input class="form-control" type="text" style="width:100%" placeholder="Enter">
                                                   </div>
                                               </div>
                                           </div>
@@ -149,7 +149,7 @@
                                 
                                                 <label for="buyername" style="width:100%">Name</label>
                                                 <br>
-                                                <input type="text" style="width:100%" placeholder="Enter">
+                                                <input class="form-control" type="text" style="width:100%" placeholder="Enter">
                                 
                                               </div>
                                             </div>
@@ -157,7 +157,7 @@
                                               <div class="" style="display:block; width:100% !important;">
                                                 <label for="buyermail" style="width:100%">Email</label>
                                                 <br>
-                                                <input type="text" style="width:100%" placeholder="Enter">
+                                                <input class="form-control" type="text" style="width:100%" placeholder="Enter">
                                               </div>
                                             </div>
                                 
@@ -165,28 +165,28 @@
                                               <div class="" style="display:block; width:100% !important;">
                                                 <label for="adrsl1" style="width:100%">Address Line1</label>
                                                 <br>
-                                                <input type="text" style="width:100%" placeholder="Enter">
+                                                <input class="form-control" type="text" style="width:100%" placeholder="Enter">
                                               </div>
                                             </div>
                                             <div class="row mt-3">
                                               <div class="" style="display:block; width:100% !important;">
                                                 <label for="adrsl2" style="width:100%">Address Line2</label>
                                                 <br>
-                                                <input type="text" style="width:100%" placeholder="Enter">
+                                                <input class="form-control" type="text" style="width:100%" placeholder="Enter">
                                               </div>
                                             </div>
                                             <div class="row mt-3">
                                               <div class="" style="display:block; width:100% !important;">
                                                 <label for="buyercity" style="width:100%">City</label>
                                                 <br>
-                                                <input type="text" style="width:100%" placeholder="Enter">
+                                                <input class="form-control" type="text" style="width:100%" placeholder="Enter">
                                               </div>
                                             </div>
                                             <div class="row mt-3">
                                               <div style="display:block; width:100% !important;">
                                                 <label for="country" style="width:100%">Country</label>
                                                 <br>
-                                                <select id="country" name="country" style="width:100%">
+                                                <select class="form-control" id="country" name="country" style="width:100%">
                                                     <option value="">Select a country</option>
                                                     <option value="India">India</option>
                                                     <option value="United States">United States</option>

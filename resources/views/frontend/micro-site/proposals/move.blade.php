@@ -355,7 +355,7 @@
                 </div> --}}
 
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-12 col-lg-12">
 
                         <div class="card">
                             <div class="card-header">
@@ -497,7 +497,7 @@
                                                                                         $price  = $price/$margin_factor;
                                                                                     }
                                                                                     $margin = "Margin Added: ".$proposal_item->margin."%";
-
+                                                                                    $userPrice = null;
                                                                                 }else{
                                                                                     $price = $proposal_item->user_price;
                                                                                     $userPrice = $proposal_item->user_price;
@@ -514,9 +514,13 @@
                                                                                 <br>
                                                                                 <span>Offer Price:
                                                                                     {{ $currency_symbol }}
-                                                                                    {{  $userPrice ?? isset($price) ? number_format(round($price,2)) : '' }}
+                                                                                    @if ($userPrice != null)
+                                                                                        {{ $userPrice }}
+                                                                                    @else
+                                                                                        {{  $userPrice ?? isset($price) ? number_format(round($price,2)) : '' }}
+                                                                                    @endif
                                                                                 </span>
-                                                                                <a href="javascript:void(0)" data-product="{{ $proposal_item->product_id }}" data-notes="{!! $ashus->remarks_offer !!}" class="edit-price" >
+                                                                                <a href="javascript:void(0)" data-product="{{ $proposal_item->product_id }}" data-notes="{!! $ashus->remarks_offer ?? '' !!}"  data-price="{{ $userPrice ?? $price ?? '' }}" class="edit-price" >
                                                                                     <i class="fas fa-pencil-alt text-primary"></i>
                                                                                 </a>
                                                                             {{-- @endif --}}
@@ -1430,10 +1434,13 @@
 
 
             $(".edit-price").click(function() {
-                var product_id =$(this).data('product');
+                var product_id = $(this).data('product');
+                var remark = $(this).data('notes');
+                var price = $(this).data('price');
+
                 $('.productId').val(product_id);
-                let remark = $(this).data('remark');
                 $("#remarks_offer").val(remark);
+                $("#price").val(price);
                 $('#pickedProductEdit').modal('show');
 
             });

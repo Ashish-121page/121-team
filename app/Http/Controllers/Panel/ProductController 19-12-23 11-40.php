@@ -321,69 +321,17 @@ class ProductController extends Controller
                 $attribute_value_id = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
 
 
-                $medias = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->where('extension','!=','gif')->get();
-                $medias_gif = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->where('extension','gif')->get();
-                $media_Video = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Video')->get();
-                $mediaAssets = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Asset')->get();
-
-                $mediaSize_attachment = 0;
-                foreach ($mediaAssets as $key => $media) {
-                    $path = str_replace("storage","public",$media->path);
-                    if (Storage::exists($path)) {
-                        $size_Of_File = Storage::size($path);
-                        $mediaSize_attachment += $size_Of_File;
-                    }
-                }
-
-                $mediaSize_video = 0;
-                foreach ($media_Video as $key => $media) {
-                    $path = str_replace("storage","public",$media->path);
-                    if (Storage::exists($path)) {
-                        $size_Of_File = Storage::size($path);
-                        $mediaSize_video += $size_Of_File;
-                    }
-                }
-
-                $mediaSize_gif = 0;
-                foreach ($medias_gif as $key => $media) {
-                    $path = str_replace("storage","public",$media->path);
-                    if (Storage::exists($path)) {
-                        $size_Of_File = Storage::size($path);
-                        $mediaSize_gif += $size_Of_File;
-                    }
-                }
-
-                $mediaSize_Image = 0;
-                foreach ($medias as $key => $media) {
-                    $path = str_replace("storage","public",$media->path);
-                    if (Storage::exists($path)) {
-                        $size_Of_File = Storage::size($path);
-                        $mediaSize_Image += $size_Of_File;
-                    }
-                }
-
-
-                $folder = "storage/files/".auth()->id();
-                $medias = Media::where('path',"LIKE","%".$folder."%")->groupBy('path')->orderBy('created_at',"DESC")->paginate(10);
-
             }else{
                 $product = null;
                 $productExtra = null;
                 $arraysd = [];
                 $varient_basis = [];
                 $attribute_value_id = [];
-                $folder = "storage/files/".auth()->id();
-                $medias = Media::where('path',"LIKE","%".$folder."%")->groupBy('path')->orderBy('created_at',"DESC")->paginate(10);
-                $media_Video = [];
-                $mediaAssets = [];
-                $medias_gif = [];
-                $mediaSize_Image = [];
-                $mediaSize_attachment = [];
-                $mediaSize_gif = [];
-                $mediaSize_video = [];
             }
 
-            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups','user_custom_col_list','product','productExtra','varient_basis','attribute_value_id','medias','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video'));
+
+
+            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups','user_custom_col_list','product','productExtra','varient_basis','attribute_value_id'));
 
         }catch(\Exception $e){
             // return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -938,65 +886,8 @@ class ProductController extends Controller
         // return back()->withInput($request->all());
         // $request['properties_varient'] = ['Material','Colour','Size'];
 
-
-        $any_value = [];
-        $substring = "any_value";
-
-        // magicstring(request()->all());
-        // return;
-
-        foreach ($request->all() as $key => $value) {
-            if (strpos($key, $substring) !== false) {
-                array_push($any_value,$key);
-
-                // checking Value Exist or Not
-                $attribute_name = explode("-",$key)[1];
-
-                $chkCountAttr = ProductAttribute::where('name',$attribute_name)->where('user_id',auth()->id())->get();
-
-                if ($chkCountAttr->count() != 0) {
-                    $attribute_id = $chkCountAttr[0]->id;
-                    $received_value = $request->$key;
-                    $chkatt = ProductAttributeValue::where('parent_id',$attribute_id)->where('attribute_value',$received_value)->first();
-
-                    if ($chkatt == null) {
-                        $tmparrvar = ProductAttributeValue::create([
-                            'parent_id' => $attribute_id,
-                            'user_id' => auth()->id() ?? null,
-                            'attribute_value' => $received_value,
-                        ]);
-
-                        $request[$attribute_name] = array($tmparrvar->id);
-
-                    }else{
-                        // magicstring($chkatt);
-                        $request[$attribute_name] = array($chkatt->id);
-
-                    }
-
-
-
-
-                }else{
-                    echo "Else Part Will Work";
-                }
-            }
-        }
-
-        // foreach ($any_value as $ashu) {
-        //     $attribute_name = explode("-",$key)[1];
-        //     $request[$attribute_name] = array($request->get($ashu));
-        // }
-
-        $user = auth()->user();
-        $custom_attriute_columns = json_decode($user->custom_attriute_columns);
-
-        // magicstring($custom_attriute_columns);
-
-
         // magicstring($request->all());
         // return;
-
 
         try {
             $allowed_array = ['yes',"Yes","YES",'1'];
@@ -1269,37 +1160,12 @@ class ProductController extends Controller
                                     $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
                                     $usi->save();
                                 }
-                            }
 
-
-                            if($request->avl_assets != null){
-                                foreach (explode(",",$request->avl_assets) as $key => $value) {
-                                    Media::whereId($value)->first()->replicate()->fill([
-                                        'type' => 'Product',
-                                        'type_id' => $product_obj->id,
-                                    ])->save();
-                                }
-                            }
-
-
-                            if($request->avl_assets != null){
-                                foreach (explode(",",$request->avl_assets) as $key => $value) {
-                                    Media::whereId($value)->first()->replicate()->fill([
-                                        'type' => 'Product',
-                                        'type_id' => $product_obj->id,
-                                    ])->save();
-                                }
                             }
 
 
 
-                            if ($usi->images != null) {
-                                $usi->images =  $usi->images.",".$request->exist_img.",".$request->avl_assets ?? null;
-                            }else{
-                                $usi->images =  $request->exist_img.",".$request->avl_assets ?? null;
-                            }
 
-                            $usi->save();
                         }
 
                         $parentAttribute = ProductAttributeValue::whereId($second)->first();
@@ -1585,23 +1451,7 @@ class ProductController extends Controller
 
                         }
 
-                        if($request->avl_assets != null){
-                            foreach (explode(",",$request->avl_assets) as $key => $value) {
-                                Media::whereId($value)->first()->replicate()->fill([
-                                    'type' => 'Product',
-                                    'type_id' => $product_obj->id,
-                                ])->save();
-                            }
-                        }
 
-
-                        if ($usi->images) {
-                            $usi->images =  $usi->images.",".$request->exist_img.",".$request->avl_assets ?? null;
-                        }else{
-                            $usi->images =  $request->exist_img.",".$request->avl_assets ?? null;
-                        }
-
-                        $usi->save();
 
                     }
 
@@ -1750,14 +1600,6 @@ class ProductController extends Controller
                             $valueasd = $request->get($custom_attriute);
                             $parentAttribute = ProductAttributeValue::whereId($valueasd[0])->first();
 
-                            // echo $valueasd[0].newline(2);
-
-                            // // echo "parentAttribute".newline(2);
-                            // // magicstring($parentAttribute);
-
-                            // continue;
-
-
                             $product_extra_info_obj_user = [
                                 'product_id' => $product_obj->id,
                                 'user_id' => $user->id,
@@ -1791,8 +1633,6 @@ class ProductController extends Controller
                             ProductExtraInfo::create($product_extra_info_obj_user);
                         }
                     }
-
-                    // return;
 
                     $usi = UserShopItem::create([
                         'user_id'=> $user->id,
@@ -1858,35 +1698,8 @@ class ProductController extends Controller
                     }
 
 
-                    if($request->avl_assets != null){
-                        foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
-                            Media::whereId($value)->first()->replicate()->fill([
-                                'type' => 'Product',
-                                'type_id' => $product_obj->id,
-                            ])->save();
-                        }
-                    }
-
-                    if ($usi->images) {
-                        if ($request->avl_assets != null) {
-                            $usi->images =  $usi->images.",".$request->exist_img.",".implode(",",$request->avl_assets) ?? null;
-                        }else{
-                            $usi->images =  $usi->images.",".$request->exist_img ?? null;
-                        }
-
-                    }else{
-                        if ($request->avl_assets != null) {
-                            $usi->images =  $request->exist_img.",".implode(",",$request->avl_assets) ?? null;
-                        }else{
-                            $usi->images =  $request->exist_img."," ?? null;
-                        }
-
-                    }
-
-                    $usi->save();
                 }
-            }
-            else{
+            }else{
 
                 $is_empty = true;
                 $reseller_group = Group::whereUserId($user->id)->where('name',"Reseller")->first();
@@ -2093,24 +1906,6 @@ class ProductController extends Controller
                         }
 
 
-                        if($request->avl_assets != null){
-                            foreach (explode(",",$request->avl_assets) as $key => $value) {
-                                Media::whereId($value)->first()->replicate()->fill([
-                                    'type' => 'Product',
-                                    'type_id' => $product_obj->id,
-                                ])->save();
-                            }
-                        }
-
-
-
-                        if ($usi->images) {
-                            $usi->images =  $usi->images.",".$request->exist_img.",".$request->avl_assets ?? null;
-                        }else{
-                            $usi->images =  $request->exist_img.",".$request->avl_assets ?? null;
-                        }
-
-                        $usi->save();
                         $is_empty = false;
 
                     }
@@ -2255,23 +2050,6 @@ class ProductController extends Controller
                     }
 
 
-                    if($request->avl_assets != null){
-                        foreach (explode(",",$request->avl_assets) as $key => $value) {
-                            Media::whereId($value)->first()->replicate()->fill([
-                                'type' => 'Product',
-                                'type_id' => $product_obj->id,
-                            ])->save();
-                        }
-                    }
-
-
-                    if ($usi->images) {
-                        $usi->images =  $usi->images.",".$request->exist_img.",".$request->avl_assets ?? null;
-                    }else{
-                        $usi->images =  $request->exist_img.",".$request->avl_assets ?? null;
-                    }
-
-                    $usi->save();
 
                     $count++;
                 }
@@ -2522,6 +2300,8 @@ class ProductController extends Controller
             $varient_basis = countRepetitions($arraysd);
             arsort($varient_basis);
 
+
+
             $user_shop_item = UserShopItem::where('product_id',$product->id)->where('user_id',auth()->id())->first();
             $available_products = ProductExtraInfo::where('group_id',$product->sku)->groupBy('product_id')->pluck('product_id')->toArray();
 
@@ -2552,12 +2332,24 @@ class ProductController extends Controller
                 array_push($fileds_sections_names, getCustomFieldValueById($value,$product->id)->value ?? '');
             }
 
-            $months = ['January' => 'January','February' => 'February','March' => 'March','April' => 'April','May' => 'May','June' => 'June','July' => 'July','August' => 'August','September' => 'September','October' => 'October','November' => 'November','December' => 'December'];
 
 
+            // magicstring($varient_basis);
+            // magicstring($product_variant_combo);
 
+            // $newArray = [];
+            // uksort($product_variant_combo, function($key1, $key2) use ($varient_basis) {
+            //     $indexOfKey1 = array_search($key1, $varient_basis);
+            //     $indexOfKey2 = array_search($key2, $varient_basis);
+            //     return $indexOfKey1 - $indexOfKey2;
+            // });
 
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months'));
+            // // return;
+            // echo "After Sort: ";
+            // magicstring($product_variant_combo);
+            // return;
+
+            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids'));
 
         }catch(\Exception $e){
             // return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -2654,8 +2446,8 @@ class ProductController extends Controller
     public function update(Request $request,Product $product)
     {
 
-        // magicstring($request->all());
-        // return;
+        magicstring($request->all());
+        return;
 
         $custom_attriute_columns = json_decode(auth()->user()->custom_fields,true) ?? [];
 
@@ -3112,10 +2904,141 @@ class ProductController extends Controller
                         // @ This Part Will Create New Product Extra Info Records
                         $to_clone = ProductExtraInfo::where('product_id',$product->id)->orderBy('created_at', 'desc')->first();
                         $groupId = $product->sku;
-                        $newProperty = [];
+                        $count1 = 0;
+                        $count2 = 0;
+                        $count3 = 0;
+
+                        // magicstring(request()->all());
+                        // return;
+
+                        echo newline(2);
+                        $existAttribute = [];
+                        $notExistAttribute = [];
+                        $groupAttributeParents = [];
+
+                        if ($request->properties != null && $request->properties != '') {
+                            foreach ($request->properties as $key => $value) {
+                                // Checking Product Attribute Exist Or Not in Records
+                                $attribute_recordProduct = ProductExtraInfo::where('group_id',$product->sku)->where('attribute_value_id',$value)->first();
+
+                                $attribute_record = getAttruibuteValueById($value);
+                                // -- Store Attribute (Parent Id ) id in Array
+                                // if (!in_array($attribute_record->parent_id, $groupAttributeParents)) {
+                                    array_push($groupAttributeParents, $attribute_record->parent_id);
+                                // }
+
+                                // -- Store Attribute Value id in Array
+                                if ($attribute_recordProduct != null) {
+                                    array_push($existAttribute, $attribute_recordProduct->attribute_value_id);
+                                }else{
+                                    array_push($notExistAttribute, $value);
+                                }
+                            }
+                        }
 
 
-                    // !=============================================================================================================================
+                        $arraysd = ProductExtraInfo::where('group_id',$product->sku)->pluck('attribute_id','attribute_value_id')->toArray();
+                        $varient_basis = countRepetitions($arraysd);
+                        arsort($varient_basis);
+
+                        $filtered_varient_basis = array_filter($varient_basis,function($val){
+                            return $val > 1;
+                        });
+
+                        array_push($filtered_varient_basis, '');
+                        // magicstring($filtered_varient_basis);
+                        // // return;
+
+                        // Creating Varient Combination
+                        foreach ($filtered_varient_basis as $varient_basis => $varient_basiscount) {
+
+
+                            $variations_products= ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',$varient_basis)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
+
+
+                            foreach ($variations_products as $variations_products_value) {
+                                $checkBasisvalue = [];
+
+                                foreach ($notExistAttribute as $index => $attribute) {
+                                        // @ Creating New Product Record
+                                        $newProduct = $product->replicate();
+                                        $newProduct->sku = $product->sku;
+                                        $newProduct->created_at = Carbon::now();
+                                        $newProduct->save();
+
+                                        // @ Creating New User shop Item Record
+                                        $newUSI = UserShopItem::where('product_id',$product->id)->first()->replicate();
+                                        $newUSI->product_id = $newProduct->id;
+                                        $newUSI->save();
+
+                                        $attributeValue_record = getAttruibuteValueById($attribute);
+
+                                        echo "I am You Project, For $attributeValue_record->attribute_value".newline();
+
+                                        // @ Creating New Product Extra Info Record
+                                        $newproductExtraInfo = $to_clone->replicate();
+                                        $newproductExtraInfo->product_id = $newProduct->id;
+                                        $newproductExtraInfo->attribute_value_id = $attributeValue_record->id;
+                                        $newproductExtraInfo->attribute_id = $attributeValue_record->parent_id;
+                                        $newproductExtraInfo->group_id = $product->sku;
+                                        $newproductExtraInfo->created_at = Carbon::now();
+                                        $newproductExtraInfo->save();
+
+
+                                    foreach ($groupAttributeParents as $key => $groupattri) {
+
+                                        $tmp_arr = [];
+
+                                        $attribute_record = getAttruibuteById($groupattri);
+                                        $to_clones = ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',$groupattri)->groupBy('attribute_value_id')->get();
+
+                                        foreach ($to_clones as $to_clone) {
+                                            $name = getAttruibuteValueById($to_clone->attribute_value_id);
+                                            $name1 = getAttruibuteValueById($variations_products_value);
+
+                                            if (in_array($to_clone->attribute_value_id,$checkBasisvalue) || $to_clone->attribute_id == $attributeValue_record->parent_id) {
+                                                continue;
+                                            }
+
+                                            // if (in_array($to_clone->attribute_id,$tmp_arr)) {
+                                            //     continue;
+                                            // }
+
+                                            echo "I am You Project 2, Running for $name->attribute_value ($name->parent_id) [$name1->parent_id], and Variant Basis is $variations_products_value".newline();
+
+                                            if ($name->parent_id == $name1->parent_id) {
+                                                array_push($tmp_arr, $name->parent_id);
+                                            }else{
+                                                array_push($checkBasisvalue, $variations_products_value);
+                                            }
+                                            // array_push($checkBasisvalue, $variations_products_value);
+
+                                            magicstring($tmp_arr);
+
+                                            // @ Creating New Product Extra Info Record
+                                            $newproductExtraInfo = $to_clone->replicate();
+                                            $newproductExtraInfo->product_id = $newProduct->id;
+                                            $newproductExtraInfo->group_id = $product->sku;
+                                            $newproductExtraInfo->created_at = Carbon::now();
+                                            $newproductExtraInfo->save();
+                                        }
+                                    }
+
+                                    // echo "Variabtion Basis Value";
+                                    // magicstring($checkBasisvalue);
+                                }
+
+
+                            }
+
+
+
+                        }
+
+
+                        // // echo "Product Created ".$count2;
+                        // magicstring($notExistAttribute);
+                        // return;
 
                         $vip_group = getPriceGroupByGroupName(auth()->id(),"VIP");
                         $reseller_group = getPriceGroupByGroupName(auth()->id(),"Reseller");
@@ -3196,89 +3119,6 @@ class ProductController extends Controller
                     $count++;
 
                 } // End of Products for Each Loop...
-
-
-
-
-                // echo newline(2);
-                // // --=======================================================================================================
-
-                //     foreach ($request->get('properties') as $key => $value) {
-                //         $prodpertyparent = getAttruibuteValueById($value)->parent_id;
-                //         $chk33 = ProductExtraInfo::where('group_id',$products[0]->sku)->where('attribute_id',$prodpertyparent)->get();
-
-                //         // @ checking New Property Exist or Not in Records
-                //         if ($chk33->count() == 0) {
-                //             // True Not Exist in Records...
-                //             echo "Property Does Not Exist".newline();
-
-
-                //                 // Getting Records of Attribute
-                //                 $attribute_record = getAttruibuteValueById($value);
-
-                //                 // @ Creating Product Record for New Property
-                //                 $clonedProduct = $products[0]->replicate();
-                //                 $clonedProduct->created_at = Carbon::now();
-                //                 // $clonedProduct->save();
-
-                //                 // @ Creating User Shop Item Record for New Property
-                //                 $clonedUserShopItemRecord = UserShopItem::where('product_id',$products[0]->id)->orderBy('images','DESC')->first();
-                //                 $clonedUserShopItem = $clonedUserShopItemRecord->replicate();
-                //                 $clonedUserShopItem->created_at = Carbon::now();
-                //                 $clonedUserShopItem->updated_at = Carbon::now();
-                //                 $clonedUserShopItem->product_id = $clonedProduct->id ?? 0;
-                //                 $clonedUserShopItem->images = $clonedUserShopItemRecord->images;
-                //                 // $clonedUserShopItem->save();
-                //                 // magicstring($clonedUserShopItem);
-
-
-                //                 // @ Creating Product Extra Info Record for New Property
-                //                 $checkProductProperty = ProductExtraInfo::where('group_id',$products[0]->sku)->groupBy('attribute_id')->get();
-
-                //                 foreach ($checkProductProperty as $key => $checkprop) {
-                //                     magicstring($checkprop);
-                //                 }
-
-
-
-
-                //                 // @ extra info of product
-                //                 // $newproduct = $to_clone->replicate();
-                //                 // $newproduct->product_id = $product->id;
-                //                 // $newproduct->attribute_value_id = $attribute_record->id;
-                //                 // $newproduct->attribute_id = $attribute_record->parent_id;
-                //                 // $newproduct->group_id = $product->sku;
-                //                 // $newproduct->created_at = Carbon::now();
-                //                 // $newproduct->save();
-
-
-
-
-                //         }else{
-                //             continue;
-                //             echo "Property Exist".newline();
-                //             // checking Property Exist in Each Product
-
-                //             foreach ($products as $key => $product) {
-                //                 $checkProductProperty = ProductExtraInfo::where('product_id',$product->id)->where('attribute_value_id',$value)->orwhere('attribute_id',$prodpertyparent)->get();
-
-                //                 if ($checkProductProperty->count() == 0) {
-                //                     echo "$value New Property Came in Existence..".newline();
-                //                 }else{
-                //                     // echo "Property Exist in Product".newline();
-                //                 }
-                //             }
-
-
-
-
-                //         }
-
-                //     }
-
-                // // --=======================================================================================================
-                //     return;
-
 
                 return back()->with('success',"$count Product Updated!");
             }
@@ -3435,23 +3275,6 @@ class ProductController extends Controller
     }
 
 
-    public function searchassets() {
-
-        if (request()->ajax()) {
-
-            $page = request()->get('page', 1); // Default to page 1 if not set
-            $folder = "storage/files/".auth()->id();
-
-            $medias = Media::where('path', 'LIKE', "%" . request()->get('search') . "%")
-                            ->where('path',"LIKE","%".$folder."%")
-                            ->groupBy('path')
-                            ->orderBy('created_at',"DESC")
-                            ->paginate(10, ['*'], 'page', $page);
-
-            return view('panel.products.include.iframe.link-assets',compact('medias'));
-        }
-
-    }
 
 
 

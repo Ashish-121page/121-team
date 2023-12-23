@@ -10,8 +10,8 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <label for="old_name">Old Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="old_name" id="old_name" value="" required>
+                                <label for="old_name">Old Name   <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="old_name" id="old_name" value="" readonly required>
                             </div>
                         </div>
 
@@ -24,7 +24,7 @@
 
                         <div class="col-12 d-flex align-items-center justify-content-between">
                             <button type="button" class="btn btn-outline-primary close-animatedModal" id="btn-close-modal">Cancel</button>
-                            <button type="submit" class="btn btn-outline-primary"> Renam </button>
+                            <button type="submit" class="btn btn-outline-primary"> Save </button>
                         </div>
 
                     </div>

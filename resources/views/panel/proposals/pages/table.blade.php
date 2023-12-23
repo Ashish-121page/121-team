@@ -66,36 +66,38 @@
                                 $product_count = App\Models\ProposalItem::where('proposal_id',$proposal->id)->get()->count();
                             @endphp
                             
-                            <tr>
+                            <tr >                                                     
                                 <td class="no-export action_btn">
                                     {{-- @if($scoped_product->user_id == auth()->id()) --}}
                                         {{-- <input type="checkbox" name="exportproduct" id="exportproduct" class="input-check"> --}}
                                     {{-- @endif --}}
                                 </td>   
-                                <td class="d-flex justify-content-between">
-                                    <span style="mr-3; margin-top: 30px;">
+                                <td class="d-flex justify-content-between" >
+                                    <div class="mt-2 my-1 py-2" >                    
+                                    <span >
                                         {{ $customer_name }}
                                     </span>
+                                    </div>
                                     <div class="d-lg-flex d-none justify-content-between" style="gap:10px;">
                                         
-                                            @foreach ($productItems as $key => $item)
-                                                @if ($key < 3)
-                                                    @php
-                                                        $mediarecord = App\Models\Media::where('type_id',$item->product_id)->where('tag','Product_Image')->first();
-                                                    @endphp 
-                                                    @if ($mediarecord != null)   
-                                                        <div style="height: 60px;width: 60px; object-fit: contain;justify-content-end;">                                                                                                                                                                                                                                                                                                                                                           
-                                                        <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid " style="border-radius: 10px;height: 100%;width: 100%;background-color: gray;align-items: center; padding:2px;">
-                                                        </div>   
-                                                                    
-                                                    @endif                                                                    
-                                                @endif
-                                            @endforeach
-                                        </div>
+                                        @foreach ($productItems as $key => $item)
+                                            @if ($key < 3)
+                                                @php
+                                                    $mediarecord = App\Models\Media::where('type_id',$item->product_id)->where('tag','Product_Image')->first();
+                                                @endphp 
+                                                @if ($mediarecord != null)   
+                                                    <div style="height: 60px;width: 60px; object-fit: contain;justify-content-end;">                                                                                                                                                                                                                                                                                                                                                           
+                                                    <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid " style="border-radius: 10px;height: 100%;width: 100%;align-items: center; padding:2px;">
+                                                    </div>   
+                                                                
+                                                @endif                                                                    
+                                            @endif
+                                        @endforeach
+                                    </div>
                                   
                                 </td>
                                 
-                                <td>
+                                <td  style=" align-items: center;">
                                     <div class=" py-1" >{{ getFormattedDateTime($proposal->updated_at)  }}</div>
                                 </td>
                                 <td>
@@ -118,36 +120,37 @@
                                         {{-- <button class="btn btn-outline-primary my-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             More <i class="uil-angle-right"></i>
                                         </button> --}}
-                                        <div class=" float-end justify-content-between"> 
+                                        <div class=" float-end justify-content-between mt-2"> 
 
-                                            <a class="btn btn-transparent w-fit" href="{{ inject_subdomain('proposal/picked/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?type=send" target="_blank" style="text-decoration: none;  color:primary; padding:4px 10px!important;">
+                                            <a class="btn btn-transparent w-fit" href="{{ inject_subdomain('proposal/picked/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?type=send" target="_blank" style="text-decoration: none;  color:primary; padding:6px 5px!important;">
                                                 <i class="fas fa-download" style="color:#6666cc"></i> 
                                             </a> 
 
-                                            <a class="btn-link text-primary" href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: underline; padding:4px 10px!important;">
+                                            <a class="btn-link text-primary" href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: none; padding:6px 5px!important;">
                                                 <i class="fas fa-edit fa-lg" style="color:#6666cc"></i>
                                             </a> 
                                             
                                                 @if ($proposal->status == 1)
                                                     @if ($product_count != 0)                                               
-                                                        <button class="btn-link text-primary copybtn"  value="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline; border:none; margin-bottom:22px; padding:0px">
+                                                        <button class="btn-link text-primary copybtn"  value="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline; border:none; margin-bottom:22px; padding:4px">
                                                             <i class="uil-link-alt"></i> Copy Link
                                                         </button>                                                
                                                     @endif                                            
                                                                                                                                        
                                                 @endif      
-                                              <a class="btn-link text-primary " href="{{inject_subdomain('make-copy/'.$proposal->id,$slug) }}" class="" style="text-decoration: underline;">
+                                              <a class="btn-link text-primary " href="{{inject_subdomain('make-copy/'.$proposal->id,$slug) }}" class="" style="text-decoration: underline; padding: 4px;">
                                                 <i class="uil-copy"></i> Duplicate
                                             </a>                                                                                                                       
 
                                         @if ($proposal->status == 1)                                                                                  
-                                                <a href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="text-danger delete-item" style="text-decoration: underline;">
+                                                <a href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="text-danger delete-item mx-2" style=" padding: 4px;">
                                                     <i class="fas fa-trash"></i>
                                                 </a>                                                                                   
                                         @endif  
                                         </div>                                                            
                                     @endif
                                 </td>
+                          
                             </tr>
         
                         @endforeach

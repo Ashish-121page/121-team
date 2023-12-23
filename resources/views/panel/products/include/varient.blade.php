@@ -1,4 +1,4 @@
-<div class="modal fade" id="editVarientModal" role="dialog" aria-labelledby="editVarientModalTitle" aria-hidden="true">
+{{-- <div class="modal fade" id="editVarientModal" role="dialog" aria-labelledby="editVarientModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -22,7 +22,7 @@
             @csrf
             <input type="hidden" name="product_id" value="{{ $product_id }}">
               <div class="row">
-                <div class="col-md-6 col-12"> 
+                <div class="col-md-6 col-12">
                     <div class="form-group mb-0">
                         <label for="input">{{ __('Color')}}</label>
                     </div>
@@ -35,7 +35,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-6 col-12"> 
+                <div class="col-md-6 col-12">
                     <div class="form-group mb-0">
                         <label for="input">{{ __('Size')}}</label>
                     </div>
@@ -57,4 +57,4 @@
         </div>
     </div>
   </div>
-</div>
+</div> --}}

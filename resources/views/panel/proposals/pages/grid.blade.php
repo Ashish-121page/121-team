@@ -40,7 +40,7 @@
 </div>
 <div class="col-md-12 col-lg-12">
   <div class="card-body1">    
-      <div class="d-flex gap-2 flex-wrap"> 
+      <div class=" d-flex gap-5 flex-wrap"> 
         @if ($proposals->count() > 0)
           @foreach ($proposals as $proposal)
               @php
@@ -54,7 +54,7 @@
 
               @endphp
 
-              <div class="cardbx m-1 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white m-1" style="width: 25rem;;max-width: 18rem; min-height: 12rem;max-height: 15rem;">
+              <div class="cardbx mx-3 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white m-1" style="width: 25rem;;max-width: 18rem; min-height: 13.5rem;max-height: 15rem;">
                   <div class="head d-flex justify-content-between mx-3 my-2">
                       <div class="one">
                         <div style="font-weight: bold">
@@ -85,7 +85,7 @@
                           @if ($mediarecord != null)   
                                           
                             <div style="height: 100px; width: 100px;object-fit: contain; ">
-                              <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid " style="border-radius: 10px;height: 80%; width: 100%; background-color:rgb(186, 183, 183); gap:10px; padding:0.15rem">
+                              <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid " style="border-radius: 10px;height: 80%; width: 100%;  gap:10px; padding:0.15rem">
                             </div>   
                                         
                           @endif                                                                    

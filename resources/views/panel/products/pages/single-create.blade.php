@@ -290,7 +290,7 @@
                                         {{-- moved --}}
 
                                         <div class="col-12 my-2">
-                                            <div class="card-header">
+                                            <div class="h6 card-header" style="padding: 0px;">
                                                 <h3>Sale Pricing</h3>
                                             </div>
                                         </div>
@@ -304,7 +304,7 @@
                                                     @endphp
                                                     <select name="base_currency" id="base_currency" class="select2">
                                                         @forelse ($currencies as $item)
-                                                            <option value="{{ $item->currency }}" @if ($product->base_currency ?? '' == $item->currency) selected @endif>{{ $item->currency }}</option>
+                                                            <option value="{{ $item->currency }}" @if ($product->base_currency ?? 'INR' == $item->currency) selected @endif>{{ $item->currency }}</option>
                                                         @empty
                                                             <option value="INR">INR</option>
                                                         @endforelse
@@ -366,7 +366,7 @@
 
                                             {{-- moved --}}
                                             <div class="col-12 my-2">
-                                                <div class="card-header">
+                                                <div class="h6 card-header" style="padding: 0px;">
                                                     <h3>Properties</h3>
                                                 </div>
                                             </div>
@@ -638,8 +638,6 @@
                                 </div>
                             </div>
                         </div>
-
-
 
                         {{-- ` Asset Safe --}}
                         {{-- <div class="stepper d-none" data-index="2">
@@ -937,18 +935,57 @@
                             </div>
                             <div class="card-body">
                                 <div class="col-md-12 col-12 form-group {{ $errors->has('img') ? 'has-error' : ''}}">
-                                    {{-- <div class="image-input">
-                                        <input type="file" accept="image/*" id="imageInput" name="img[]" multiple>
-                                        <label for="imageInput" class="image-button bg-primary "><i class="far fa-image"></i> Choose image</label>
-                                        <span class="change-image">Choose different image</span>
-                                    </div> --}}
                                     <div class="form-group mb-0">
                                         <input class="form-control" type="file" name="img[]" multiple value="{{old('img')}}"  accept=".png, .jpg, .jpeg" id="imageInput">
+                                        @if (isset($product))
+                                            @foreach (getShopProductImage($product->id,'multi') as $image)
+                                               {{-- <img src="{{ asset($image->path) }}" alt="" /> --}}
+                                            @endforeach
+                                            @if (getShopProductImage($product->id,'multi')->count() > 0)
+                                                <input type="hidden" name="exist_img" value="{{implode(',',getShopProductImage($product->id,'multi')->pluck('id')->toArray() )}}" >
+                                            @endif
+                                        @endif
                                     </div>
                                     <p class="pb-0"><i class="ik ik-info mr-1"></i>Multiple images can be selected at once by using the control key.</p>
                                 </div>
                             </div>
                         </div>
+
+
+                        <div class="myassetsbox d-none">
+
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 d-flex justify-content-between align-items-center my-3">
+                                        <div class="h6">Link Assets</div>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#linkAssetsModal" >
+                                            Link Assets
+                                        </button>
+                                    </div>
+                                    <div class="col-12">
+                                        <table class="table  text-center">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>File Name</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="previewassetsitem">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
                         </div>
 
                         <div class="stepper d-none" data-index="3">
@@ -1292,10 +1329,13 @@
                                             @php
                                                 $system = App\Models\ProductAttribute::where('name',$item)->where('user_id',null)->first();
                                                 $own = App\Models\ProductAttribute::where('name',$item)->where('user_id',auth()->id())->first();
+                                                $parent = null;
                                                 if ($system != null) {
                                                     $records = $system;
+                                                    $parent = $system;
                                                 }else{
                                                     $records = $own;
+                                                    $parent = $own;
                                                 }
 
                                                 if ($records != null) {
@@ -1303,12 +1343,9 @@
                                                 }else{
                                                     $records = [];
                                                 }
-
                                             @endphp
 
-
-
-                                        @if (count($records) != 0)
+                                        @if (count($records) != 0 && $parent->value != 'any_value')
                                                 <div class="col-md-6 col-12">
                                                     <div class="form-group">
                                                         <label for="properties_{{$key}}">{{ $item }}</label>
@@ -1322,7 +1359,15 @@
                                                         </select>
                                                     </div>
                                                 </div>
+                                        @else
+                                            <div class="col-md-6 col-12">
+                                                <div class="form-group">
+                                                    <label for="properties_{{$key}}">{{ $item }}</label>
+                                                    <input type="text" class="form-control" name="any_value-{{$item}}" id="properties_{{$key}}">
+                                                </div>
+                                            </div>
                                         @endif
+
 
                                         @endforeach
                                     </div>
@@ -1332,27 +1377,6 @@
 
                         </div>
 
-
-                        {{-- <div class="row stepper-actions justify-content-center mx-auto">
-                            <div class="col-lg-3">
-                                <a href="#" class="btn btn-outline-primary previous_btn d-none">Previous</a>
-                            </div>
-                            <div class="col-lg-3 form-group d-flex justify-content-center">
-                                <a href="#" class="btn btn-primary next_btn">Next</a>
-                            </div>
-                            <div class="col-lg-6 d-flex justify-content-end">
-                                <label class="create_btn d-none">Save & Add more
-                                    <input type="submit" value="1" name="btn1" class="btn btn-primary btn-sm ">
-                                </label>  --}}
-                                {{-- <label class="create_btn d-none">Save & Preview all
-                                    <input type="submit" value="2" name="btn1" class="btn btn-primary btn-sm ml-3">
-                                </label>  --}}
-
-                                {{-- <input type="submit" value="2" name="btn1" class="btn btn-primary btn-md create_btn d-none"> --}}
-                                {{-- <input type="submit" name="btn1" class="">Save & Add more />
-                                <button type="submit" name="btn2" class="btn btn-primary btn-md create_btn d-none ml-3">Save & Preview all</button> --}}
-                            {{-- </div>
-                        </div> --}}
                     </div>
                     {{-- end of row --}}
                 </div>
@@ -1387,6 +1411,102 @@
 
     $(document).ready(function () {
         $(".select2").trigger('change');
+
+
+
+        $("#searchbyname").keyup(function (e) {
+            $.ajax({
+                type: "GET",
+                url: "{{ route('panel.products.search.assets') }}",
+                data: {
+                    search: $(this).val(),
+                    type: 'search'
+                },
+                success: function (response) {
+                    $("#updateseachassets").html(response);
+
+                    $(".addingitem").click(function(e) {
+                        e.preventDefault();
+                        $(this).addClass("active");
+                        $(this).addClass("disabled");
+
+
+
+                        let mediaid = $(this).data("mediaid");
+                        let file_name = $(this).data("file_name");
+
+                        if (addedassets != null) {
+                            addedassets.push(mediaid);
+                            addedassetsFilename.push(file_name);
+                        }
+
+                        let addedassets1 = [...new Set(addedassets)];
+                        let addedassetsFilename1 = [...new Set(addedassetsFilename)];
+
+                        localStorage.setItem("mediaId", addedassets1)
+                        localStorage.setItem("mediaFilename", addedassetsFilename1)
+
+                        appendAssets(addedassets1, addedassetsFilename1);
+
+                    });
+
+
+                },error:function (error) {
+                    console.log(error);
+                }
+            });
+        });
+
+
+        $("li.page-item").click(function (e) {
+            $('a.page-link').attr("href","#");
+            e.preventDefault();
+            console.log($(this).children('a').html());
+
+
+            $.ajax({
+                type: "GET",
+                url: "{{ route('panel.products.search.assets') }}",
+                data: {
+                    page: $(this).children('a').html(),
+                    type:'page'
+                },
+                success: function (response) {
+                    $("#updateseachassets").html(response);
+
+
+                    $(".addingitem").click(function(e) {
+                        e.preventDefault();
+                        $(this).addClass("active");
+                        $(this).addClass("disabled");
+
+
+
+                        let mediaid = $(this).data("mediaid");
+                        let file_name = $(this).data("file_name");
+
+                        if (addedassets != null) {
+                            addedassets.push(mediaid);
+                            addedassetsFilename.push(file_name);
+                        }
+
+                        let addedassets1 = [...new Set(addedassets)];
+                        let addedassetsFilename1 = [...new Set(addedassetsFilename)];
+
+                        localStorage.setItem("mediaId", addedassets1)
+                        localStorage.setItem("mediaFilename", addedassetsFilename1)
+
+                        appendAssets(addedassets1, addedassetsFilename1);
+
+                    });
+
+                },error:function (error) {
+                    console.log(error);
+                }
+            });
+        });
+
+
     });
 
 </script>
