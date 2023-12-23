@@ -264,6 +264,18 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     });
 
 
+    Route::group(['prefix' => 'constant-management/article', 'as' => 'constant_management.article.'], function () {
+        Route::get('/', [ArticleController::class,'index'])->name('index');
+        Route::any('/print', [ArticleController::class,'print'])->name('print');
+        Route::get('/create', [ArticleController::class,'create'])->name('create');
+        Route::post('/store', [ArticleController::class,'store'])->name('store');
+        Route::get('/edit/{id}', [ArticleController::class,'edit'])->name('edit');
+        Route::get('/show/{id}', [ArticleController::class,'show'])->name('show');
+        Route::post('/update/{id}', [ArticleController::class,'update'])->name('update');
+        Route::get('/delete/{id}', [ArticleController::class,'destroy'])->name('delete');
+    });
+
+
     Route::group(['namespace' => 'Admin\ConstantManagement','middleware' => 'can:manage_setting', 'prefix' => 'constant-management', 'as' => 'constant_management.'], function () {
         Route::group(['middleware' => 'can:manage_setting', 'prefix' => 'mail-sms-template', 'as' => 'mail_sms_template.'], function () {
             Route::get('/', [MailSmsTemplateController::class,'index'])->name('index');
@@ -296,16 +308,17 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         });
 
 
-        Route::group(['middleware' => 'can:manage_article', 'prefix' => 'article', 'as' => 'article.'], function () {
-            Route::get('/', [ArticleController::class,'index'])->name('index');
-            Route::any('/print', [ArticleController::class,'print'])->name('print');
-            Route::get('/create', [ArticleController::class,'create'])->name('create');
-            Route::post('/store', [ArticleController::class,'store'])->name('store');
-            Route::get('/edit/{id}', [ArticleController::class,'edit'])->name('edit');
-            Route::get('/show/{id}', [ArticleController::class,'show'])->name('show');
-            Route::post('/update/{id}', [ArticleController::class,'update'])->name('update');
-            Route::get('/delete/{id}', [ArticleController::class,'destroy'])->name('delete');
-        });
+        // Route::group(['middleware' => 'can:manage_article', 'prefix' => 'article', 'as' => 'article.'], function () {
+        // Route::group(['prefix' => 'article', 'as' => 'article.'], function () {
+        //     Route::get('/', [ArticleController::class,'index'])->name('index');
+        //     Route::any('/print', [ArticleController::class,'print'])->name('print');
+        //     Route::get('/create', [ArticleController::class,'create'])->name('create');
+        //     Route::post('/store', [ArticleController::class,'store'])->name('store');
+        //     Route::get('/edit/{id}', [ArticleController::class,'edit'])->name('edit');
+        //     Route::get('/show/{id}', [ArticleController::class,'show'])->name('show');
+        //     Route::post('/update/{id}', [ArticleController::class,'update'])->name('update');
+        //     Route::get('/delete/{id}', [ArticleController::class,'destroy'])->name('delete');
+        // });
         Route::group(['middleware' => 'can:manage_setting', 'prefix' => 'location', 'as' => 'location.'], function () {
             Route::get('/', [LocationController::class,'country'])->name('country');
             Route::get('/create', [LocationController::class,'create'])->name('create');
@@ -439,6 +452,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
             Route::post('/update/site-name/{id}', [SellerController::class,'updateSiteName'])->name('update.site-name');
             Route::get('/delete/{id}', [AccessCatalogueRequest::class,'destroy'])->name('request-delete');
             Route::get('/deleteacr/{id}',[AccessCatalogueRequest::class,'deleteacr'])->name('delete.acr');
+           
 
 
         });

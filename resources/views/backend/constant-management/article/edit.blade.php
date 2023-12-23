@@ -156,7 +156,7 @@ $breadcrumb_arr = [
         <script>
             function slugFunction() {
 					var x = document.getElementById("slugInput").value;
-					document.getElementById("slugOutput").innerHTML = "{{ url('/artical/') }}/" + x;
+					document.getElementById("slugOutput").innerHTML = "{{ url('/article/') }}/" + x;
 				}
 				function convertToSlug(Text)
 				{

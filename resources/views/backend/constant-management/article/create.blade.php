@@ -51,9 +51,16 @@ $breadcrumb_arr = [
                                                 <label for="category_id">{{ __('Category')}} <span class="text-danger">*</span> </label>
                                                 <select required name="category_id" id="category_id" class="form-control select2">
                                                     <option value="" readonly>{{ __('Select Category')}}</option>
-                                                    @foreach (fetchGet('App\Models\Category', 'where', 'category_type_id', '=', 6) as $item)
+                                                    {{-- @php
+                                                        $category = App\Models\Category::where('category_type_id','6')->get();
+                                                    @endphp --}}
+                                                    {{-- @foreach ($category as $item)
                                                         <option value="{{ $item->id }}">{{ $item->name }}</option> 
-                                                    @endforeach
+                                                    @endforeach --}}
+                                                    <option value="36">General</option> 
+                                                    <option value="37">Blog</option> 
+
+
                                                 </select>
                                             </div>
                                         </div>

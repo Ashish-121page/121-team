@@ -948,9 +948,8 @@ class Microproposals extends Controller
 
     function ashish(Request $request){
         magicstring(session()->all());
-        magicstring(auth()->user());
 
-
+        // magicstring(auth()->user());
         // $slug = $request->subdomain;
         // $user_shop = UserShop::whereSlug($slug)->first();
 

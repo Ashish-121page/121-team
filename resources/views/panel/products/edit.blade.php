@@ -178,6 +178,7 @@
                                 <div class="md-step btn  editable custom_active_add-5" data-step="4"> Variants </div>
                             </div>
                             {{--  Stepper End  --}}
+                           
 
 
                             @php
