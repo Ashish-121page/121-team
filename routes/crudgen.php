@@ -377,25 +377,29 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
     // });
 
 
-    // documents linking new
-    Route::group(['middleware' => 'auth', 'prefix' => 'panel/Documents','as' =>'panel.Documents.'], function () {
+    // ` Quotation linking new
+    Route::group(['middleware' => 'checkAccountPermission:documentaion', 'prefix' => 'panel/Quotation','as' =>'panel.Documents.'], function () {
+
         Route::get('', ['uses' => 'invoiceController@index', 'as' => 'index']);
-
         Route::get('/secondview', ['uses' => 'invoiceController@secondview', 'as' => 'secondview']);
-
         Route::get('/thirdview', ['uses' => 'invoiceController@thirdview', 'as' => 'thirdview']);
-
         Route::get('/fourthview', ['uses' => 'invoiceController@fourthview', 'as' => 'fourthview']);
 
-        Route::get('/Quotation', ['uses' => 'invoiceController@Quotation', 'as' => 'Quotation']);
+        Route::get('/start', ['uses' => 'invoiceController@Quotation', 'as' => 'Quotation']);
+        Route::post('/Quotation/create', ['uses' => 'invoiceController@createQuotation', 'as' => 'create.Quotation']);
+        
+        Route::get('/step-2', ['uses' => 'invoiceController@quotation2', 'as' => 'quotation2']);
+        Route::post('/Quotation/create/item', ['uses' => 'invoiceController@createQuotationitem', 'as' => 'create.Quotation.item']);
+        Route::get('/step-3', ['uses' => 'invoiceController@quotation3', 'as' => 'quotation3']);
 
-        Route::get('/quotation2', ['uses' => 'invoiceController@quotation2', 'as' => 'quotation2']);
-
-        Route::get('/quotation3', ['uses' => 'invoiceController@quotation3', 'as' => 'quotation3']);
-
-        Route::get('/quotation4', ['uses' => 'invoiceController@quotation4', 'as' => 'quotation4']);
+        Route::get('/step-4', ['uses' => 'invoiceController@quotation4', 'as' => 'quotation4']);
+        Route::post('/save', ['uses' => 'invoiceController@storeQuotation', 'as' => 'save.quotation']);
 
         Route::get('/quotationpdf', ['uses' => 'invoiceController@quotationpdf', 'as' => 'quotationpdf']);
+
+        Route::get('/printexcelqt1', ['uses' => 'invoiceController@printexcelqt1', 'as' => 'printexcelqt1']);
+
+        Route::post('/printexcelqt1', ['uses' => 'invoiceController@exportexcel', 'as' => 'printexcelqt1']);
 
 
     });

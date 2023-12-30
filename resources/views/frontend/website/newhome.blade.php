@@ -806,11 +806,5 @@
 
 @endsection
 @push('script')
-<script>
-	let deferredPrompt;	
-	window.addEventListener('beforeinstallprompt', (e) => {
-		e.preventDefault();
-		deferredPrompt = e;
-	});
-</script>
+
 @endpush

@@ -2,7 +2,7 @@
     @if (request()->get('type_id') == auth()->id())
         <form action="{{ route('panel.user_shop_items.removebulk') }}" method="post" id="removebulkform" >
     @else
-        <form action="{{ route('panel.user_shop_items.addbulk') }}" method="post">    
+        <form action="{{ route('panel.user_shop_items.addbulk') }}" method="post">
     @endif
         @csrf
         <input type="hidden" name="user_id"  value="{{ $user_id }}">
@@ -15,10 +15,10 @@
                 {{-- <h5>Catalogue ({{$scoped_products->count()}})</h5> --}}
                 <div class="d-flex">
                     <div class="d-flex">
-                        @if (request()->get('type_id') == auth()->id())                        
+                        @if (request()->get('type_id') == auth()->id())
                             <button type="submit" name="delproduct" id="delproduct" class="btn btn-sm btn-danger mr-2  d-none validateMargin">Delete Products/button>
                             {{-- Delete All Button --}}
-                            <input type="submit" name="delete_all" id="delete_all" value="Delete All Products" class="btn btn-outline-primary d-none"> 
+                            <input type="submit" name="delete_all" id="delete_all" value="Delete All Products" class="btn btn-outline-primary d-none">
                         @endif
                         {{-- <input type="text" placeholder="Type and Enter" id="searchValue" name="search" value="{{ request()->get('search') }}"  class="form-control"> --}}
                         {{-- <div class="d-flex ml-2">
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                     </div>
-                   
+
                     <button type="button" class="btn btn-sm btn-primary ml-2" id="select-all">Select All</button>
                     <button type="button" class="btn btn-sm btn-primary ml-2 unSelectAll" id="">UnSelect All</button>
                     <button type="submit"  class="btn btn-sm btn-success ml-2 validateMargin">Bulk Add to Shop</button>
@@ -66,10 +66,10 @@
                     </div>
                 </div>
                 @endif
-                
+
         @if (request()->has('category_id') && request()->get('category_id') != '')
         @php
-                    if (request()->has('productsgrid')) { 
+                    if (request()->has('productsgrid')) {
                         $view = 'productsgrid=true' ;
                     }else{
                         $view = 'products=true' ;
@@ -77,20 +77,20 @@
                 @endphp
 
                 @php
-                $products_subcat = App\Models\Product::where('user_id',auth()->id())->pluck('sub_category'); 
+                $products_subcat = App\Models\Product::where('user_id',auth()->id())->pluck('sub_category');
                 $record = App\Models\Category::whereIn('id',$products_subcat)->whereparentId(request()->get('category_id'))->get();
             @endphp
-        
+
             <div class="row d-none">
                 <div class="col-12" style="width: 80vw;overflow: hidden; overflow-x: auto">
                     <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{request()->get('category_id') }}" class="text-primary">
-                        <h1 class="d-inline-block" style="font-size: medium"> 
-                            <u>{{ App\Models\Category::whereId(request()->get('category_id'))->first()->name }} 
-                            <i class="fas fa-chevron-right" style="font-size: small"></i> 
+                        <h1 class="d-inline-block" style="font-size: medium">
+                            <u>{{ App\Models\Category::whereId(request()->get('category_id'))->first()->name }}
+                            <i class="fas fa-chevron-right" style="font-size: small"></i>
                         </h1>
                     </a>
-                    
-                    
+
+
                     @foreach ($record as $item)
                         <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{request()->get('category_id') }}&sub_category_id={{ $item->id}}" class="btn btn-outline-primary @if (request()->has('sub_category_id') && request()->get('sub_category_id') == $item->id) active @endif">{{ $item->name }}</a>
                     @endforeach
@@ -99,48 +99,48 @@
                         @php
                             $subCategoryCount = App\Models\Product::where('user_id', auth()->id())->where('sub_category', $item->id)->count();
                         @endphp
-                
+
                             <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{request()->get('category_id') }}&sub_category_id={{ $item->id}}" class="btn btn-outline-primary @if (request()->has('sub_category_id') && request()->get('sub_category_id') == $item->id) active @endif">{{ $item->name }} {{ $item->name }} ({{ $subCategoryCount }})</a>
                     @endforeach
-                    
+
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-12" style="width: 80vw;overflow: hidden; overflow-x: auto">
                         <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&{{$view}}&category_id={{request()->get('category_id') }}" class="text-primary">
-                            <h1 class="d-inline-block" style="font-size: medium"> 
+                            <h1 class="d-inline-block" style="font-size: medium">
                             <u>{{ App\Models\Category::whereId(request()->get('category_id'))->first()->name }} </u>
-                            {{ getProductCountViaCategoryIdOwner(request()->get('category_id'), decrypt(request()->get('type_ide')) ) }} 
-                            <i class="fas fa-chevron-right" style="font-size: small"></i> 
+                            {{ getProductCountViaCategoryIdOwner(request()->get('category_id'), decrypt(request()->get('type_ide')) ) }}
+                            <i class="fas fa-chevron-right" style="font-size: small"></i>
                         </h1>
                     </a>
                     @php
-                        $products_subcat = App\Models\Product::where('user_id',auth()->id())->pluck('sub_category'); 
+                        $products_subcat = App\Models\Product::where('user_id',auth()->id())->pluck('sub_category');
                         $record = App\Models\Category::whereIn('id',$products_subcat)->whereparentId(request()->get('category_id'))->get();
                         // $record_count = App\Models\Category::whereIn('id',$products_subcat)->whereparentId(request()->get('category_id'))->get()->count();
                     @endphp
-                    
+
                     @foreach ($record as $item)
                     @php
                     $subCategoryCount = App\Models\Product::where('user_id', auth()->id())->where('sub_category', $item->id)->count();
                     @endphp
-            
+
                         {{-- <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&{{$view}}&category_id={{request()->get('category_id') }}&sub_category_id={{ $item->id}}" class="btn btn-outline-primary @if (request()->has('sub_category_id') && request()->get('sub_category_id') == $item->id) active @endif">{{ $item->name }} {{ $item->id }}</a> --}}
                         <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&{{$view}}&category_id={{request()->get('category_id') }}&sub_category_id={{ $item->id}}" class="btn btn-outline-primary @if (request()->has('sub_category_id') && request()->get('sub_category_id') == $item->id) active @endif">
                             {{ $item->name }} ({{ $subCategoryCount }})
                         </a>
                     @endforeach
-                    
+
                 </div>
             </div>
 
 
         @endif
-        
+
         <div class="row mt-4">
                 {{-- Todo: For On Site Product --}}
-           
+
 
 
                 <div class="card-body1">
@@ -160,14 +160,14 @@
                             {{-- <button type="button" id="export_button" class="btn btn-success btn-sm">Excel</button> --}}
                             <button class="btn btn-secondary dropdown-toggle d-none " type="button" id="dropdownMenu1" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">Edit Columns</button>
-                
+
                             <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
-                          
-                
+
+
                                 <li class="dropdown-item p-0 col-btn" data-val="col_3">
                                     <a href="javascript:void(0);" class="btn btn-sm">Model Code</a>
                                 </li>
-                                
+
                                 <li class="dropdown-item p-0 col-btn" data-val="pro_image">
                                     <a href="javascript:void(0);" class="btn btn-sm"> Image </a>
                                 </li>
@@ -175,17 +175,17 @@
                                 <li class="dropdown-item p-0 col-btn" data-val="col_2">
                                     <a href="javascript:void(0);" class="btn btn-sm">Title</a>
                                 </li>
-                                
-                              
+
+
 
                                 <li class="dropdown-item p-0 col-btn" data-val="col_4">
                                     <a href="javascript:void(0);" class="btn btn-sm">Category</a>
                                 </li>
-                                
+
                                 <li class="dropdown-item p-0 col-btn" data-val="col_5">
                                     <a href="javascript:void(0);" class="btn btn-sm">Varients</a>
                                 </li>
-                                
+
                                 <li class="dropdown-item p-0 col-btn" data-val="col_6">
                                     <a href="javascript:void(0);" class="btn btn-sm">Shop Price</a>
                                 </li>
@@ -193,9 +193,9 @@
                                 <li class="dropdown-item p-0 col-btn" data-val="action_btn">
                                     <a href="javascript:void(0);" class="btn btn-sm">Action</a>
                                 </li>
-                                
-                
-                
+
+
+
                             </ul>
                             <a href="javascript:void(0);" id="print" data-url="{{ route('panel.product_attributes.print') }}"
                                 data-rows="{{json_encode($scoped_products) }}" class="btn btn-primary btn-sm">Print</a>
@@ -230,30 +230,30 @@
                                     </th>
 
                                     <th class="pro_image no-export"> Image</th>
-                
+
                                     <th class="col_2">Title
                                         <div class="table-div">
                                             {{-- <i class="ik ik-arrow-up  asc" data-val="name"></i> --}}
                                             {{-- <i class="ik ik ik-arrow-down desc" data-val="name"></i> --}}
                                         </div>
                                     </th>
-                
-                               
-                
+
+
+
                                     <th class="col_4">Category
                                         <div class="table-div">
                                             {{-- <i class="ik ik-arrow-up  asc" data-val="type"></i> --}}
                                             {{-- <i class="ik ik ik-arrow-down desc" data-val="type"></i> --}}
                                         </div>
                                     </th>
-                
+
                                     <th class="col_5">Variants
                                         <div class="table-div">
                                             {{-- <i class="ik ik-arrow-up  asc" data-val="type"></i> --}}
                                             {{-- <i class="ik ik ik-arrow-down desc" data-val="type"></i> --}}
                                         </div>
                                     </th>
-                
+
                                     <th class="col_6">Price
                                         <div class="table-div">
                                             {{-- <i class="ik ik-arrow-up  asc" data-val="type"></i> --}}
@@ -272,7 +272,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                               
+
 
                                 @foreach ($scoped_products as $scoped_product)
                                 @php
@@ -313,20 +313,20 @@
                                         }else{
                                             if ($parent_shop) {
                                                 $route = inject_subdomain("shop/".encrypt(@$scoped_product->id),$parent_shop->slug, true, false);
-                                            
+
                                             }
                                         }
                                     }
                                 @endphp
                                     <tr>
-            
+
                                         <td class="no-export action_btn">
                                             @if($scoped_product->user_id == auth()->id())
                                                 <input type="checkbox" name="exportproduct" id="exportproduct" class="input-check">
                                             @endif
                                         </td>
 
-                                        
+
                                         <td class="col_3">
                                             {{ $scoped_product->model_code }}
                                         </td>
@@ -340,19 +340,19 @@
                                                         @if (in_array($scoped_product->id,$pinned_items))
                                                             <img src="{{ asset('frontend/assets/svg/bookmark_added.svg')}}" id="input-checkpinimg_{{ $scoped_product->id }}" alt="{{ $scoped_product->id }}" class="{{ $scoped_product->id }}" >
                                                         @else
-                                                            <img src="{{ asset('frontend/assets/svg/bookmark.svg')}}" id="input-checkpinimg_{{ $scoped_product->id }}" alt="{{ $scoped_product->id }}" class="{{ $scoped_product->id }}" >                                                                    
+                                                            <img src="{{ asset('frontend/assets/svg/bookmark.svg')}}" id="input-checkpinimg_{{ $scoped_product->id }}" alt="{{ $scoped_product->id }}" class="{{ $scoped_product->id }}" >
                                                         @endif
                                                     </span>
                                                 </label>
                                             @endif
                                         </td>
-                                        
+
                                         <td class="pro_image no-export" style="height: 100px;width: 100px; object-fit: contain">
                                             <a href="{{ $route }}" target="_blank">
                                                 <img src="{{ asset(getShopProductImage($scoped_product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="Prouc" class="custom-img" style="height: 100%;width: 100%;">
-                                            </a> 
+                                            </a>
                                         </td>
-                                        
+
                                         <td class="col_2">
                                             {{ Str::limit($scoped_product->title , 40)}}
                                         </td>
@@ -373,11 +373,11 @@
 
                                         </td>
                                         <td class="col_6">
-                                            <a href="{{ route('panel.products.edit',$scoped_product->id) }}" class="btn-link text-primary">Edit</a>
+                                            <a href="{{ route('panel.products.edit',$scoped_product->id) }}?type={{ encrypt('editmainksku') }}" class="btn-link text-primary">Edit</a>
                                         </span>
                                         </td>
 
-                                     
+
                                     </tr>
 
                                 @endforeach
@@ -389,8 +389,8 @@
                         </table>
                     </div>
                 </div>
-            
-        </div> 
+
+        </div>
         @if(request()->get('type_id') != auth()->id())
             <div class="d-flex justify-content-end">
                 <div class="input-group border-0">
@@ -402,7 +402,7 @@
                         <label class="input-group-text">%</label>
                     </span>
                 </div>
-                
+
                 <button type="submit" class="btn btn-sm btn-success ml-2 validateMargin">Bulk Add to Shop</button>
                 <button type="button" class="btn btn-sm btn-primary ml-2" id="select-all">Select All</button>
                 <button type="button" class="btn btn-sm btn-primary ml-2 unSelectAll" id="">UnSelect All</button>
@@ -411,5 +411,5 @@
     </form>
 </div>
 <div>
-    {{ $scoped_products->appends(request()->query())->links() }} 
+    {{ $scoped_products->appends(request()->query())->links() }}
 </div>

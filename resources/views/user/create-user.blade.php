@@ -1,4 +1,4 @@
-@extends('backend.layouts.main') 
+@extends('backend.layouts.main')
 @section('title', 'Add User')
 @section('content')
     <!-- push external head elements to head -->
@@ -20,7 +20,7 @@
 
     </style>
 
-    
+
     <div class="container-fluid">
     	<div class="page-header">
             <div class="row align-items-end">
@@ -66,7 +66,7 @@
                                             <label for="name">{{ __('Username')}}<span class="text-red">*</span></label>
                                             <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" placeholder="Enter user name" required>
                                             <div class="help-block with-errors"></div>
-    
+
                                             @error('name')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -77,7 +77,7 @@
                                             <label for="email">{{ __('Email')}}<span class="text-red">*</span></label>
                                             <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="Enter email address" required>
                                             <div class="help-block with-errors" ></div>
-    
+
                                             @error('email')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -89,7 +89,7 @@
                                                 <label for="password">{{ __('Password')}}<span class="text-red">*</span></label>
                                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="Enter password" required>
                                                 <div class="help-block with-errors"></div>
-        
+
                                                 @error('password')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
@@ -104,14 +104,14 @@
                                                 <div class="help-block with-errors"></div>
                                             </div>
                                         </div>
-                                    
+
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="">{{ __('Status')}}<span class="text-red">*</span> </label>
                                                 <select required name="status" class="form-control select2">
                                                     <option value="" readonly>{{ __('Select Status')}}</option>
                                                     @foreach (getStatus() as $index => $item)
-                                                        <option @if($item['id'] == 1) selected @endif value="{{ $item['id'] }}">{{ $item['name'] }}</option> 
+                                                        <option @if($item['id'] == 1) selected @endif value="{{ $item['id'] }}">{{ $item['name'] }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -133,7 +133,7 @@
                                                     <button class="btn btn-warning" type="button" id="usersupplier">Supplier Access</button>
                                                     <button class="btn btn-danger" type="button" id="userdealer">Dealer Access</button>
                                                   </div>
-                                              
+
                                                 <table class="table align-middle d-none">
                                                     <thead>
                                                         <tr>
@@ -158,7 +158,7 @@
                                                             </div>
                                                           </td>
                                                         </tr>
-  
+
                                                         <tr>
                                                           <th scope="row" class="sno"></th>
                                                           <td>My Supplier</td>
@@ -173,8 +173,8 @@
                                                             </div>
                                                           </td>
                                                         </tr>
-                                                
-                                                
+
+
                                                         <tr class="d-none">
                                                           <th scope="row" class="sno"></th>
                                                           <td>Settings</td>
@@ -189,7 +189,7 @@
                                                             </div>
                                                           </td>
                                                         </tr>
-                                                
+
                                                         <tr>
                                                           <th scope="row" class="sno"></th>
                                                           <td>Display</td>
@@ -204,7 +204,7 @@
                                                             </div>
                                                           </td>
                                                         </tr>
-                                                
+
                                                         <tr>
                                                           <th scope="row" class="sno"></th>
                                                           <td>Bulk Uploads + Filemanager</td>
@@ -219,7 +219,7 @@
                                                             </div>
                                                           </td>
                                                         </tr>
-  
+
                                                         <tr>
                                                           <th scope="row" class="sno"></th>
                                                           <td>Price Group</td>
@@ -234,7 +234,7 @@
                                                             </div>
                                                           </td>
                                                         </tr>
-  
+
                                                         <tr>
                                                           <th scope="row" class="sno"></th>
                                                           <td>Category Group</td>
@@ -249,7 +249,7 @@
                                                             </div>
                                                           </td>
                                                         </tr>
-  
+
                                                         <tr>
                                                           <th scope="row" class="sno"></th>
                                                           <td>Manage Brand</td>
@@ -279,15 +279,32 @@
                                                               </div>`
                                                             </td>
                                                           </tr>
-  
+
+
+
+                                                        <tr>
+                                                            <th scope="row" class="sno"></th>
+                                                            <td>Documentaion</td>
+                                                            <td>
+                                                              <div class="form-check">
+                                                                <input class="form-check-input" type="radio" value="yes" id="documentationyes" name="documentaion">
+                                                              </div>
+                                                            </td>
+                                                            <td>
+                                                              <div class="form-check">
+                                                                <input class="form-check-input" type="radio" value="no" id="documentationsno" name="documentaion">
+                                                              </div>`
+                                                            </td>
+                                                          </tr>
+
                                                         <tr>
                                                           <td colspan="2">
                                                               <button class="btn btn-info btn-sm" type="button" onclick="checkall()">Select All</button>
                                                               <button class="btn btn-danger btn-sm" type="button" onclick="decheckall()">Unslect All</button>
                                                           </td>
-  
+
                                                         </tr>
-  
+
                                                       </tbody>
                                                   </table>
 
@@ -318,11 +335,11 @@
                                                             </label>
                                                         </div>
                                                     </form>
-                                                </div>                                        
+                                                </div>
                                                 <div class="help-block with-errors"></div>
                                             </div>
                                         </div>
-                                      
+
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -403,7 +420,7 @@
         </div>
     </div>
     <!-- push external js -->
-    @push('script') 
+    @push('script')
         <script src="{{ asset('backend/plugins/select2/dist/js/select2.min.js') }}"></script>
          <!--get role wise permissiom ajax script-->
         <script src="{{ asset('backend/js/get-role.js') }}"></script>
@@ -426,15 +443,15 @@
                     $('.seller_option').toggle();
                 });
             });
-            
 
-            $("#openop").click(function () { 
+
+            $("#openop").click(function () {
               $('table').toggleClass('d-none')
             });
 
             // change if Check Box not Cliked
-            $("#is_seller").change(function () { 
-                $('table').toggleClass('d-none')        
+            $("#is_seller").change(function () {
+                $('table').toggleClass('d-none')
             });
 
             //  Check If Seller Panel is On Or Not
@@ -442,7 +459,7 @@
                 $('table').toggleClass('d-none')
             };
 
-            
+
             // function checkall() {
             //     var chk = document.querySelectorAll('#yes');
             //     for (let i = 0; i < chk.length; i++) {
@@ -454,43 +471,43 @@
             //     }
             // }
 
-          
+
             function checkall() {
-                var arr_yes = ['mycustomeryes','Filemanageryes','addandedityes','bulkuploadyes','pricegroupyes','mysupplieryes','managegroupyes','manangebrandsyes','offersyes'];
+                var arr_yes = ['mycustomeryes','Filemanageryes','addandedityes','bulkuploadyes','pricegroupyes','mysupplieryes','managegroupyes','manangebrandsyes','offersyes','documentationyes'];
 
-                
-                $.each(arr_yes, function (indexInArray, valueOfElement) { 
+
+                $.each(arr_yes, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });
-                
-            
+
+
             }
 
-            
+
             function decheckall() {
-                var arr_no = ['mycustomerno','Filemanagerno','addandeditno','bulkuploadno','pricegroupno','mysupplierno','managegroupno','manangebrandsno','offersno'];
+                var arr_no = ['mycustomerno','Filemanagerno','addandeditno','bulkuploadno','pricegroupno','mysupplierno','managegroupno','manangebrandsno','offersno','documentationsno'];
 
-                $.each(arr_no, function (indexInArray, valueOfElement) { 
+                $.each(arr_no, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });
             }
-            
 
-            
-            $("#usersupplier").click(function (e) { 
+
+
+            $("#usersupplier").click(function (e) {
                 e.preventDefault();
-                var arr_supplier = ['mycustomeryes','Filemanageryes','addandedityes','offersyes'];
-                var arr_dealer = ['mysupplierno','manangebrandsno','pricegroupno','managegroupno','bulkuploadno'];
+                var arr_supplier = ['mycustomeryes','Filemanageryes','addandedityes','offersyes','documentationyes'];
+                var arr_dealer = ['mysupplierno','manangebrandsno','pricegroupno','managegroupno','bulkuploadno','documentationsno'];
 
 
-                $.each(arr_supplier, function (indexInArray, valueOfElement) { 
+                $.each(arr_supplier, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });
-                
-                $.each(arr_dealer, function (indexInArray, valueOfElement) { 
+
+                $.each(arr_dealer, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });
@@ -498,17 +515,17 @@
 
             });
 
-            $("#userdealer").click(function (e) { 
+            $("#userdealer").click(function (e) {
                 e.preventDefault();
-                var arr_dealer = ['mysupplieryes','Filemanageryes','offersyes'];
-                var arr_supplier = ['mycustomerno','addandeditno','pricegroupno','manangebrandsno','bulkuploadno','managegroupno'];
+                var arr_dealer = ['mysupplieryes','Filemanageryes','offersyes','documentationyes' ];
+                var arr_supplier = ['mycustomerno','addandeditno','pricegroupno','manangebrandsno','bulkuploadno','managegroupno','documentationsno'];
 
-                $.each(arr_dealer, function (indexInArray, valueOfElement) { 
+                $.each(arr_dealer, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });
 
-                $.each(arr_supplier, function (indexInArray, valueOfElement) { 
+                $.each(arr_supplier, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });

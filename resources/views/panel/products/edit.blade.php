@@ -81,8 +81,8 @@
         </div>
 
         <div class="hoverbtn">
-            <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true"
-                class="btn btn-xl btn-outline-secondary">Discard</a>
+            {{-- <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true"
+                class="btn btn-xl btn-outline-secondary">Discard</a> --}}
         </div>
 
         <div class="row">
@@ -178,7 +178,6 @@
                                 <div class="md-step btn  editable custom_active_add-5" data-step="4"> Variants </div>
                             </div>
                             {{--  Stepper End  --}}
-                           
 
 
                             @php
@@ -190,17 +189,19 @@
                                 <div class="col-md-5 col-lg-4">
                                     <div class="row">
                                         <div class="col-12">
-                                            <img src="{{ asset(getMediaByIds($image_ids)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
-                                                class="img-fluid " style="height: 250px;width: 100%;object-fit: contain;"
-                                                alt="">
+                                            <a href="{{ route('panel.view.product',encrypt($product->id)) }}" target="_window">
+                                                <img src="{{ asset(getMediaByIds($image_ids)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
+                                                    class="img-fluid " style="height: 250px;width: 100%;object-fit: contain;"
+                                                    alt="">
+                                            </a>
                                         </div>
                                         <div class="col-12">
 
                                             <div class="row my-1">
                                                 <div class="col-4"> Model Code </div>
                                                 <div class="col-8">
-                                                    <input type="text" class="form-control" name="model_code"
-                                                        value="{{ $product->model_code ?? old('model_code') }}" required>
+                                                    <input required type="text" class="form-control" name="model_code"
+                                                        value="{{ $product->model_code ?? old('model_code') }}" >
                                                 </div>
                                             </div>
 
@@ -210,7 +211,7 @@
                                                 </div>
                                                 <div class="col-8">
                                                     <input class="form-control" name="title" type="text" id="title"
-                                                        value="{{ $product->title }}" required>
+                                                        value="{{ $product->title }}" >
                                                 </div>
                                             </div>
 
@@ -298,7 +299,7 @@
                                                         <td>
                                                             <a href="{{ route('panel.products.edit', $product->id) }}?type={{ encrypt('editmainksku') }}"
                                                                 class="btn btn-outline-primary @if ($product->id == $product->id && request()->has('type') && request()->get('type') != null) active @endif">
-                                                                Main SKU <i class="fa fa-pen"></i>
+                                                                Main SKU
                                                             </a>
                                                         </td>
                                                     </tr>
@@ -1080,6 +1081,7 @@
                                                         <table class="table table-bordered d-none" id="tableimage">
                                                             <thead>
                                                                 <tr>
+                                                                    <th scope="col-6">Preview</th>
                                                                     <th scope="col-6">Asset Name</th>
                                                                     <th scope="col-6">File Size</th>
                                                                     {{-- <th scope="col-3" style="padding-bottom:25px;">Last
@@ -1108,6 +1110,9 @@
 
                                                                     @endphp
                                                                     <tr>
+                                                                        <td>
+                                                                            <img src="{{ asset($media->path) }}" alt="im-fluid" style="height: 50px;width: 50px">
+                                                                        </td>
                                                                         <th scope="row">
                                                                             {{-- {{ $filename }} --}}
                                                                             <div class="mt-2">
@@ -1453,7 +1458,7 @@
                                             </label>
                                             <input type="checkbox" class="custom-control-input" id="exclubtn"
                                                 data-open="productexclusivebuyernamebox" value="1" name="exclusive"
-                                                @if ($product->exclusive == 1) checked @endif required>
+                                                @if ($product->exclusive == 1) checked @endif >
                                         </div>
                                     </div>
 
@@ -1745,11 +1750,12 @@
                                                 } else {
                                                     $records = $own;
                                                 }
+                                                $parent = $records;
                                                 $og = $records;
                                                 $records = App\Models\ProductAttributeValue::where('parent_id', $records->id)->get();
 
                                             @endphp
-                                            <div class="col-md-6 col-12">
+                                            {{-- <div class="col-md-6 col-12">
                                                 <div class="form-group">
                                                     <label
                                                         for="properties_{{ $key }}">{{ $item }}</label>
@@ -1763,9 +1769,77 @@
                                                                 {{ $record->attribute_value }}</option>
                                                         @endforeach
                                                     </select>
-
                                                 </div>
-                                            </div>
+                                            </div> --}}
+
+                                            {{-- <p>
+                                                {{ magicstring($attribute_value_id); }}
+                                            </p> --}}
+
+                                            @if (count($records) != 0 && $parent->value != 'any_value' && $parent->value != 'uom')
+                                                <div class="col-md-6 col-12">
+                                                    <div class="form-group">
+                                                        <label for="properties_{{$key}}">{{ $item }}</label>
+                                                        <select name="properties[]" id="properties_{{$key}}" class="select2">
+                                                            <option value="">Select One</option>
+                                                            @foreach ($records as $record)
+                                                                <option value="{{ $record->id }}"  @if (in_array($record->id, $attribute_value_id)) selected @endif>{{ $record->attribute_value }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            @elseif ($parent->value == 'uom')
+                                                <div class="col-md-6 col-12">
+                                                    <div class="form-group">
+
+                                                        <label for="properties_{{$key}}">{{ $item }}</label>
+                                                        @php
+                                                            $eeduhfj = App\Models\ProductExtraInfo::where('product_id', $product->id)->where('attribute_id',$parent->id)->first();
+
+                                                            if ($eeduhfj != null) {
+                                                                $record = App\Models\ProductAttributeValue::where('id', $eeduhfj->attribute_value_id)->first() ?? '';
+                                                                $value = explode("x",$record->attribute_value) ?? '';
+                                                            }
+                                                        @endphp
+                                                        <div class="d-flex">
+                                                            <input type="number" min="0" class="form-control" name="any_value-{{$item}}[L]" id="properties_{{$key}}" placeholder="Length" value="{{ $value[0] ?? '' }}">
+
+                                                            <input type="number" min="0" class="form-control" name="any_value-{{$item}}[W]" id="properties_{{$key}}" placeholder="Width" value="{{ $value[1] ?? '' }}">
+
+                                                            <input type="number" min="0" class="form-control" name="any_value-{{$item}}[H]" id="properties_{{$key}}" placeholder="Height" value="{{ $value[2] ?? '' }}">
+
+                                                            <select name="any_value-{{$item}}[U]" id="any_value-{{$item}}" class="form-control select2">
+                                                                <option value="">Select Unit</option>
+                                                                <option value="mm" @if (($value[3] ?? '') == 'mm') selected @endif>MM</option>
+                                                                <option value="cm" @if (($value[3] ?? '') == 'cm') selected @endif>CM</option>
+                                                                <option value="inches" @if (($value[3] ?? '') == 'inches') selected @endif>Inches</option>
+                                                                <option value="feet" @if (($value[3] ?? '') == 'feet') selected @endif>Feet</option>
+                                                            </select>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            @else
+
+                                                @if ($parent->value == 'uom')
+                                                    @continue
+                                                @endif
+                                                @php
+                                                    $eeduhfj = App\Models\ProductExtraInfo::where('product_id', $product->id)->where('attribute_id',$parent->id)->first();
+
+                                                    if ($eeduhfj != null) {
+                                                        $record = App\Models\ProductAttributeValue::where('id', $eeduhfj->attribute_value_id)->first() ?? '';
+                                                    }
+                                                @endphp
+
+                                                <div class="col-md-6 col-12">
+                                                    <div class="form-group">
+                                                        <label for="properties_{{$key}}">{{ $item }}    </label>
+                                                        <input type="text" class="form-control" name="any_value-{{$item}}" id="properties_{{$key}}" value="{{ $record->attribute_value ?? '' }}">
+                                                    </div>
+                                                </div>
+                                            @endif
+
                                         @endforeach
                                     </div>
                                 </div>
@@ -2041,7 +2115,7 @@
             $(document).ready(function() {
 
                 $("#createvariant").animatedModal({
-                    nimatedIn: 'lightSpeedIn',
+                    animatedIn: 'lightSpeedIn',
                     animatedOut: 'bounceOutDown',
                     color: '#fff',
                 });

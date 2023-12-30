@@ -145,7 +145,6 @@ Route::get('/user-shop-cs-filler', function () {
         Route::get('/demo', [WebsiteController::class,'demoform'])->name('demoform');
         Route::get('/dtask', [WebsiteController::class,'formjaya'])->name('jayaform23');
 
-
         Route::get('/feedback', [WebsiteController::class,'feedbackform'])->name('feedbackform');
         Route::get('/about', [WebsiteController::class,'about'])->name('about');
         Route::get('/plans', [WebsiteController::class,'planIndex'])->name('plan.index');

@@ -10,6 +10,10 @@ use App\Models\TimeandActionModal;
 use App\Models\CustomFields;
 use Carbon\Carbon;
 use Twilio\Rest\Client;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+
+
 // from shn
 
 // for dynamic mail
@@ -1988,11 +1992,13 @@ if (!function_exists('getFieldNameById')) {
     function getFieldNameById($user_id,$fieldid){
         $user = App\User::whereId($user_id)->first();
         $custom_fields = $user->custom_fields;
-        $custom_fields = json_decode($custom_fields);
+        $custom_fields = json_decode($custom_fields) ?? null;
 
-        foreach ($custom_fields as $key => $value) {
-            if ($value->id == $fieldid) {
-                return $value->text;
+        if ($custom_fields != null) {
+            foreach ($custom_fields as $key => $value) {
+                if ($value->id == $fieldid) {
+                    return $value->text;
+                }
             }
         }
 
@@ -2036,6 +2042,14 @@ if (!function_exists('countRepetitions')) {
             }
         }
         return $repetitionCount;
+    }
+}
+if (!function_exists('getAllPropertiesofProductById')) {
+    function getAllPropertiesofProductById($product_id,$user_id = null) {
+        if ($user_id == null) {
+            $user_id = auth()->id();
+        }
+        return ProductExtraInfo::where('product_id',$product_id)->where('user_id',$user_id)->get();
     }
 }
 
@@ -2164,6 +2178,36 @@ if (!function_exists('getAttributeIdByName')) {
         return ProductAttribute::where('name',$name)->where('user_id',$user_id)->first()->id ?? 0;
     }
 }
+
+function convertImageUrlToDataUrl($imageUrl) {
+    // Fetch the image content
+    $response = Http::get($imageUrl);
+    if (!$response->successful()) {
+        return null;
+    }
+
+    // Store the image content temporarily
+    $tempImagePath = 'temp_image.jpg'; // Generate a unique name for actual use
+    Storage::disk('local')->put($tempImagePath, $response->body());
+
+    // Read the stored image
+    $imagePath = storage_path('app/' . $tempImagePath);
+    $imageContents = file_get_contents($imagePath);
+
+    // Get MIME type
+    $finfo = new \finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $finfo->buffer($imageContents);
+
+    // Encode in base64
+    $base64Encoded = base64_encode($imageContents);
+
+    // Delete the temporary file
+    Storage::disk('local')->delete($tempImagePath);
+
+    // Return the Data URL
+    return 'data:' . $mimeType . ';base64,' . $base64Encoded;
+}
+
 
 
 

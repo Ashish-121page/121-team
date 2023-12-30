@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'check_access_code' =>  \App\Http\Middleware\CheckAccessCode::class,
         'is.admin' =>  \App\Http\Middleware\IsAdmin::class,
         'inactive.user' =>  \App\Http\Middleware\InactiveUserMiddleware::class,
+        'checkAccountPermission' => \App\Http\Middleware\CheckAccountPermission::class,
     ];
 }

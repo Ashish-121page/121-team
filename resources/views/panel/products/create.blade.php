@@ -32,7 +32,7 @@
 
         // Grouping Columns
 
-        $default_property = ['Model_Code', 'SKU Type', 'Product name', 'Category', 'Sub_Category', 'Customer_Price_without_GST', 'HSN Tax', 'HSN_Percnt'];
+        $default_property = ['Model_Code', 'SKU Type', 'Product name', 'Category', 'Sub_Category', 'Customer_Price_without_GST', 'HSN Tax', 'HSN_Percnt', 'Variation attributes'];
 
     @endphp
     <!-- push external head elements to head -->

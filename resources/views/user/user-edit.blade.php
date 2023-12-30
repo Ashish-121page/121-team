@@ -1,4 +1,4 @@
-@extends('backend.layouts.main') 
+@extends('backend.layouts.main')
 @section('title', $user->name)
 @section('content')
     <!-- push external head elements to head -->
@@ -26,7 +26,7 @@
         }
 
     </style>
-    
+
     <div class="container-fluid">
     	<div class="page-header">
             <div class="row align-items-end">
@@ -80,7 +80,7 @@
                                                 <label for="name">{{ __('Name')}}<span class="text-red">*</span></label>
                                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ clean($user->name, 'titles')}}" required>
                                                 <div class="help-block with-errors"></div>
-        
+
                                                 @error('name')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
@@ -93,7 +93,7 @@
                                                 <label for="email">{{ __('Email')}}<span class="text-red">*</span></label>
                                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email"  required value="{{ clean($user->email, 'titles')}}" required>
                                                 <div class="help-block with-errors"></div>
-        
+
                                                 @error('email')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
@@ -106,7 +106,7 @@
                                                 <label for="password">{{ __('Password')}}</label>
                                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="Enter password">
                                                 <div class="help-block with-errors"></div>
-        
+
                                                 @error('password')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
@@ -121,20 +121,20 @@
                                                 <div class="help-block with-errors"></div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="">{{ __('Status')}}<span class="text-red">*</span>  </label>
-                                                                                       
+
                                                 <select required name="status" class="form-control select2"  >
                                                     <option value="" readonly>{{ __('Select Status')}}</option>
                                                     @foreach (getStatus() as $index => $item)
-                                                        <option value="{{ $item['id'] }}" {{ $user->status == $item['id'] ? 'selected' :'' }}>{{ $item['name'] }}</option> 
+                                                        <option value="{{ $item['id'] }}" {{ $user->status == $item['id'] ? 'selected' :'' }}>{{ $item['name'] }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                         </div>
-                                     
+
                                         @if(UserRole($user->id)->name == 'User')
                                         @php
                                             $industry = json_decode($user->industry_id);
@@ -165,7 +165,7 @@
 
                                         <div class="col-md-6">
                                             {{--` Delete All Empty Offer --}}
-                                            @php 
+                                            @php
                                               $draft_offers = App\Models\Proposal::where('user_id',$user->id)->where('status',0)->pluck('id');
                                               $blank_offers = [];
                                               foreach ($draft_offers as $key => $value) {
@@ -174,7 +174,7 @@
                                                   }
                                               }
                                             @endphp
-                                            
+
                                             <a href="{{ route('backend.constant-management.proposals.deleteDraft',$user->id) }}" class="btn btn-sm btn-outline-danger delete-item" title="Delete All Draft Offers Till Now.">
                                                 Delete Empty Offer <i class="fa fa-trash" aria-hidden="true"></i> {{ count($blank_offers) }}
                                             </a>
@@ -187,10 +187,10 @@
                                             $permi = json_decode($user->account_permission);
                                             $permi->bulkupload = $permi->bulkupload ?? 'no';
                                             $permi->manage_categories = $permi->manage_categories ?? 'no';
-                                            $permi->mysupplier = $permi->mysupplier ?? 'no';                                             
+                                            $permi->mysupplier = $permi->mysupplier ?? 'no';
                                             $permi->manangebrands = $permi->manangebrands ?? 'no';
                                             $permi->offers = $permi->offers ?? 'no';
-                                            $permi->articleManage = $permi->articleManage ?? 'no';
+                                            $permi->documentaion = $permi->documentaion ?? 'no';
                                         @endphp
 
 
@@ -201,7 +201,7 @@
                                                     <button class="btn btn-warning" type="button" id="usersupplier">Supplier Access</button>
                                                     <button class="btn btn-danger" type="button" id="userdealer">Dealer Access</button>
                                                   </div>
-                                              
+
                                                 <table class="table align-middle d-none">
                                                     <thead>
                                                       <tr>
@@ -241,8 +241,8 @@
                                                           </div>
                                                         </td>
                                                       </tr>
-                                              
-                                              
+
+
                                                       <tr>
                                                         <th scope="row" class="sno"></th>
                                                         <td>Settings</td>
@@ -257,7 +257,7 @@
                                                           </div>
                                                         </td>
                                                       </tr>
-                                              
+
                                                       <tr>
                                                         <th scope="row" class="sno"></th>
                                                         <td>Display</td>
@@ -272,7 +272,7 @@
                                                           </div>
                                                         </td>
                                                       </tr>
-                                              
+
                                                       <tr>
                                                         <th scope="row" class="sno"></th>
                                                         <td>Bulk Uploads + Filemanager</td>
@@ -348,21 +348,21 @@
                                                         </td>
                                                       </tr>
 
-
                                                       <tr>
                                                         <th scope="row" class="sno"></th>
-                                                        <td>Manage 121 Article</td>
+                                                        <td>Documentaion</td>
                                                         <td>
                                                           <div class="form-check">
-                                                            <input class="form-check-input" type="radio" value="yes" id="articlesyes" name="articleManage" {{ $permi->articleManage == 'yes' ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="radio" value="yes" id="documentationyes" name="documentaion" {{ $permi->documentaion == 'yes' ? 'checked' : '' }}>
                                                           </div>
                                                         </td>
                                                         <td>
                                                           <div class="form-check">
-                                                            <input class="form-check-input" type="radio" value="no" id="articleno" name="articleManage" {{ $permi->articleManage == 'no' ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="radio" value="no" id="documentationno" name="documentaion" {{ $permi->documentaion == 'no' ? 'checked' : '' }}>
                                                           </div>
                                                         </td>
                                                       </tr>
+
 
                                                       <tr>
                                                         <td colspan="2">
@@ -397,8 +397,8 @@
                                                                 <input type="radio" name="gender"  {{ $user->gender == 'Female' ? 'checked' : '' }}>
                                                                 <i class="helper"></i>{{ __('Female')}}
                                                             </label>
-                                                        </div>  
-                                                </div>                                        
+                                                        </div>
+                                                </div>
                                                 <div class="help-block with-errors"></div>
                                             </div>
                                         </div>
@@ -452,8 +452,8 @@
                                                     </label>
                                                 </div>
                                             </div>
-                                        </div>  
-                                        
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -471,20 +471,20 @@
         </div>
     </div>
     <!-- push external js -->
-    @push('script') 
+    @push('script')
         <script src="{{ asset('backend/plugins/select2/dist/js/select2.min.js') }}"></script>
         <!--get role wise permissiom ajax script-->
         <script src="{{ asset('backend/js/get-role.js') }}"></script>
         <script src="{{ asset('backend/js/get-role.js') }}"></script>
-       
+
         <script>
-            $("#openop").click(function () { 
+            $("#openop").click(function () {
               $('table').toggleClass('d-none')
             });
 
             // change if Check Box not Cliked
-            $("#is_supplier").change(function () { 
-                $('table').toggleClass('d-none')        
+            $("#is_supplier").change(function () {
+                $('table').toggleClass('d-none')
             });
 
             //  Check If Seller Panel is On Or Not
@@ -493,39 +493,39 @@
              }
 
             function checkall() {
-                var arr_yes = ['mycustomeryes','Filemanageryes','addandedityes','bulkuploadyes','pricegroupyes','mysupplieryes','managegroupyes','manangebrandsyes','offersyes'];
+                var arr_yes = ['mycustomeryes','Filemanageryes','addandedityes','bulkuploadyes','pricegroupyes','mysupplieryes','managegroupyes','manangebrandsyes','offersyes','documentationyes'];
 
-                
-                $.each(arr_yes, function (indexInArray, valueOfElement) { 
+
+                $.each(arr_yes, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });
-                
-            
+
+
             }
 
-            
+
             function decheckall() {
-                var arr_no = ['mycustomerno','Filemanagerno','addandeditno','bulkuploadno','pricegroupno','mysupplierno','managegroupno','manangebrandsno','offersno'];
+                var arr_no = ['mycustomerno','Filemanagerno','addandeditno','bulkuploadno','pricegroupno','mysupplierno','managegroupno','manangebrandsno','offersno','documentationno'];
 
-                $.each(arr_no, function (indexInArray, valueOfElement) { 
+                $.each(arr_no, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });
             }
-            
-            $("#usersupplier").click(function (e) { 
+
+            $("#usersupplier").click(function (e) {
                 e.preventDefault();
-                var arr_supplier = ['mycustomeryes','Filemanageryes','addandedityes','offersyes','bulkuploadyes','managegroupyes'];
+                var arr_supplier = ['mycustomeryes','Filemanageryes','addandedityes','offersyes','bulkuploadyes','managegroupyes','documentationyes'];
                 var arr_dealer = ['mysupplierno','manangebrandsno','pricegroupno'];
 
 
-                $.each(arr_supplier, function (indexInArray, valueOfElement) { 
+                $.each(arr_supplier, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });
-                
-                $.each(arr_dealer, function (indexInArray, valueOfElement) { 
+
+                $.each(arr_dealer, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });
@@ -533,23 +533,23 @@
 
             });
 
-            $("#userdealer").click(function (e) { 
+            $("#userdealer").click(function (e) {
                 e.preventDefault();
                 var arr_dealer = ['mysupplieryes','Filemanageryes','offersyes'];
-                var arr_supplier = ['mycustomerno','addandeditno','pricegroupno','manangebrandsno','bulkuploadno','managegroupno'];
+                var arr_supplier = ['mycustomerno','addandeditno','pricegroupno','manangebrandsno','bulkuploadno','managegroupno','documentationno'];
 
-                $.each(arr_dealer, function (indexInArray, valueOfElement) { 
+                $.each(arr_dealer, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });
 
-                $.each(arr_supplier, function (indexInArray, valueOfElement) { 
+                $.each(arr_supplier, function (indexInArray, valueOfElement) {
                     var checkbx = $('#'+valueOfElement);
                     checkbx.prop("checked", true)
                 });
             });
-          
-          
+
+
 
           </script>
     @endpush

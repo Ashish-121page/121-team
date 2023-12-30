@@ -84,6 +84,7 @@ $breadcrumb_arr = [
                                         <select required name="type" id="type" class="form-control select2" id="selecttype">
                                             <option value="" readonly>Select Type</option>
                                             <option value="any_value">Text</option>
+                                            <option value="uom">UOM</option>
                                             <option value="dropdown">Dropdown</option>
                                     </select>
                                     </div>

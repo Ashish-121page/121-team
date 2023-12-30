@@ -85,8 +85,16 @@ class ProductAttributeController extends Controller
      */
     public function store(Request $request)
     {
+        // if ($request->has('request_from')) {
+        //     // $response = new Response();
+        //     return response()->json([
+        //         'status' => 'success',
+        //         'msg' => 'Product Property Created Successfully!'
+        //     ]);
+        // }
 
         // return magicstring($request->all());
+
         $this->validate($request, [
                         'name'     => 'required',
                         'type'     => 'sometimes',
@@ -101,7 +109,7 @@ class ProductAttributeController extends Controller
                 // `  Start Creating Custom Attribute....
                 $user = User::find(auth()->id());
                 $custom_arr_old = json_decode($user->custom_attriute_columns);
-                $custom_arr_new = [$request->name];
+                $custom_arr_new = [str_replace(' ','_',$request->name)];
 
                 // + creating Array for Adding in User Record
                 if ($custom_arr_old != null) {
@@ -118,20 +126,20 @@ class ProductAttributeController extends Controller
             }
 
 
-            if (request()->has('type') && request()->get('type') != 'any_value') {
+            if (request()->has('type') && request()->get('type') == 'any_value') {
                 $value = 'any_value';
-            }else{
+            }elseif (request()->has('type') && request()->get('type') == 'uom') {
+                $value = 'uom';
+            }
+            else{
                 $value = null;
             }
-
-            // echo $value;
-            // return;
 
             $chkCount = ProductAttribute::where('name',$request->name)->where('user_id',$request->user_id)->get();
             if (count($chkCount) == 0) {
                 // ! Uploading Attributes
                 $AttributValue = ProductAttribute::create([
-                    'name' => $request->get('name'),
+                    'name' => str_replace(' ','_',$request->get('name')),
                     'type' => $type,
                     'value' => $value ?? NULL,
                     'user_id' => $request->get('user_id') ?? null,
@@ -149,16 +157,26 @@ class ProductAttributeController extends Controller
                     }
                 }
 
-
-
             }else{
                 return back()->with('error',"$request->name Property already exists in your Account.");
             }
 
+
+        if ($request->has('request_from')) {
+            // $response = new Response();
+            return response()->json([
+                'status' => 'success',
+                'msg' => 'Product Property Created Successfully!'
+            ]);
+        }
+
+
             return redirect()->route('panel.product_attributes.index')->with('success','Product Attribute Created Successfully!');
         }catch(\Exception $e){
-            // return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
-            throw $e;
+            return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
+
+
+            // throw $e;
         }
     }
 

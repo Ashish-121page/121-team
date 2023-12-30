@@ -331,7 +331,6 @@
                     }
                 });
 
-
             });
 
             $(".savebtn").click(function (e) {
@@ -441,9 +440,40 @@
                         }
                     });
                 });
-
-
             });
+
+
+
+
+            $("#attr_section").change(function (e) {
+                e.preventDefault();
+                console.log($(this).val());
+                let ref = $(this).val();
+
+                if (ref === '3') {
+                    $("input[name='data_type'][value='diamension']").parent().addClass('d-none');
+                    $("input[name='data_type'][value='multi_select']").parent().addClass('d-none');
+                    $("input[name='data_type'][value='interger']").parent().addClass('d-none');
+                    // $("input[name='data_type'][value='date']").parent().addClass('d-none');
+                    // $("input[name='data_type'][value='html']").parent().addClass('d-none');
+                    // $("input[name='data_type'][value='long_text']").parent().addClass('d-none');
+                    // $("input[name='data_type'][value='price']").parent().addClass('d-none');
+                    // $("input[name='data_type'][value='uom']").parent().addClass('d-none');
+                    // $("input[name='data_type'][value='url']").parent().addClass('d-none');
+                }else{
+                    $("input[name='data_type'][value='diamension']").parent().removeClass('d-none');
+                    $("input[name='data_type'][value='multi_select']").parent().removeClass('d-none');
+                    $("input[name='data_type'][value='interger']").parent().removeClass('d-none');
+                    // $("input[name='data_type'][value='date']").parent().removeClass('d-none');
+                    // $("input[name='data_type'][value='html']").parent().removeClass('d-none');
+                    // $("input[name='data_type'][value='long_text']").parent().removeClass('d-none');
+                    // $("input[name='data_type'][value='price']").parent().removeClass('d-none');
+                    // $("input[name='data_type'][value='uom']").parent().removeClass('d-none');
+                    // $("input[name='data_type'][value='url']").parent().removeClass('d-none');
+                }
+            });
+
+
 
         </script>
 

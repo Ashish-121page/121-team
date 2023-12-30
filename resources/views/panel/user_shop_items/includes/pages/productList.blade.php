@@ -1,6 +1,6 @@
 <div class="col-lg-3 col-md-4 filterable-items mb-4 border border-primary d-flex justify-content-center align-items-center skeltonbtn" style="font-size: 2vh; width: 25rem;  min-height: 13.5rem; ">
     <a href="{{ route('panel.products.create') }}?action=nonbranded" class="text-dark " style="display: block;height: 100%;width: 100%;position: absolute ;text-align: center;">
-        <span style="height: 100%;display: flex;width: 100%;justify-content: center;align-items: center;">+ Add Product</span> 
+        <span style="height: 100%;display: flex;width: 100%;justify-content: center;align-items: center;">+ Add Product</span>
     </a>
 </div>
 {{-- Todo: For On Site Product --}}
@@ -37,7 +37,7 @@
             $proUsiExists = productExistInUserShop($scoped_product->id,$user_id,$user_shop->id)
         @endphp
         <div class="product-card product-box">
-            
+
             @if(!$product_exists)
                 <label class="custom-chk prdct-checked" data-select-all="boards">
                     <input type="checkbox" name="products[]" class="input-check d-none" value="{{ $scoped_product->id }}" >
@@ -58,7 +58,7 @@
                         }else{
                             if ($parent_shop) {
                                 $route = inject_subdomain("shop/".encrypt(@$scoped_product->id),$parent_shop->slug, true, false);
-                            
+
                             }
                         }
                     }
@@ -73,7 +73,7 @@
                                 <span class="badge badge-danger"> Unpublished</span>
                             @endif
                     </div> --}}
-                    
+
                     {{-- @if ($scoped_product->user_id != auth()->id())
                         <a href="{{ route('panel.user_shop_items.edit',$product_exists->id) }}"><i class="fa fa-edit added-icon mt-2"></i></a>
                     @endif --}}
@@ -87,18 +87,18 @@
                             @if (in_array($scoped_product->id,$pinned_items))
                                 <img src="{{ asset('frontend/assets/svg/bookmark_added.svg')}}" id="input-checkpinimg_{{ $scoped_product->id }}" alt="{{ $scoped_product->id }}" class="{{ $scoped_product->id }}" >
                             @else
-                                <img src="{{ asset('frontend/assets/svg/bookmark.svg')}}" id="input-checkpinimg_{{ $scoped_product->id }}" alt="{{ $scoped_product->id }}" class="{{ $scoped_product->id }}" >                                                                    
+                                <img src="{{ asset('frontend/assets/svg/bookmark.svg')}}" id="input-checkpinimg_{{ $scoped_product->id }}" alt="{{ $scoped_product->id }}" class="{{ $scoped_product->id }}" >
                             @endif
                         </span>
                     </label>
                 @endif
-            </div> 
+            </div>
             </div>
                 {{-- <a href="{{ $route }}" target="_blank"> --}}
                 <a href="{{ route('panel.view.product',encrypt($scoped_product->id)) }}" target="_blank">
                     <img src="{{ asset(getShopProductImage($scoped_product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" class="custom-img" style="">
-                </a> 
-            
+                </a>
+
             <div class="product-body">
                 <div class="d-flex justify-content-between">
                     {{-- <h6 class="mb-0">
@@ -133,11 +133,11 @@
                         </label>
                     @endif
                 </div>
-                
+
                 {{-- <div>
                     <b>{{$scoped_product->category->name ?? " *Dump Product* "}}</b>
                 </div> --}}
-                
+
                 {{-- <span class="mb-0 d-block"><b>Brand:</b><span> {{ $scoped_product->brand->name ?? '--' }}</span></span> --}}
                 {{-- <span class="mb-0 d-block"><b>Color: </b><span>{{ $scoped_product->color ?? '--' }}</span><b> Size:</b> <span></span>{{ $scoped_product->size ?? '--' }}</span> --}}
                 {{-- <span class="mb-0 d-block"><b>Cost Price:</b> --}}
@@ -160,19 +160,19 @@
                     {{-- @if($scoped_product->varient_products()->count() - 1 > 0) --}}
                     <span class="d-flex justify-content-between w-85">
                         <span><b>Variants:</b> {{ $scoped_product->varient_products()->count()}} Products </span>
-                        <a href="{{ route('panel.products.edit',$scoped_product->id) }}" class="btn-link text-primary">Edit</a>
+                        <a href="{{ route('panel.products.edit',$scoped_product->id) }}?type={{ encrypt('editmainksku') }}" class="btn-link text-primary">Edit</a>
                     </span>
                     {{-- @endif --}}
                 </div>
                 {{-- <span>Supplier Model Code -</span> <span class="fw-600 text-dark">{{ $scoped_product->model_code ?? '--' }}</span> --}}
-                
+
                 {{-- @if($product_exists != null)
                     @if($scoped_product->user_id != auth()->id())
                         <a href="{{ route('panel.user_shop_items.remove',[$scoped_product->id,$user_id]) }}" class="btn-block text-center btn-danger mt-2 btn-md p-2 confirm-btn" data-pid="{{$scoped_product->id }}" >Remove from Shop</a>
                     @endif
                 @else
-                    <a href="javascript:void(0)" 
-                    data-category_id="{{ $scoped_product->category_id  }}" 
+                    <a href="javascript:void(0)"
+                    data-category_id="{{ $scoped_product->category_id  }}"
                     data-sub_category_id="{{$scoped_product->sub_category  }}"  data-pid="{{$scoped_product->id }}" @if(request()->get('type') == 'direct') data-price="{{ $user_shop_product->price ?? 0 }}" @else data-price="{{ $scoped_product->price ?? 0 }}"  @endif class="btn-block text-center btn-primary mt-2 btn-md p-2 addProductBtn">Add to Shop</a>
                 @endif     --}}
             </div>

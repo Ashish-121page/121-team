@@ -6,9 +6,9 @@
                 // $usi = productExistInUserShop($product->id,auth()->id(),$user_shop->id);
                 $productId= \Crypt::encrypt($product->id);
                 $record = (array) json_decode($proposal->currency_record);
-                $exhangerate = Session::get('Currency_exchange') ?? $record[$proposal->offer_currency] ?? 1;
+                $exhangerate = $record[$proposal->offer_currency] ?? 1;
                 $HomeCurrency = 1;
-                $currency_symbol = Session::get('currency_name') ?? $proposal->offer_currency ?? 'INR';
+                $currency_symbol = $proposal->offer_currency ?? 'INR';
             @endphp
                 <div class="col-lg-4 col-md-4 col-12 mt-4 pt-2 d-print-none" style="position: relative;min-height: 500px" id="contain-{{ $product->id }}">
 

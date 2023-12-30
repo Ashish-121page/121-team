@@ -94,7 +94,7 @@
                                 <div class="col-4"> Model Code </div>
 
                                 <div class="col-8">
-                                    <input type="text" class="form-control" placeholder="Enter Model Number" name="model_code"
+                                    <input required type="text" class="form-control" placeholder="Enter Model Number" name="model_code"
                                                 value="{{ $product->model_code ?? old('model_code') ?? '' }}" list="available_modelcode" autocomplete="off" required>
                                 @if ($available_model_code != null)
                                     <datalist id="available_modelcode">
@@ -111,7 +111,7 @@
                                     Title:
                                 </div>
                                 <div class="col-8">
-                                    <input required class="form-control" name="title" type="text" id="title" value="{{ $product->title ?? old('title')}}" placeholder="Enter Title" >
+                                    <input  class="form-control" name="title" type="text" id="title" value="{{ $product->title ?? old('title')}}" placeholder="Enter Title" >
                                 </div>
                             </div>
 
@@ -598,6 +598,30 @@
                                                 </div>
                                             </div>
 
+                                            {{-- -- Custom Fields of User 1 ` --}}
+                                            @if (in_array('1', $fileds_sections))
+                                                    <div class="col-12">
+                                                        <div class="h5">Custom Cols</div>
+                                                    </div>
+                                                    @if ($user_custom_fields != null)
+                                                        <div class="col-12">
+                                                            <div class="row">
+                                                                @foreach ($user_custom_fields as $user_custom_field)
+                                                                    @if ($user_custom_field['ref_section'] === '1')
+                                                                        <div class="col-6">
+                                                                            <div class="form-group">
+                                                                                <label
+                                                                                    for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
+                                                                                {!! $user_custom_field['tag'] !!}
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                            @endif
+
                                     </div>
 
                                     {{-- <div class="row">
@@ -946,7 +970,11 @@
                                             @endif
                                         @endif
                                     </div>
-                                    <p class="pb-0"><i class="ik ik-info mr-1"></i>Multiple images can be selected at once by using the control key.</p>
+                                    <p class="pb-3 my-2 alert alert-warning">
+                                        <i class="ik ik-info mr-1"></i>If there are any duplicate file names, they will replace the existing ones.
+                                        <br>
+                                        <i class="ik ik-info mr-1"></i> Multiple images can be selected at once by using the control key.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -975,6 +1003,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="previewassetsitem">
+
 
                                             </tbody>
                                         </table>
@@ -1016,6 +1045,29 @@
                                             </div>
                                         </div>
 
+                                        {{-- -- Custom Fields of User 4 ` --}}
+                                        @if (in_array('4', $fileds_sections))
+                                            <div class="col-12">
+                                                <div class="h5">Custom Cols</div>
+                                            </div>
+                                            @if ($user_custom_fields != null)
+                                                <div class="col-12">
+                                                    <div class="row">
+                                                        @foreach ($user_custom_fields as $user_custom_field)
+                                                            @if ($user_custom_field['ref_section'] === '4')
+                                                                <div class="col-6">
+                                                                    <div class="form-group">
+                                                                        <label
+                                                                            for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
+                                                                        {!! $user_custom_field['tag'] !!}
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endif
 
                                         <div class="col-md-4 col-6 d-none">
                                             <div class="form-group">
@@ -1064,7 +1116,7 @@
                                                     <span class="text-danger">*</span>
                                                 </label>
                                                 <br>
-                                                <input type="checkbox" class="hiddenbxbtn" id="exclubtn" data-open="productexclusivebuyernamebox" value="1" name="exclusive" required>
+                                                <input type="checkbox" class="hiddenbxbtn" id="exclubtn" data-open="productexclusivebuyernamebox" value="1" name="exclusive" >
                                             </div>
                                         </div>
 
@@ -1302,6 +1354,30 @@
                                         </div>
                                     </div>
                                 </div>
+                                {{-- -- Custom Fields of User 5 ` --}}
+                                @if (in_array('5', $fileds_sections))
+                                    <div class="col-12">
+                                        <div class="h5">Custom Cols</div>
+                                    </div>
+                                    @if ($user_custom_fields != null)
+                                        <div class="col-12">
+                                            <div class="row">
+                                                @foreach ($user_custom_fields as $user_custom_field)
+                                                    @if ($user_custom_field['ref_section'] === '5')
+                                                        <div class="col-6">
+                                                            <div class="form-group">
+                                                                <label
+                                                                    for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
+                                                                {!! $user_custom_field['tag'] !!}
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endif
+
                             </div>
                         </div>
 
@@ -1345,21 +1421,44 @@
                                                 }
                                             @endphp
 
-                                        @if (count($records) != 0 && $parent->value != 'any_value')
-                                                <div class="col-md-6 col-12">
-                                                    <div class="form-group">
-                                                        <label for="properties_{{$key}}">{{ $item }}</label>
-                                                        <select name="{{$item}}[]" id="properties_{{$key}}" class="select2" multiple>
-                                                            <option value="">Select One</option>
-                                                            @foreach ($records as $record)
-                                                                <option value="{{ $record->id }}"  @if (in_array($record->id,$attribute_value_id))
-                                                                    selected
-                                                                @endif >{{ $record->attribute_value }}</option>
-                                                            @endforeach
+                                        @if (count($records) != 0 && $parent->value != 'any_value' && $parent->value != 'uom')
+                                            <div class="col-md-6 col-12">
+                                                <div class="form-group">
+                                                    <label for="properties_{{$key}}">{{ $item }}</label>
+                                                    <select name="{{$item}}[]" id="properties_{{$key}}" class="select2" multiple>
+                                                        <option value="">Select One</option>
+                                                        @foreach ($records as $record)
+                                                            <option value="{{ $record->id }}"  @if (in_array($record->id,$attribute_value_id))
+                                                                selected
+                                                            @endif >{{ $record->attribute_value }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        @elseif ($parent->value == 'uom')
+                                            <div class="col-md-6 col-12">
+                                                <div class="form-group">
+                                                    <label for="properties_{{$key}}">{{ $item }}</label>
+                                                    <div class="d-flex">
+                                                        <input type="number" min="0" class="form-control" name="any_value-{{$item}}[L]" id="properties_{{$key}}" placeholder="Length">
+                                                        <input type="number" min="0" class="form-control" name="any_value-{{$item}}[W]" id="properties_{{$key}}" placeholder="Width">
+                                                        <input type="number" min="0" class="form-control" name="any_value-{{$item}}[H]" id="properties_{{$key}}" placeholder="Height">
+                                                        <select name="any_value-{{$item}}[U]" id="any_value-{{$item}}" class="form-control select2">
+                                                            <option value="mm">MM</option>
+                                                            <option value="cm">CM</option>
+                                                            <option value="inches">Inches</option>
+                                                            <option value="feet">Feet</option>
                                                         </select>
+
                                                     </div>
                                                 </div>
+                                            </div>
                                         @else
+
+                                            @if ($parent->value == 'uom')
+                                                @continue
+                                            @endif
+
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
                                                     <label for="properties_{{$key}}">{{ $item }}</label>
@@ -1457,6 +1556,7 @@
             });
         });
 
+        $('a.page-link').attr("href","#");
 
         $("li.page-item").click(function (e) {
             $('a.page-link').attr("href","#");
@@ -1479,7 +1579,6 @@
                         e.preventDefault();
                         $(this).addClass("active");
                         $(this).addClass("disabled");
-
 
 
                         let mediaid = $(this).data("mediaid");
@@ -1506,7 +1605,11 @@
             });
         });
 
+    });
 
+
+    $(document).change(function (e) {
+        $('a.page-link').attr("href","#");
     });
 
 </script>

@@ -277,10 +277,8 @@
                 buybtn.disabled = true;
                 freetrial.disabled = true;
             }
+
         }
-
-
-        
 </script>
 
 

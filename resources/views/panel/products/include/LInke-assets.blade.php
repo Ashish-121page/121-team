@@ -8,11 +8,11 @@
             <div class="modal-body">
 
                 <form>
-                    <div class="table-responsive">
+                    {{-- <div class="table-responsive"> --}}
                         <div class="mb-3">
-                            <input type="text" name="searchbyname" id="searchbyname" placeholder="Search by Name" class="form-control">
+                            <input type="text" name="searchbyname" id="searchbyname" placeholder="Search by File Name" class="form-control">
                         </div>
-                        <table class="table">
+                        {{-- <table class="table">
 
                             <thead>
                                 <tr>
@@ -25,9 +25,30 @@
                             <tbody id="updateseachassets">
 
                                 @include('panel.products.include.iframe.link-assets')
+
+
                             </tbody>
                         </table>
+                    </div> --}}
+
+
+
+                    <div class="row">
+                        <div class="col-12 d-flex flex-column justify-content-center">
+                            <div class="row" id="updateseachassets">
+                                @include('panel.products.include.iframe.link-assets')
+                            </div>
+
+                            <div class="row">
+
+                            </div>
+
+                        </div>
                     </div>
+
+
+
+
                 </form>
 
 
@@ -35,7 +56,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-outline-primary">Save changes</button>
+                {{-- <button type="button" class="btn btn-outline-primary">Save changes</button> --}}
             </div>
         </div>
     </div>
@@ -45,6 +66,13 @@
 <script>
     var addedassets = [];
     var addedassetsFilename = [];
+
+    $('a.page-link').attr("href","#");
+
+
+    $(document).ready(function () {
+        $('a.page-link').attr("href","#");
+    });
 
     function remveassets(element) {
         let assetId = element.value;

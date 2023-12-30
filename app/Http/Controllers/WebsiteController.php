@@ -48,7 +48,6 @@ class WebsiteController extends Controller
     }
 
      public function formjaya()
-
     {
         return view('frontend.website.booksession.jayaform23');
     }
