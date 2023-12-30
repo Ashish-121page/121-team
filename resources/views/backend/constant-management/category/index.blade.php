@@ -249,6 +249,7 @@
 
 
                     let newvalue = newval.split(" > ")[1];
+                    $(this).val(newval.split(" > ")[0])
 
                     $('#tags').tagsinput('add',newvalue);
 

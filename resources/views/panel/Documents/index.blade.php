@@ -1,4 +1,4 @@
-@extends('backend.layouts.main') 
+@extends('backend.layouts.main')
 @section('title', 'Invoice')
 @section('content')
 
@@ -8,20 +8,20 @@
     <style>
 
      a active{
-      
+
           color: white!important;
           /* background-color: #6666a3; */
           border-radius: 5%;
           position: relative;
           opacity: 86%
-          
+
       }
-      
+
       a active span {
-          font-size: 16px; 
+          font-size: 16px;
       }
-      
-      
+
+
       a active::before{
               content: '';
               background-color: #8484f8;
@@ -31,35 +31,48 @@
               bottom: -7px;
               left: -4px;
       }
-      
+
       </style>
 
     @endpush
 
 <div class="container-fluid">
+    @php
+
+        $user = auth()->user();
+        $acc_permissions = json_decode($user->account_permission);
+        $acc_permissions->mysupplier = $acc_permissions->mysupplier ?? 'no';
+        $acc_permissions->quoatations = $acc_permissions->quoatations ?? 'no';
+
+
+    @endphp
+
 
     <div class="row">
         <!-- Sidebar -->
         <div class="col-lg-2 sidebar mt-3">
           <!-- Sidebar content -->
           <h6 style="font-weight:900"></h2>
-          
+
           <div class="sidebar-section mt-5">
             <h6>All Documents</h6>
-           
           </div>
-          <div class="sidebar-section h6">
-            <a class="" href="{{route('panel.Documents.Quotation','active')}}">Quotations</a>
-           
-          </div>
+
+
+          {{-- @if ($acc_permissions->quoatations == 'yes') --}}
+            <div class="sidebar-section h6">
+                <a class="" href="{{route('panel.Documents.Quotation','active')}}">Quotations</a>
+            </div>
+          {{-- @endif --}}
+
           <div class="sidebar-section h6">
             <a href="{{route('panel.Documents.secondview')}}">Invoice</a>
-            
+
           </div>
         </div>
-        
+
         <!-- Main Content -->
-       
+
         <div class="col-lg-10 mt-3">
           <!-- Main content goes here -->
               <div class="mt-5">
@@ -77,7 +90,7 @@
                     </button>
                   </div>
                 </div>
-        
+
                 <!-- Other elements (filter, select, buttons) -->
                 <div class="row mt-3 justify-content-between ">
                   <div class="col-2">
@@ -91,7 +104,7 @@
                       <option value="draft">Draft</option>
                     </select>
                   </div>
-        
+
                   <!-- Loop through proposals -->
                   <div class="col-6">
                     <!-- Your PHP loop logic for proposals -->
@@ -103,17 +116,17 @@
                         <table id="table" class="table">
                             <thead class="h6 text-muted">
                                     <tr>
-                                        <td class="no-export action_btn"> 
+                                        <td class="no-export action_btn">
                                             <!-- {{-- <input type="checkbox" id="checkallinp"> --}} -->
-                                        </td> 
+                                        </td>
                                         <td class="col-2">Invoice No.</td>
                                         <td class="col-2">Buyer</td>
                                         <td class="col-2">Company Name</td>
                                         <td class="col-2">Status</td>
                                         <td class="col-2">Amount</td>
                                         <td class="col-2">Created On</td>
-                    
-                                        
+
+
                                     </tr>
                             </thead>
                             <tbody>
@@ -128,27 +141,27 @@
                                             $productItems = App\Models\ProposalItem::where('proposal_id',$proposal->id)->get();
                                             $product_count = App\Models\ProposalItem::where('proposal_id',$proposal->id)->get()->count();
                                         @endphp --> --}}
-                                        
+
                                         <tr>
                                             <td class="no-export action_btn">
                                                 <!-- {{-- @if($scoped_product->user_id == auth()->id()) --}} -->
                                                     <!-- {{-- <input type="checkbox" name="exportproduct" id="exportproduct" class="input-check"> --}} -->
                                                 <!-- {{-- @endif --}} -->
-                                            </td>   
+                                            </td>
                                             <td class="justify-content-between">
-                                              
-                                              
-                                                  
-                                                      
-                                              <div class="py-1" >                                                                                                                                                                                                                                                                                                                                                           
+
+
+
+
+                                              <div class="py-1" >
                                               invoiceid12234
                                               {{-- <!-- <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid p-1" style="border-radius: 10px;height: 100%;width: 100%;background-color: gray;align-items: center;"> --> --}}
-                                              </div>   
-                                                                            
-                                                          
-                                          
+                                              </div>
+
+
+
                                         </td>
-                                            
+
                                             <td>
                                                 <div class=" py-1" > buyer23</div>
                                             </td>
@@ -161,35 +174,35 @@
                                                       <!-- <span class="text-danger"> Draft </span></div> -->
                                             </td>
                                             <td>
-                                                
+
                                             </td>
-                              
+
                                             <td>
-                                                
+
                                               9/8/2023
                                             </td>
                                         </tr>
-  
+
                                         <tr>
                                           <td class="no-export action_btn">
                                               <!-- {{-- @if($scoped_product->user_id == auth()->id()) --}} -->
                                                   <!-- {{-- <input type="checkbox" name="exportproduct" id="exportproduct" class="input-check"> --}} -->
                                               <!-- {{-- @endif --}} -->
-                                          </td>   
+                                          </td>
                                           <td class="justify-content-between">
-                                              
-                                              
-                                                  
-                                                      
-                                                <div class="py-1" >                                                                                                                                                                                                                                                                                                                                                           
+
+
+
+
+                                                <div class="py-1" >
                                                 invoiceid12234
                                                 {{-- <!-- <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid p-1" style="border-radius: 10px;height: 100%;width: 100%;background-color: gray;align-items: center;"> --> --}}
-                                                </div>   
-                                                                              
-                                                            
-                                            
+                                                </div>
+
+
+
                                           </td>
-                                          
+
                                           <td>
                                               <div class=" py-1" > buyer23</div>
                                           </td>
@@ -204,29 +217,29 @@
                                               </div>
                                           </td>
                                           <td>
-                                              
+
                                           </td>
-                            
+
                                           <td>
-                                              
+
                                             9/8/2023
                                           </td>
                                       </tr>
-                    
-                                                                    
+
+
                             </tbody>
                         </table>
                     </div>
                   </div>
                 </div>
-    
+
               </div>
         </div>
     </div>
     {{-- @include('panel.Documents.modals.buyer') --}}
-  
-    
-  
+
+
+
 </div>
 <script src="{{ asset('backend/js/index-page.js') }}"></script>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
@@ -243,7 +256,7 @@
         e.preventDefault();
         var url = $(this).attr('href');
         var msg = "<div class='dropdown w-100'><h5></h5><select class='form-select' id='mybro' aria-label='Default select example'><option selected>Buyer name</option><option value='1'>One</option><option value='2'>Two</option><option value='3'>Three</option></select></div>";
-        
+
         $.confirm({
             draggable: true,
             title: ' Buyer Search',
@@ -268,17 +281,17 @@
 
 
 
-      
+
       $(function () {
         $("#mybro").select2()
       });
 
-      
 
 
-      
+
+
   });
-  
+
 </script>
 @endsection
 

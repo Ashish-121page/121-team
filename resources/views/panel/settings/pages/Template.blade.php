@@ -91,4 +91,76 @@
             </form>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-12 my-3 text-center">
+            <div class="h4">QR Templates</div>
+        </div>
+            {{-- <div class="container mt-4">
+                <div class="my-2 text-center">
+                    <a href="javascript:void();" onclick="window.print();" class="btn btn-primary hide-print" type="button">Print</a>
+                </div>
+                
+                <div class="row mt-4 qr-grid justify-content-center">
+                    @php
+                        $page = 0;
+                    @endphp
+                    @foreach ($product_ids as $key => $product_id)
+                    @php
+                        $product = getProductDataById($product_id);
+                        $user_shop = App\Models\UserShop::whereUserId(auth()->id())->first();
+    
+                        
+                        $enc_product = encrypt($product_id);
+                        $bhai = "shop/".$enc_product."?pg=&scan=1";
+                        $url= inject_subdomain($bhai,$user_shop->slug,false,true);
+                        $barcode_img = QrCode::size(170)->generate( $url );
+                        $product = getProductDataById($product_id);
+                    @endphp
+                    <div class="col-lg-4 text-center mx-auto ">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div style="width: 40%; text-align: center;">
+                                <img src="companylogo.jpg" alt="company Logo" style="height: 70px; width: 80px; padding: 0 5px;">
+                            </div>
+                            <div style="width: 60%; text-align: left;">
+                                <h1>{{ auth()->user()->name }}</h1>                            
+                            </div>
+                        </div>
+                        <hr>
+                        <h5 style="text-decoration: underline;">{{ $user_shop->slug }}.121.page</h5>
+                        
+                            <h6 style="font-family:monospace">{{ 'Scan here' }}</h6>
+                            <div style="border: 3px solid #6666CC; display: inline-block; padding: 5px; position: relative;">
+                                <div style="position: absolute; top: -3px; left: -3px; right: -3px; bottom: -3px; border: 3px solid #6666CC; border-radius: 3px;"></div>
+                                {!! $barcode_img !!}
+                            </div>                                                                                                    
+                            
+    
+                            <h6 class="mt-2" style="word-break: break-all; font-weight:600;">
+                                Model Code: {{ $product->model_code }}
+    
+                               
+                            </h6>
+                            <h6 style="font-family:monospace" >{{ 'to know more' }}</h6>
+                            <hr>
+                           
+                            <h6 class="" style="word-break: break-all; font-weight: bold;"> Powered by 121.page</h6>
+                            
+                        </div>
+                    </div>
+                    
+                    @if($loop->iteration%9 == 0)
+                        <span class="col-12 break-page">
+                            <div class="mt-2 text-center">
+                                Page {{++$page}}
+                            </div>
+                        </span>
+                    @endif
+                    @endforeach
+                </div>
+                
+            </div> --}}
+        
+    </div>
+        
 </div>

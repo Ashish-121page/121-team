@@ -366,6 +366,17 @@ class ProductController extends Controller
                 $folder = "storage/files/".auth()->id();
                 $medias = Media::where('path',"LIKE","%".$folder."%")->groupBy('path')->orderBy('created_at',"DESC")->paginate(10);
 
+
+                $user_custom_fields = json_decode($user->custom_fields,true) ?? [];
+                $fileds_sections = array_column($user_custom_fields, 'ref_section');
+                $fileds_sections_names = [];
+                $fileds_sections_ids = array_column($user_custom_fields, 'id');
+
+                foreach ($fileds_sections_ids as $key => $value) {
+                    array_push($fileds_sections_names, getCustomFieldValueById($value,$product->id)->value ?? '');
+                }
+
+
             }else{
                 $product = null;
                 $productExtra = null;
@@ -381,9 +392,15 @@ class ProductController extends Controller
                 $mediaSize_attachment = [];
                 $mediaSize_gif = [];
                 $mediaSize_video = [];
+                $user_custom_fields = json_decode($user->custom_fields,true) ?? [];
+                $fileds_sections = array_column($user_custom_fields, 'ref_section');
+                $fileds_sections_names = [];
+                $fileds_sections_ids = array_column($user_custom_fields, 'id');
+
+
             }
 
-            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups','user_custom_col_list','product','productExtra','varient_basis','attribute_value_id','medias','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video'));
+            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups','user_custom_col_list','product','productExtra','varient_basis','attribute_value_id','medias','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','fileds_sections','user_custom_fields'));
 
         }catch(\Exception $e){
             // return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -949,39 +966,54 @@ class ProductController extends Controller
             if (strpos($key, $substring) !== false) {
                 array_push($any_value,$key);
 
+                if (is_array($request->$key)) {
+                    $request[$key] = implode("x",$request->$key);
+                }
+
+
+
                 // checking Value Exist or Not
                 $attribute_name = explode("-",$key)[1];
 
                 $chkCountAttr = ProductAttribute::where('name',$attribute_name)->where('user_id',auth()->id())->get();
 
+
+                if ($chkCountAttr->count() == 0) {
+                    $attribute_name = str_replace("_"," ",$attribute_name);
+                    $chkCountAttr = ProductAttribute::where('name',$attribute_name)->where('user_id',auth()->id())->get();
+                }
+
+
                 if ($chkCountAttr->count() != 0) {
                     $attribute_id = $chkCountAttr[0]->id;
                     $received_value = $request->$key;
-                    $chkatt = ProductAttributeValue::where('parent_id',$attribute_id)->where('attribute_value',$received_value)->first();
 
-                    if ($chkatt == null) {
-                        $tmparrvar = ProductAttributeValue::create([
-                            'parent_id' => $attribute_id,
-                            'user_id' => auth()->id() ?? null,
-                            'attribute_value' => $received_value,
-                        ]);
+                    if ($received_value != null && $received_value != "" && $received_value != []) {
+                        $chkatt = ProductAttributeValue::where('parent_id',$attribute_id)->where('attribute_value',$received_value)->first();
 
-                        $request[$attribute_name] = array($tmparrvar->id);
+                        if ($chkatt == null) {
+                            $tmparrvar = ProductAttributeValue::create([
+                                'parent_id' => $attribute_id,
+                                'user_id' => auth()->id() ?? null,
+                                'attribute_value' => $received_value,
+                            ]);
 
-                    }else{
-                        // magicstring($chkatt);
-                        $request[$attribute_name] = array($chkatt->id);
+                            $request[$attribute_name] = array($tmparrvar->id);
 
+                        }else{
+                            // magicstring($chkatt);
+                            $request[$attribute_name] = array($chkatt->id);
+
+                        }
                     }
-
-
-
-
                 }else{
                     echo "Else Part Will Work";
                 }
             }
         }
+
+
+        // return;
 
         // foreach ($any_value as $ashu) {
         //     $attribute_name = explode("-",$key)[1];
@@ -1126,6 +1158,46 @@ class ProductController extends Controller
                             ];
 
                             $product_obj = Product::create($product_obj);
+
+
+                            $product = $product_obj;
+
+                            $custom_fields = json_decode($user->custom_fields);
+                            if ($custom_fields != null && count($custom_fields) > 0) {
+                                foreach ($custom_fields as $key => $customfield) {
+
+                                    $ogname = $customfield->id;
+                                    $customfield = str_replace("[]",'',$customfield->id);
+                                    if (is_array($request->get($customfield)) || is_html($request->get($customfield))) {
+
+                                        echo "' $ogname ' It is an Array or HTML.".newline();
+                                        $updatevalue = base64_encode(json_encode($request->get($customfield)));
+
+                                    }else{
+                                        // $customfield = str_replace("[]",'',$customfield);
+                                        $updatevalue = $request->get($customfield);
+                                    }
+
+                                    $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                    if ($custom_field == null) {
+                                        echo "Create New Records".newline(2);
+                                        CustomFields::create([
+                                            'relatation_name' => $ogname,
+                                            'product_id' => $product_obj->id,
+                                            'value' => $updatevalue ?? '',
+                                            'user_id' => auth()->id(),
+                                        ]);
+                                    }else{
+                                        echo "Record Are Exist Update It".newline(2);
+
+                                        $custom_field->update([
+                                            'value' => $updatevalue ?? '',
+                                        ]);
+                                    }
+                                }
+                            }
+
+
 
                             $product_id = $product_obj->id;
                             $parentAttribute = ProductAttributeValue::whereId($third)->first();
@@ -1441,6 +1513,45 @@ class ProductController extends Controller
                         $product_obj = Product::create($product_obj);
                         $product_id = $product_obj->id;
 
+                        $product = $product_obj;
+
+                        $custom_fields = json_decode($user->custom_fields);
+                        if ($custom_fields != null && count($custom_fields) > 0) {
+                            foreach ($custom_fields as $key => $customfield) {
+
+                                $ogname = $customfield->id;
+                                $customfield = str_replace("[]",'',$customfield->id);
+                                if (is_array($request->get($customfield)) || is_html($request->get($customfield))) {
+
+                                    echo "' $ogname ' It is an Array or HTML.".newline();
+                                    $updatevalue = base64_encode(json_encode($request->get($customfield)));
+
+                                }else{
+                                    // $customfield = str_replace("[]",'',$customfield);
+                                    $updatevalue = $request->get($customfield);
+                                }
+
+                                $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                if ($custom_field == null) {
+                                    echo "Create New Records".newline(2);
+                                    CustomFields::create([
+                                        'relatation_name' => $ogname,
+                                        'product_id' => $product_obj->id,
+                                        'value' => $updatevalue ?? '',
+                                        'user_id' => auth()->id(),
+                                    ]);
+                                }else{
+                                    echo "Record Are Exist Update It".newline(2);
+
+                                    $custom_field->update([
+                                        'value' => $updatevalue ?? '',
+                                    ]);
+                                }
+                            }
+                        }
+
+
+
                         $parentAttribute = ProductAttributeValue::whereId($third)->first();
 
                         $product_extra_info_obj_user = [
@@ -1704,6 +1815,43 @@ class ProductController extends Controller
 
                     $product_id = $product_obj->id;
 
+                    $product = $product_obj;
+
+                    $custom_fields = json_decode($user->custom_fields);
+                    if ($custom_fields != null && count($custom_fields) > 0) {
+                        foreach ($custom_fields as $key => $customfield) {
+
+                            $ogname = $customfield->id;
+                            $customfield = str_replace("[]",'',$customfield->id);
+                            if (is_array($request->get($customfield)) || is_html($request->get($customfield))) {
+
+                                echo "' $ogname ' It is an Array or HTML.".newline();
+                                $updatevalue = base64_encode(json_encode($request->get($customfield)));
+
+                            }else{
+                                // $customfield = str_replace("[]",'',$customfield);
+                                $updatevalue = $request->get($customfield);
+                            }
+
+                            $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                            if ($custom_field == null) {
+                                echo "Create New Records".newline(2);
+                                CustomFields::create([
+                                    'relatation_name' => $ogname,
+                                    'product_id' => $product_obj->id,
+                                    'value' => $updatevalue ?? '',
+                                    'user_id' => auth()->id(),
+                                ]);
+                            }else{
+                                echo "Record Are Exist Update It".newline(2);
+
+                                $custom_field->update([
+                                    'value' => $updatevalue ?? '',
+                                ]);
+                            }
+                        }
+                    }
+
                     $parentAttribute = ProductAttributeValue::whereId($third)->first();
 
                     $product_extra_info_obj_user = [
@@ -1888,6 +2036,8 @@ class ProductController extends Controller
             }
             else{
 
+
+
                 $is_empty = true;
                 $reseller_group = Group::whereUserId($user->id)->where('name',"Reseller")->first();
                 if(!$reseller_group){
@@ -1951,6 +2101,44 @@ class ProductController extends Controller
                         $product_obj = Product::create($product_obj);
 
                         $product_id = $product_obj->id;
+
+                        $product = $product_obj;
+
+                        $custom_fields = json_decode($user->custom_fields);
+                        if ($custom_fields != null && count($custom_fields) > 0) {
+                            foreach ($custom_fields as $key => $customfield) {
+
+                                $ogname = $customfield->id;
+                                $customfield = str_replace("[]",'',$customfield->id);
+                                if (is_array($request->get($customfield)) || is_html($request->get($customfield))) {
+
+                                    echo "' $ogname ' It is an Array or HTML.".newline();
+                                    $updatevalue = base64_encode(json_encode($request->get($customfield)));
+
+                                }else{
+                                    // $customfield = str_replace("[]",'',$customfield);
+                                    $updatevalue = $request->get($customfield);
+                                }
+
+                                $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                if ($custom_field == null) {
+                                    echo "Create New Records".newline(2);
+                                    CustomFields::create([
+                                        'relatation_name' => $ogname,
+                                        'product_id' => $product_obj->id,
+                                        'value' => $updatevalue ?? '',
+                                        'user_id' => auth()->id(),
+                                    ]);
+                                }else{
+                                    echo "Record Are Exist Update It".newline(2);
+
+                                    $custom_field->update([
+                                        'value' => $updatevalue ?? '',
+                                    ]);
+                                }
+                            }
+                        }
+
 
                         // $product_extra_info_obj_user = [
                         //     'product_id' => $product_obj->id,
@@ -2094,7 +2282,7 @@ class ProductController extends Controller
 
 
                         if($request->avl_assets != null){
-                            foreach (explode(",",$request->avl_assets) as $key => $value) {
+                            foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
                                 Media::whereId($value)->first()->replicate()->fill([
                                     'type' => 'Product',
                                     'type_id' => $product_obj->id,
@@ -2105,9 +2293,9 @@ class ProductController extends Controller
 
 
                         if ($usi->images) {
-                            $usi->images =  $usi->images.",".$request->exist_img.",".$request->avl_assets ?? null;
+                            $usi->images =  $usi->images.",".$request->exist_img.",".($request->avl_assets[0] ?? null);
                         }else{
-                            $usi->images =  $request->exist_img.",".$request->avl_assets ?? null;
+                            $usi->images =  $request->exist_img.",".($request->avl_assets[0] ?? null);
                         }
 
                         $usi->save();
@@ -2153,6 +2341,42 @@ class ProductController extends Controller
                     $product_obj = Product::create($product_obj);
 
                     $product_id = $product_obj->id;
+                    $product = $product_obj;
+
+                    $custom_fields = json_decode($user->custom_fields);
+                    if ($custom_fields != null && count( (array) $custom_fields) > 0) {
+                        foreach ($custom_fields as $key => $customfield) {
+
+                            $ogname = $customfield->id;
+                            $customfield = str_replace("[]",'',$customfield->id);
+                            if (is_array($request->get($customfield)) || is_html($request->get($customfield))) {
+
+                                echo "' $ogname ' It is an Array or HTML.".newline();
+                                $updatevalue = base64_encode(json_encode($request->get($customfield)));
+
+                            }else{
+                                // $customfield = str_replace("[]",'',$customfield);
+                                $updatevalue = $request->get($customfield);
+                            }
+
+                            $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                            if ($custom_field == null) {
+                                echo "Create New Records".newline(2);
+                                CustomFields::create([
+                                    'relatation_name' => $ogname,
+                                    'product_id' => $product_obj->id,
+                                    'value' => $updatevalue ?? '',
+                                    'user_id' => auth()->id(),
+                                ]);
+                            }else{
+                                echo "Record Are Exist Update It".newline(2);
+
+                                $custom_field->update([
+                                    'value' => $updatevalue ?? '',
+                                ]);
+                            }
+                        }
+                    }
 
                     $product_extra_info_obj_user = [
                         'product_id' => $product_obj->id,
@@ -2282,7 +2506,7 @@ class ProductController extends Controller
 
 
 
-            magicstring($folderPath);
+            // magicstring($folderPath);
             // return;
             $msg =  "Product Crated with Varient $count";
             // return back()->with('success',$msg);
@@ -2654,7 +2878,77 @@ class ProductController extends Controller
     public function update(Request $request,Product $product)
     {
 
+
+        $any_value = [];
+        $newProp = [];
+        $substring = "any_value";
+
+        // magicstring(request()->all());
+        // return;
+
+        foreach ($request->all() as $key => $value) {
+            if (strpos($key, $substring) !== false) {
+                array_push($any_value,$key);
+
+                if (is_array($request->$key)) {
+
+                    $tmp = implode("x",$request->$key);
+                    if ($tmp != 'xxx') {
+                        $request[$key] = $tmp;
+                    }else{
+                        $request[$key] = '';
+                    }
+                }
+
+                // checking Value Exist or Not
+                $attribute_name = explode("-",$key)[1];
+
+                $chkCountAttr = ProductAttribute::where('name',$attribute_name)->where('user_id',auth()->id())->get();
+
+
+                if ($chkCountAttr->count() == 0) {
+                    $attribute_name = str_replace("_"," ",$attribute_name);
+                    $chkCountAttr = ProductAttribute::where('name',$attribute_name)->where('user_id',auth()->id())->get();
+                }
+
+
+                if ($chkCountAttr->count() != 0) {
+                    $attribute_id = $chkCountAttr[0]->id;
+                    $received_value = $request->$key;
+
+                    if ($received_value != null && $received_value != "" && $received_value != []) {
+                        $chkatt = ProductAttributeValue::where('parent_id',$attribute_id)->where('attribute_value',$received_value)->first();
+
+                        if ($chkatt == null) {
+                            $tmparrvar = ProductAttributeValue::create([
+                                'parent_id' => $attribute_id,
+                                'user_id' => auth()->id() ?? null,
+                                'attribute_value' => $received_value,
+                            ]);
+
+                            $request[$attribute_name] = array($tmparrvar->id);
+
+                            array_push($newProp,$tmparrvar->id);
+
+                        }else{
+                            // magicstring($chkatt);
+                            $request[$attribute_name] = array($chkatt->id);
+                            array_push($newProp,$chkatt->id);
+
+
+                        }
+                    }
+                }else{
+                    echo "Else Part Will Work";
+                }
+            }
+        }
+
+        // magicstring($newProp);
+        $request['properties'] = array_merge($request->properties,$newProp);
+
         // magicstring($request->all());
+
         // return;
 
         $custom_attriute_columns = json_decode(auth()->user()->custom_fields,true) ?? [];

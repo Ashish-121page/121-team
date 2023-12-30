@@ -91,6 +91,7 @@ Route::group(['middleware' => 'can:manage_dev', 'prefix' => 'dev'], function(){
 
 	// Test Images API URLS
 	Route::get('/image-studio', ['uses' => 'DevRouteController@imagestudio', 'as' => 'image.studio']);
+	Route::get('/image-studio/test', ['uses' => 'DevRouteController@ashish', 'as' => 'image.studio']);
 
 
 

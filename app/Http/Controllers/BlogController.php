@@ -19,14 +19,8 @@ use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-class BlogController extends Controller
+class BulkController extends Controller
 {
-
-    public function index() {
-
-        return view('frontend.website.blog.index');
-    }
-
     public function productUpload(Request $request)
     {
         // chk user have active package or not!
@@ -581,7 +575,7 @@ class BlogController extends Controller
 
                                             // ! New Create Media
                                 
-                                            if(isset($item[$ImageMainIndex]) && $item[$ImageMainIndex] != null){
+                                            if(isset($item[$ImageMainIndex]) && $item[$ImageMainIndex] != null`){
                                                 $media = new Media();
                                                 $media->tag = "Product_Image";
                                                 $media->file_type = "Image";
@@ -2196,3 +2190,4 @@ class BlogController extends Controller
 
       
 }
+`

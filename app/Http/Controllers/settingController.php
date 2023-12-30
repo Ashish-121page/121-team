@@ -10,6 +10,7 @@ use App\Models\CustomFields;
 use App\User;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Panel\ProductAttributeController;
 
 class settingController extends Controller
 {
@@ -208,11 +209,17 @@ class settingController extends Controller
         return view('panel.settings.admin.edit-template',compact('template'));
     }
 
+    function addDetails(Request $request){
+
+        return view('panel.settings.pages.add-detais');
+    }
+
 
 
     public function customfields(Request $request) {
 
-        magicstring($request->all());
+        // echo "Original Request";
+        // magicstring($request->all());
 
         try {
 
@@ -227,125 +234,176 @@ class settingController extends Controller
                 'attr_section' => 'required',
             ]);
 
-            $uniquie_id = generateRandomStringNative(10)."_CustomField";
-            if ($request->get('data_type') == 'multi_select') {
-                $type = 'select';
-                $extra = 'multiple';
-            } else {
-                $type = $request->get('data_type','text');
-                $extra = '';
+            if ($request->get('attr_section',1) == 3) {
+
+                $type = 'any_value';
+                switch ($request->get('data_type')) {
+                    case 'text':
+                        $type = 'any_value';
+                        break;
+                    case 'multi_select':
+                        $type = 'dropdown';
+                        break;
+                    case 'select':
+                        $type = 'dropdown';
+                        break;
+                    case 'uom':
+                        $type = 'uom';
+                        break;
+                    default:
+                        $type = 'any_value';
+                        break;
+                }
+
+
+                $Tmp_values = [implode(",",$request->get('value'))];
+                $user_id = auth()->id();
+                $request->merge(['user_id' => $user_id, 'user_shop_id' => UserShopRecordByUserId($user_id)->id,'name' => $request->attr_name,'type' => $type,'request_from' => 'custom_fields','value' => $Tmp_values]);
+
+                $destinationController = new ProductAttributeController();
+
+                $responseRecevied = $destinationController->store($request);
+
+                if ($responseRecevied->getData()->status == 'success') {
+                    return back()->with('success',$responseRecevied->getData()->msg);
+                }
+
+                // magicstring($responseRecevied);
+                // return;
+
+            }else{
+                // echo "You Came Here to Create Custom Field";
+                // return;
+                // ` Creating Custom Field
+                $uniquie_id = generateRandomStringNative(10)."_CustomField";
+                if ($request->get('data_type') == 'multi_select') {
+                    $type = 'select';
+                    $extra = 'multiple';
+                } else {
+                    $type = $request->get('data_type','text');
+                    $extra = '';
+                }
+
+                if ($request->has('must_field')) {
+                    $must_field = 'required';
+                } else {
+                    $must_field = '';
+                }
+
+                $value = array_filter($request->get('value'),function($value) {
+                    return $value !== null && $value !== '';
+                });
+                $request['value'] = $value;
+
+                $tag = '';
+
+                switch ($request->get('data_type')) {
+                    case 'text':
+                        $tag = "<input type='text' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
+                        break;
+                    case 'long_text':
+                        $tag = "<textarea class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field></textarea>";
+                        break;
+                    case 'date':
+                        $tag = "<input type='date' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
+                        break;
+                    case 'select':
+                        $tag = "<select class='form-control' name='".$uniquie_id."'>";
+                        foreach ($value as $key => $value) {
+                            $tag .= "<option value='".$value."'>".$value."</option>";
+                        }
+                        $tag .= "</select>";
+                        break;
+                    case 'multi_select':
+                        $uniquie_id = $uniquie_id."[]";
+                        $tag = "<select class='form-control select2' name='".$uniquie_id."' multiple $must_field>";
+                        foreach ($value as $key => $value) {
+                            $tag .= "<option value='".$value."'>".$value."</option>";
+                        }
+                        $tag .= "</select>";
+                        break;
+                    case 'price':
+                        $tag = "<input type='number' min='0' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
+                        break;
+                    case 'diamension':
+                        $tag = '
+                        <div class="d-flex">
+                            <input type="text" name="'.$uniquie_id.'[length]" placeholder="length" required class="form-control" style="width:100px" '. $must_field.' >
+                            <input type="text" name="'.$uniquie_id.'[width]" placeholder="Width" required class="form-control"  style="width:100px" '. $must_field.'>
+                            <input type="text" name="'.$uniquie_id.'[height]" placeholder="Height" required class="form-control"  style="width:100px" '. $must_field.'>
+                            <select name="'.$uniquie_id.'[unit]" class="form-control" style="width:max-content" '.$must_field.'>
+                                <option value="mm">mm</option>
+                                <option value="cms">cms</option>
+                                <option value="inches">inches</option>
+                                <option value="feet">feet</option>
+                            </select>
+                        </div>';
+
+                        break;
+                    case 'uom':
+                        // $tag = "<input type='text' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
+                        $tag = '
+                        <div class="d-flex">
+                            <input type="text" name="'.$uniquie_id.'[measument]" placeholder="" required class="form-control" style="width:100px" '. $must_field.' >
+                            <select name="'.$uniquie_id.'[unit]" class="form-control" style="width:max-content" '.$must_field.'>
+                                <option value="mm">mm</option>
+                                <option value="cms">cms</option>
+                                <option value="inches">inches</option>
+                                <option value="feet">feet</option>
+                            </select>
+                        </div>';
+
+                        break;
+                    case 'url':
+                        $tag = "<input type='url' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
+                        break;
+                    case 'html':
+                        $tag = "<textarea class='form-control htmlinput' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field></textarea>";
+                        break;
+                    case 'interger':
+                        $tag = "<input type='number' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
+                        break;
+                    default:
+                        $tag = "<input type='text' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
+                        break;
+                }
+
+
+                $data = (object) array(
+                    'id' => $uniquie_id,
+                    'text' => $request->get('attr_name'),
+                    'type' => $type,
+                    'value' => ($value != null) ? implode(",",$request->get('value')) : '',
+                    'extra' => $extra,
+                    'required' => $must_field,
+                    'ref_section' => $request->get('attr_section'),
+                    'tag' => $tag,
+                );
+
+                $user = auth()->user();
+                if ($user->custom_fields != null) {
+                    $tmp = json_decode($user->custom_fields, true);
+                    array_push($tmp, $data);
+                    $record = json_encode($tmp);
+                } else {
+                    $record = json_encode([$data]);
+                }
+
+
+                $user->custom_fields = $record;
+                $user->save();
+
+
+                magicstring($data);
+                magicstring($user);
+                magicstring(request()->all());
+
+                return back()->with('success','Custom Field Added');
             }
 
-            if ($request->has('must_field')) {
-                $must_field = 'required';
-            } else {
-                $must_field = '';
-            }
-
-            $value = array_filter($request->get('value'),function($value) {
-                return $value !== null && $value !== '';
-            });
-            $request['value'] = $value;
-
-            $tag = '';
-
-            switch ($request->get('data_type')) {
-                case 'text':
-                    $tag = "<input type='text' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
-                    break;
-                case 'long_text':
-                    $tag = "<textarea class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field></textarea>";
-                    break;
-                case 'date':
-                    $tag = "<input type='date' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
-                    break;
-                case 'select':
-                    $tag = "<select class='form-control' name='".$uniquie_id."'>";
-                    foreach ($value as $key => $value) {
-                        $tag .= "<option value='".$value."'>".$value."</option>";
-                    }
-                    $tag .= "</select>";
-                    break;
-                case 'multi_select':
-                    $uniquie_id = $uniquie_id."[]";
-                    $tag = "<select class='form-control select2' name='".$uniquie_id."' multiple $must_field>";
-                    foreach ($value as $key => $value) {
-                        $tag .= "<option value='".$value."'>".$value."</option>";
-                    }
-                    $tag .= "</select>";
-                    break;
-                case 'price':
-                    $tag = "<input type='number' min='0' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
-                    break;
-                case 'diamension':
-                    $tag = '
-                    <div class="d-flex">
-                        <input type="text" name="'.$uniquie_id.'[length]" placeholder="length" required class="form-control" style="width:100px" '. $must_field.' >
-                        <input type="text" name="'.$uniquie_id.'[width]" placeholder="Width" required class="form-control"  style="width:100px" '. $must_field.'>
-                        <input type="text" name="'.$uniquie_id.'[height]" placeholder="Height" required class="form-control"  style="width:100px" '. $must_field.'>
-                        <select name="'.$uniquie_id.'[unit]" class="form-control" style="width:max-content" '.$must_field.'>
-                            <option value="mm">mm</option>
-                            <option value="cms">cms</option>
-                            <option value="inches">inches</option>
-                            <option value="feet">feet</option>
-                        </select>
-                    </div>';
-
-                    break;
-                case 'uom':
-                    // $tag = "<input type='text' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
-                    $tag = '
-                    <div class="d-flex">
-                        <input type="text" name="'.$uniquie_id.'[measument]" placeholder="" required class="form-control" style="width:100px" '. $must_field.' >
-                        <select name="'.$uniquie_id.'[unit]" class="form-control" style="width:max-content" '.$must_field.'>
-                            <option value="mm">mm</option>
-                            <option value="cms">cms</option>
-                            <option value="inches">inches</option>
-                            <option value="feet">feet</option>
-                        </select>
-                    </div>';
-
-                    break;
-                case 'url':
-                    $tag = "<input type='url' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
-                    break;
-                case 'html':
-                    $tag = "<textarea class='form-control htmlinput' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field></textarea>";
-                    break;
-                case 'interger':
-                    $tag = "<input type='number' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
-                    break;
-                default:
-                    $tag = "<input type='text' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
-                    break;
-            }
 
 
-            $data = (object) array(
-                'id' => $uniquie_id,
-                'text' => $request->get('attr_name'),
-                'type' => $type,
-                'value' => ($value != null) ? implode(",",$request->get('value')) : '',
-                'extra' => $extra,
-                'required' => $must_field,
-                'ref_section' => $request->get('attr_section'),
-                'tag' => $tag,
-            );
 
-            $user = User::find(auth()->id());
-            if ($user->custom_fields != null) {
-                $tmp = json_decode($user->custom_fields, true);
-                array_push($tmp, $data);
-                $record = json_encode($tmp);
-            } else {
-                $record = json_encode([$data]);
-            }
-
-
-            $user->custom_fields = $record;
-            $user->save();
-
-            return back()->with('success','Custom Field Added');
 
         } catch (\Throwable $th) {
             throw $th;
@@ -514,7 +572,7 @@ class settingController extends Controller
             foreach ($CustomFieldsTableRecord as $key => $record) {
                 $record->delete();
             }
-            
+
             return back()->with('success','Custom Field Removed');
         } catch (\Throwable $th) {
             throw $th;

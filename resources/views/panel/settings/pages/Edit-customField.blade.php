@@ -25,7 +25,7 @@
 
                     <div class="form-group mb-3">
                         <label for="custattr_section" class="form-label">Section <span class="text-danger">*</span> </label>
-                        <select name="attr_section" class="select2 form-control" id="custattr_section" required>
+                        <select name="attr_section" class="form-control" id="custattr_section" required readonly disabled>
                             <option value="1">Product Info > Essentials</option>
                             <option value="2">Product Info > Sale Price</option>
                             <option value="3">Product Info > Property</option>

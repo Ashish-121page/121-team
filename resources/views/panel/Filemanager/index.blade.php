@@ -141,7 +141,7 @@
                                 @forelse ($filetypes as $item)
                                     <option value="{{ $item }}" @if (request()->get('file_type') == $item) selected @endif>{{ $item }}</option>
                                 @empty
-                                    <option>No Files are Exist</option>
+                                    <option>No Files Exist</option>
                                 @endforelse
                             </select>
 
@@ -690,7 +690,6 @@
                 });
             }
 
-
         </script>
         <script>
             $(document).ready(function () {
@@ -705,8 +704,7 @@
                     changeColor($(this).attr("data-color"));
                 });
 
-                readycolor()
-
+                readycolor();
 
                 $("#downloadimage").click(function (e) {
                     e.preventDefault();
@@ -745,6 +743,8 @@
                     $("#editpreviewimage").addClass('d-none');
                     $(".needhidemodal").addClass('invisible');
                     $("#editpreviewimage").attr('src','');
+                    $(".spinner-box").addClass('d-none');
+                    $(".needhidemodal").removeClass('invisible');
 
                     // $("#removebgbtn").click();
 
@@ -758,6 +758,9 @@
 
                     $(".savebtn").addClass('d-none');
                     $("#downloadimage").removeClass('d-none');
+                    $(".spinner-box").removeClass('d-none');
+                    $(".needhidemodal").addClass('invisible');
+
                     $.ajax({
                         type: "POST",
                         url: "{{ route('panel.image.removebg') }}",

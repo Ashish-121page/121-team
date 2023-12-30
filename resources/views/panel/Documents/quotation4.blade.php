@@ -39,7 +39,9 @@
                 white-space: nowrap;
             }
 
-
+            .sdeds {
+                display: none
+            }
 
             .input-group {
                 display: flex;
@@ -56,329 +58,312 @@
                         <button class="btn btn-secondary" onclick="goBack()" type="button">
                             <i class="fas fa-chevron-left"></i>
                         </button>
-                        <h5 class="ms-3 mt-5 mb-0" style="margin-left: 30px !important;">Quotation-231</h5>
+                        <h5 class="ms-3 mt-5 mb-0" style="margin-left: 30px !important;">{{ $QuotationRecord->slug }}</h5>
                     </div>
 
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6">                
-              <div class="two" style="display: flex; align-items: center; justify-content: flex-end;">
-                  <div class="form-group w-100" style="margin-bottom: 0rem; display: flex; justify-content: flex-end;">
-                      <div class=" d-flex align-items-end">
+            <div class="col-lg-6 col-md-6">
+                <div class="two" style="display: flex; align-items: center; justify-content: flex-end;">
+                    <div class="form-group w-100" style="margin-bottom: 0rem; display: flex; justify-content: flex-end;">
+                        <div class=" d-flex align-items-end">
 
-                       
-                          {{-- <div class="form-group w-100 justify-content-between" style="display: flex; align-items: center;">
+
+                            {{-- <div class="form-group w-100 justify-content-between" style="display: flex; align-items: center;">
                               <button class="btn btn-primary" type="button" id="#9uou">
                                   <span class="bi bi-currency-dollar">$</span>
                               </button>
                           </div> --}}
-                      </div>
-                      <div class="form-group w-100 justify-content-between" style="display: flex; align-items: center;">
-                        <label for="currency" class="control-label">Currency</label>
-                        <div class="input-group mb-3" style="margin-left:40px; width:100%;">
-                          <!-- <input type="number" class="form-control" style="width:25%"  id="gst" value="" aria-label="currency" aria-describedby="currencySelect"> -->
-                          <select class="form-select2 w-100" style="width:45%; background-color: #f3f3f3" id="currencySelect" aria-label="Currency">
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                            <option value="GBP">GBP</option>  
-                            <option value="GBP">INR</option>              
-                          </select>
                         </div>
-                        <!-- <input class="form-control" style="width:70%;" name="gst" type="text" id="gst" value=""> -->
-                      </div>
-                    
-                      <div class="dropdown">
-                          <button class="btn btn-outline-primary dropdown-toggle mx-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                              Add more products
-                          </button>                          
-                      </div>
-                      <button class="btn btn-outline-success mx-1" type="button" aria-expanded="false" data-bs-toggle="modal" data-bs-target="#AttriModal">
-                          Customize Table
-                      </button>
-                      <button class="btn btn-dark mx-1" type="button" aria-expanded="false">
-                          Save quotation
-                      </button>
-                  </div>
-                  
-              </div>
+                        <div class="form-group w-100 justify-content-between" style="display: flex; align-items: center;">
+                            <label for="currency" class="control-label">Currency</label>
+                            <div class="input-group mb-3" style="margin-left:40px; width:100%;">
+                                <!-- <input type="number" class="form-control" style="width:25%"  id="gst" value="" aria-label="currency" aria-describedby="currencySelect"> -->
+                                <select class="form-control select2 w-100" style="width:45%; background-color: #f3f3f3"
+                                    id="currencySelect" aria-label="Currency">
+                                    <option value="INR" selected>INR</option>
+                                    <option value="GBP">GBP</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                </select>
+                            </div>
+                            <!-- <input class="form-control" style="width:70%;" name="gst" type="text" id="gst" value=""> -->
+                        </div>
+
+                        <div class="dropdown">
+                            <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $QuotationRecord->id }}"
+                                class="btn btn-outline-primary mx-1">
+                                Add more products
+                            </a>
+                        </div>
+                        <a href="#" class="btn btn-outline-success mx-1" role="button" aria-expanded="false"
+                            data-bs-toggle="modal" data-bs-target="#AttriModal">
+                            Customize Table
+                        </a>
+                        <a href="#" class="btn btn-dark mx-1" aria-expanded="false" id="saveQuote">
+                            Save quotation
+                        </a>
+                        <a href="{{ route('panel.Documents.quotationpdf') }}?typeId={{  $QuotationRecord->id }}" class="btn btn-outline-dark mx-1" aria-expanded="false" id="saveQuote">
+                            Print PDF
+                        </a>
+                    </div>
+
+                </div>
             </div>
         </div>
-          
-        
+
+
         <div class="row mt-3 text-muted mx-3" style="">
-            <p> 3 Products added
-            </p>
+            <p> {{ $QuotationItems->count() }} Products added </p>
 
         </div>
         <div class="row mt-3">
             <div class="col-lg-12 ">
                 <div class="table-responsive">
-                    <table class="table ">
-                        <thead>
-                            <tr>
-                                <th><input type="checkbox" aria-label="Checkbox for following text input"></th>
-                                <!-- Checkbox header -->
-                                <th>Image</th>
-                                <th>Product ID</th>
-                                <th>Variant ID</th>
-                                <th>COO</th>
-                                <th colspan="3">Selling Price</th>
-                                <th>New Head</th> <!-- Your new header -->
-                            </tr>
-                            <tr>
-                                <th></th>
-                                <th></th> <!-- Image sub-header -->
-                                <th></th> <!-- Product ID sub-header -->
-                                <th></th> <!-- Variant ID sub-header -->
-                                <th></th> <!-- COO sub-header -->
-                                <th>Currency</th>
-                                <th>Price</th>
-                                <th>Unit</th>
-                                <th></th> <!-- New Head sub-header -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="sticky-col first-col"><input type="checkbox"><span
-                                        style="margin-left: 10px;">1</span></td>
-                                <td class="sticky-col second-col">T-28158</td>
-                                <td class="sticky-col third-col"></td>
-                                <td><input type="text" class="form-control" style="width:60%"></td>
-                                <td></td>
-                                <td>USD</td>
-                                <td>15.25</td>
-                                <td>per piece</td>
-                                <td></td>
-
-
-                                {{-- <td class="sticky-col thirteenth-col">$0</td> --}}
-                            </tr>
-                            <tr>
-                                <td class="sticky-col first-col"><input type="checkbox"><span
-                                        style="margin-left: 10px;">2</span></td>
-                                <td class="sticky-col second-col">G-3900928</td>
-                                <td class="sticky-col third-col"></td>
-                                <td><input type="text" class="form-control" style="width:60%"></td>
-                                <td></td>
-                                <td><input type="text" class="form-control" style="width:60%"></td>
-
-                                {{-- <td class="sticky-col thirteenth-col">$0</td> --}}
-                            </tr>
-                            <tr>
-                                <td class="sticky-col first-col"><input type="checkbox"><span
-                                        style="margin-left: 10px;">3</span></td>
-                                <td class="sticky-col second-col">R-8158</td>
-                                <td class="sticky-col third-col"></td>
-                                <td><input type="text" class="form-control" style="width:60%"></td>
-                                <td></td>
-                                <td><input type="text" class="form-control" style="width:60%"></td>
-
-                                {{-- <td class="sticky-col thirteenth-col">$0</td> --}}
-                            </tr>
-                            <!-- Repeat rows as needed -->
-                        </tbody>
-                    </table>
+                    @include('panel.Documents.pages.Product-Table')
                 </div>
             </div>
         </div>
 
 
         <div class="row mt-3 justify-content-start">
-          <div class="col-lg-5 col-md-5 d-flex align-items-center">
-              <input type="text" class="form-control" placeholder="Add remarks here">
-              {{-- <button class="btn btn-primary mx-2 ms-2">Edit</button> --}}
-          </div>
-      </div>
-
-
-    </div>
-    {{-- offcanvas --}}  
-    {{-- <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCurrency" aria-labelledby="offcanvasCurrencyLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasCurrencyLabel">Convert Currency</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div> --}}
-        {{-- <div class="offcanvas-body">
-            <!-- Typeable select menu (using Bootstrap 5's custom select) -->
-            <input class="form-control" list="currencyList" id="currencyInput" placeholder="Type to search...">
-            <datalist id="currencyList">
-                <option value="USD">United States Dollar</option>
-                <option value="EUR">Euro</option>
-                <option value="JPY">Japanese Yen</option> 
-                <!-- Add other currencies as needed -->
-            </datalist>
-        </div> --}}
-    </div>
-
-
-    {{-- modal --}}
-
-    <div class="modal fade" id="AttriModal" tabindex="-1" aria-labelledby="AttriModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="background-color:#ffff; max-width:1300px !important;">
-            <div class="modal-content" style="margin-top:0%;">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="AttriModalLabel">Select Attributes</h1>
-                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-                </div>
-                <div class="modal-body">
-                    <div class="col-md-6 col-12 my-3" style="overflow: auto; max-height: 80vh">
-                        <span style="margin-top: -10px;">
-                            <i class="ik ik-info fa-2x text-warning ml-2 remove-ik-class"
-                                title="These Values will be Updated on All selected Products"></i>
-                        </span>
-                        <!-- All Attributes -->
-                        <div class="table-responsive" style="max-height:40vh; overflow:hidden;overflow-y:auto;">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Property</th>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col">
-                                            <div class="form-group w-100" style="margin-bottom:0rem">
-                                                <input type="checkbox" id="check_all" class=" m-2">
-                                                <label for="check_all"
-                                                    style="font-size: 12.8px; font-family:Nunito Sans, sans-serif;font-weight:700;user-select: none;">Select
-                                                    All</label>
-                                            </div>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td scope="row">
-                                            <div class="form-group h-100"
-                                                style="cursor: pointer; margin-bottom:0rem!important;">
-                                                <input type="checkbox" value=" id="" class="my_attribute d-none mx-1"
-                                                    name="myfields[]" data-index="">
-                                                <label for="attri_" class="form-label w-100 h-100"
-                                                    style="font-size: 12.8px;font-family:Nunito Sans, sans-serif; user-select: none;">Attribute
-                                                    1 </label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td scope="row">
-                                            <div class="form-group h-100"
-                                                style="cursor: pointer; margin-bottom:0rem!important;">
-                                                <input type="checkbox" value="" id="attri_"
-                                                    class="my_attribute d-none mx-1" name="myfields[]" data-index="">
-                                                <label for="attri_" class="form-label w-100 h-100"
-                                                    style="font-size: 12.8px;font-family:Nunito Sans, sans-serif; user-select: none;">Attribute
-                                                    2 </label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td scope="row">
-                                            <div class="form-group h-100"
-                                                style="cursor: pointer; margin-bottom:0rem!important;">
-                                                <input type="checkbox" value="" id="attri_"
-                                                    class="my_attribute d-none mx-1" name="myfields[]" data-index="">
-                                                <label for="attri_" class="form-label w-100 h-100"
-                                                    style="font-size: 12.8px;font-family:Nunito Sans, sans-serif; user-select: none;">Attribute
-                                                    3 </label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td scope="row">
-                                            <div class="form-group h-100"
-                                                style="cursor: pointer; margin-bottom:0rem!important;">
-                                                <input type="checkbox" value="" id="attri_ class="my_attribute
-                                                    d-none mx-1" name="myfields[]" data-index="">
-                                                <label for="attri_ class="form-label w-100 h-100"
-                                                    style="font-size: 12.8px;font-family:Nunito Sans, sans-serif; user-select: none;">Attribute
-                                                    4 </label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td scope="row">
-                                            <div class="form-group">
-                                                <!-- <label for="attri_1" class="form-label w-100 h-100" style="font-size: large;user-select: none;">System Under Upgrade Try Again Later.</label> -->
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="modal-footer d-flex justify-content-between">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary ml-auto">Proceed</button>
-                </div>
-
-
+            <div class="col-lg-5 col-md-5 d-flex align-items-center">
+                <input type="text" class="form-control" placeholder="Add remarks here" id="Quotation-additional_notes" value="{{ $QuotationRecord->additional_notes ?? '' }}">
+                {{-- <button class="btn btn-primary mx-2 ms-2">Edit</button> --}}
             </div>
         </div>
+
+
     </div>
+    </div>
+z
+    {{-- Including Modal --}}
+    @include('panel.Documents.modals.SelectAttribute')
+
 
     <script src="{{ asset('backend/js/index-page.js') }}"></script>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
     <script src="{{ asset('backend/plugins/jquery.repeater/jquery.repeater.min.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-        <script src="{{asset('backend/plugins/mohithg-switchery/dist/switchery.min.js') }}"></script>
-        <script src="{{asset('backend/js/form-advanced.js') }}"></script>
-        <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  $(document).ready(function () {
-    $("#9uou").click(function (e) {
-        e.preventDefault();
-        var url = $(this).attr('href');
-        var msg = "<div class='offcanvas-body'><input class='form-control' list='currencyList' id='currencyInput' placeholder='Type to search...'><datalist id='currencyList'><option value='USD'>United States Dollar</option><option value='EUR'>Euro</option><option value='JPY'>Japanese Yen</option></datalist></div>";
-        
-        $.confirm({
-            draggable: true,
-            title: ' Buyer Search',
-            content: msg,
-            type: 'blue',
-            typeAnimated: true,
-            buttons: {
-                tryAgain: {
-                    text: 'Proceed',
-                    btnClass: 'btn-primary',
-                    // action: function () {
-                    //     // Redirect to the second view route
-                    //     window.location.href = "{{ route('panel.Documents.secondview') }}";
-                    // }
-                },
-                close: function () {
-                    // Additional action if needed upon dialog close
-                }
-            }
-        });
-    });
-
-
-
-      
-      // $(function () {
-      //   $("#mybro").select2()
-      // });
-
-      
-
-
-      
-  });
-  
-</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.js') }}"></script>
+    <script src="{{ asset('backend/js/form-advanced.js') }}"></script>
+    <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // function proceedTothirdView() {
-        //     // Redirect to the route for second view
-        //     window.location.href = "{{ route('panel.Documents.thirdview') }}";
-        // }
+        $(document).ready(function() {
+            $("#9uou").click(function(e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+                var msg =
+                    "<div class='offcanvas-body'><input class='form-control' list='currencyList' id='currencyInput' placeholder='Type to search...'><datalist id='currencyList'><option value='USD'>United States Dollar</option><option value='EUR'>Euro</option><option value='JPY'>Japanese Yen</option></datalist></div>";
 
+                $.confirm({
+                    draggable: true,
+                    title: ' Buyer Search',
+                    content: msg,
+                    type: 'blue',
+                    typeAnimated: true,
+                    buttons: {
+                        tryAgain: {
+                            text: 'Proceed',
+                            btnClass: 'btn-primary',
+                            // action: function () {
+                            //     // Redirect to the second view route
+                            //     window.location.href = "{{ route('panel.Documents.secondview') }}";
+                            // }
+                        },
+                        close: function() {
+                            // Additional action if needed upon dialog close
+                        }
+                    }
+                });
+            });
+
+
+
+
+            // $(function () {
+            //   $("#mybro").select2()
+            // });
+
+
+
+
+
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // $("#AttriModal").modal('show');
+
+            $(".choosefields").change(function(e) {
+                e.preventDefault();
+                // $.alert("Hello ji"+$(this).attr('id'))
+                let id = $(this).attr('id').split('-')[1];
+                $(".Change-" + id).toggleClass("d-none");
+            });
+
+
+            $("#select-All-Default").click(function(e) {
+                e.preventDefault();
+                $(".choosefields").attr('checked', true);
+                $(this).attr('checked', true);
+
+                getAllCheckedCheckboxes()
+
+            });
+
+
+            function getAllCheckedCheckboxes() {
+                var checkedCheckboxes = [];
+                $(".choosefields:checked").each(function() {
+                    checkedCheckboxes.push($(this).val());
+                    let id = $(this).attr('id').split('-')[1];
+                    $(".Change-" + id).toggleClass("d-none");
+                });
+                var table = document.getElementById('sdhfidsj');
+                tableToJson(table);
+                // return checkedCheckboxes;
+            }
+
+            getAllCheckedCheckboxes();
+
+        });
 
         function goBack() {
             window.history.back()
         }
     </script>
+
+
+    <script>
+        // function tableToJson(table) {
+        //     var data = [];
+
+        //     // Function to clean string
+        //     function cleanString(str) {
+        //         return str.replace(/\s+/g, ' ').trim();
+        //     }
+
+        //     // Get headers text, skip headers with class 'd-none'
+        //     var headers = [];
+        //     table.querySelectorAll('thead th:not(.d-none)').forEach(function(header, index) {
+        //         headers[index] = cleanString(header.textContent);
+        //     });
+
+        //     // Convert rows to objects, skip rows and cells with class 'd-none'
+        //     Array.from(table.querySelectorAll('tbody tr:not(.d-none)')).forEach(function(row) {
+        //         var rowData = {};
+        //         Array.from(row.querySelectorAll('td:not(.d-none)')).forEach(function(cell, index) {
+        //             if (headers[index]) {
+        //                 rowData[headers[index]] = cleanString(cell.textContent);
+        //             }
+        //         });
+        //         data.push(rowData);
+        //     });
+
+        //     return data;
+        // }
+
+
+        function tableToJson(table) {
+    var data = [];
+
+    // Function to clean string
+    function cleanString(str) {
+        return str.replace(/\s+/g, ' ').trim();
+    }
+
+    // Function to get text or select value
+    function getTextOrSelectValue(element) {
+        // Check if element is a select element
+        if (element.tagName === "SELECT") {
+            return element.options[element.selectedIndex].value;
+        }
+        return element.contentEditable === 'true' ? element.innerText : element.textContent;
+    }
+
+    // Get headers text, skip headers with class 'd-none'
+    var headers = [];
+    table.querySelectorAll('thead th:not(.d-none)').forEach(function(header, index) {
+        headers[index] = cleanString(getTextOrSelectValue(header));
+    });
+
+    // Convert rows to objects, skip rows and cells with class 'd-none'
+    Array.from(table.querySelectorAll('tbody tr:not(.d-none)')).forEach(function(row) {
+        var rowData = {};
+        Array.from(row.querySelectorAll('td:not(.d-none)')).forEach(function(cell, index) {
+            var value = cell.querySelector('select') ? getTextOrSelectValue(cell.querySelector('select')) : cleanString(getTextOrSelectValue(cell));
+            if (headers[index]) {
+                rowData[headers[index]] = value;
+            }
+        });
+        data.push(rowData);
+    });
+
+    return data;
+}
+
+        // Convert the table into JSON
+        $("#saveQuote").click(function(e) {
+            e.preventDefault();
+            var table = document.getElementById('sdhfidsj');
+            var json = tableToJson(table);
+            console.log(JSON.stringify(json));
+
+
+            $.ajax({
+                type: "POST",
+                url: "{{ route('panel.Documents.save.quotation') }}",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "data": JSON.stringify(json),
+                    "quotation_id": "{{ $QuotationRecord->id }}",
+                    "currency": $("#currencySelect").val(),
+                    "additional_notes" : $("#Quotation-additional_notes").val()
+                },
+                dataType: "json",
+                success: function(response) {
+                    console.log(response);
+                    if (response.status == 'success') {
+                        $.toast({
+                            text: response.message,
+                            showHideTransition: 'fade',
+                            icon: response.status,
+                            stack: 6,
+                            position: 'bottom-right'
+                        })
+                    }
+                },
+                error: function(error) {
+                    $.toast({
+                        text: error.message,
+                        showHideTransition: 'fade',
+                        icon: error.status,
+                        stack: 6,
+                        position: 'bottom-right'
+                    })
+                }
+            });
+        });
+
+        $("#currencySelect").change(function(e) {
+            e.preventDefault();
+            $('.currencySelect').html($(this).val());
+        });
+
+
+        $(document).ready(function() {
+            $('.priceEdit[contenteditable]').on('input', function() {
+                $(this).text($(this).text().replace(/[^0-9.]/g, ''));
+            });
+        });
+
+
+    </script>
+
 
 @endsection

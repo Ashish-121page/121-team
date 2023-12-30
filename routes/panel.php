@@ -257,22 +257,11 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::post('offer/banner', [settingController::class,'uploadbanner'])->name('upload.banner');
         Route::get('edit/Template/{template}', [settingController::class,'EditTemplate'])->name('edit.Template');
         Route::post('custom/fields', [settingController::class,'customfields'])->name('custom.fields');
+        Route::get('/add-details', [settingController::class,'addDetails'])->name('add-details');
 
         Route::post('update/custom/fields', [settingController::class,'Updatecustomfields'])->name('update.custom.fields');
         Route::get('remove/custom/fields/{fieldId}', [settingController::class,'removecustomfields'])->name('remove.custom.fields');
 
-    });
-
-
-    Route::group(['prefix' => 'constant-management/article', 'as' => 'constant_management.article.'], function () {
-        Route::get('/', [ArticleController::class,'index'])->name('index');
-        Route::any('/print', [ArticleController::class,'print'])->name('print');
-        Route::get('/create', [ArticleController::class,'create'])->name('create');
-        Route::post('/store', [ArticleController::class,'store'])->name('store');
-        Route::get('/edit/{id}', [ArticleController::class,'edit'])->name('edit');
-        Route::get('/show/{id}', [ArticleController::class,'show'])->name('show');
-        Route::post('/update/{id}', [ArticleController::class,'update'])->name('update');
-        Route::get('/delete/{id}', [ArticleController::class,'destroy'])->name('delete');
     });
 
 
@@ -308,17 +297,16 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         });
 
 
-        // Route::group(['middleware' => 'can:manage_article', 'prefix' => 'article', 'as' => 'article.'], function () {
-        // Route::group(['prefix' => 'article', 'as' => 'article.'], function () {
-        //     Route::get('/', [ArticleController::class,'index'])->name('index');
-        //     Route::any('/print', [ArticleController::class,'print'])->name('print');
-        //     Route::get('/create', [ArticleController::class,'create'])->name('create');
-        //     Route::post('/store', [ArticleController::class,'store'])->name('store');
-        //     Route::get('/edit/{id}', [ArticleController::class,'edit'])->name('edit');
-        //     Route::get('/show/{id}', [ArticleController::class,'show'])->name('show');
-        //     Route::post('/update/{id}', [ArticleController::class,'update'])->name('update');
-        //     Route::get('/delete/{id}', [ArticleController::class,'destroy'])->name('delete');
-        // });
+        Route::group(['middleware' => 'can:manage_article', 'prefix' => 'article', 'as' => 'article.'], function () {
+            Route::get('/', [ArticleController::class,'index'])->name('index');
+            Route::any('/print', [ArticleController::class,'print'])->name('print');
+            Route::get('/create', [ArticleController::class,'create'])->name('create');
+            Route::post('/store', [ArticleController::class,'store'])->name('store');
+            Route::get('/edit/{id}', [ArticleController::class,'edit'])->name('edit');
+            Route::get('/show/{id}', [ArticleController::class,'show'])->name('show');
+            Route::post('/update/{id}', [ArticleController::class,'update'])->name('update');
+            Route::get('/delete/{id}', [ArticleController::class,'destroy'])->name('delete');
+        });
         Route::group(['middleware' => 'can:manage_setting', 'prefix' => 'location', 'as' => 'location.'], function () {
             Route::get('/', [LocationController::class,'country'])->name('country');
             Route::get('/create', [LocationController::class,'create'])->name('create');
@@ -452,7 +440,6 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
             Route::post('/update/site-name/{id}', [SellerController::class,'updateSiteName'])->name('update.site-name');
             Route::get('/delete/{id}', [AccessCatalogueRequest::class,'destroy'])->name('request-delete');
             Route::get('/deleteacr/{id}',[AccessCatalogueRequest::class,'deleteacr'])->name('delete.acr');
-           
 
 
         });
@@ -538,6 +525,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
         Route::post('/update/singlecurrency', [CurrencyController::class,'update'])->name('update.single');
 
+
     });
 
 
@@ -558,6 +546,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::get('/manage-bulk', [NewBulkController::class,'updateExcelShow'])->name('manage.bulk');
         Route::post('/update-bulk-excel', [NewBulkController::class,'updateExcel'])->name('update.bulk.excel');
         // ` Update Bulk Excel For Users Upload Admin End
+
     });
 
 
@@ -567,7 +556,9 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     });
 
     Route::group(['middleware' => 'auth', 'namespace' => 'panel', 'prefix' => '/image', 'as' => 'image.'], function () {
-        Route::any('/removebg',[ImageController::class,'removeBg'])->name('removebg');
+        Route::any('/Image-studio/{file_path}',[ImageController::class,'photoStudio'])->name('studio');
+
+        Route::post('/removebg',[ImageController::class,'removeBg'])->name('removebg');
         Route::any('/changebg',[ImageController::class,'changebg'])->name('changebg');
         Route::post('/crop/image',[ImageController::class,'cropimage'])->name('crop.image');
 

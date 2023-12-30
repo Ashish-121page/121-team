@@ -1,5 +1,7 @@
 <?php
 namespace App\Http\Controllers;
+
+use App\Http\Controllers\Panel\FileManager;
 use App\Models\Category;
 use App\Models\Country;
 use App\Models\Group;
@@ -16,6 +18,7 @@ use App\Models\UserCurrency;
 use App\Models\UserShop;
 use App\Models\UserShopItem;
 use App\Models\Usertemplates;
+use App\Models\CustomFields;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -32,6 +35,7 @@ use PhpParser\Node\Expr\Cast\Object_;
 use PhpParser\Node\Stmt\Return_;
 use Psy\TabCompletion\Matcher\ObjectMethodDefaultParametersMatcher;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+
 use ZipArchive;
 
 
@@ -113,7 +117,7 @@ class NewBulkController extends Controller
         $SizeIndex = $col_list->{'Size'};
         // $SamepleAvailableIndex = $col_list->{'Sample / Stock available'};
         $SKUTypeIndex = $col_list->{'SKU Type'};
-        $TitleIndex = $col_list->{'Product name'};
+        $TitleIndex = $col_list->{'Product_name'};
         $VideoURLIndex = $col_list->{'Video URL'};
         $CustomerPriceIndex = $col_list->{'Customer_Price_without_GST'};
         $VIPPriceIndex = $col_list->{'Shop_Price_VIP_Customer'};
@@ -121,16 +125,16 @@ class NewBulkController extends Controller
         $MRPIndex = $col_list->{'mrpIncl tax'};
         $HSNTaxIndex = $col_list->{'HSN Tax'};
         $HSNPercentageIndex = $col_list->{'HSN_Percnt'};
-        $CollectionYearIndex = $col_list->{'Theme / Collection Year'};
-        $SampleYearIndex = $col_list->{'Sample Year'};
-        $SampleMonthIndex = $col_list->{'Sample Month'};
-        $SampleTimeIndex = $col_list->{'Sampling time'};
+        $CollectionYearIndex = $col_list->{'Theme_Collection_Year'};
+        $SampleYearIndex = $col_list->{'Sample_Year'};
+        $SampleMonthIndex = $col_list->{'Sample_Month'};
+        $SampleTimeIndex = $col_list->{'Sampling_time'};
         $CBMIndex = $col_list->{'CBM'};
         $ProductionTimeIndex = $col_list->{'Production time (days)'};
         $MBQIndex = $col_list->{'MBQ'};
         $MBQ_unitsIndex = $col_list->{'MBQ_units'};
-        $SourcingYearIndex = $col_list->{'Sourcing Year'} ;
-        $SourcingMonthIndex = $col_list->{'Sourcing month'};
+        $SourcingYearIndex = $col_list->{'Sourcing_Year'} ;
+        $SourcingMonthIndex = $col_list->{'Sourcing_month'};
         $StandardCartonIndex =$col_list->{'standard_carton_pcs'};
         $CartonWeightIndex =$col_list->{'carton_weight_actual'};
         $CartonUnitIndex =$col_list->{'unit'};
@@ -150,18 +154,18 @@ class NewBulkController extends Controller
         $Tag1Index = $col_list->{'Search keywords'};
         $artwork_urlIndex = $col_list->{'artwork_url'};
         $DescriptionIndex = $col_list->{'description'};
-        $ExclusiveBuyerNameIndex = $col_list->{'Exclusive Buyer Name'};
-        $Collection_NameIndex = $col_list->{'Theme / Collection Name'};
-        $SeasonMonthIndex = $col_list->{'Season / Month'};
-        $vendor_sourced_fromIndex = $col_list->{'Vendor Sourced from'};
-        $vendor_priceIndex = $col_list->{'Vendor price'};
-        $product_cost_unitIndex = $col_list->{'Product Cost_Unit'};
-        $vendor_currencyIndex = $col_list->{'Vendor currency'};
-        $sourcing_yearIndex = $col_list->{'Sourcing Year'};
+        $ExclusiveBuyerNameIndex = $col_list->{'Exclusive_Buyer_Name'};
+        $Collection_NameIndex = $col_list->{'Theme_Collection_Name'};
+        $SeasonMonthIndex = $col_list->{'Season_Month'};
+        $vendor_sourced_fromIndex = $col_list->{'Vendor_Sourced_from'};
+        $vendor_priceIndex = $col_list->{'Vendor_price'};
+        $product_cost_unitIndex = $col_list->{'Product_Cost_Unit'};
+        $vendor_currencyIndex = $col_list->{'Vendor_currency'};
+        $sourcing_yearIndex = $col_list->{'Sourcing_Year'};
         $VariationAttributesIndex = $col_list->{'Variation attributes'};
-        $ProductGroupIdIndex = $col_list->{'Group ID'};
+        $ProductGroupIdIndex = $col_list->{'Group_ID'};
         $RemarkIndex = $col_list->{'Remarks'};
-        $BrandNameIndex = $col_list->{'Brand Name'};
+        $BrandNameIndex = $col_list->{'Brand_Name'};
         $SellingPriceUnitIndex = $col_list->{'Selling Price_Unit'};
         // ` Image Indexig
         $ImageMainIndex = $col_list->{'Image_main'};
@@ -2262,38 +2266,230 @@ class NewBulkController extends Controller
     }
 
 
-    public function ProductSheetExport(Request $request,User $user_id)
-    {
+    // public function ProductSheetExport(Request $request,User $user_id)
+    // {
+    //     // Fetch All attriubutes
+    //     $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
+    //     $custom_attributes = (array) json_decode($user_id->custom_attriute_columns) ?? ['Colours','Size','Material'];
+    //     $custom_fields = (array) json_decode($user_id->custom_fields) ?? [];
+    //     $Export_columns = [];
+
+    //     // Getting sections custom Inputs Columns
+    //     $custom_col1 = [];
+    //     $custom_col4 = [];
+    //     $custom_col5 = [];
+
+
+    //     foreach ($custom_fields as $index => $custom_field) {
+    //         if ($custom_field->ref_section == 1) {
+    //             array_push($custom_col1,$custom_field->text);
+    //         }
+
+    //         if ($custom_field->ref_section == 4) {
+    //             array_push($custom_col4,$custom_field->text);
+    //         }
+
+    //         if ($custom_field->ref_section == 5) {
+    //             array_push($custom_col5,$custom_field->text);
+    //         }
+    //     }
+
+    //     $default_attribute['custom_input_1'] = $custom_col1;
+    //     $default_attribute['custom_input_4'] = $custom_col4;
+    //     $default_attribute['custom_input_5'] = $custom_col5;
+
+
+    //     foreach ($default_attribute as $key => $valueArr) {
+    //         foreach ($valueArr as $key => $value) {
+    //             array_push($Export_columns,$value);
+    //         }
+    //     }
+
+    //     // Merging All attributes
+    //     $merged_array = array_merge($Export_columns,$custom_attributes);
+
+    //     ini_set('max_execution_time', 0);
+    //     ini_set('memory_limit', '4000M');
+    //     try {
+    //         $spreadSheet = new Spreadsheet();
+    //         $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+    //         $spreadSheet->getActiveSheet()->fromArray($merged_array,null,'A3');
+    //         $Excel_writer = new Xls($spreadSheet);
+
+    //         $mytime = Carbon::now();
+    //         $user = auth()->user();
+    //         $fileName = "$user->name Exported Data-".$mytime->toDateTimeString();
+
+    //         header('Content-Type: application/vnd.ms-excel');
+    //         header("Content-Disposition: attachment;filename=$fileName.xls");
+    //         header('Cache-Control: max-age=0');
+    //         ob_end_clean();
+    //         $Excel_writer->save('php://output');
+    //         exit();
+    //     } catch (Exception $e) {
+    //         $response = ['msg'=> "Error While Creating Excel File.. Try Again Later."];
+    //         return $response;
+    //     }
+    //     return back()->with('success',"Download Started !!");
+    // }
+
+
+
+    public function ProductSheetExport(Request $request,User $user_id){
         // Fetch All attriubutes
-        $default_attribute = (array) json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
+        $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
         $custom_attributes = (array) json_decode($user_id->custom_attriute_columns) ?? ['Colours','Size','Material'];
+        $custom_fields = (array) json_decode($user_id->custom_fields) ?? [];
+        $Export_columns = [];
+
+        // Getting sections custom Inputs Columns
+        $custom_col1 = [];
+        $custom_col4 = [];
+        $custom_col5 = [];
+
+
+
+        // return;
+
+        foreach ($custom_fields as $index => $custom_field) {
+            if ($custom_field->ref_section == 1) {
+                array_push($custom_col1,$custom_field->text);
+            }
+
+            if ($custom_field->ref_section == 4) {
+                array_push($custom_col4,$custom_field->text);
+            }
+
+            if ($custom_field->ref_section == 5) {
+                array_push($custom_col5,$custom_field->text);
+            }
+        }
+
+        $default_attribute['custom_input_1'] = $custom_col1;
+        $default_attribute['custom_input_4'] = $custom_col4;
+        $default_attribute['custom_input_5'] = $custom_col5;
+
+
+        foreach ($default_attribute as $key => $valueArr) {
+            foreach ($valueArr as $key => $value) {
+                array_push($Export_columns,$value);
+            }
+        }
 
         // Merging All attributes
-        $merged_array = array_merge(array_keys($default_attribute),$custom_attributes);
+        $merged_array = array_merge($Export_columns,$custom_attributes);
+        $FirstSheetName = "Entry Sheet";
+        $SecondSheetName = "Data Validation Sheet";
+
+
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
         try {
+
+            $spreadsheet = new Spreadsheet();
+            $actualWorkSheet = $spreadsheet->getActiveSheet();
+            $actualWorkSheet->setTitle($FirstSheetName);
+
             $spreadSheet = new Spreadsheet();
-            $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
             $spreadSheet->getActiveSheet()->fromArray($merged_array,null,'A3');
-            $Excel_writer = new Xls($spreadSheet);
+            // Add some sample data to the Actual Work sheet
+            $actualWorkSheet->fromArray($merged_array, null, 'A3');
 
-            $mytime = Carbon::now();
-            $user = auth()->user();
-            $fileName = "$user->name Exported Data-".$mytime->toDateTimeString();
 
-            header('Content-Type: application/vnd.ms-excel');
-            header("Content-Disposition: attachment;filename=$fileName.xls");
-            header('Cache-Control: max-age=0');
-            ob_end_clean();
-            $Excel_writer->save('php://output');
-            exit();
+            // Second Worksheet for Dropdown Values
+            $dropdownSheet = $spreadsheet->createSheet();
+            $dropdownSheet->setTitle($SecondSheetName);
+
+            foreach ($custom_attributes as $key => $custom_attribute) {
+                $optionsArray = [];
+                $index = $key + 1;
+                $dropdownSheet->setCellValue([$index,'1'],$custom_attribute);
+
+                $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user_id->id)->first();
+                if ($attribute_rec == null) {
+                    $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
+                }
+
+
+                $attribute_values = ProductAttributeValue::where('parent_id',$attribute_rec->id)->pluck('attribute_value')->toArray();
+
+                $optionsArray = array_chunk($attribute_values,1);
+                $excelColumn = $this->numToExcelColumn($index);
+                $startCell = $excelColumn . '2';
+
+                $dropdownSheet->fromArray(
+                    $optionsArray,
+                    null,
+                    $startCell
+                );
+
+
+                $ActualSheetColIndex = array_search($custom_attribute, $merged_array);
+                $ActualSheetColIndex = $this->numToExcelColumn($ActualSheetColIndex + 1);
+
+                $validation = new \PhpOffice\PhpSpreadsheet\Cell\DataValidation();
+                $validation->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST);
+                $validation->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP);
+                $validation->setAllowBlank(false);
+                $validation->setShowInputMessage(true);
+                $validation->setShowErrorMessage(true);
+                $validation->setShowDropDown(true);
+                $validation->setErrorTitle('Input error');
+                $validation->setError('Value is not in the list.');
+                $validation->setPromptTitle('Pick from list');
+                $validation->setPrompt('Please pick a value from the drop-down list.');
+
+                // Corrected the formula string
+                $validation->setFormula1("'$SecondSheetName'!$" . $excelColumn . "\$2:\$" . $excelColumn . "\$" . (count($attribute_values) + 1 ));
+
+
+
+                // Apply the validation to each cell in the range A1:A100
+                for ($i = 1; $i <= 100; $i++) {
+
+                    $cellCoordinate = $ActualSheetColIndex . strval($i + 3);
+                    $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                }
+
+
+            }
+
+
+            // Prepare the response for a downloadable file
+            return new StreamedResponse(function () use ($spreadsheet) {
+                // Clear the output buffer
+                if (ob_get_contents()) ob_end_clean();
+
+                // Write the file to php://output
+                $writer = new Xlsx($spreadsheet);
+                $writer->save('php://output');
+            }, 200, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition' => 'attachment;filename="workbook_with_separate_dropdown_sheet.xlsx"',
+                'Cache-Control' => 'max-age=0',
+                // Optional: Set the content length if possible
+                //'Content-Length' => $fileSize,
+            ]);
+
         } catch (Exception $e) {
             $response = ['msg'=> "Error While Creating Excel File.. Try Again Later."];
             return $response;
         }
-        return back()->with('success',"Download Started !!");
+
     }
+
+
+    function numToExcelColumn($num) {
+        $char = '';
+        while ($num > 0) {
+            $remainder = ($num - 1) % 26;
+            $char = chr(65 + $remainder) . $char;
+            $num = floor(($num - $remainder) / 26);
+        }
+        return $char;
+    }
+
+
 
     // @ This Function Will Be USe in Admin Panel For Changeing Order of Excel Sheet
     public function updateExcelShow(Request $request) {
@@ -2709,6 +2905,10 @@ class NewBulkController extends Controller
             $unitIndex = 57;
             $artwork_urlIndex = 58;
 
+
+
+
+
             // * Start: Marging Both Array Custom And Default Attributes
             $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
             $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
@@ -2760,11 +2960,10 @@ class NewBulkController extends Controller
 
 
                 // ` Getting Custom Attribute
-
                 // checking Custom Attribute Values In database
                 if ($custom_attributes != null) {
                     foreach ($custom_attributes as $key => $custom_attribute) {
-                        echo $custom_attribute.newline();
+                        echo "Property Name: ".$custom_attribute.newline();
                         // * Getting Column Number
                         $tmp_col = $col_list->{$custom_attribute} - 1;
 
@@ -2787,10 +2986,57 @@ class NewBulkController extends Controller
                                 return back()->with("error","Oops Something Went wrong.Try again Later!!");
                             }else{
                                 $search_value = $temp_item[$tmp_col];
+
+                                // ` Converting Input value to Proper case
+                                $search_value = strtolower($search_value);
+                                $search_value = ucwords($search_value);
+
                                 $attribute_value_record = ProductAttributeValue::where('parent_id',$attribute_record->id)->where('attribute_value',$search_value)->first();
                                 if ($attribute_value_record == null) {
-                                    return back()->with('error',"$search_value Does Not Exist in $custom_attribute Column  at Row $row.");
-                                }
+
+                                    // -- Making Copy of Variable
+                                    $attribute_data = $attribute_record;
+
+                                    // return back()->with('error',"$search_value Does Not Exist in $custom_attribute Column  at Row $row.");
+                                    echo newline(3);
+
+                                    if ($attribute_data->value == 'any_value') {
+                                        magicstring($search_value);
+                                        ProductAttributeValue::create([
+                                            'parent_id' => $attribute_data->id,
+                                            'user_id' => auth()->id() ?? null,
+                                            'attribute_value' => $search_value,
+                                        ]);
+                                    }elseif ($attribute_data->value == 'uom') {
+                                        $pattern_without_space = '/^(\d+)x(\d+)x(\d+)x(\w+)$/';
+                                        $pattern_decimal_without_space = '/^(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\w+)$/';
+                                        $pattern_with_space = '/^(\d+)\s*X\s*(\d+)\s*X\s*(\d+)\s*X\s*(\w+)$/';
+                                        $pattern_decimal_with_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
+
+
+                                        if (preg_match($pattern_with_space, $search_value) || preg_match($pattern_decimal_with_space, $search_value) ) {
+                                            ProductAttributeValue::create([
+                                                'parent_id' => $attribute_data->id,
+                                                'user_id' => auth()->id() ?? null,
+                                                'attribute_value' => $search_value,
+                                            ]);
+                                        }elseif (preg_match($pattern_without_space, $search_value) || preg_match($pattern_decimal_without_space, $search_value)) {
+                                            ProductAttributeValue::create([
+                                                'parent_id' => $attribute_data->id,
+                                                'user_id' => auth()->id() ?? null,
+                                                'attribute_value' => $search_value,
+                                            ]);
+                                        }
+                                        else {
+                                            $msg = "The $search_value does not match the pattern. The pattern should be L X B X H X UNIT. In column $attribute_data->name at row $row.";
+                                            return back()->with('error',$msg);
+                                        }
+                                    }else{
+                                        return back()->with('error',"$search_value Not Exist in column $attribute_data->name At Row $row");
+                                    }
+
+
+                                } // of Main IF To Check Value
                             }
 
                         }
@@ -2799,6 +3045,9 @@ class NewBulkController extends Controller
                 }
 
             }
+
+
+            // return;
 
             // ! Updating Loop
             foreach ($master as $key => $value) {
@@ -3286,41 +3535,47 @@ class NewBulkController extends Controller
             }
 
 
-            // @ Validating Loop
-                foreach ($master as $tmp_key => $tmp_item) {
-                    $row = $tmp_key+4;
-                    // magicstring($tmp_item);
 
-                    if (isset(${'Model_Code'})) {
-                        // ` Checking Model Code
-                        if ($tmp_item[${'Model_Code'}] != null && $tmp_item[${'Model_Code'}] != "") {
-                            // Checking Group Id..
-                            $checkSKU = Product::where('model_code',$tmp_item[${'Model_Code'}])->where('user_id',auth()->id())->first();
-                            if (empty($checkSKU)) {
-                                // Group Id not Match with User
-                                // Todo: Do Nothing
-                            }elseif($checkSKU->user_id != auth()->id()){
-                                // No Record found In product Need to Created New.!!
-                                return back()->with('error',"Group Id Didn't Match!!");
+
+            // @ Validating Loop
+
+                    // @ Validating Loop
+                    foreach ($master as $tmp_key => $tmp_item) {
+                        $row = $tmp_key+4;
+                        // magicstring($tmp_item);
+
+                        if (isset(${'Model_Code'})) {
+                            if ($tmp_item[${'Model_Code'}] == null) {
+                                    return back()->with('error',"ModelCode Cannot be Blank At Row $row");
+                                }
+                            // ` Checking Model Code
+                            if ($tmp_item[${'Model_Code'}] != null && $tmp_item[${'Model_Code'}] != "") {
+                                // Checking Group Id..
+                                $checkSKU = Product::where('model_code',$tmp_item[${'Model_Code'}])->where('user_id',auth()->id())->first();
+                                if (empty($checkSKU)) {
+                                    // Group Id not Match with User
+                                    // Todo: Do Nothing
+                                } elseif ($checkSKU->user_id != auth()->id()) {
+                                    // No Record found In product Need to Created New.!!
+                                    return back()->with('error',"Group Id Didn't Match!!");
+                                } elseif ($checkSKU->user_id == auth()->id()) {
+                                    // Get Product and User id is Matched
+                                    $GroupId = $checkSKU->sku;
+                                } else {
+                                    echo "Something Went Wrong!!";
+                                    return;
+                                }
+                            } else {
+                                return back()->with('error',"Model Code Should Require Add That Field at Row $row.");
                             }
-                            elseif ($checkSKU->user_id == auth()->id()) {
-                                // Get Product and User id is Matched
-                                $GroupId = $checkSKU->sku;
-                            }else{
-                                echo "Sometyhing Went Wrong!!";
-                                return;
-                            }
-                        }
-                    }else{
-                        return back()->with('error',"Model Code Should Require Add That Field.");
                     }
 
 
                     // -- Checking Product Name is null or Not
-                    if (isset(${'Product name'})) {
-                        if ($tmp_item[${'Product name'}] == null) {
-                            return back()->with('error',"Product Name Cannot be Blank At Row $row");
-                        }
+                    if (isset(${'Product_name'})) {
+                        // if ($tmp_item[${'Product_name'}] == null) {
+                        //     return back()->with('error',"Product Name Cannot be Blank At Row $row");
+                        // }
                     }
 
                     // checking Category
@@ -3406,10 +3661,10 @@ class NewBulkController extends Controller
                     }
 
                     // ` Checking Selling Price_Unit
-                    // if (isset(${'Selling Price_Unit'})) {
+                    // if (isset(${'Selling_Price_Unit'})) {
                     //     // ` Checking Customer Price
-                    //     if ($tmp_item[${'Selling Price_Unit'}] != null) {
-                    //         if (!is_numeric($tmp_item[${'Selling Price_Unit'}])){
+                    //     if ($tmp_item[${'Selling_Price_Unit'}] != null) {
+                    //         if (!is_numeric($tmp_item[${'Selling_Price_Unit'}])){
                     //             return back()->with('error',"Enter valid amount in Customer Price at Row $row");
                     //         }
                     //     }
@@ -3452,13 +3707,13 @@ class NewBulkController extends Controller
                     }
 
                     // ` Checking mrpIncl tax
-                    if (isset(${'mrpIncl tax'})) {
+                    if (isset(${'mrpIncl_tax'})) {
                         // ` Checking Customer Price
-                        if ($tmp_item[${'mrpIncl tax'}] != null) {
-                            if (!is_numeric($tmp_item[${'mrpIncl tax'}])){
+                        if ($tmp_item[${'mrpIncl_tax'}] != null) {
+                            if (!is_numeric($tmp_item[${'mrpIncl_tax'}])){
                                 return back()->with('error',"Enter valid amount in MRP Incl. tax Reseller at Row $row");
                             }
-                            $mrp = $tmp_item[${'mrpIncl tax'}];
+                            $mrp = $tmp_item[${'mrpIncl_tax'}];
                         }
                     }else{
                         $mrp = 0;
@@ -3466,10 +3721,10 @@ class NewBulkController extends Controller
 
 
                     // ` Checking HSN Tax
-                    if (isset(${'HSN Tax'})) {
+                    if (isset(${'HSN_Code'})) {
                         // ` Checking Customer Price
-                        if ($tmp_item[${'HSN Tax'}] != null) {
-                            if (!is_numeric($tmp_item[${'HSN Tax'}])){
+                        if ($tmp_item[${'HSN_Code'}] != null) {
+                            if (!is_numeric($tmp_item[${'HSN_Code'}])){
                                 return back()->with('error',"Enter valid amount HSN Tax Reseller at Row $row");
                             }
                         }
@@ -3487,9 +3742,9 @@ class NewBulkController extends Controller
 
 
                     // ` Checking Theme / COllection Year...
-                    if (isset(${'Theme / Collection Year'})) {
-                        if ($tmp_item[${'Theme / Collection Year'}] != null) {
-                            if ($tmp_item[${'Theme / Collection Year'}] >= $SampleMinYear && $tmp_item[${'Theme / Collection Year'}] <= $SampleMaxYear) {
+                    if (isset(${'Theme_Collection_Year'})) {
+                        if ($tmp_item[${'Theme_Collection_Year'}] != null) {
+                            if ($tmp_item[${'Theme_Collection_Year'}] >= $SampleMinYear && $tmp_item[${'Theme_Collection_Year'}] <= $SampleMaxYear) {
                                 // echo "Between Theme Collection Range..".newline(5);
                             }else{
                                 return back()->with('error',"Enter valid Theme / Collection Year at Row $row");
@@ -3498,9 +3753,9 @@ class NewBulkController extends Controller
                     }
 
                     // ` Checking Sourcing Year...
-                    if (isset(${'Sourcing Year'})) {
-                        if ($tmp_item[${'Sourcing Year'}] != null) {
-                            if ($tmp_item[${'Sourcing Year'}] >= $SampleMinYear && $tmp_item[${'Sourcing Year'}] <= $SampleMaxYear) {
+                    if (isset(${'Sourcing_Year'})) {
+                        if ($tmp_item[${'Sourcing_Year'}] != null) {
+                            if ($tmp_item[${'Sourcing_Year'}] >= $SampleMinYear && $tmp_item[${'Sourcing_Year'}] <= $SampleMaxYear) {
                                 // echo "Between Theme Collection Range..".newline(5);
                             }else{
                                 return back()->with('error',"Enter valid Sourcing Year at Row $row");
@@ -3509,9 +3764,9 @@ class NewBulkController extends Controller
                     }
 
                     // ` Checking Sample Year...
-                    if (isset(${'Sample Year'})) {
-                        if ($tmp_item[${'Sample Year'}] != null) {
-                            if ($tmp_item[${'Sample Year'}] >= $SampleMinYear && $tmp_item[${'Sample Year'}] <= $SampleMaxYear) {
+                    if (isset(${'Sample_Year'})) {
+                        if ($tmp_item[${'Sample_Year'}] != null) {
+                            if ($tmp_item[${'Sample_Year'}] >= $SampleMinYear && $tmp_item[${'Sample_Year'}] <= $SampleMaxYear) {
                                 // echo "Between Theme Collection Range..".newline(5);
                             }else{
                                 return back()->with('error',"Enter valid Sample Year at Row $row");
@@ -3520,9 +3775,9 @@ class NewBulkController extends Controller
                     }
 
                     // ` Checking Sample Month...
-                    if (isset(${'Sample Month'})) {
-                        if ($tmp_item[${'Sample Month'}] != null) {
-                            if (!in_array($tmp_item[${'Sample Month'}],$Months_array)) {
+                    if (isset(${'Sample_Month'})) {
+                        if ($tmp_item[${'Sample_Month'}] != null) {
+                            if (!in_array($tmp_item[${'Sample_Month'}],$Months_array)) {
                                 return back()->with('error',"Enter Valid Month in Sampling month at Row $row");
                             }
                         }
@@ -3530,9 +3785,9 @@ class NewBulkController extends Controller
 
 
                     // ` Checking Season / Month...
-                    if (isset(${'Season / Month'})) {
-                        if ($tmp_item[${'Season / Month'}] != null) {
-                            if (!in_array($tmp_item[${'Season / Month'}],$Months_array)) {
+                    if (isset(${'Season_Month'})) {
+                        if ($tmp_item[${'Season_Month'}] != null) {
+                            if (!in_array($tmp_item[${'Season_Month'}],$Months_array)) {
                                 return back()->with('error',"Enter Valid Month in Season / Month at Row $row");
                             }
                         }
@@ -3540,9 +3795,9 @@ class NewBulkController extends Controller
 
 
                     // ` Checking Sourcing month...
-                    if (isset(${'Sourcing month'})) {
-                        if ($tmp_item[${'Sourcing month'}] != null) {
-                            if (!in_array($tmp_item[${'Sourcing month'}],$Months_array)) {
+                    if (isset(${'Sourcing_month'})) {
+                        if ($tmp_item[${'Sourcing_month'}] != null) {
+                            if (!in_array($tmp_item[${'Sourcing_month'}],$Months_array)) {
                                 return back()->with('error',"Enter Valid Month in Sourcing month at Row $row");
                             }
                         }
@@ -3646,6 +3901,7 @@ class NewBulkController extends Controller
 
                         $receive_data = explode($Array_saprator,$tmp_item[$tmp_col]);
 
+
                         foreach ($receive_data as $gkey => $gvalue) {
                             $attribute_data_default = ProductAttribute::where('name',$attribute_name)->where('user_id',null)->first();
                             $attribute_data_custom = ProductAttribute::where('name',$attribute_name)->where('user_id',$user_id->id)->first();
@@ -3656,8 +3912,11 @@ class NewBulkController extends Controller
                                 $attribute_data = $attribute_data_custom;
                             }
 
+
                             $attribute_value_obj = ProductAttributeValue::where('parent_id',$attribute_data->id)->pluck('attribute_value');
                             $attribute_value = [];
+
+
 
                             foreach ($attribute_value_obj as $key => $value) {
                                 $value = strtolower($value);
@@ -3672,15 +3931,59 @@ class NewBulkController extends Controller
                             // ! checking Value Exist in Records or Not
                             if ($gvalue != '') {
                                 if (!in_array($gvalue,$attribute_value,true)) {
-                                    return back()->with('error',"$gvalue Not Exist in column $attribute_data->name At Row $row");
+
+
+                                    if ($attribute_data->value == 'any_value') {
+                                        magicstring($gvalue);
+                                        ProductAttributeValue::create([
+                                            'parent_id' => $attribute_data->id,
+                                            'user_id' => auth()->id() ?? null,
+                                            'attribute_value' => $gvalue,
+                                        ]);
+                                    }elseif ($attribute_data->value == 'uom') {
+                                        $pattern_without_space = '/^(\d+)x(\d+)x(\d+)x(\w+)$/';
+                                        $pattern_decimal_without_space = '/^(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\w+)$/';
+                                        $pattern_with_space = '/^(\d+)\s*X\s*(\d+)\s*X\s*(\d+)\s*X\s*(\w+)$/';
+                                        $pattern_decimal_with_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
+
+
+                                        if (preg_match($pattern_with_space, $gvalue) || preg_match($pattern_decimal_with_space, $gvalue) ) {
+                                            ProductAttributeValue::create([
+                                                'parent_id' => $attribute_data->id,
+                                                'user_id' => auth()->id() ?? null,
+                                                'attribute_value' => $gvalue,
+                                            ]);
+                                        }elseif (preg_match($pattern_without_space, $gvalue) || preg_match($pattern_decimal_without_space, $gvalue)) {
+                                            ProductAttributeValue::create([
+                                                'parent_id' => $attribute_data->id,
+                                                'user_id' => auth()->id() ?? null,
+                                                'attribute_value' => $gvalue,
+                                            ]);
+                                        }
+                                        else {
+                                            $msg = "The $gvalue does not match the pattern. The pattern should be L X B X H X UNIT. In column $attribute_data->name at row $row.";
+                                            return back()->with('error',$msg);
+                                        }
+                                    }else{
+                                        return back()->with('error',"$gvalue Not Exist in column $attribute_data->name At Row $row");
+                                    }
                                 }
                             }
+
+
+
+
+
 
                         }
                     }
 
                 }
+
+
+            // return;
             // @ End of Validating Loop
+
 
             $modalArray = [];
             $SKUArray = [];
@@ -3694,6 +3997,7 @@ class NewBulkController extends Controller
 
                     $myTmp_array = [];
                     $Productids_array = [];
+
 
 
                     // ` Checking Up Values of Attribute Variation Column
@@ -3777,8 +4081,8 @@ class NewBulkController extends Controller
                     }
 
 
-                    if (isset(${'Search keywords'})) {
-                        $search_keywords = $item[${'Search keywords'}];
+                    if (isset(${'Search_keywords'})) {
+                        $search_keywords = $item[${'Search_keywords'}];
                     }else{
                         $search_keywords = '';
                     }
@@ -3790,8 +4094,8 @@ class NewBulkController extends Controller
                         $exclusive_item = 'No';
                     }
 
-                    if (isset(${'Selling Price_Unit'})) {
-                        $SellingPrice_Unit = $item[${'Selling Price_Unit'}];
+                    if (isset(${'Selling_Price_Unit'})) {
+                        $SellingPrice_Unit = $item[${'Selling_Price_Unit'}];
                     }else{
                         $SellingPrice_Unit = '';
                     }
@@ -3948,7 +4252,7 @@ class NewBulkController extends Controller
                                         array_push($modalArray,$item[${'Model_Code'}]);
                                         array_push($SKUArray,$sku_code);
                                     }
-                                    $unique_slug  = getUniqueProductSlug($item[${'Product name'}]);
+                                    $unique_slug  = getUniqueProductSlug($item[${'Product_name'}]);
                                     // - Start Uploading Product....
                                     // Todo: Checking Product Exist in Database or Not..
                                     $product_chk = Product::where('sku',$sku_code)->get();
@@ -3992,7 +4296,7 @@ class NewBulkController extends Controller
 
 
                                     $product_obj =  [
-                                        'title' => ($product_exist != null && $item[${'Product name'}] == null) ? $product_exist->title : $item[${'Product name'}],
+                                        'title' => ($product_exist != null && $item[${'Product_name'}] == null) ? $product_exist->title : $item[${'Product_name'}],
                                         'model_code' => ($product_exist != null && $item[${'Model_Code'}] == null) ? $product_exist->model_code : $item[${'Model_Code'}],
                                         'category_id' => ($product_exist != null && $Category_id == '') ? $product_exist->category_id : $Category_id,
                                         'sub_category' => ($product_exist != null && $sub_category_id == '') ? $product_exist->sub_category : $sub_category_id,
@@ -4010,19 +4314,54 @@ class NewBulkController extends Controller
                                         'is_publish' => 1,
                                         'price' => $price ?? 0,
                                         'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}],
-                                        'hsn' => ($product_exist != null && $item[${'HSN Tax'}] == '') ? $product_exist->hsn : $item[${'HSN Tax'}] ?? null,
+                                        'hsn' => ($product_exist != null && $item[${'HSN_Code'}] == '') ? $product_exist->hsn : $item[${'HSN_Code'}] ?? null,
                                         'hsn_percent' => ($product_exist != null && $item[${'HSN_Percnt'}] == '') ? $product_exist->hsn_percent : $item[${'HSN_Percnt'}] ?? null,
-                                        'mrp' => ($product_exist != null && $item[${'mrpIncl tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl tax'}]),
+                                        'mrp' => ($product_exist != null && $item[${'mrpIncl_tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl_tax'}]),
                                         'video_url' => ($product_exist != null && $item[${'Video URL'}] == '') ? $product_exist->video_url : $item[${'Video URL'}],
-                                        'search_keywords' => ($product_exist != null && $item[${'Search keywords'}] == '') ? $product_exist->tag1 : $item[${'Search keywords'}],
+                                        'search_keywords' => ($product_exist != null && $item[${'Search_keywords'}] == '') ? $product_exist->tag1 : $item[${'Search_keywords'}],
                                         'artwork_url' => $item[${'artwork_url'}] ?? null,
                                         'exclusive' => (in_array($item[${'Copyright/ Exclusive item'}],$allowed_array)) ? 1 : 0 ?? 0,
                                         'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
-                                        'SellingPriceUnitIndex' => $item[${'Selling Price_Unit'}] ?? '',
+                                        'SellingPriceUnitIndex' => $item[${'Selling_Price_Unit'}] ?? '',
                                         // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
                                     ];
 
                                     $product_obj = Product::create($product_obj);
+                                    $custom_fields = json_decode($user->custom_fields) ?? [];
+                                    if ($custom_fields != null && count( (array) $custom_fields) > 0) {
+                                        foreach ($custom_fields as $key => $customfield) {
+
+                                            $ogname = $customfield->id;
+                                            // $customfieldID = str_replace("[]",'',$customfield->id);
+                                            $customfieldID = $tmp_item[${"$customfield->text"}] ?? '';
+
+                                            if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
+                                                echo "' $ogname ' It is an Array or HTML.".newline();
+                                                $updatevalue = base64_encode(json_encode($customfieldID));
+                                            }else{
+                                                // $customfield = str_replace("[]",'',$customfield);
+                                                $updatevalue = $customfieldID;
+                                            }
+
+                                            $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                            if ($custom_field == null) {
+                                                echo "Create New Records".newline(2);
+                                                CustomFields::create([
+                                                    'relatation_name' => $ogname,
+                                                    'product_id' => $product_obj->id,
+                                                    'value' => $updatevalue ?? '',
+                                                    'user_id' => auth()->id(),
+                                                ]);
+                                            }else{
+                                                echo "Record Are Exist Update It".newline(2);
+
+                                                $custom_field->update([
+                                                    'value' => $updatevalue ?? '',
+                                                ]);
+                                            }
+                                        }
+                                    }
+
 
                                     // debugtext($debuging_mode,"Printing Product Object","Red");
                                     // magicstring($product_obj);
@@ -4046,31 +4385,31 @@ class NewBulkController extends Controller
                                             'user_id' => $user->id,
                                             'user_shop_id' => $user_shop->id,
                                             'allow_resellers' => $Allow_Resellers,
-                                            'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                            'collection_name' => $item[${'Theme / Collection Name'}],
-                                            'season_month' => $item[${'Season / Month'}],
-                                            'season_year' => $item[${'Theme / Collection Year'}],
-                                            'sample_year' => $item[${'Sample Year'}],
-                                            'sample_month' => $item[${'Sample Month'}],
-                                            'sampling_time' => $item[${'Sampling time'}],
-                                            'CBM' => $item[${'CBM'}],
-                                            'production_time' => $item[${'Production time (days)'}],
-                                            'MBQ' => $item[${'MBQ'}],
-                                            'MBQ_unit' => $item[${'MBQ_units'}],
-                                            'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                            'vendor_price' => $item[${'Vendor price'}],
-                                            'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                            'vendor_currency' => $item[${'Vendor currency'}],
-                                            'sourcing_year' => $item[${'Sourcing Year'}],
-                                            'sourcing_month' => $item[${'Sourcing month'}],
+                                            'exclusive_buyer_name' => $item[${'Exclusive_Buyer_Name'}],
+                                            'collection_name' => $item[${'Theme_Collection_Name'}],
+                                            'season_month' => $item[${'Season_Month'}],
+                                            'season_year' => $item[${'Theme_Collection_Year'}],
+                                            'sample_year' => $item[${'Sample_Year'}],
+                                            'sample_month' => $item[${'Sample_Month'}],
+                                            'sampling_time' => $item[${'Sampling_time'}],
+                                            'CBM' => '',
+                                            'production_time' =>'',
+                                            'MBQ' => '',
+                                            'MBQ_unit' => '',
+                                            'vendor_sourced_from' => $item[${'Vendor_Sourced_from'}],
+                                            'vendor_price' => $item[${'Vendor_price'}],
+                                            'product_cost_unit' => $item[${'Product_Cost_Unit'}],
+                                            'vendor_currency' => $item[${'Vendor_currency'}],
+                                            'sourcing_year' => $item[${'Sourcing_Year'}],
+                                            'sourcing_month' => $item[${'Sourcing_month'}],
                                             'attribute_value_id' => $product_att_val->id,
                                             'attribute_id' => $product_att_val->parent_id,
                                             // 'attribute_value_id' => $product_att_val->attribute_value,
                                             // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
                                             'group_id' => $sku_code,
-                                            'Cust_tag_group' =>$item[${'Group ID'}],
+                                            'Cust_tag_group' =>$item[${'Group_ID'}],
                                             'remarks' => $item[${'Remarks'}] ?? '' ,
-                                            'brand_name' => $item[${'Brand Name'}],
+                                            'brand_name' => $item[${'Brand_Name'}],
                                         ];
 
                                         ProductExtraInfo::create($product_extra_info_obj_user);
@@ -4108,31 +4447,31 @@ class NewBulkController extends Controller
                                                         'user_id' => $user->id,
                                                         'user_shop_id' => $user_shop->id,
                                                         'allow_resellers' => $Allow_Resellers,
-                                                        'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                                        'collection_name' => $item[${'Theme / Collection Name'}],
-                                                        'season_month' => $item[${'Season / Month'}],
-                                                        'season_year' => $item[${'Theme / Collection Year'}],
-                                                        'sample_year' => $item[${'Sample Year'}],
-                                                        'sample_month' => $item[${'Sample Month'}],
-                                                        'sampling_time' => $item[${'Sampling time'}],
-                                                        'CBM' => $item[${'CBM'}],
-                                                        'production_time' => $item[${'Production time (days)'}],
-                                                        'MBQ' => $item[${'MBQ'}],
-                                                        'MBQ_unit' => $item[${'MBQ_units'}],
-                                                        'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                                        'vendor_price' => $item[${'Vendor price'}],
-                                                        'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                                        'vendor_currency' => $item[${'Vendor currency'}],
-                                                        'sourcing_year' => $item[${'Sourcing Year'}],
-                                                        'sourcing_month' => $item[${'Sourcing month'}],
+                                                        'exclusive_buyer_name' => $item[${'Exclusive_Buyer_Name'}],
+                                                        'collection_name' => $item[${'Theme_Collection_Name'}],
+                                                        'season_month' => $item[${'Season_Month'}],
+                                                        'season_year' => $item[${'Theme_Collection_Year'}],
+                                                        'sample_year' => $item[${'Sample_Year'}],
+                                                        'sample_month' => $item[${'Sample_Month'}],
+                                                        'sampling_time' => $item[${'Sampling_time'}],
+                                                        'CBM' => '',
+                                                        'production_time' =>'',
+                                                        'MBQ' => '',
+                                                        'MBQ_unit' => '',
+                                                        'vendor_sourced_from' => $item[${'Vendor_Sourced_from'}],
+                                                        'vendor_price' => $item[${'Vendor_price'}],
+                                                        'product_cost_unit' => $item[${'Product_Cost_Unit'}],
+                                                        'vendor_currency' => $item[${'Vendor_currency'}],
+                                                        'sourcing_year' => $item[${'Sourcing_Year'}],
+                                                        'sourcing_month' => $item[${'Sourcing_month'}],
                                                         'attribute_value_id' => $product_att_val->id,
                                                         'attribute_id' => $product_att_val->parent_id,
                                                         // 'attribute_value_id' => $product_att_val->attribute_value,
                                                         // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
                                                         'group_id' => $sku_code,
-                                                        'Cust_tag_group' =>$item[${'Group ID'}],
+                                                        'Cust_tag_group' =>$item[${'Group_ID'}],
                                                         'remarks' => $item[${'Remarks'}] ?? '' ,
-                                                        'brand_name' => $item[${'Brand Name'}],
+                                                        'brand_name' => $item[${'Brand_Name'}],
                                                     ];
                                                     ProductExtraInfo::create($product_extra_info_obj_user);
                                                 }
@@ -4308,32 +4647,32 @@ class NewBulkController extends Controller
                                             'user_id' => $user->id,
                                             'user_shop_id' => $user_shop->id,
                                             'allow_resellers' => $Allow_Resellers,
-                                            'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                            'collection_name' => $item[${'Theme / Collection Name'}],
-                                            'season_month' => $item[${'Season / Month'}],
-                                            'season_year' => $item[${'Theme / Collection Year'}],
+                                            'exclusive_buyer_name' => $item[${'Exclusive_Buyer_Name'}],
+                                            'collection_name' => $item[${'Theme_Collection_Name'}],
+                                            'season_month' => $item[${'Season_Month'}],
+                                            'season_year' => $item[${'Theme_Collection_Year'}],
                                             'sample_available' => 0,
-                                            'sample_year' => $item[${'Sample Year'}],
-                                            'sample_month' => $item[${'Sample Month'}],
-                                            'sampling_time' => $item[${'Sampling time'}],
-                                            'CBM' => $item[${'CBM'}],
-                                            'production_time' => $item[${'Production time (days)'}],
-                                            'MBQ' => $item[${'MBQ'}],
-                                            'MBQ_unit' => $item[${'MBQ_units'}],
-                                            'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                            'vendor_price' => $item[${'Vendor price'}],
-                                            'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                            'vendor_currency' => $item[${'Vendor currency'}],
-                                            'sourcing_year' => $item[${'Sourcing Year'}],
-                                            'sourcing_month' => $item[${'Sourcing month'}],
+                                            'sample_year' => $item[${'Sample_Year'}],
+                                            'sample_month' => $item[${'Sample_Month'}],
+                                            'sampling_time' => $item[${'Sampling_time'}],
+                                            'CBM' => '',
+                                            'production_time' =>'',
+                                            'MBQ' => '',
+                                            'MBQ_unit' => '',
+                                            'vendor_sourced_from' => $item[${'Vendor_Sourced_from'}],
+                                            'vendor_price' => $item[${'Vendor_price'}],
+                                            'product_cost_unit' => $item[${'Product_Cost_Unit'}],
+                                            'vendor_currency' => $item[${'Vendor_currency'}],
+                                            'sourcing_year' => $item[${'Sourcing_Year'}],
+                                            'sourcing_month' => $item[${'Sourcing_month'}],
                                             'attribute_value_id' => $product_att_val->id,
                                             'attribute_id' => $product_att_val->parent_id,
                                             // 'attribute_value_id' => $product_att_val->attribute_value,
                                             // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
                                             'group_id' => $sku_code,
-                                            'Cust_tag_group' =>$item[${'Group ID'}],
+                                            'Cust_tag_group' =>$item[${'Group_ID'}],
                                             'remarks' => $item[${'Remarks'}] ?? '' ,
-                                            'brand_name' => $item[${'Brand Name'}],
+                                            'brand_name' => $item[${'Brand_Name'}],
                                         ];
 
                                         ProductExtraInfo::create($product_extra_info_obj_user);
@@ -4366,32 +4705,32 @@ class NewBulkController extends Controller
                                         'user_id' => $user->id,
                                         'user_shop_id' => $user_shop->id,
                                         'allow_resellers' => $Allow_Resellers,
-                                        'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                        'collection_name' => $item[${'Theme / Collection Name'}],
-                                        'season_month' => $item[${'Season / Month'}],
-                                        'season_year' => $item[${'Theme / Collection Year'}],
+                                        'exclusive_buyer_name' => $item[${'Exclusive_Buyer_Name'}],
+                                        'collection_name' => $item[${'Theme_Collection_Name'}],
+                                        'season_month' => $item[${'Season_Month'}],
+                                        'season_year' => $item[${'Theme_Collection_Year'}],
                                         'sample_available' => 0,
                                         'sample_year' => $item[${"Sample Year"}],
-                                        'sample_month' => $item[${'Sample Month'}],
-                                        'sampling_time' => $item[${'Sampling time'}],
-                                        'CBM' => $item[${'CBM'}],
-                                        'production_time' => $item[${'Production time (days)'}],
-                                        'MBQ' => $item[${'MBQ'}],
-                                        'MBQ_unit' => $item[${'MBQ_units'}],
-                                        'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                        'vendor_price' => $item[${'Vendor price'}],
-                                        'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                        'vendor_currency' => $item[${'Vendor currency'}],
-                                        'sourcing_year' => $item[${'Sourcing Year'}],
-                                        'sourcing_month' => $item[${'Sourcing month'}],
+                                        'sample_month' => $item[${'Sample_Month'}],
+                                        'sampling_time' => $item[${'Sampling_time'}],
+                                        'CBM' => '',
+                                        'production_time' =>'',
+                                        'MBQ' => '',
+                                        'MBQ_unit' => '',
+                                        'vendor_sourced_from' => $item[${'Vendor_Sourced_from'}],
+                                        'vendor_price' => $item[${'Vendor_price'}],
+                                        'product_cost_unit' => $item[${'Product_Cost_Unit'}],
+                                        'vendor_currency' => $item[${'Vendor_currency'}],
+                                        'sourcing_year' => $item[${'Sourcing_Year'}],
+                                        'sourcing_month' => $item[${'Sourcing_month'}],
                                         'attribute_value_id' => $product_att_val->id,
                                         'attribute_id' => $product_att_val->parent_id,
                                         // 'attribute_value_id' => $product_att_val->attribute_value,
                                         // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
                                         'group_id' => $sku_code,
-                                        'Cust_tag_group' =>$item[${'Group ID'}],
+                                        'Cust_tag_group' =>$item[${'Group_ID'}],
                                         'remarks' => $item[${'Remarks'}] ?? '' ,
-                                        'brand_name' => $item[${'Brand Name'}],
+                                        'brand_name' => $item[${'Brand_Name'}],
                                     ];
 
                                     ProductExtraInfo::create($product_extra_info_obj_user);
@@ -4448,7 +4787,7 @@ class NewBulkController extends Controller
                                     array_push($modalArray,$item[${'Model_Code'}]);
                                     array_push($SKUArray,$sku_code);
                                 }
-                                $unique_slug  = getUniqueProductSlug($item[${'Product name'}]);
+                                $unique_slug  = getUniqueProductSlug($item[${'Product_name'}]);
                                 // - Start Uploading Product....
                                 // Todo: Checking Product Exist in Database or Not..
                                 $product_chk = Product::where('sku',$sku_code)->get();
@@ -4492,7 +4831,7 @@ class NewBulkController extends Controller
 
 
                                 $product_obj =  [
-                                    'title' => ($product_exist != null && $item[${'Product name'}] == null) ? $product_exist->title : $item[${'Product name'}],
+                                    'title' => ($product_exist != null && $item[${'Product_name'}] == null) ? $product_exist->title : $item[${'Product_name'}],
                                     'model_code' => ($product_exist != null && $item[${'Model_Code'}] == null) ? $product_exist->model_code : $item[${'Model_Code'}],
                                     'category_id' => ($product_exist != null && $Category_id == '') ? $product_exist->category_id : $Category_id,
                                     'sub_category' => ($product_exist != null && $sub_category_id == '') ? $product_exist->sub_category : $sub_category_id,
@@ -4510,7 +4849,7 @@ class NewBulkController extends Controller
                                     'is_publish' => 1,
                                     'price' => $price ?? 0,
                                     'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}],
-                                    'hsn' => ($product_exist != null && $item[${'HSN Tax'}] == '') ? $product_exist->hsn : $item[${'HSN Tax'}] ?? null,
+                                    'hsn' => ($product_exist != null && $item[${'HSN_Code'}] == '') ? $product_exist->hsn : $item[${'HSN_Code'}] ?? null,
                                     'hsn_percent' => ($product_exist != null && $item[${'HSN_Percnt'}] == '') ? $product_exist->hsn_percent : $item[${'HSN_Percnt'}] ?? null,
 
                                     'mrp' => ($product_exist != null && $mrp == '') ? $product_exist->mrp : trim($mrp),
@@ -4525,6 +4864,40 @@ class NewBulkController extends Controller
                                 ];
 
                                 $product_obj = Product::create($product_obj);
+                                $custom_fields = json_decode($user->custom_fields) ?? [];
+                                if ($custom_fields != null && count( (array) $custom_fields) > 0) {
+                                    foreach ($custom_fields as $key => $customfield) {
+
+                                        $ogname = $customfield->id;
+                                        // $customfieldID = str_replace("[]",'',$customfield->id);
+                                        $customfieldID = $tmp_item[${"$customfield->text"}] ?? '';
+
+                                        if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
+                                            echo "' $ogname ' It is an Array or HTML.".newline();
+                                            $updatevalue = base64_encode(json_encode($customfieldID));
+                                        }else{
+                                            // $customfield = str_replace("[]",'',$customfield);
+                                            $updatevalue = $customfieldID;
+                                        }
+
+                                        $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                        if ($custom_field == null) {
+                                            echo "Create New Records".newline(2);
+                                            CustomFields::create([
+                                                'relatation_name' => $ogname,
+                                                'product_id' => $product_obj->id,
+                                                'value' => $updatevalue ?? '',
+                                                'user_id' => auth()->id(),
+                                            ]);
+                                        }else{
+                                            echo "Record Are Exist Update It".newline(2);
+
+                                            $custom_field->update([
+                                                'value' => $updatevalue ?? '',
+                                            ]);
+                                        }
+                                    }
+                                }
 
                                 // debugtext($debuging_mode,"Printing Product Object","Red");
                                 // magicstring($product_obj);
@@ -4548,31 +4921,31 @@ class NewBulkController extends Controller
                                         'user_id' => $user->id,
                                         'user_shop_id' => $user_shop->id,
                                         'allow_resellers' => $Allow_Resellers ?? 'No',
-                                        'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                        'collection_name' => $item[${'Theme / Collection Name'}],
-                                        'season_month' => $item[${'Season / Month'}],
-                                        'season_year' => $item[${'Theme / Collection Year'}],
-                                        'sample_year' => $item[${'Sample Year'}],
-                                        'sample_month' => $item[${'Sample Month'}],
-                                        'sampling_time' => $item[${'Sampling time'}],
-                                        'CBM' => $item[${'CBM'}],
-                                        'production_time' => $item[${'Production time (days)'}],
-                                        'MBQ' => $item[${'MBQ'}],
-                                        'MBQ_unit' => $item[${'MBQ_units'}],
-                                        'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                        'vendor_price' => $item[${'Vendor price'}],
-                                        'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                        'vendor_currency' => $item[${'Vendor currency'}],
-                                        'sourcing_year' => $item[${'Sourcing Year'}],
-                                        'sourcing_month' => $item[${'Sourcing month'}],
+                                        'exclusive_buyer_name' => $item[${'Exclusive_Buyer_Name'}],
+                                        'collection_name' => $item[${'Theme_Collection_Name'}],
+                                        'season_month' => $item[${'Season_Month'}],
+                                        'season_year' => $item[${'Theme_Collection_Year'}],
+                                        'sample_year' => $item[${'Sample_Year'}],
+                                        'sample_month' => $item[${'Sample_Month'}],
+                                        'sampling_time' => $item[${'Sampling_time'}],
+                                        'CBM' => '',
+                                        'production_time' =>'',
+                                        'MBQ' => '',
+                                        'MBQ_unit' => '',
+                                        'vendor_sourced_from' => $item[${'Vendor_Sourced_from'}],
+                                        'vendor_price' => $item[${'Vendor_price'}],
+                                        'product_cost_unit' => $item[${'Product_Cost_Unit'}],
+                                        'vendor_currency' => $item[${'Vendor_currency'}],
+                                        'sourcing_year' => $item[${'Sourcing_Year'}],
+                                        'sourcing_month' => $item[${'Sourcing_month'}],
                                         'attribute_value_id' => $product_att_val->id,
                                         'attribute_id' => $product_att_val->parent_id,
                                         // 'attribute_value_id' => $product_att_val->attribute_value,
                                         // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
                                         'group_id' => $sku_code,
-                                        'Cust_tag_group' =>$item[${'Group ID'}],
+                                        'Cust_tag_group' =>$item[${'Group_ID'}],
                                         'remarks' => $item[${'Remarks'}] ?? '' ,
-                                        'brand_name' => $item[${'Brand Name'}],
+                                        'brand_name' => $item[${'Brand_Name'}],
                                     ];
 
                                     ProductExtraInfo::create($product_extra_info_obj_user);
@@ -4609,31 +4982,31 @@ class NewBulkController extends Controller
                                                     'user_id' => $user->id,
                                                     'user_shop_id' => $user_shop->id,
                                                     'allow_resellers' => $Allow_Resellers,
-                                                    'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                                    'collection_name' => $item[${'Theme / Collection Name'}],
-                                                    'season_month' => $item[${'Season / Month'}],
-                                                    'season_year' => $item[${'Theme / Collection Year'}],
-                                                    'sample_year' => $item[${'Sample Year'}],
-                                                    'sample_month' => $item[${'Sample Month'}],
-                                                    'sampling_time' => $item[${'Sampling time'}],
-                                                    'CBM' => $item[${'CBM'}],
-                                                    'production_time' => $item[${'Production time (days)'}],
-                                                    'MBQ' => $item[${'MBQ'}],
-                                                    'MBQ_unit' => $item[${'MBQ_units'}],
-                                                    'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                                    'vendor_price' => $item[${'Vendor price'}],
-                                                    'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                                    'vendor_currency' => $item[${'Vendor currency'}],
-                                                    'sourcing_year' => $item[${'Sourcing Year'}],
-                                                    'sourcing_month' => $item[${'Sourcing month'}],
+                                                    'exclusive_buyer_name' => $item[${'Exclusive_Buyer_Name'}],
+                                                    'collection_name' => $item[${'Theme_Collection_Name'}],
+                                                    'season_month' => $item[${'Season_Month'}],
+                                                    'season_year' => $item[${'Theme_Collection_Year'}],
+                                                    'sample_year' => $item[${'Sample_Year'}],
+                                                    'sample_month' => $item[${'Sample_Month'}],
+                                                    'sampling_time' => $item[${'Sampling_time'}],
+                                                    'CBM' => '',
+                                                    'production_time' =>'',
+                                                    'MBQ' => '',
+                                                    'MBQ_unit' => '',
+                                                    'vendor_sourced_from' => $item[${'Vendor_Sourced_from'}],
+                                                    'vendor_price' => $item[${'Vendor_price'}],
+                                                    'product_cost_unit' => $item[${'Product_Cost_Unit'}],
+                                                    'vendor_currency' => $item[${'Vendor_currency'}],
+                                                    'sourcing_year' => $item[${'Sourcing_Year'}],
+                                                    'sourcing_month' => $item[${'Sourcing_month'}],
                                                     'attribute_value_id' => $product_att_val->id,
                                                     'attribute_id' => $product_att_val->parent_id,
                                                     // 'attribute_value_id' => $product_att_val->attribute_value,
                                                     // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
                                                     'group_id' => $sku_code,
-                                                    'Cust_tag_group' =>$item[${'Group ID'}],
+                                                    'Cust_tag_group' =>$item[${'Group_ID'}],
                                                     'remarks' => $item[${'Remarks'}] ?? '' ,
-                                                    'brand_name' => $item[${'Brand Name'}],
+                                                    'brand_name' => $item[${'Brand_Name'}],
                                                 ];
                                                 ProductExtraInfo::create($product_extra_info_obj_user);
                                             }
@@ -4809,32 +5182,32 @@ class NewBulkController extends Controller
                                         'user_id' => $user->id,
                                         'user_shop_id' => $user_shop->id,
                                         'allow_resellers' => $Allow_Resellers,
-                                        'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                        'collection_name' => $item[${'Theme / Collection Name'}],
-                                        'season_month' => $item[${'Season / Month'}],
-                                        'season_year' => $item[${'Theme / Collection Year'}],
+                                        'exclusive_buyer_name' => $item[${'Exclusive_Buyer_Name'}],
+                                        'collection_name' => $item[${'Theme_Collection_Name'}],
+                                        'season_month' => $item[${'Season_Month'}],
+                                        'season_year' => $item[${'Theme_Collection_Year'}],
                                         'sample_available' => 0,
-                                        'sample_year' => $item[${'Sample Year'}],
-                                        'sample_month' => $item[${'Sample Month'}],
-                                        'sampling_time' => $item[${'Sampling time'}],
-                                        'CBM' => $item[${'CBM'}],
-                                        'production_time' => $item[${'Production time (days)'}],
-                                        'MBQ' => $item[${'MBQ'}],
-                                        'MBQ_unit' => $item[${'MBQ_units'}],
-                                        'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                        'vendor_price' => $item[${'Vendor price'}],
-                                        'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                        'vendor_currency' => $item[${'Vendor currency'}],
-                                        'sourcing_year' => $item[${'Sourcing Year'}],
-                                        'sourcing_month' => $item[${'Sourcing month'}],
+                                        'sample_year' => $item[${'Sample_Year'}],
+                                        'sample_month' => $item[${'Sample_Month'}],
+                                        'sampling_time' => $item[${'Sampling_time'}],
+                                        'CBM' => '',
+                                        'production_time' =>'',
+                                        'MBQ' => '',
+                                        'MBQ_unit' => '',
+                                        'vendor_sourced_from' => $item[${'Vendor_Sourced_from'}],
+                                        'vendor_price' => $item[${'Vendor_price'}],
+                                        'product_cost_unit' => $item[${'Product_Cost_Unit'}],
+                                        'vendor_currency' => $item[${'Vendor_currency'}],
+                                        'sourcing_year' => $item[${'Sourcing_Year'}],
+                                        'sourcing_month' => $item[${'Sourcing_month'}],
                                         'attribute_value_id' => $product_att_val->id,
                                         'attribute_id' => $product_att_val->parent_id,
                                         // 'attribute_value_id' => $product_att_val->attribute_value,
                                         // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
                                         'group_id' => $sku_code,
-                                        'Cust_tag_group' =>$item[${'Group ID'}],
+                                        'Cust_tag_group' =>$item[${'Group_ID'}],
                                         'remarks' => $item[${'Remarks'}] ?? '' ,
-                                        'brand_name' => $item[${'Brand Name'}],
+                                        'brand_name' => $item[${'Brand_Name'}],
                                     ];
 
                                     ProductExtraInfo::create($product_extra_info_obj_user);
@@ -4891,7 +5264,7 @@ class NewBulkController extends Controller
                                     array_push($modalArray,$item[${'Model_Code'}]);
                                     array_push($SKUArray,$sku_code);
                                 }
-                                $unique_slug  = getUniqueProductSlug($item[${'Product name'}]);
+                                $unique_slug  = getUniqueProductSlug($item[${'Product_name'}]);
                                 // - Start Uploading Product....
                                 // Todo: Checking Product Exist in Database or Not..
                                 $product_chk = Product::where('sku',$sku_code)->get();
@@ -4933,7 +5306,7 @@ class NewBulkController extends Controller
 
 
                                 $product_obj =  [
-                                    'title' => ($product_exist != null && $item[${'Product name'}] == null) ? $product_exist->title : $item[${'Product name'}],
+                                    'title' => ($product_exist != null && $item[${'Product_name'}] == null) ? $product_exist->title : $item[${'Product_name'}],
                                     'model_code' => ($product_exist != null && $item[${'Model_Code'}] == null) ? $product_exist->model_code : $item[${'Model_Code'}],
                                     'category_id' => ($product_exist != null && $Category_id == '') ? $product_exist->category_id : $Category_id,
                                     'sub_category' => ($product_exist != null && $sub_category_id == '') ? $product_exist->sub_category : $sub_category_id,
@@ -4951,22 +5324,56 @@ class NewBulkController extends Controller
                                     'is_publish' => 1,
                                     'price' => $price ?? 0,
                                     'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}],
-                                    'hsn' => ($product_exist != null && $item[${'HSN Tax'}] == '') ? $product_exist->hsn : $item[${'HSN Tax'}] ?? null,
+                                    'hsn' => ($product_exist != null && $item[${'HSN_Code'}] == '') ? $product_exist->hsn : $item[${'HSN_Code'}] ?? null,
                                     'hsn_percent' => ($product_exist != null && $item[${'HSN_Percnt'}] == '') ? $product_exist->hsn_percent : $item[${'HSN_Percnt'}] ?? null,
-                                    'mrp' => ($product_exist != null && $item[${'mrpIncl tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl tax'}]),
+                                    'mrp' => ($product_exist != null && $item[${'mrpIncl_tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl_tax'}]),
                                     // 'video_url' => ($product_exist != null && $item[${'Video URL'}] == '') ? $product_exist->video_url : $item[${'Video URL'}],
-                                    'search_keywords' => ($product_exist != null && $item[${'Search keywords'}] == '') ? $product_exist->tag1 : $item[${'Search keywords'}],
+                                    'search_keywords' => ($product_exist != null && $item[${'Search_keywords'}] == '') ? $product_exist->tag1 : $item[${'Search_keywords'}],
                                     // 'artwork_url' => $item[${'artwork_url'}] ?? null,
                                     // 'exclusive' => (in_array($item[${'Copyright/ Exclusive item'}],$allowed_array)) ? 1 : 0 ?? 0,
                                     'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
-                                    'SellingPriceUnitIndex' => $item[${'Selling Price_Unit'}] ?? '',
+                                    'SellingPriceUnitIndex' => $item[${'Selling_Price_Unit'}] ?? '',
                                     // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
                                 ];
 
                                 $product_obj = Product::create($product_obj);
 
-                                // debugtext($debuging_mode,"Printing Product Object","Red");
-                                // magicstring($product_obj);
+                                $product = $product_obj;
+
+                                $custom_fields = json_decode($user->custom_fields) ?? [];
+                                if ($custom_fields != null && count( (array) $custom_fields) > 0) {
+                                    foreach ($custom_fields as $key => $customfield) {
+
+                                        $ogname = $customfield->id;
+                                        // $customfieldID = str_replace("[]",'',$customfield->id);
+                                        $customfieldID = $tmp_item[${"$customfield->text"}] ?? '';
+
+                                        if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
+                                            echo "' $ogname ' It is an Array or HTML.".newline();
+                                            $updatevalue = base64_encode(json_encode($customfieldID));
+                                        }else{
+                                            // $customfield = str_replace("[]",'',$customfield);
+                                            $updatevalue = $customfieldID;
+                                        }
+
+                                        $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                        if ($custom_field == null) {
+                                            echo "Create New Records".newline(2);
+                                            CustomFields::create([
+                                                'relatation_name' => $ogname,
+                                                'product_id' => $product_obj->id,
+                                                'value' => $updatevalue ?? '',
+                                                'user_id' => auth()->id(),
+                                            ]);
+                                        }else{
+                                            echo "Record Are Exist Update It".newline(2);
+
+                                            $custom_field->update([
+                                                'value' => $updatevalue ?? '',
+                                            ]);
+                                        }
+                                    }
+                                }
 
                                 array_push($Productids_array,$product_obj->id);
 
@@ -4987,31 +5394,31 @@ class NewBulkController extends Controller
                                         'user_id' => $user->id,
                                         'user_shop_id' => $user_shop->id,
                                         'allow_resellers' => $Allow_Resellers,
-                                        'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                        'collection_name' => $item[${'Theme / Collection Name'}],
-                                        'season_month' => $item[${'Season / Month'}],
-                                        'season_year' => $item[${'Theme / Collection Year'}],
-                                        'sample_year' => $item[${'Sample Year'}],
-                                        'sample_month' => $item[${'Sample Month'}],
-                                        'sampling_time' => $item[${'Sampling time'}],
-                                        'CBM' => $item[${'CBM'}],
-                                        'production_time' => $item[${'Production time (days)'}],
-                                        'MBQ' => $item[${'MBQ'}],
-                                        'MBQ_unit' => $item[${'MBQ_units'}],
-                                        'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                        'vendor_price' => $item[${'Vendor price'}],
-                                        'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                        'vendor_currency' => $item[${'Vendor currency'}],
-                                        'sourcing_year' => $item[${'Sourcing Year'}],
-                                        'sourcing_month' => $item[${'Sourcing month'}],
+                                        'exclusive_buyer_name' => $item[${'Exclusive_Buyer_Name'}],
+                                        'collection_name' => $item[${'Theme_Collection_Name'}],
+                                        'season_month' => $item[${'Season_Month'}],
+                                        'season_year' => $item[${'Theme_Collection_Year'}],
+                                        'sample_year' => $item[${'Sample_Year'}],
+                                        'sample_month' => $item[${'Sample_Month'}],
+                                        'sampling_time' => $item[${'Sampling_time'}],
+                                        'CBM' => '',
+                                        'production_time' =>'',
+                                        'MBQ' => '',
+                                        'MBQ_unit' => '',
+                                        'vendor_sourced_from' => $item[${'Vendor_Sourced_from'}],
+                                        'vendor_price' => $item[${'Vendor_price'}],
+                                        'product_cost_unit' => $item[${'Product_Cost_Unit'}],
+                                        'vendor_currency' => $item[${'Vendor_currency'}],
+                                        'sourcing_year' => $item[${'Sourcing_Year'}],
+                                        'sourcing_month' => $item[${'Sourcing_month'}],
                                         'attribute_value_id' => $product_att_val->id,
                                         'attribute_id' => $product_att_val->parent_id,
                                         // 'attribute_value_id' => $product_att_val->attribute_value,
                                         // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
                                         'group_id' => $sku_code,
-                                        'Cust_tag_group' =>$item[${'Group ID'}],
+                                        'Cust_tag_group' =>$item[${'Group_ID'}],
                                         'remarks' => $item[${'Remarks'}] ?? '' ,
-                                        'brand_name' => $item[${'Brand Name'}],
+                                        'brand_name' => $item[${'Brand_Name'}],
                                     ];
 
                                     ProductExtraInfo::create($product_extra_info_obj_user);
@@ -5048,31 +5455,31 @@ class NewBulkController extends Controller
                                                     'user_id' => $user->id,
                                                     'user_shop_id' => $user_shop->id,
                                                     'allow_resellers' => $Allow_Resellers,
-                                                    'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                                    'collection_name' => $item[${'Theme / Collection Name'}],
-                                                    'season_month' => $item[${'Season / Month'}],
-                                                    'season_year' => $item[${'Theme / Collection Year'}],
-                                                    'sample_year' => $item[${'Sample Year'}],
-                                                    'sample_month' => $item[${'Sample Month'}],
-                                                    'sampling_time' => $item[${'Sampling time'}],
-                                                    'CBM' => $item[${'CBM'}],
-                                                    'production_time' => $item[${'Production time (days)'}],
-                                                    'MBQ' => $item[${'MBQ'}],
-                                                    'MBQ_unit' => $item[${'MBQ_units'}],
-                                                    'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                                    'vendor_price' => $item[${'Vendor price'}],
-                                                    'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                                    'vendor_currency' => $item[${'Vendor currency'}],
-                                                    'sourcing_year' => $item[${'Sourcing Year'}],
-                                                    'sourcing_month' => $item[${'Sourcing month'}],
+                                                    'exclusive_buyer_name' => $item[${'Exclusive_Buyer_Name'}],
+                                                    'collection_name' => $item[${'Theme_Collection_Name'}],
+                                                    'season_month' => $item[${'Season_Month'}],
+                                                    'season_year' => $item[${'Theme_Collection_Year'}],
+                                                    'sample_year' => $item[${'Sample_Year'}],
+                                                    'sample_month' => $item[${'Sample_Month'}],
+                                                    'sampling_time' => $item[${'Sampling_time'}],
+                                                    'CBM' => '',
+                                                    'production_time' =>'',
+                                                    'MBQ' => '',
+                                                    'MBQ_unit' => '',
+                                                    'vendor_sourced_from' => $item[${'Vendor_Sourced_from'}],
+                                                    'vendor_price' => $item[${'Vendor_price'}],
+                                                    'product_cost_unit' => $item[${'Product_Cost_Unit'}],
+                                                    'vendor_currency' => $item[${'Vendor_currency'}],
+                                                    'sourcing_year' => $item[${'Sourcing_Year'}],
+                                                    'sourcing_month' => $item[${'Sourcing_month'}],
                                                     'attribute_value_id' => $product_att_val->id,
                                                     'attribute_id' => $product_att_val->parent_id,
                                                     // 'attribute_value_id' => $product_att_val->attribute_value,
                                                     // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
                                                     'group_id' => $sku_code,
-                                                    'Cust_tag_group' =>$item[${'Group ID'}],
+                                                    'Cust_tag_group' =>$item[${'Group_ID'}],
                                                     'remarks' => $item[${'Remarks'}] ?? '' ,
-                                                    'brand_name' => $item[${'Brand Name'}],
+                                                    'brand_name' => $item[${'Brand_Name'}],
                                                 ];
                                                 ProductExtraInfo::create($product_extra_info_obj_user);
                                             }
@@ -5271,7 +5678,7 @@ class NewBulkController extends Controller
                             array_push($modalArray,$item[${'Model_Code'}]);
                             array_push($SKUArray,$sku_code);
                         }
-                        $unique_slug  = getUniqueProductSlug($item[${'Product name'}]);
+                        $unique_slug  = getUniqueProductSlug($item[${'Product_name'}]);
                         // - Start Uploading Product....
                         // Todo: Checking Product Exist in Database or Not..
                         $product_chk = Product::where('sku',$sku_code)->get();
@@ -5312,7 +5719,7 @@ class NewBulkController extends Controller
 
 
                         $product_obj =  [
-                            'title' => ($product_exist != null && $item[${'Product name'}] == null) ? $product_exist->title : $item[${'Product name'}],
+                            'title' => ($product_exist != null && $item[${'Product_name'}] == null) ? $product_exist->title : $item[${'Product_name'}],
                             'model_code' => ($product_exist != null && $item[${'Model_Code'}] == null) ? $product_exist->model_code : $item[${'Model_Code'}],
                             'category_id' => ($product_exist != null && $Category_id == '') ? $product_exist->category_id : $Category_id,
                             'sub_category' => ($product_exist != null && $sub_category_id == '') ? $product_exist->sub_category : $sub_category_id,
@@ -5329,18 +5736,53 @@ class NewBulkController extends Controller
                             'is_publish' => 1,
                             'price' => $price ?? 0,
                             'min_sell_pr_without_gst' => ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->min_sell_pr_without_gst : $item[${'Customer_Price_without_GST'}],
-                            'hsn' => ($product_exist != null && $item[${'HSN Tax'}] == '') ? $product_exist->hsn : $item[${'HSN Tax'}] ?? null,
+                            'hsn' => ($product_exist != null && $item[${'HSN_Code'}] == '') ? $product_exist->hsn : $item[${'HSN_Code'}] ?? null,
                             'hsn_percent' => ($product_exist != null && $item[${'HSN_Percnt'}] == '') ? $product_exist->hsn_percent : $item[${'HSN_Percnt'}] ?? null,
-                            'mrp' => ($product_exist != null && $item[${'mrpIncl tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl tax'}]),
+                            'mrp' => ($product_exist != null && $item[${'mrpIncl_tax'}] == '') ? $product_exist->mrp : trim($item[${'mrpIncl_tax'}]),
                             // 'video_url' => ($product_exist != null && $item[${'Video URL'}] == '') ? $product_exist->video_url : $item[${'Video URL'}],
-                            'search_keywords' => ($product_exist != null && $item[${'Search keywords'}] == '') ? $product_exist->tag1 : $item[${'Search keywords'}],
+                            'search_keywords' => ($product_exist != null && $item[${'Search_keywords'}] == '') ? $product_exist->tag1 : $item[${'Search_keywords'}],
                             // 'artwork_url' => $item[${'artwork_url'}] ?? null,
                             // 'exclusive' => (in_array($item[${'Copyright/ Exclusive item'}],$allowed_array)) ? 1 : 0 ?? 0,
                             'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
-                            'SellingPriceUnitIndex' => $item[${'Selling Price_Unit'}] ?? '',
+                            'SellingPriceUnitIndex' => $item[${'Selling_Price_Unit'}] ?? '',
                         ];
 
                         $product_obj = Product::create($product_obj);
+                        $product = $product_obj;
+                        $custom_fields = json_decode($user->custom_fields) ?? [];
+                        if ($custom_fields != null && count( (array) $custom_fields) > 0) {
+                            foreach ($custom_fields as $key => $customfield) {
+
+                                $ogname = $customfield->id;
+                                // $customfieldID = str_replace("[]",'',$customfield->id);
+                                $customfieldID = $tmp_item[${"$customfield->text"}] ?? '';
+
+                                if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
+                                    echo "' $ogname ' It is an Array or HTML.".newline();
+                                    $updatevalue = base64_encode(json_encode($customfieldID));
+                                }else{
+                                    // $customfield = str_replace("[]",'',$customfield);
+                                    $updatevalue = $customfieldID;
+                                }
+
+                                $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                if ($custom_field == null) {
+                                    echo "Create New Records".newline(2);
+                                    CustomFields::create([
+                                        'relatation_name' => $ogname,
+                                        'product_id' => $product_obj->id,
+                                        'value' => $updatevalue ?? '',
+                                        'user_id' => auth()->id(),
+                                    ]);
+                                }else{
+                                    echo "Record Are Exist Update It".newline(2);
+
+                                    $custom_field->update([
+                                        'value' => $updatevalue ?? '',
+                                    ]);
+                                }
+                            }
+                        }
 
                         array_push($Productids_array,$product_obj->id);
 
@@ -5375,29 +5817,29 @@ class NewBulkController extends Controller
                                             'user_id' => $user->id,
                                             'user_shop_id' => $user_shop->id,
                                             'allow_resellers' => $Allow_Resellers,
-                                            'exclusive_buyer_name' => $item[${'Exclusive Buyer Name'}],
-                                            'collection_name' => $item[${'Theme / Collection Name'}],
-                                            'season_month' => $item[${'Season / Month'}],
-                                            'season_year' => $item[${'Theme / Collection Year'}],
-                                            'sample_year' => $item[${'Sample Year'}],
-                                            'sample_month' => $item[${'Sample Month'}],
-                                            'sampling_time' => $item[${'Sampling time'}],
-                                            'CBM' => $item[${'CBM'}],
-                                            'production_time' => $item[${'Production time (days)'}],
-                                            'MBQ' => $item[${'MBQ'}],
-                                            'MBQ_unit' => $item[${'MBQ_units'}],
-                                            'vendor_sourced_from' => $item[${'Vendor Sourced from'}],
-                                            'vendor_price' => $item[${'Vendor price'}],
-                                            'product_cost_unit' => $item[${'Product Cost_Unit'}],
-                                            'vendor_currency' => $item[${'Vendor currency'}],
-                                            'sourcing_year' => $item[${'Sourcing Year'}],
-                                            'sourcing_month' => $item[${'Sourcing month'}],
+                                            'exclusive_buyer_name' => $item[${'Exclusive_Buyer_Name'}],
+                                            'collection_name' => $item[${'Theme_Collection_Name'}],
+                                            'season_month' => $item[${'Season_Month'}],
+                                            'season_year' => $item[${'Theme_Collection_Year'}],
+                                            'sample_year' => $item[${'Sample_Year'}],
+                                            'sample_month' => $item[${'Sample_Month'}],
+                                            'sampling_time' => $item[${'Sampling_time'}],
+                                            'CBM' => '',
+                                            'production_time' =>'',
+                                            'MBQ' => '',
+                                            'MBQ_unit' => '',
+                                            'vendor_sourced_from' => $item[${'Vendor_Sourced_from'}],
+                                            'vendor_price' => $item[${'Vendor_price'}],
+                                            'product_cost_unit' => $item[${'Product_Cost_Unit'}],
+                                            'vendor_currency' => $item[${'Vendor_currency'}],
+                                            'sourcing_year' => $item[${'Sourcing_Year'}],
+                                            'sourcing_month' => $item[${'Sourcing_month'}],
                                             'attribute_value_id' => $product_att_val->id,
                                             'attribute_id' => $product_att_val->parent_id,
                                             'group_id' => $sku_code,
-                                            'Cust_tag_group' =>$item[${'Group ID'}],
+                                            'Cust_tag_group' =>$item[${'Group_ID'}],
                                             'remarks' => $item[${'Remarks'}] ?? '' ,
-                                            'brand_name' => $item[${'Brand Name'}],
+                                            'brand_name' => $item[${'Brand_Name'}],
                                         ];
                                         ProductExtraInfo::create($product_extra_info_obj_user);
 
@@ -5563,13 +6005,21 @@ class NewBulkController extends Controller
             // ! Main For Uploading Data End
 
 
-            // return;
-            return back()->with('success',"$count Record Are Uploaded");
-        } catch (\Throwable $th) {
-            throw $th;
-            // return;
-        }
 
+            // return;
+            // return back()->with('success',"$count Record Are Uploaded");
+            // return redirect()->route('panel.filemanager.index')->with('success', "$count Record Are Uploaded");
+
+            return redirect(route('panel.user_shop_items.create', ['type' => 'direct', 'type_ide' => encrypt(auth()->id()),'assetsafe' => true]))->with('success', "$count Record Are Uploaded");
+
+
+
+            // http://localhost/project/121.page-Laravel/121.page/panel/user-shop-items/create?type=direct&type_ide=eyJpdiI6Ik16b3gwZ3lTZjh2Zm95cXhUcEM0d1E9PSIsInZhbHVlIjoiYlBnMElYanFkNlIwUGNCQlRld1lodz09IiwibWFjIjoiNmQwMDIxY2RjZDg1ZWE2MTJiZmEzM2JkN2JjMmI1N2NlZDE0NWQwZTRiMGUyY2I3MzhmZDE2ZmNiODAyZDI2NCIsInRhZyI6IiJ9&assetsafe=true
+
+        } catch (\Throwable $th) {
+            return back()->with('error',"There was Error while uploading. Raise support ticket for resolution.");
+            // throw $th;
+        }
 
     }
 
@@ -5797,3 +6247,4 @@ class NewBulkController extends Controller
 
 
 }
+

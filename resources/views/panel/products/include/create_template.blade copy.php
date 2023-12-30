@@ -58,9 +58,7 @@
                                 @endforelse
                               </tbody>
                             </table>
-
                         </div>
-
                         
     
                         <div class="actionbtn  mt-2 d-flex justify-content-between align-items-center my-2">

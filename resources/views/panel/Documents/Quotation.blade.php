@@ -4,13 +4,19 @@
 
     <!-- push external head elements to head -->
     @push('head')
-    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> --}}
-
+        {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> --}}
     @endpush
 
     <div class="container-fluid">
 
+        @php
 
+            $user = auth()->user();
+            $acc_permissions = json_decode($user->account_permission);
+            $acc_permissions->mysupplier = $acc_permissions->mysupplier ?? 'no';
+            $acc_permissions->quoatations = $acc_permissions->quoatations ?? 'no';
+
+        @endphp
         <div class="row">
             <!-- Sidebar -->
             <div class="col-lg-2 sidebar mt-3">
@@ -22,10 +28,12 @@
                         <h6>All Documents</h6>
 
                     </div>
-                    <div class="sidebar-section h6">
-                        <a class="" href="{{ route('panel.Documents.Quotation') }}">Quotations</a>
 
-                    </div>
+                    {{-- @if ($acc_permissions->quoatations == 'yes') --}}
+                        <div class="sidebar-section h6">
+                            <a class="" href="{{ route('panel.Documents.Quotation', 'active') }}">Quotations</a>
+                        </div>
+                    {{-- @endif --}}
                     <div class="sidebar-section h6">
                         <a href="{{ route('panel.Documents.index') }}">Invoice</a>
 
@@ -39,9 +47,12 @@
                             <div class="col-lg-4 col-md-5 input-group border rounded">
                                 <input type="text" id="quicktitle" value="" name="title"
                                     class="form-control border-0" placeholder="Search Buyer name or..">
-                                <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit"><svg width="18" height="18" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill="currentColor" d="m479.6 399.716l-81.084-81.084l-62.368-25.767A175.014 175.014 0 0 0 368 192c0-97.047-78.953-176-176-176S16 94.953 16 192s78.953 176 176 176a175.034 175.034 0 0 0 101.619-32.377l25.7 62.2l81.081 81.088a56 56 0 1 0 79.2-79.195M48 192c0-79.4 64.6-144 144-144s144 64.6 144 144s-64.6 144-144 144S48 271.4 48 192m408.971 264.284a24.028 24.028 0 0 1-33.942 0l-76.572-76.572l-23.894-57.835l57.837 23.894l76.573 76.572a24.028 24.028 0 0 1-.002 33.941"/>
-                                </svg>
+                                <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit"><svg
+                                        width="18" height="18" viewBox="0 0 512 512"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill="currentColor"
+                                            d="m479.6 399.716l-81.084-81.084l-62.368-25.767A175.014 175.014 0 0 0 368 192c0-97.047-78.953-176-176-176S16 94.953 16 192s78.953 176 176 176a175.034 175.034 0 0 0 101.619-32.377l25.7 62.2l81.081 81.088a56 56 0 1 0 79.2-79.195M48 192c0-79.4 64.6-144 144-144s144 64.6 144 144s-64.6 144-144 144S48 271.4 48 192m408.971 264.284a24.028 24.028 0 0 1-33.942 0l-76.572-76.572l-23.894-57.835l57.837 23.894l76.573 76.572a24.028 24.028 0 0 1-.002 33.941" />
+                                    </svg>
                                 </button>
                             </div>
                         </div>
@@ -79,81 +90,52 @@
                                     <thead class="h6 text-muted">
                                         <tr>
                                             <td class="no-export action_btn">
-                                                <!-- {{-- <input type="checkbox" id="checkallinp"> --}} -->
+                                                <input type="checkbox" id="checkallinp">
                                             </td>
                                             <td class="col-2">Enquiry ID</td>
                                             <td class="col-2">Buyer Name</td>
                                             <td class="col-2">Buyer Email </td>
+                                            <td class="col-2">Buyer Company </td>
                                             <td class="col-2">Created On</td>
                                             <td class="col-4"></td>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{-- <!-- @if ($proposals->count() > 0)
-                                          @foreach ($proposals as $proposal)
-                                              @php
-                                                  $customer_detail = json_decode($proposal->customer_details);
-                                                  $customer_name = $customer_detail->customer_name ?? '--';
-                                                  $customer_mob_no = $customer_detail->customer_mob_no ?? '--';
-                                                  $direct = $proposal->status == 0 ? "?direct=1" : "";
-                                                  $user_key = encrypt(auth()->id());
-                                                  $productItems = App\Models\ProposalItem::where('proposal_id',$proposal->id)->get();
-                                                  $product_count = App\Models\ProposalItem::where('proposal_id',$proposal->id)->get()->count();
-                                              @endphp --> --}}
 
-                                        <tr>
-                                            <td class="no-export action_btn">
-                                                <!-- {{-- @if ($scoped_product->user_id == auth()->id()) --}} -->
-                                                <!-- {{-- <input type="checkbox" name="exportproduct" id="exportproduct" class="input-check"> --}} -->
-                                                <!-- {{-- @endif --}} -->
-                                            </td>
-                                            <td class="justify-content-between">
-                                                <div class="py-1">
-                                                    1
-                                                    {{-- <!-- <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid p-1" style="border-radius: 10px;height: 100%;width: 100%;background-color: gray;align-items: center;"> --> --}}
-                                                </div>
-                                            </td>
+                                        @forelse ($Quotation as $record)
+                                            @php
+                                                $jsonData = json_decode($record->customer_info) ?? '';
+                                            @endphp
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox" class="checkinp" name="checkinp[]"
+                                                        value="{{ $record->id }}">
+                                                </td>
+                                                <td>
+                                                    {{ $record->slug }}
+                                                </td>
+                                                <td>
+                                                    {{ $jsonData->buyerName ?? '-' }}
+                                                </td>
+                                                <td>
+                                                    {{ $jsonData->buyerEmail ?? '-' }}
+                                                </td>
+                                                <td>
+                                                    {{ $jsonData->companyName ?? '-' }}
+                                                </td>
+                                                <td>
+                                                    {{ $record->quotation_date }}
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}"
+                                                        class="btn btn-outline-primary">
+                                                        Edit
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                        @endforelse
 
-                                            <td>
-                                                <div class=" py-1">jaya</div>
-                                            </td>
-                                            <td>
-                                                <div class=" py-1">jaya@121mail.com</div>
-                                            </td>
-                                            <td>
-                                                <div class=" py-1">12/20/2023</div>
-                                            </td>
-                                            <td>
-
-                                            </td>                                            
-                                        </tr>
-
-                                        <tr>
-                                            <td class="no-export action_btn">
-                                                <!-- {{-- @if ($scoped_product->user_id == auth()->id()) --}} -->
-                                                <!-- {{-- <input type="checkbox" name="exportproduct" id="exportproduct" class="input-check"> --}} -->
-                                                <!-- {{-- @endif --}} -->
-                                            </td>
-                                            <td class="justify-content-between">
-                                                <div class="py-1">
-                                                    2
-                                                    {{-- <!-- <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid p-1" style="border-radius: 10px;height: 100%;width: 100%;background-color: gray;align-items: center;"> --> --}}
-                                                </div>
-                                            </td>
-
-                                            <td>
-                                                <div class=" py-1">Pac</div>
-                                            </td>
-                                            <td>
-                                                <div class=" py-1">pac23@gmail.com</div>
-                                            </td>
-                                            <td>
-                                                <div class=" py-1">12/20/2023</div>
-                                            </td>
-                                            <td>
-
-                                            </td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -173,52 +155,87 @@
     <script src="{{ asset('backend/js/index-page.js') }}"></script>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
     <script src="{{ asset('backend/plugins/jquery.repeater/jquery.repeater.min.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-        <script src="{{asset('backend/plugins/mohithg-switchery/dist/switchery.min.js') }}"></script>
-        <script src="{{asset('backend/js/form-advanced.js') }}"></script>
-        <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  $(document).ready(function () {
-    $("#bjkhkh").click(function (e) {
-        e.preventDefault();
-        var url = $(this).attr('href');
-        var msg = "<div class='col-lg-12 col-md-12'><div class='row'><div class='col-lg-12 col-md-12'><label for='buyerName'>Buyer Name:</label><br><input type='text' id='buyerName' name='buyerName' class='form-control border rounded' placeholder='Enter'></div><div class='col-lg-12 col-md-12'><label for='buyerEmail'>Buyer Email:</label><br><input type='text' id='buyerEmail' name='buyerEmail' class='form-control border rounded' placeholder='Enter'></div><div class='col-lg-12 col-md-12'><label for='companyName'>Company Name (optional):</label><br><input type='text' id='companyName' name='companyName' class='form-control border rounded' placeholder='Enter'></div></div></div>";      
-        $.confirm({
-            draggable: true,
-            title: ' Add buyer details',
-            content: msg,
-            type: 'blue',
-            typeAnimated: true,
-            buttons: {
-                tryAgain: {
-                    text: 'Confirm',
-                    btnClass: 'btn-primary',
-                    action: function () {
-                        // Redirect to the second view route
-                        window.location.href = "{{ route('panel.Documents.quotation2') }}";
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.js') }}"></script>
+    <script src="{{ asset('backend/js/form-advanced.js') }}"></script>
+    <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#bjkhkh").click(function(e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+                var msg =
+                    "<div class='col-lg-12 col-md-12'><div class='row'><div class='col-lg-12 col-md-12'><label for='buyerName'>Buyer Name:</label><br><input type='text' id='buyerName' name='buyerName' class='form-control border rounded' placeholder='Enter'></div><div class='col-lg-12 col-md-12'><label for='buyerEmail'>Buyer Email:</label><br><input type='text' id='buyerEmail' name='buyerEmail' class='form-control border rounded' placeholder='Enter'></div><div class='col-lg-12 col-md-12'><label for='companyName'>Company Name (optional):</label><br><input type='text' id='companyName' name='companyName' class='form-control border rounded' placeholder='Enter'></div></div></div>";
+
+                $.confirm({
+                    draggable: true,
+                    title: 'Add buyer details',
+                    content: msg,
+                    type: 'blue',
+                    typeAnimated: true,
+                    buttons: {
+                        tryAgain: {
+                            text: 'Confirm',
+                            btnClass: 'btn-primary',
+                            action: function() {
+
+                                const buyerName = document.getElementById('buyerName');
+                                const buyerEmail = document.getElementById('buyerEmail');
+                                const companyName = document.getElementById('companyName');
+                                let dt = new Date();
+                                const buyerObj = {
+                                    buyerName: buyerName.value,
+                                    buyerEmail: buyerEmail.value,
+                                    companyName: companyName.value,
+                                    CreatedOn: dt.toLocaleString()
+                                };
+
+                                jsonBuyerObj = JSON.stringify(buyerObj);
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "{{ route('panel.Documents.create.Quotation') }}",
+                                    data: {
+                                        _token: "{{ csrf_token() }}",
+                                        buyerObj: jsonBuyerObj
+                                    },
+                                    dataType: "json",
+                                    success: function(response) {
+                                        if (response.status != 'Error') {
+                                            localStorage.setItem(
+                                                'buyerObj-Quotation',
+                                                jsonBuyerObj);
+                                            localStorage.setItem(
+                                                'record_id-Quotation', response
+                                                .record_id);
+                                            window.location.href =
+                                                "{{ route('panel.Documents.quotation2') }}?typeId=" +
+                                                response.record_id;
+                                        }
+                                    }
+                                });
+                            }
+                        },
+                        close: function() {
+                            // Additional action if needed upon dialog close
+                        }
                     }
-                },
-                close: function () {
-                    // Additional action if needed upon dialog close
-                }
-            }
+                });
+            });
+
+
+
+
+            $(function() {
+                $("#890out").select2()
+            });
+
+
+
+
+
         });
-    });
-
-
-
-      
-      $(function () {
-        $("#890out").select2()
-      });
-
-      
-
-
-      
-  });
-  
-</script>
+    </script>
 @endsection

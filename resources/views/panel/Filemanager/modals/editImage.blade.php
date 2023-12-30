@@ -82,8 +82,7 @@
                                                             class="btn btn-outline-primary d-none">Custom
                                                             Ratio</button>
                                                         <button id="setFreeCrop" type="button"
-                                                            class="btn btn-outline-primary aspectratiobtn active">Free
-                                                            Crop</button>
+                                                            class="btn btn-outline-primary aspectratiobtn active">Free Crop</button>
                                                         <button id="LivePrevbtn" type="button"
                                                             class="btn btn-outline-primary d-none">Live
                                                             Preview</button>
