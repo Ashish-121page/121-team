@@ -53,7 +53,7 @@
                                     alt="company logo"
                                     style="border-radius: 10px;height: 250px;width: 300px;align-items: center; padding:2px;">
                             </th>
-                            <th scope="col">{{''}}</th>
+                            <th scope="col">{{ '' }}</th>
                             <th scope="col" colspan="7">{{ $Userinfo->buyerName ?? '' }}</th>
                             <th scope="col">{{ $Userinfo->companyName ?? '' }}</th>
                             @foreach ($userAttribute as $item)
@@ -81,7 +81,7 @@
                         </tr> --}}
                         <tr>
                             <th scope="col">Model Code</th>
-                            <th scope="col">Image</th>
+                            <th scope="col">image</th>
                             <th scope="col">COO</th>
                             <th scope="col">Name</th>
                             <th scope="col">Selling Price</th>
@@ -116,8 +116,10 @@
 
                                 <td>
                                     {{-- <div style="height: 80px;width: 80px; object-fit: contain;justify-content-end;"> --}}
-                                    {{-- <img src="{{ asset(getShopProductImage($quotationitem->product_id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="Image" class="img-fluid " style="border-radius: 10px;height: 100%;width: 100%;align-items: center; padding:2px;"> --}}
-                                    {{ asset(getShopProductImage($quotationitem->product_id)->path ?? asset('frontend/assets/img/placeholder.png')) }}
+                                    <img src="{{ asset(getShopProductImage($quotationitem->product_id)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
+                                        alt="Image" class="img-fluid "
+                                        style="border-radius: 10px;height: 100%;width: 100%;align-items: center; padding:2px;">
+                                    {{-- {{ asset(getShopProductImage($quotationitem->product_id)->path ?? asset('frontend/assets/img/placeholder.png')) }} --}}
                                     {{-- </div> --}}
                                 </td>
                                 <td>{{ json_decode($quotationitem->additional_notes)->COO ?? '' }}</td>
@@ -204,8 +206,20 @@
             $('#' + tableId + ' tr:gt(1)').each(function() {
                 var arrayItem = {};
 
+                // $('td', $(this)).each(function(index, item) {
+                //     arrayItem[headers[index]] = $(item).html().replace(/^\s+|\s+$/gm, '');
+                // });
+
                 $('td', $(this)).each(function(index, item) {
-                    arrayItem[headers[index]] = $(item).html().replace(/^\s+|\s+$/gm, '');
+                    // Check if the cell contains an image
+                    if ($(item).find('img').length > 0) {
+                        // Extract the src of the image
+                        arrayItem[headers[index]] = $(item).find('img').attr('src');
+                    } else {
+                        // Extract the text
+                        // arrayItem[headers[index]] = $(item).html().trim();
+                        arrayItem[headers[index]] = $(item).html().replace(/^\s+|\s+$/gm, '');
+                    }
                 });
 
                 array.push(arrayItem);
@@ -214,45 +228,43 @@
             return array;
         }
 
-        
 
 
-//         function getTableData(tableId) {
-//         var data = [];
-//         var headers = [];
-//         var secondHeaders = [];
 
-//         // Fetch the first row of headers
-//         $('#' + tableId + ' tr:eq(0) th').each(function(index, item) {
-//             headers[index] = $(item).text().trim();
-//         });
+        // function getTableData(tableId) {
+        //     var array = [];
+        //     var headers = [];
 
-//         // Fetch the second row of headers
-//         $('#' + tableId + ' tr:eq(1) th').each(function(index, item) {
-//             secondHeaders[index] = $(item).text().trim();
-//         });
+        //     // Fetch headers from the first row
+        //     $('#' + tableId + ' tr:eq(0) th').each(function(index, item) {
+        //         headers[index] = $(item).html().trim();
+        //     });
 
-//         // Add both header rows to the data array
-//         data.push(headers);
-//         data.push(secondHeaders);
+        //     // Fetch headers from the second row, if present
+        //     $('#' + tableId + ' tr:eq(1) th').each(function(index, item) {
+        //         headers[index] += ' ' + $(item).html().trim();
+        //     });
 
-//         // Loop through the table rows starting from the third row
-//         $('#' + tableId + ' tr:gt(1)').each(function() {
-//             var rowData = {};
-//             $('td', $(this)).each(function(index, item) {
-//                 // Use the first row headers as keys if the second row headers are not set
-//                 var header = secondHeaders[index] || headers[index];
-//                 rowData[header] = $(item).text().trim();
-//             });
-//             data.push(rowData);
-//         });
+        //     // Loop through the table rows starting from the third row
+        //     $('#' + tableId + ' tr:gt(1)').each(function() {
+        //         var arrayItem = {};
 
-//         return data;
-//     }
+        //         $('td', $(this)).each(function(index, item) {
+        //             // Check if the cell contains an image
+        //             if ($(item).find('img').length > 0) {
+        //                 // Extract the src of the image
+        //                 arrayItem[headers[index]] = $(item).find('img').attr('src');
+        //             } else {
+        //                 // Extract the text
+        //                 arrayItem[headers[index]] = $(item).html().trim();
+        //             }
+        //         });
 
-// // Usage
-// var tableData = getTableData('myTableId');
-// console.log(JSON.stringify(tableData, null, 2));
+        //         array.push(arrayItem);
+        //     });
+
+        //     return array;
+        // }
 
 
 

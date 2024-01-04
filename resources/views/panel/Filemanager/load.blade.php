@@ -88,5 +88,5 @@
 
 <button type="button" class="btn btn-outline-primary btn-icon openupload" data-bs-toggle="modal"
     data-bs-target="#uploadfiles" style="position: fixed;bottom: 9%;right: 4%;height: 50px;width: 50px;font-size: 1.5rem;" title="Upload Assets">
-    <i class="fas fa-cloud-upload-alt"></i>
+    <i class="fas fa-cloud-upload-alt" style="line-height: 1 !important"></i>
 </button>

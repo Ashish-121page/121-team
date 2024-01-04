@@ -108,7 +108,14 @@
                         </span>
                     </td>
                     <td>
-                        <a href="{{ asset(Storage::url($file)) }}" download="{{ basename($file) }}" class="btn-link">Download</a>
+                        
+                            <div style="display: flex;">
+                                <a href="{{ route('panel.image.studio',encrypt($file)) }}" class="btn-link mx-3">
+                                    Edit
+                                </a>
+                                <a href="{{ asset(Storage::url($file)) }}" download="{{ basename($file) }}" class="btn-link">Download</a>
+                            </div>
+                        
                     </td>
                 </tr>
             @empty

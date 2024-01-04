@@ -42,7 +42,7 @@ class BulkController extends Controller
 {
 
     public function categoryUpload(Request $request)
-    {   
+    {
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file);
         $worksheet = $spreadsheet->getActiveSheet();
         $rows = [];
@@ -63,7 +63,7 @@ class BulkController extends Controller
         $RemarkIndex = 1;
         $CategoryIndex = 2;
         $SubCategoryIndex = 3;
-        
+
         // Data Tree
         $IndustryIndexobj = null;
         $CategoryIndexobj = null;
@@ -73,8 +73,8 @@ class BulkController extends Controller
         $CategoryArr = [];
 
         $master_obj = collect($master);
-        
-            
+
+
             foreach($master as $index => $item){
                 $index = ++$index;
                 // Category
@@ -86,7 +86,7 @@ class BulkController extends Controller
                         'parent_id' => null,
                     ]);
                 }
-                
+
                 //Category
                 if($item[$CategoryIndex] != null){
                     $CategoryIndexobj = Category::create([
@@ -105,16 +105,18 @@ class BulkController extends Controller
                         'category_type_id' => 13,
                         'parent_id' => $CategoryIndexobj->id,
                     ]);
-                }    
-            ++$index;   
+                }
+            ++$index;
             }
             $count = $index;
             return back()->with('success', 'Done! '.$count.' records created successfully.');
     }
 
+
+    // Dump Fuction
     public function productBulkUpdate(Request $request)
     {
-   
+
         $count = 0;
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file);
         $worksheet = $spreadsheet->getActiveSheet();
@@ -131,8 +133,8 @@ class BulkController extends Controller
         // $head = array_shift($rows);
         $master = $rows;
 
-        
-        
+
+
         // Index
         $IdIndex = 0;
         $ModelCodeIndex = 1;
@@ -195,7 +197,7 @@ class BulkController extends Controller
                 // check is User Product?
                 if($item[$IdIndex]){
                     $chk = Product::whereId($item[$IdIndex])->whereUserId(auth()->id())->first();
-                  
+
                    if(!$chk){
                       return back()->with("error",$item[$TitleIndex]." Product was not found (Possibly Deleted) at Row:".$row_number);
                    }
@@ -204,7 +206,7 @@ class BulkController extends Controller
                 }
 
 
-                // Check Category & sub Category 
+                // Check Category & sub Category
                 if($item[$CategoryIndex]){
                     // $chk = Category::whereIn('id', $scoped_category->pluck('id'))->where('name',$item[$CategoryIndex])->first();
                     $chk = Category::where('name',$item[$CategoryIndex])->first();
@@ -267,7 +269,7 @@ class BulkController extends Controller
                     return back()->with("error",'Please use only 1 & 0 in Exclusive column'.$item[$ExclusiveIndex]);
                 }
 
-                                 
+
                 // // Stock
                 // if ($item[$StockIndex] != null && is_numeric($item[$StockIndex]) != 1) {
                 //    return back()->with("error",'Please use only numeric value in Stock column');
@@ -277,13 +279,13 @@ class BulkController extends Controller
                 if ($item[$StockIndex] != "Yes"  && $item[$StockIndex] != "No") {
                     return back()->with('error','Manage Inventory Value Should be Yes or No Only in Column '.$row_number);
                 }
-                
+
 
                 // Hsn Percent
                 if ($item[$HsnPercentIndex] != null && is_numeric($item[$HsnPercentIndex]) != 1) {
                    return back()->with("error",'Please use only numeric value in Hsn Percent column'.$item[$HsnPercentIndex]);
                 }
-            }            
+            }
         }
 
         foreach ($master as $index => $item) {
@@ -292,7 +294,7 @@ class BulkController extends Controller
             $category = Category::where('name',$item[$CategoryIndex])->first();
             $subcategory = Category::where('parent_id', $category->id)->where('name',$item[$SubCategoryIndex])->first() ;
 
-            if ($item[$TitleIndex] != null) { 
+            if ($item[$TitleIndex] != null) {
                 $carton_details = [
                    'standard_carton' => $item[$StandardCartonIndex],
                    'carton_weight' => $item[$CartonWeightIndex],
@@ -333,14 +335,14 @@ class BulkController extends Controller
                         //  'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? 0,
                          'mrp' => $item[$MRPIndex]??null,
                          'hsn' => $item[$HSNTaxIndex],
-                         'hsn_percent' => $item[$HsnPercentIndex],                         
-                         'video_url' => $item[$VideoURLIndex],                         
-                         'tag1' => $item[$Tag1Index],                         
-                         'tag2' => $item[$Tag2Index],                         
-                         'tag3' => $item[$Tag3Index],                         
-                         'meta_description' => $item[$MetaDescriptionIndex],                         
-                         'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,          
-                         'artwork_url' => $item[$artwork_urlIndex] ?? null,      
+                         'hsn_percent' => $item[$HsnPercentIndex],
+                         'video_url' => $item[$VideoURLIndex],
+                         'tag1' => $item[$Tag1Index],
+                         'tag2' => $item[$Tag2Index],
+                         'tag3' => $item[$Tag3Index],
+                         'meta_description' => $item[$MetaDescriptionIndex],
+                         'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,
+                         'artwork_url' => $item[$artwork_urlIndex] ?? null,
                          'material' => $item[$materialIndex] ?? null,
                          'exclusive' => $item[$ExclusiveIndex] ?? 0,
                     ]);
@@ -354,7 +356,7 @@ class BulkController extends Controller
 
 
 
-                    
+
                     $chk_inventroy = Inventory::where('product_id',$productObj->id)->where('user_id',auth()->id())->get();
                     if ($item[$StockIndex] == 'Yes') {
                         if (count($chk_inventroy) == 0) {
@@ -392,7 +394,7 @@ class BulkController extends Controller
                         $vip_group_product->price = $item[$VipPriceIndex]??0;
                         $vip_group_product->save();
                     }
-                    
+
                     if(isset($productObj->medias[0]) && $productObj->medias[0]->id){
                         Media::whereId($productObj->medias[0]->id)->update([
                             'file_name' => $item[$ImageMainIndex],
@@ -506,7 +508,7 @@ class BulkController extends Controller
                             $media->save();
                         }
                     }
-                    
+
                  }
                 if($productObj){
                     ++$count;
@@ -541,7 +543,7 @@ class BulkController extends Controller
         $sizeIndex = 4;
         $groupIndex = 5;
         $priceIndex = 6;
-       
+
         $group_productObj = null;
 
         foreach ($master as $index => $item) {
@@ -557,7 +559,7 @@ class BulkController extends Controller
                     ++$count;
                 }
             }
-            
+
         }
 
         return back()->with('success', 'Good News! ' .$count. ' records Updated successfully!');
@@ -568,7 +570,7 @@ class BulkController extends Controller
 
     public function productBulkExport($products)
     {
-      
+
         // return $products;
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
@@ -586,7 +588,7 @@ class BulkController extends Controller
         } catch (Exception $e) {
             return;
         }
- 
+
     }
 
     // Export Product Data
@@ -595,38 +597,38 @@ class BulkController extends Controller
         try {
             {
                 if ($request->has('id')) {
-                    // Non Branded 
+                    // Non Branded
                     $products = Product::whereUserId($request->get('id'))->get();
                 }else{
                     $products = Product::whereUserId(auth()->id())->get();
                 }
-                
+
                 $products_array [] = array('Id','Model Code','Global Category','Global Sub-category','Product Name','Image_main','image_name_front','image_name_back','image_name_side1','image_name_side2','image_name_poster','Video URL','Description','Weight','weight_unit','length','width','height','length_unit','standard_carton_pcs','carton_weight_actual','unit','Customer_Price_without_GST','Shop_Price_VIP_Customer','Shop_Price_Reseller',"'mrp Incl tax'","'HSN Tax'",'HSN_Percnt','meta_description','meta_keywords','artwork_url','Manage Inventory (Yes or No Only)','Publish (it will be 0 for unpublish or 1 for publish)','Exclusive', );
-        
+
                 $custom_attribute = json_decode(auth()->user()->custom_attriute_columns);
                 // $products_array = $products_array[0],$custom_attribute);
                 foreach ($custom_attribute as $key => $value) {
                     array_push($products_array[0],$value);
                 }
-        
-        
-        
+
+
+
                 unset($custom_attribute[0],$custom_attribute[1],$custom_attribute[2]);
-                
-        
+
+
                 // magicstring($products_array);
-                
+
                 // return;
-        
+
                 $reseller_group = Group::whereUserId(auth()->id())->where('name',"Reseller")->first();
                 $vip_group = Group::whereUserId(auth()->id())->where('name',"VIP")->first();
                 foreach($products as $pkey => $product)
                 {
                     $usi = UserShopItem::whereUserId(auth()->id())->where('product_id',$product->id)->latest()->first();
                      $reseller_group_product = GroupProduct::where('group_id',$reseller_group->id??0)->where('product_id',$product->id)->latest()->first();
-        
+
                     $vip_group_product = GroupProduct::where('group_id',$vip_group->id??0)->where('product_id',$product->id)->latest()->first();
-                    
+
                     if ( $product->shipping != null) {
                         $dimensions = json_decode($product->shipping);
                         $height = $dimensions->height ?? null;
@@ -660,33 +662,33 @@ class BulkController extends Controller
                             'is_published' => 0
                         ]);
                     }
-        
-        
+
+
                     // $common_attribute = ['Colour','Size','Material'];
                     $color_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',1)->groupBy('attribute_value_id')->pluck('attribute_value_id');
                     $size_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',2)->groupBy('attribute_value_id')->pluck('attribute_value_id');
                     $material_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',3)->groupBy('attribute_value_id')->pluck('attribute_value_id');
-        
-        
+
+
                     $color_Val = [];
                     if ($color_array != null) {
                         foreach ($color_array as $key => $value) {
                             $color_Val[$key] = getAttruibuteValueById($value)->attribute_value;
-                        }                
+                        }
                     }else{
                         $color_Val = '';
                     }
-        
+
                     $size_Val = [];
                     if ($size_array != null) {
                         foreach ($size_array as $key => $value) {
                             $size_Val[$key] = getAttruibuteValueById($value)->attribute_value;
                         }
-        
+
                     }else{
                         $size_Val = '';
                     }
-        
+
                     $material_Val = [];
                     if ($material_array != null) {
                         foreach ($material_array as $key => $value) {
@@ -695,14 +697,14 @@ class BulkController extends Controller
                     }else{
                         $material_Val = '';
                     }
-                    
+
                     $PRODUCT_ATTRIBUTE_ARRAY = [];
                     if ($custom_attribute != null) {
                         foreach ($custom_attribute as $attributes) {
                             $id = getAttributeIdByName($attributes,auth()->id());
-                            
+
                             $attribute_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$id)->groupBy('attribute_value_id')->pluck('attribute_value_id');
-            
+
                             $ashu = [];
                             if ($attribute_array != null) {
                                 foreach ($attribute_array as $key => $value) {
@@ -711,7 +713,7 @@ class BulkController extends Controller
                             }else{
                                 $ashu = '';
                             }
-                            
+
                             $PRODUCT_ATTRIBUTE_ARRAY[$attributes] = implode("^^",$ashu);
                         }
                     }
@@ -755,13 +757,13 @@ class BulkController extends Controller
                         'Size' => implode("^^",$size_Val) ?? '',
                         "Material" => implode("^^",$material_Val) ?? '',
                     );
-        
+
                     foreach ($PRODUCT_ATTRIBUTE_ARRAY as $index => $value) {
-                        array_push($products_array[$pkey+1],$value);                
+                        array_push($products_array[$pkey+1],$value);
                     }
                 }
-                
-                
+
+
                 $this->productBulkExport($products_array);
                 return back()->with('success',' Export Excel File Successfully');
             }
@@ -789,7 +791,7 @@ class BulkController extends Controller
         } catch (Exception $e) {
             return;
         }
- 
+
     }
     public function groupProductBulkExport($group_products)
     {
@@ -810,11 +812,11 @@ class BulkController extends Controller
         } catch (Exception $e) {
             return;
         }
- 
+
     }
 
     function exportProductGroupData(){
-        
+
         $group_ids = Group::where('user_id',auth()->id())->pluck('id');
         $group_products = GroupProduct::whereIn('group_id',$group_ids)->get();
         $group_products_array [] = array("Id","Model Code","Product Name","Product Color","Product Size","Group Name","Customer Price");
@@ -837,7 +839,7 @@ class BulkController extends Controller
     }
 
     function exportInventoryStock(){
-        
+
         $products = Product::where('user_id',auth()->id())->get();
         $products_array[] = array("Id","Model No.","Product Name","Product Color","Product Size","Inventory");
         foreach($products as $product)
@@ -858,10 +860,10 @@ class BulkController extends Controller
     }
 
 
-   
+
     function bulkuserimportadd(Request $request) {
 
-        
+
         // echo "<pre>";
         // print_r($request->all());
         // echo "</pre>";
@@ -918,7 +920,7 @@ class BulkController extends Controller
         $gst_numberIndex = 27;
 
 
-      
+
 
         foreach ($master as $index => $items) {
             $row_number = $index + 3;
@@ -935,7 +937,7 @@ class BulkController extends Controller
             if (User::where('phone',$items[$PhoneIndex])->get()->count() != 0) {
                 return back()->with('error',' Phone Number Already Exist At Row '.$row_number);
             }
-            
+
             // checking Email Address
             if (User::where('email',$items[$EmailIndex])->get()->count() != 0) {
                 return back()->with('error',' Email Already Exist At Row '.$row_number);
@@ -962,9 +964,9 @@ class BulkController extends Controller
                 if(!$chk_code){
                 return redirect()->back()->with('error','This access code is invalid!');
                 }
-    
+
                 $chk_redeem = AccessCode::whereCode($items[$AccessCodeIndex])->where('redeemed_user_id','!=',null)->first();
-    
+
                 //  Check already redeemed
                 if($chk_redeem){
                     return redirect()->back()->with('error','This access code is already redeemed!');
@@ -977,7 +979,7 @@ class BulkController extends Controller
                 $mycustomer = 'no';
                 $mysupplier = 'yes';
                 $Filemanager = 'yes';
-                $addandedit = 'no'; 
+                $addandedit = 'no';
                 $bulkupload = 'no';
                 $pricegroup = 'no';
                 $managegroup = 'yes';
@@ -986,7 +988,7 @@ class BulkController extends Controller
                 $mycustomer = 'yes';
                 $mysupplier = 'no';
                 $Filemanager = 'yes';
-                $addandedit = 'yes'; 
+                $addandedit = 'yes';
                 $bulkupload = 'yes';
                 $pricegroup = 'yes';
                 $managegroup = 'yes';
@@ -997,13 +999,13 @@ class BulkController extends Controller
                 $mycustomer = 'no';
                 $mysupplier = 'yes';
                 $Filemanager = 'yes';
-                $addandedit = 'no';  
+                $addandedit = 'no';
                 $bulkupload = 'no';
                 $pricegroup = 'no';
                 $managegroup = 'yes';
                 $manangebrands = 'no';
             }
-        
+
             $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup ];
 
             $fb_link = trim($items[$FacebookIndex]);
@@ -1012,10 +1014,10 @@ class BulkController extends Controller
             $yt_link = trim($items[$YoutubeIndes]);
             $likedin_link = trim($items[$LinkedinIndex]);
             $pint_link = trim($items[$PinterestIndex]);
-            
-            $social_link = json_encode(array('fb_link' => $fb_link,'in_link' => $likedin_link ,'tw_link' => $tw_link , 'yt_link' => $yt_link,'insta_link' => $in_link,'pint_link' => $pint_link));    
 
-            
+            $social_link = json_encode(array('fb_link' => $fb_link,'in_link' => $likedin_link ,'tw_link' => $tw_link , 'yt_link' => $yt_link,'insta_link' => $in_link,'pint_link' => $pint_link));
+
+
             $name = trim($items[$NameofUserIndex]);
             $email = trim($items[$EmailIndex]);
             $phone = trim($items[$PhoneIndex]);
@@ -1024,11 +1026,11 @@ class BulkController extends Controller
             if ($items[$AccountPasswordIndex] != "" || $items[$AccountPasswordIndex] != null) {
                 $pass = Hash::make(trim($items[$AccountPasswordIndex]));
             }else{
-                $pass = $phone."@121".generateRandomStringNative(2); 
+                $pass = $phone."@121".generateRandomStringNative(2);
                 $pass = Hash::make($pass);
             }
 
-            
+
             $add_phone = json_encode(explode(',',$items[$AdditionalPhoneIndex]) );
             $catidNBD = $items[$catIdNBDIndex];
 
@@ -1037,8 +1039,8 @@ class BulkController extends Controller
             }else{
                 $is_supplier = 0;
             }
-            
-            
+
+
             //    DB::insert('insert into users (name,email,phone,gender,dob,password,demo_given,additional_numbers) values(?,?,?,?,?,?,0,?)',[$name,$email,$phone,$gender,$dob,$pass,$demo_given,$add_phone]);
 
             //  store user information
@@ -1052,7 +1054,7 @@ class BulkController extends Controller
                     'account_permission' => json_encode($permission_user),
                     'is_supplier' => $is_supplier,
                     'NBD_Cat_ID' => $catidNBD,
-            ]);       
+            ]);
             $user->syncRoles(3);
 
             // Getting User By Phone If object Not Created !!
@@ -1099,13 +1101,13 @@ class BulkController extends Controller
             ];
 
             $data->details = json_encode($arr);
-            $data->save();            
+            $data->save();
 
-            
+
             // assign new role to the user
             $userrole = 3;
             // $user->syncRoles($userrole);
-            
+
             // ! DO Not Change This
             // Assign Role as a User
 
@@ -1144,9 +1146,9 @@ class BulkController extends Controller
                 }else{
                     $shop_name =  $items[$NameofBusinessIndex]."'s Shop";
                 }
-            
+
                 // return $user->id;
-                                  
+
                 $story = [
                     'title' => 'About',
                     'cta_link' => '',
@@ -1157,7 +1159,7 @@ class BulkController extends Controller
                     'description' => $items[$BusinessDescriptionIndex],
                     'img' => '',
                 ];
-                
+
                 $user_shop = UserShop::create([
                     'user_id' => $user->id,
                     'name'=> $shop_name,
@@ -1173,7 +1175,7 @@ class BulkController extends Controller
                     'story' => json_encode($story),
                     'features' => json_encode($features),
                     'team' => json_encode($team),
-                    'email' => $user->email,    
+                    'email' => $user->email,
                     'social_links' => $social_link,
                     'embedded_code' =>urlencode($items[$EmbededCodeIndex])
                 ]);
@@ -1184,25 +1186,25 @@ class BulkController extends Controller
                  // Code Has
                  if ($items[$AccessCodeIndex] != null && $chk_code) {
 
-                    // Update Access Code 
+                    // Update Access Code
                     $chk_code->update([
-                        'redeemed_user_id' => $user->id,  
+                        'redeemed_user_id' => $user->id,
                         'redeemed_at' => now()
                     ]);
 
                     $user->update([
                         'is_supplier' => 1,
                     ]);
-                    
+
                 }else{
                     $user->update([
                         'is_supplier' => 0,
                     ]);
-                }          
-                
+                }
+
                 // Assign Trial Package
                 $package = Package::whereId(1)->first();
-                
+
                 if($package){
                     if($package->duration == null){
                             $duration = 30;
@@ -1224,7 +1226,7 @@ class BulkController extends Controller
             }
 
 
-            
+
         }
 
         if ($user_shop && $user) {
@@ -1233,12 +1235,12 @@ class BulkController extends Controller
             return redirect('panel/users/index')->with('error', 'Failed to create new user! Try again.');
         }
         echo "Error While Uploading Users!";
-    }   
+    }
 
 
     public function UserBulkExport($products)
     {
-      
+
         // return $products;
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
@@ -1256,12 +1258,12 @@ class BulkController extends Controller
         } catch (Exception $e) {
             return;
         }
- 
+
     }
 
-    
+
     function exportUserData(Request $request){
-        
+
         if (AuthRole() != 'Admin') {
             return back()->with("error","You Don't Have Permission to Access This Page !");
         }
@@ -1272,12 +1274,12 @@ class BulkController extends Controller
 
         $reseller_group = Group::whereUserId(auth()->id())->where('name',"Reseller")->first();
         $vip_group = Group::whereUserId(auth()->id())->where('name',"VIP")->first();
-        
+
         $users = User::role('User')->get();
 
         foreach($users as $user)
         {
-           
+
             $useraddress = UserAddress::where('user_id',$user->id)->first();
 
             if (isset($useraddress) && isset($useraddress) != "") {
@@ -1300,10 +1302,10 @@ class BulkController extends Controller
                 $gst_number = "";
                 $pincode = "";
             }
-            
+
             $usershop = UserShop::where('user_id',$user->id)->first();
 
-            if (isset($usershop)) {                
+            if (isset($usershop)) {
                 $contact_info = json_decode($usershop->contact_info);
                 $social_links = json_decode($usershop->social_links);
             }
@@ -1327,7 +1329,7 @@ class BulkController extends Controller
                 foreach (json_decode($user->additional_numbers) as $number) {
                    array_push($additional_numbers,$number);
                 }
-            } 
+            }
 
             magicstring($additional_numbers);
 
@@ -1342,8 +1344,8 @@ class BulkController extends Controller
                 'About the business' => $description->description ?? "",
                 'Phone1/ primary'  => $user->phone ?? "",
                 'Whatsapp' => $contact_info->whatsapp ?? "" ,
-                'addition_phone' => implode(", ",$additional_numbers) ?? "", 
-                'Business Email' => $user->email ?? "", 
+                'addition_phone' => implode(", ",$additional_numbers) ?? "",
+                'Business Email' => $user->email ?? "",
                 'Account Type' => $user->account_type ?? "" ,
                 'Facebook link' => $social_links->fb_link ??  "",
                 'Instagram link' => $social_links->insta_link ??  "",
@@ -1351,7 +1353,7 @@ class BulkController extends Controller
                 'Twitter link' => $social_links->tw_link ??  "",
                 'LinkedIn link' => $social_links->in_link ??  "",
                 'Pinterest link' => $social_links->pint_link ??  "",
-                'Map Code SRC' => $embedded_code ?? "",                
+                'Map Code SRC' => $embedded_code ?? "",
                 'Slider Preview' => $user->demo_given ?? "",
                 'Line 1 - Flat Office Number and Floor' => $address_1 ?? "",
                 'Line 2 - Building Name' => $address_2 ?? "",
@@ -1376,7 +1378,7 @@ class BulkController extends Controller
         // chk user have active package or not!
         if(AuthRole() == "User"){
             return back()->with('error','You do not have Permission To Access This Page!');
-        }    
+        }
 
         try {
             $count = 0;
@@ -1442,7 +1444,7 @@ class BulkController extends Controller
                 if (User::where('phone',$item[$Phone1Index])->where('id','!=',$user_id)->get()->count() != 0) {
                     return back()->with('error',' Phone Number Already Exist At Row '.$row_number);
                 }
-                
+
                 // checking Email Address
                 if (User::where('email',$item[$BusinessEmailIndex])->where('id','!=',$user_id)->get()->count() != 0) {
                     return back()->with('error',' Email Already Exist At Row '.$row_number);
@@ -1460,7 +1462,7 @@ class BulkController extends Controller
                 if ($item[$BusinessEmailIndex] == "") {
                     return back()->with('error',' Email is Require At Row '.$row_number);
                 }
-                
+
                 $NameofSPOC = $item[$NameofSPOCIndex];
                 $phone = $item[$Phone1Index];
                 $additional = explode(",",$item[$addition_phoneIndex]);
@@ -1471,12 +1473,12 @@ class BulkController extends Controller
                 $email = $item[$BusinessEmailIndex];
                 $catid = $item[$CatIDIndex];
 
-                
+
                 if ($item[$AccountTypeIndex] == 'reseller' || $item[$AccountTypeIndex] == 'customer') {
                     $mycustomer = 'no';
                     $mysupplier = 'yes';
                     $Filemanager = 'yes';
-                    $addandedit = 'no'; 
+                    $addandedit = 'no';
                     $bulkupload = 'no';
                     $pricegroup = 'no';
                     $managegroup = 'yes';
@@ -1485,7 +1487,7 @@ class BulkController extends Controller
                     $mycustomer = 'yes';
                     $mysupplier = 'no';
                     $Filemanager = 'yes';
-                    $addandedit = 'yes'; 
+                    $addandedit = 'yes';
                     $bulkupload = 'yes';
                     $pricegroup = 'yes';
                     $managegroup = 'yes';
@@ -1496,7 +1498,7 @@ class BulkController extends Controller
                     $mycustomer = 'no';
                     $mysupplier = 'yes';
                     $Filemanager = 'yes';
-                    $addandedit = 'no';  
+                    $addandedit = 'no';
                     $bulkupload = 'no';
                     $pricegroup = 'no';
                     $managegroup = 'yes';
@@ -1504,11 +1506,11 @@ class BulkController extends Controller
                 }
 
 
-            
+
                 $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup ];
 
                 $permission_user = json_encode($permission_user);
-    
+
                 // Todo: Updateing User
                 $user = DB::update('update users set name = ? , phone = ? , additional_numbers = ? ,email = ? ,account_type = ?,demo_given = ?,account_permission = ?,NBD_Cat_ID = ? where id = ?',[$NameofSPOC,$phone,$additional,$email,$AccountType,$demo_given,$permission_user,$catid,$user_id]);
 
@@ -1521,7 +1523,7 @@ class BulkController extends Controller
                 $yt_link = trim($item[$youtubelinkIndex]);
                 $likedin_link = trim($item[$LinkedinlinkIndex]);
                 $pint_link = trim($item[$PinterestIndex]);
-                
+
                 $slug = $item[$ShopURLnameIndex];
                 $NameofBusiness = $item[$NameOfBusinessIndex];
                 $about = $item[$AboutthebusinessIndex];
@@ -1544,7 +1546,7 @@ class BulkController extends Controller
                 ]);
 
                 $contact_info = json_encode($contact_info);
-                $social_link = json_encode(array('fb_link' => $fb_link,'in_link' => $likedin_link ,'tw_link' => $tw_link , 'yt_link' => $yt_link,'insta_link' => $in_link,'pint_link' => $pint_link)); 
+                $social_link = json_encode(array('fb_link' => $fb_link,'in_link' => $likedin_link ,'tw_link' => $tw_link , 'yt_link' => $yt_link,'insta_link' => $in_link,'pint_link' => $pint_link));
                 $mapcode = urlencode($item[$EmbededCodeIndex]);
 
                 // Todo: Updateing UserShop
@@ -1571,7 +1573,7 @@ class BulkController extends Controller
                     }
                 }
 
-                
+
                 $user_add = [
                     'address_1' => $item[$address_1Index],
                     'address_2' => $item[$address_2Index],
@@ -1602,11 +1604,11 @@ class BulkController extends Controller
                     // Todo: Updateing UserShop
                     $user_address = DB::update('update user_addresses set details = ? where user_id = ?',[$user_add,$user_id]);
                 }
-                
+
 
                 $count++;
             }
-            
+
             return back()->with('success',' Data Updated with Row '.$count);
 
         }
@@ -1614,7 +1616,7 @@ class BulkController extends Controller
             throw $th;
         }
 
-        
+
     }
 
 
@@ -1623,8 +1625,8 @@ class BulkController extends Controller
         // chk user have active package or not!
         if(AuthRole() == "User"){
             return back()->with('error','You do not have Permission To Access This Page!');
-        }    
-        
+        }
+
         try {
             $count = 0;
             $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file);
@@ -1707,7 +1709,7 @@ class BulkController extends Controller
                     $media->save();
                     $arr_images[] = $media->id;
                 }
-                
+
                 if(isset($item[$pro_img3]) && $item[$pro_img3] != null){
                     $media = new Media();
                     $media->tag = "Product_Image_By_admin";
@@ -1720,7 +1722,7 @@ class BulkController extends Controller
                     $media->save();
                     $arr_images[] = $media->id;
                 }
-                
+
                 if(isset($item[$pro_img4]) && $item[$pro_img4] != null){
                     $media = new Media();
                     $media->tag = "Product_Image_By_admin";
@@ -1746,7 +1748,7 @@ class BulkController extends Controller
                     $media->save();
                     $arr_images[] = $media->id;
                 }
-                
+
                 if(isset($item[$pro_img6]) && $item[$pro_img6] != null){
                     $media = new Media();
                     $media->tag = "Product_Image_By_admin";
@@ -1769,13 +1771,13 @@ class BulkController extends Controller
                         // $other->save();
                         $user_record =  getUserRecordByUserId($other->user_id);
                         $onsite_notification['user_id'] =  $other->user_id;
-                        $onsite_notification['title'] = "121 Team Made Change on ". NameById($user_id)." User's Product Images 
+                        $onsite_notification['title'] = "121 Team Made Change on ". NameById($user_id)." User's Product Images
                         $item[$product_idIndex] (Model-#All Product) , resulting in Get New Changes By Team 121 , review changes and publish." ;
                         $onsite_notification['link'] = route('panel.user_shop_items.edit')."/".$othershops->id;
                         pushOnSiteNotification($onsite_notification);
                     }
                 }
-                   
+
                 // Add images to UserShopItem
                 if(count($arr_images) > 0) {
                     $productObj->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
@@ -1786,7 +1788,7 @@ class BulkController extends Controller
                     ++$count;
                 }
             }
-         
+
             return redirect(route('panel.filemanager.index'))->with('success', 'Good News! '.$count.' records created successfully!');
 
 
@@ -1794,14 +1796,14 @@ class BulkController extends Controller
             return back()->with('error',"SomeThing Went Wrong While Trying to Upload $th");
         }
 
-        
-        
+
+
     }
 
 
-    
+
     public function inventoryExportDownloadBulkExport($products)
-    { 
+    {
         // return $products;
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
@@ -1822,7 +1824,7 @@ class BulkController extends Controller
             return;
         }
     }
-    
+
     // function inventoryExportDownload(Request $request){
     //     try {
     //         $products = Inventory::where('user_id',auth()->id())->get();
@@ -1862,7 +1864,7 @@ class BulkController extends Controller
     //                 if ($color_array != null) {
     //                     foreach ($color_array as $key => $value) {
     //                         $color_Val[$key] = getAttruibuteValueById($value)->attribute_value;
-    //                     }                
+    //                     }
     //                 }else{
     //                     $color_Val = '';
     //                 }
@@ -1873,7 +1875,7 @@ class BulkController extends Controller
     //                 if ($size_array != null) {
     //                     foreach ($size_array as $key => $value) {
     //                         $size_Val[$key] = getAttruibuteValueById($value)->attribute_value;
-    //                     }                
+    //                     }
     //                 }else{
     //                     $size_Val = '';
     //                 }
@@ -1885,7 +1887,7 @@ class BulkController extends Controller
     //                 if ($material_array != null) {
     //                     foreach ($material_array as $key => $value) {
     //                         $material_Val[$key] = getAttruibuteValueById($value)->attribute_value;
-    //                     }                
+    //                     }
     //                 }else{
     //                     $material_Val = '';
     //                 }
@@ -1895,9 +1897,9 @@ class BulkController extends Controller
     //                 if ($uncommonAttribute != null) {
     //                     foreach ($uncommonAttribute as $attributes) {
     //                         $id = getAttributeIdByName($attributes,auth()->id());
-                            
+
     //                         $attribute_array = ProductExtraInfo::where('product_id',$product->product_id)->where('attribute_id',$id)->groupBy('attribute_value_id')->pluck('attribute_value_id');
-            
+
     //                         $ashu = [];
     //                         if ($attribute_array != null) {
     //                             foreach ($attribute_array as $key => $value) {
@@ -1929,10 +1931,10 @@ class BulkController extends Controller
     //                 $final_array[] = array_merge($start_array[0],$PRODUCT_ATTRIBUTE_ARRAY,$end_array[0]);
 
     //             }
-                
+
     //             $this->inventoryExportDownloadBulkExport($final_array);
     //             return back()->with('success',' Export Excel File Successfully');
-                
+
     //     } catch (\Throwable $th) {
     //         throw $th;
     //         // echo $th;
@@ -1981,7 +1983,7 @@ class BulkController extends Controller
                     if ($color_array != null) {
                         foreach ($color_array as $key => $value) {
                             $color_Val[$key] = getAttruibuteValueById($value)->attribute_value;
-                        }                
+                        }
                     }else{
                         $color_Val = '';
                     }
@@ -1992,7 +1994,7 @@ class BulkController extends Controller
                     if ($size_array != null) {
                         foreach ($size_array as $key => $value) {
                             $size_Val[$key] = getAttruibuteValueById($value)->attribute_value;
-                        }                
+                        }
                     }else{
                         $size_Val = '';
                     }
@@ -2005,7 +2007,7 @@ class BulkController extends Controller
                     if ($material_array != null) {
                         foreach ($material_array as $key => $value) {
                             $material_Val[$key] = getAttruibuteValueById($value)->attribute_value;
-                        }                
+                        }
                     }else{
                         $material_Val = '';
                     }
@@ -2015,9 +2017,9 @@ class BulkController extends Controller
                     if ($uncommonAttribute != null) {
                         foreach ($uncommonAttribute as $attributes) {
                             $id = getAttributeIdByName($attributes,auth()->id());
-                            
+
                             $attribute_array = ProductExtraInfo::where('product_id',$product->product_id)->where('attribute_id',$id)->groupBy('attribute_value_id')->pluck('attribute_value_id');
-            
+
                             $ashu = [];
                             if ($attribute_array != null) {
                                 foreach ($attribute_array as $key => $value) {
@@ -2049,23 +2051,23 @@ class BulkController extends Controller
                     $final_array[] = array_merge($start_array[0],$PRODUCT_ATTRIBUTE_ARRAY,$end_array[0]);
 
                 }
-                
+
                 $this->inventoryExportDownloadBulkExport($final_array);
                 return back()->with('success',' Export Excel File Successfully');
-                
+
         } catch (\Throwable $th) {
             throw $th;
             // echo $th;
         }
     }
 
-    
+
     public function inventoryGroupBulkUpdate(Request $request)
     {
-   
+
         $count = 0;
         $row = 0;
-        
+
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file);
         $worksheet = $spreadsheet->getActiveSheet();
         $rows = [];
@@ -2087,13 +2089,13 @@ class BulkController extends Controller
 
         $BackupstockIndex = count($custom_attribute)+4;
         $stockIndex = count($custom_attribute)+5;
-        
+
         foreach ($master as $key => $item) {
             $TandA = [];
             $row = $key+1;
             // Checking Id Match with User or Not.
             $chk = Inventory::whereId($item[$idIndex])->first();
-            
+
             if ($chk->user_id != auth()->id()) {
                 return back()->with('error',"ID Not Match!! At Row ".$row);
             }
@@ -2104,7 +2106,7 @@ class BulkController extends Controller
             //     $products->prent_stock = $item[$stockIndex];
             //     $products->save();
             // }
-            
+
             // Start Updateing Inventory
             $chk->update([
                 'prent_stock' => $item[$BackupstockIndex] ?? 0,
@@ -2120,7 +2122,7 @@ class BulkController extends Controller
     // T&A Export and Update
 
     public function DeliveryExportDownloadBulkExport($products)
-    { 
+    {
         // return $products;
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
@@ -2152,7 +2154,7 @@ class BulkController extends Controller
 
                     $delivery_stock = TimeandActionModal::where('product_id',$product)->pluck('delivery_stock')->toArray();
                     $delivery_period = TimeandActionModal::where('product_id',$product)->pluck('delivery_period')->toArray();
-                    
+
                     $products_array[] = array(
                         'Id' => $product,
                         'Product Name' => $product_info->title ?? "",
@@ -2160,12 +2162,12 @@ class BulkController extends Controller
                         'Delivery stock (Use ^^ to Sparate)' => implode("^^",$delivery_stock),
                         'Delivery Period (Use ^^ to Sparate)' =>  implode("^^",$delivery_period),
                     );
-                    
+
                 }
 
                 $this->DeliveryExportDownloadBulkExport($products_array);
                 return back()->with('success',' Export Excel File Successfully');
-                
+
         } catch (\Throwable $th) {
             // throw $th;
             echo $th;
@@ -2174,10 +2176,10 @@ class BulkController extends Controller
 
     public function DeliveryGroupBulkUpdate(Request $request)
     {
-   
+
         $count = 0;
         $row = 0;
-        
+
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file);
         $worksheet = $spreadsheet->getActiveSheet();
         $rows = [];
@@ -2197,13 +2199,13 @@ class BulkController extends Controller
         $idIndex = 0;
         $ProductnameIndex = 1;
         $ModalCodeIndex = 2;
-        $deliveryQuantityIndex = 3; 
-        $deliveryPeriodIndex = 4; 
-        
+        $deliveryQuantityIndex = 3;
+        $deliveryPeriodIndex = 4;
+
         foreach ($master as $key => $item) {
             $TandA = [];
             $row = $key+1;
-        
+
             $chk = Product::whereId($item[$idIndex])->first();
             if ($chk->user_id != auth()->id()) {
                 return back()->with('error',"Product id not match at row :".$row);
@@ -2211,9 +2213,9 @@ class BulkController extends Controller
 
             if ($item[$deliveryQuantityIndex] != null || $item[$deliveryPeriodIndex] != null) {
                 // Exploding String
-                $deliveryStock = explode("^^",$item[$deliveryQuantityIndex]);   
+                $deliveryStock = explode("^^",$item[$deliveryQuantityIndex]);
                 $deliveryPeriod = explode("^^",$item[$deliveryPeriodIndex]);
-                
+
                 // Maching Count
                 if (count($deliveryPeriod) != count($deliveryStock)) {
                     return back()->with('error',"Delivery Time And Stock Not MAtch At Row ".$row);
@@ -2224,7 +2226,7 @@ class BulkController extends Controller
 
                 $usi = UserShopItem::where('product_id',$item[$idIndex])->first();
 
-                for ($i=0; $i < count($deliveryPeriod); $i++) { 
+                for ($i=0; $i < count($deliveryPeriod); $i++) {
                     TimeandActionModal::create([
                         'product_id' => $item[$idIndex],
                         'user_shop_item_id' => $usi->id,
@@ -2242,6 +2244,5 @@ class BulkController extends Controller
         return back()->with('success',$msg);
     }
 
-      
+
 }
- 

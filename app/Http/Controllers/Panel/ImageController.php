@@ -106,8 +106,6 @@ class ImageController extends Controller
     //         'image_path' => $output_path
     //     ];
     //     return response()->json($response);
-
-
     // }
 
 

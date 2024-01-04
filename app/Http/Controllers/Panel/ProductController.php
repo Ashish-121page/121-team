@@ -2508,7 +2508,7 @@ class ProductController extends Controller
 
             // magicstring($folderPath);
             // return;
-            $msg =  "Product Crated with Varient $count";
+            $msg =  "Product Created with Varient $count";
             // return back()->with('success',$msg);
 
 

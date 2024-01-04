@@ -497,7 +497,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     // Route::get('/export/product-bulk', [BulkController::class,'exportData'])->name('product.bulk-export');
 
 
-    Route::post('/update/product-bulk', [BulkController::class,'productBulkUpdate'])->name('product.bulk-update');
+    // Route::post('/update/product-bulk', [BulkController::class,'productBulkUpdate'])->name('product.bulk-update');
     Route::get('/export/product-group/bulk', [BulkController::class,'exportProductGroupData'])->name('product.group.bulk-export');
     Route::get('/export/inventory-group/bulk', [BulkController::class,'exportInventoryStock'])->name('inventory.group.bulk-export');
     Route::post('/update/inventory-group/bulk', [BulkController::class,'inventoryGroupBulkUpdate'])->name('inventory.group.bulk-update');

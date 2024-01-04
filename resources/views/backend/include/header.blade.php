@@ -184,7 +184,7 @@
 
                     <div class="dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="notiDropdown" role="button" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false" style="color:#ccd3e4;"><i class="ik ik-bell"></i>
+                            aria-haspopup="true" aria-expanded="false" style="color:#ccd3e4;"><i class="ik ik-bell" style="line-height:2.3 !important"></i>
                             @if($notification->count() > 0)
                             <span class="badge bg-primary">{{ $notification->count() }}</span>
                             @endif

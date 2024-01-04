@@ -155,7 +155,7 @@
 
                                 <button type="button" class="btn btn-outline-primary mx-1 openupload" data-bs-toggle="modal"
                                     data-bs-target="#uploadfiles" title="Upload Assets">
-                                    <i class="fas fa-cloud-upload-alt"></i> Upload
+                                    <i class="fas fa-cloud-upload-alt" style="line-height: 1 !important"></i> Upload
                                 </button>
 
                             </div>

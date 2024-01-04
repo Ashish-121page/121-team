@@ -115,8 +115,8 @@
                                 </div>
                             </div>
 
-                            <div class="row my-1 d-none">
-                                <div class="col-4 ">
+                            <div class="row my-1">
+                                <div class="col-4">
                                     Group Id:
                                 </div>
                                 <div class="col-8">
@@ -345,16 +345,9 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-4 col-6">
-                                                <div class="form-group">
-                                                    <label for="">Brand Name</label>
-                                                    <input type="text" name="brand_name" class="form-control" id="brand_name" value="{{  $prodextra->brand_name ?? old('brand_name') }}">
-                                                </div>
-                                            </div>
-
                                             <div class="col-md-4 col-6 mt-2">
                                                 <div class="form-group {{ $errors->has('hsn') ? 'has-error' : ''}}">
-                                                    <label for="hsn" class="control-label">HSN Code </label>
+                                                    <label for="hsn" class="control-label">HSN Tax </label>
                                                     <input class="form-control" name="hsn" type="number" id="hsn" value="{{ $product->hsn ?? old('hsn') }}" >
                                                 </div>
                                             </div>
@@ -367,18 +360,6 @@
                                                             <label class="input-group-text">%</label>
                                                         </span>
                                                     </div> --}}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 col-6 mt-2">
-                                                <div class="form-group ">
-                                                    <label for="search_keywords" class="control-label">Search keywords</label>
-                                                    <input  class="form-control TAGGROUP" name="search_keywords" type="text" id="search_keywords" value="{{  $product->search_keywords ?? old('search_keywords') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12 col-12 mt-2">
-                                                <div class="form-group {{ $errors->has('description') ? 'has-error' : ''}}">
-                                                    <label for="description" class="control-label">Product Description</label>
-                                                    <textarea name="description" class="form-control" id="description" cols="30" rows="10">{{ $product->description ?? old('description') }}</textarea>
                                                 </div>
                                             </div>
 
@@ -402,10 +383,178 @@
                                                 }
                                             @endphp
 
-                                            
+                                            {{-- ` PRODUCT WEIGHT GROUP --}}
+                                            <div class="col-12">
+                                                <div class="row mb-3">
+                                                    <div class="col-12">
+                                                        <hr class="text-primary">
+                                                        <label for="weightbox">
+                                                            <div class="h6">Product Weight</div>
+                                                        </label> &nbsp;&nbsp;&nbsp;
+                                                        <input type="checkbox" data-open="weightboxbtn" id="weightbox" class="hiddenbxbtn">
+                                                    </div>
+                                                </div>
+                                                <div class="row d-none" id="weightboxbtn">
+                                                    <div class="col-md-4 col-4">
+                                                        <div class="form-group ">
+                                                            <label for="gross_weight" class="control-label">Gross Weight</label>
+                                                            <input  class="form-control" name="gross_weight" type="text" id="gross_weight" value="{{ $shipping->gross_weight ?? old('gross_weight') }}">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4 col-4">
+                                                        <label class="">{{ __('Net Weight')}}</label>
+                                                        <div class="form-group">
+                                                            <input class="form-control" name="weight" type="nnumber" id="weight" value="{{ $shipping->weight ?? old('weight') }}">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4 col-4">
+                                                        <label class="">{{ __('Weight UOM')}}</label>
+                                                        {{-- Drop Down --}}
+                                                        {{-- gms/kgs --}}
+                                                        <div class="form-group">
+                                                            <select name="unit" id="unit" class="form-control select2">
+                                                                <option value="gms">gms</option>
+                                                                <option value="kgs">kgs</option>
+                                                            </select>
+                                                            {{-- <input class="form-control" name="unit" type="nnumber" id="unit" value="{{$shipping->unit ?? ''}}" > --}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {{-- ` PRODUCT DIMENSION GROUP --}}
+                                            <div class="col-12">
+                                                <div class="row mb-3">
+                                                    <div class="col-12">
+                                                        <hr class="text-primary">
+                                                        <label for="productdimensionsbx">
+                                                            <div class="h6">Product Dimensions</div>
+                                                        </label> &nbsp;&nbsp;&nbsp;
+                                                        <input type="checkbox" data-open="productdimensionsbox" id="productdimensionsbx" class="hiddenbxbtn">
+                                                    </div>
+                                                </div>
+                                                <div class="row d-none" id="productdimensionsbox">
+
+                                                    <div class="col-md-6 col-12">
+                                                        <label class="Length">{{ __('Length')}}</label>
+                                                        <div class="form-group">
+                                                            <input class="form-control" name="length" type="number" id="length" value="{{ $shipping->length ?? old('length') }}" >
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-12">
+                                                        <label class="">{{ __('Width')}}</label>
+                                                        <div class="form-group">
+                                                            <input class="form-control" name="width" type="number" id="width" value="{{ $shipping->width ?? old('width') }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-12">
+                                                        <label class="">{{ __('Height')}}</label>
+                                                            <div class="form-group">
+                                                                <input class="form-control" name="height" type="number" id="height" value="{{ $shipping->height ?? old('height') }}">
+                                                            </div>
+                                                        </div>
+
+                                                    <div class="col-md-6 col-12">
+                                                        <label class="">{{ __('LWH UOM')}}</label>
+                                                        {{-- DropDown --}}
+                                                        {{-- mm/cms/inches/feet --}}
+                                                        {{-- @dd($shipping) --}}
+                                                        <div class="form-group">
+                                                            <select name="length_unit" id="length_unit" class="form-control select2">
+                                                                <option value="mm">mm</option>
+                                                                <option value="cms">cms</option>
+                                                                <option value="inches">inches</option>
+                                                                <option value="feet">feet</option>
+                                                            </select>
+                                                            {{-- <input class="form-control" name="length_unit" type="nnumber" id="length_unit" value="{{$shipping->length_unit ?? ''}}" > --}}
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            {{-- ` PRODUCT PACKING --}}
+                                            <div class="col-12">
+                                                <div class="row mb-3">
+                                                    <div class="col-12">
+                                                        <hr class="text-primary">
+                                                        <label for="productpackingbx">
+                                                            <div class="h6">Product Packing</div>
+                                                        </label> &nbsp;&nbsp;&nbsp;
+                                                        <input type="checkbox" data-open="productpackingbox" id="productpackingbx" class="hiddenbxbtn">
+                                                    </div>
+                                                </div>
+
+                                                <div class="row d-none" id="productpackingbox">
+                                                    <div class="col-md-6 col-12">
+                                                        <label class="">{{ __('Standard Carton Pcs')}}</label>
+                                                            <div class="form-group">
+                                                                <input class="form-control" name="standard_carton" type="text" id="standard_carton" value="{{ $carton_details->standard_carton ?? old('standard_carton') }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 col-12">
+                                                            <label class="">{{ __('Carton Actual Weight')}}</label>
+                                                            <div class="form-group">
+                                                                <input class="form-control" name="carton_weight" type="number" id="carton_weight" value="{{ $carton_details->carton_weight ?? old('carton_weight') }}">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6 col-12">
+                                                            <label class="">{{ __('Carton Length')}}</label>
+                                                            <div class="form-group">
+                                                                <input class="form-control" name="carton_length" type="number" id="carton_length"  value="{{ $carton_details->carton_length ??  old('carton_length') }}" >
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6 col-12">
+                                                            <label class="">{{ __('Carton Width')}}</label>
+                                                            <div class="form-group">
+                                                                <input class="form-control" name="carton_width" type="number" id="carton_width" alue="{{  $carton_details->carton_width ?? old('carton_width') }}"  >
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6 col-12">
+                                                            <label class="">{{ __('Carton Height')}}</label>
+                                                            <div class="form-group">
+                                                                <input class="form-control" name="carton_height" type="number" id="carton_height" alue="{{ $carton_details->carton_height ?? old('carton_height') }}" >
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6 col-12">
+                                                            <label class="">{{ __('Carton Dimension Unit')}}</label>
+                                                            <div class="form-group">
+                                                            {{-- <input class="form-control" name="Carton_Dimensions_unit" type="nnumber" id="Carton_Dimensions_unit" value="{{$carton_details->Carton_Dimensions_unit ?? ''}}" > --}}
+
+                                                            <select name="Carton_Dimensions_unit" class="select2" id="Carton_Dimensions_unit">
+                                                                <option value="mm" @if ($carton_details->carton_height ?? 'mm') selected @endif>mm</option>
+                                                                <option value="cms" @if ($carton_details->carton_height ?? 'cms') selected @endif>cms</option>
+                                                                <option value="inches" @if ($carton_details->carton_height ?? 'inches') selected @endif>inches</option>
+                                                                <option value="feet" @if ($carton_details->carton_height ?? 'feet') selected @endif>feet</option>
+                                                            </select>
+
+                                                            </div>
+                                                        </div>
+
+
+                                                        <div class="col-md-6 col-12">
+                                                            <label class="">{{ __('UOM')}}</label>
+                                                            {{-- DropDown --}}
+                                                            {{-- pcs/ sets --}}
+                                                            <div class="form-group">
+                                                                {{-- <input class="form-control" name="carton_unit" type="nnumber" id="carton_unit" value="{{$carton_details->carton_unit ?? ''}}" > --}}
+                                                                <select name="carton_unit" id="carton_unit" class="form-control select2">
+                                                                    <option value="pcs">pcs</option>
+                                                                    <option value="sets">sets</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                </div>
+                                            </div>
 
                                             {{-- ` Shipping Details --}}
-                                            <div class="col-12 d-none">
+                                            <div class="col-12">
                                                 <div class="row mb-3">
                                                     <div class="col-12">
                                                         <hr class="text-primary">
@@ -440,7 +589,12 @@
                                                             <input  class="form-control" name="MBQ_unit" type="number" id="MBQ_unit" alue="{{ $prodextra->MBQ_unit ??  old('MBQ_unit') }}" >
                                                         </div>
                                                     </div>
-                                                    
+                                                    <div class="col-md-6 col-12">
+                                                        <div class="form-group ">
+                                                            <label for="remarks" class="control-label">Remarks</label>
+                                                            <input  class="form-control" name="remarks" type="text" id="remarks" alue="{{$prodextra->remarks ?? old('remarks') }}" >
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -865,209 +1019,74 @@
 
                         <div class="stepper d-none" data-index="3">
                             <div class="card">
-                                {{-- <div class="card-header">
+                                <div class="card-header">
                                     <h4>Basic Product Info</h4>
-                                </div> --}}
-                                <div class="row">
-                                    <div class="card-body">
-                                        <div class="row">
-
-                                            {{-- ` PRODUCT SAMPLE DETAILS GROUP --}}
-                                            <div class="col-12">
-                                                <div class="row mb-3">
-                                                    <div class="col-12">
-                                                        <hr class="text-primary">
-                                                        <label for="productsamplebx">
-                                                            <div class="h6">Sample Details</div>
-                                                        </label> &nbsp;&nbsp;&nbsp;
-                                                        <input type="checkbox" data-open="productsamplebox" id="productsamplebx" class="hiddenbxbtn" @if (($prodextra->sample_available ?? '') != '' || ($prodextra->sampling_time ?? '') != '')checked  @endif>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row d-none" id="productsamplebox">
-                                                    <div class="col-md-4 col-4 d-none">
-                                                        <div class="form-group ">
-                                                            <label for="sample_available" class="control-label">Sample / Stock available</label>
-                                                                <input  class="form-control" name="sample_available" type="text" id="sample_available" value="{{$prodextra->sample_available ?? ''}}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4 col-4">
-                                                        <div class="form-group ">
-                                                            <label for="sample_year" class="control-label">Sample Year</label>
-                                                                <select name="sample_year" id="sample_year" class="form-control select2">
-                                                                    <option value="">Select Year</option>
-                                                                    @php
-                                                                        $selectedYear = $prodextra->sample_year ?? '';
-                                                                    @endphp
-                                                                    @for ($i = date('Y'); $i >= 1985; $i--)
-                                                                        <option value="{{ $i }}" @if ($selectedYear == $i) selected @endif >{{ $i }}</option>
-                                                                    @endfor
-                                                                </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4 col-4">
-                                                        <div class="form-group ">
-                                                            <label for="sample_month" class="control-label">Sample Month</label>
-                                                            {{-- <input  class="form-control" name="sample_month" type="text" id="sample_month" value="{{$prodextra->sample_month ?? ''}}" > --}}
-
-                                                            <select name="sample_month" id="sample_month" class="select2">
-
-                                                                <option value="">Select Sample Month</option>
-                                                                @php
-                                                                    $selectedMonth = $prodextra->sample_month ?? '';
-                                                                @endphp
-                                                                    @foreach ([
-                                                                        'January' => 'January',
-                                                                        'February' => 'February',
-                                                                        'March' => 'March',
-                                                                        'April' => 'April',
-                                                                        'May' => 'May',
-                                                                        'June' => 'June',
-                                                                        'July' => 'July',
-                                                                        'August' => 'August',
-                                                                        'September' => 'September',
-                                                                        'October' => 'October',
-                                                                        'November' => 'November',
-                                                                        'December' => 'December',
-                                                                    ] as $monthValue => $monthName)
-                                                                        {{-- <option value="{{ $monthValue }}" >{{ $monthName }}</option> --}}
-                                                                        <option value="{{ $monthValue }}" @if ($selectedMonth == $monthValue) selected @endif>{{ $monthName }}</option>
-                                                                    @endforeach
-                                                            </select>
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4 col-4">
-                                                        <div class="form-group ">
-                                                            <label for="sampling_time" class="control-label">Sampling time</label>
-                                                            <input  class="form-control" name="sampling_time" type="text" id="sampling_time" value="{{$prodextra->sampling_time ?? ''}}">
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col-md-4 col-4 " id="productexclusivebuyernamebox">
-                                                        <div class="form-group">
-                                                            <label for="exclusive_buyer_name" class="control-label">Exclusive Buyer Name</label>
-                                                            <input  class="form-control" name="exclusive_buyer_name" type ="text" id="exclusive_buyer_name" value="{{$prodextra->exclusive_buyer_name ?? '' }}" >
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12 col-12">
+                                            <div class="form-group {{ $errors->has('description') ? 'has-error' : ''}}">
+                                                <label for="description" class="control-label">Product Description</label>
+                                                <textarea name="description" class="form-control" id="description" cols="30" rows="10">{{ $product->description ?? old('description') }}</textarea>
                                             </div>
-
-                                            {{--`Theme Collection from essentials  --}}
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h3>Theme Collection</h3>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="row">
-                                                            <div class="col-md-4 col-4"required >
-                                                                <div class="form-group ">
-                                                                    <label for="collection_name" class="control-label">Theme / Collection Name</label >
-                                                                    <input  class="form-control" name="collection_name" type="text" id="collection_name" value="{{ $prodextra->collection_name ?? '' }}" >
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4 col-4">
-                                                                <div class="form-group">
-                                                                    <label for="season_month" class="control-label">Season / Month</label >
-                                                                    {{-- <input  class="form-control" name="season_month" type="text" id="season_month" value="{{$prodextra->season_month ?? '' }}" > --}}
-                                                                    <select name="season_month" id="season_month" class="select2">
-                                                                        <option value="">Select Sourcing Month</option>
-                                                                        @php
-                                                                            $selectedMonth = $prodextra->season_month ?? '';
-                                                                        @endphp
-                                                                        @foreach ([
-                                                                            'January' => 'January',
-                                                                            'February' => 'February',
-                                                                            'March' => 'March',
-                                                                            'April' => 'April',
-                                                                            'May' => 'May',
-                                                                            'June' => 'June',
-                                                                            'July' => 'July',
-                                                                            'August' => 'August',
-                                                                            'September' => 'September',
-                                                                            'October' => 'October',
-                                                                            'November' => 'November',
-                                                                            'December' => 'December',
-                                                                        ] as $monthValue => $monthName)
-                                                                            <option value="{{ $monthValue }}" @if ($selectedMonth == $monthValue) selected @endif>{{ $monthName }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4 col-4">
-                                                                <div class="form-group ">
-                                                                    <label for="season_year">Theme / Collection Year</label label >
-                                                                    {{-- <input class="form-control" name="season_year" type="number" id="season_year" value= "{{ $prodextra->season_year ?? '0' }}"  required> --}}
-                                                                    {{-- <select id="season_year"></select> --}}
-                                                                    <select name="season_year" id="season_year" class="form-control select2">
-                                                                        <option value="">Select Year</option>
-                                                                        {{-- <option value="{{ $option->id }}" @if ($option->id == $prodextra->season_year) selected
-                                                                            @endif>{{  $option->name ?? ''}}</option> --}}
-                                                                        @php
-                                                                            $selectedYear = $prodextra->season_year ?? '';
-                                                                        @endphp
-                                                                        @for ($i = date('Y'); $i >= 1985; $i--)
-                                                                            <option value="{{ $i }}" @if ($selectedYear == $i) selected @endif>{{ $i }}</option>
-                                                                        @endfor
-                                                                    </select>
-
-
-
-
-                                                                </div>
-                                                            </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-
-                                            {{-- -- Custom Fields of User 4 ` --}}
-                                            @if (in_array('4', $fileds_sections))
-                                                <div class="col-12">
-                                                    <div class="h5">Custom Cols</div>
-                                                </div>
-                                                @if ($user_custom_fields != null)
-                                                    <div class="col-12">
-                                                        <div class="row">
-                                                            @foreach ($user_custom_fields as $user_custom_field)
-                                                                @if ($user_custom_field['ref_section'] === '4')
-                                                                    <div class="col-6">
-                                                                        <div class="form-group">
-                                                                            <label
-                                                                                for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
-                                                                            {!! $user_custom_field['tag'] !!}
-                                                                        </div>
-                                                                    </div>
-                                                                @endif
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            @endif
-
-                                            <div class="col-md-4 col-6 d-none">
-                                                <div class="form-group">
-                                                    <label for="">Video Url </label>
-                                                    <input type="url" name="video_url" class="form-control" id="video_url" value="{{ old('video_url') }}">
-                                                </div>
-                                            </div>
-
-
-                                            <div class="col-md-4 col-6 d-none">
-                                                <div class="form-group {{ $errors->has('artwork_url') ? 'has-error' : ''}}">
-                                                    <label for="artwork_url" class="control-label">Art Work Reference</label>
-                                                    <input class="form-control" name="artwork_url" type="url" id="artwork_url" value="{{old('artwork_url')}}" placeholder="Enter Artwork URL" >
-                                                </div>
-                                            </div>
-
-
-
-
                                         </div>
+
+                                        <div class="col-md-4 col-6">
+                                            <div class="form-group ">
+                                                <label for="search_keywords" class="control-label">Search keywords</label>
+                                                <input  class="form-control TAGGROUP" name="search_keywords" type="text" id="search_keywords" value="{{  $product->search_keywords ?? old('search_keywords') }}">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 col-6">
+                                            <div class="form-group">
+                                                <label for="">Brand Name</label>
+                                                <input type="text" name="brand_name" class="form-control" id="brand_name" value="{{  $prodextra->brand_name ?? old('brand_name') }}">
+                                            </div>
+                                        </div>
+
+                                        {{-- -- Custom Fields of User 4 ` --}}
+                                        @if (in_array('4', $fileds_sections))
+                                            <div class="col-12">
+                                                <div class="h5">Custom Cols</div>
+                                            </div>
+                                            @if ($user_custom_fields != null)
+                                                <div class="col-12">
+                                                    <div class="row">
+                                                        @foreach ($user_custom_fields as $user_custom_field)
+                                                            @if ($user_custom_field['ref_section'] === '4')
+                                                                <div class="col-6">
+                                                                    <div class="form-group">
+                                                                        <label
+                                                                            for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
+                                                                        {!! $user_custom_field['tag'] !!}
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endif
+
+                                        <div class="col-md-4 col-6 d-none">
+                                            <div class="form-group">
+                                                <label for="">Video Url </label>
+                                                <input type="url" name="video_url" class="form-control" id="video_url" value="{{ old('video_url') }}">
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-md-4 col-6 d-none">
+                                            <div class="form-group {{ $errors->has('artwork_url') ? 'has-error' : ''}}">
+                                                <label for="artwork_url" class="control-label">Art Work Reference</label>
+                                                <input class="form-control" name="artwork_url" type="url" id="artwork_url" value="{{old('artwork_url')}}" placeholder="Enter Artwork URL" >
+                                            </div>
+                                        </div>
+
+
+
+
                                     </div>
                                 </div>
                             </div>
@@ -1101,179 +1120,90 @@
                                             </div>
                                         </div>
 
-                                            
+                                            <div class="col-md-6 col-12 d-none" id="productexclusivebuyernamebox">
+                                                <div class="form-group">
+                                                    <label for="exclusive_buyer_name">Exclusive Buyer Name</label>
+                                                    <input  class="form-control" name="exclusive_buyer_name" type ="col-md-6 col-12"text" id="exclusive_buyer_name" value="{{$prodextra->exclusive_buyer_name ?? '' }}" >
+                                                </div>
+                                            </div>
                                     </div>
                                 </div>
 
-                                {{-- ` PRODUCT WEIGHT GROUP --}}
+
+                                {{-- ` PRODUCT SAMPLE DETAILS GROUP --}}
                                 <div class="col-12">
                                     <div class="row mb-3">
                                         <div class="col-12">
                                             <hr class="text-primary">
-                                            <label for="weightbox">
-                                                <div class="h6">Product Weight</div>
+                                            <label for="productsamplebx">
+                                                <div class="h6">Sample Details</div>
                                             </label> &nbsp;&nbsp;&nbsp;
-                                            <input type="checkbox" data-open="weightboxbtn" id="weightbox" class="hiddenbxbtn">
+                                            <input type="checkbox" data-open="productsamplebox" id="productsamplebx" class="hiddenbxbtn" @if (($prodextra->sample_available ?? '') != '' || ($prodextra->sampling_time ?? '') != '')checked  @endif>
                                         </div>
                                     </div>
-                                    <div class="row d-none" id="weightboxbtn">
+
+                                    <div class="row d-none" id="productsamplebox">
                                         <div class="col-md-4 col-4">
                                             <div class="form-group ">
-                                                <label for="gross_weight" class="control-label">Gross Weight</label>
-                                                <input  class="form-control" name="gross_weight" type="text" id="gross_weight" value="{{ $shipping->gross_weight ?? old('gross_weight') }}">
+                                                <label for="sample_available" class="control-label">Sample / Stock available</label>
+                                                    <input  class="form-control" name="sample_available" type="text" id="sample_available" value="{{$prodextra->sample_available ?? ''}}">
                                             </div>
                                         </div>
-
                                         <div class="col-md-4 col-4">
-                                            <label class="">{{ __('Net Weight')}}</label>
-                                            <div class="form-group">
-                                                <input class="form-control" name="weight" type="nnumber" id="weight" value="{{ $shipping->weight ?? old('weight') }}">
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4 col-4">
-                                            <label class="">{{ __('Weight UOM')}}</label>
-                                            {{-- Drop Down --}}
-                                            {{-- gms/kgs --}}
-                                            <div class="form-group">
-                                                <select name="unit" id="unit" class="form-control select2">
-                                                    <option value="gms">gms</option>
-                                                    <option value="kgs">kgs</option>
-                                                </select>
-                                                {{-- <input class="form-control" name="unit" type="nnumber" id="unit" value="{{$shipping->unit ?? ''}}" > --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- ` PRODUCT DIMENSION GROUP --}}
-                                <div class="col-12">
-                                    <div class="row mb-3">
-                                        <div class="col-12">
-                                            <hr class="text-primary">
-                                            <label for="productdimensionsbx">
-                                                <div class="h6">Product Dimensions</div>
-                                            </label> &nbsp;&nbsp;&nbsp;
-                                            <input type="checkbox" data-open="productdimensionsbox" id="productdimensionsbx" class="hiddenbxbtn">
-                                        </div>
-                                    </div>
-                                    <div class="row d-none" id="productdimensionsbox">
-
-                                        <div class="col-md-6 col-12">
-                                            <label class="Length">{{ __('Length')}}</label>
-                                            <div class="form-group">
-                                                <input class="form-control" name="length" type="number" id="length" value="{{ $shipping->length ?? old('length') }}" >
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-12">
-                                            <label class="">{{ __('Width')}}</label>
-                                            <div class="form-group">
-                                                <input class="form-control" name="width" type="number" id="width" value="{{ $shipping->width ?? old('width') }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-12">
-                                            <label class="">{{ __('Height')}}</label>
-                                                <div class="form-group">
-                                                    <input class="form-control" name="height" type="number" id="height" value="{{ $shipping->height ?? old('height') }}">
-                                                </div>
-                                            </div>
-
-                                        <div class="col-md-6 col-12">
-                                            <label class="">{{ __('LWH UOM')}}</label>
-                                            {{-- DropDown --}}
-                                            {{-- mm/cms/inches/feet --}}
-                                            {{-- @dd($shipping) --}}
-                                            <div class="form-group">
-                                                <select name="length_unit" id="length_unit" class="form-control select2">
-                                                    <option value="mm">mm</option>
-                                                    <option value="cms">cms</option>
-                                                    <option value="inches">inches</option>
-                                                    <option value="feet">feet</option>
-                                                </select>
-                                                {{-- <input class="form-control" name="length_unit" type="nnumber" id="length_unit" value="{{$shipping->length_unit ?? ''}}" > --}}
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                {{-- ` PRODUCT PACKING --}}
-                                <div class="col-12">
-                                    <div class="row mb-3">
-                                        <div class="col-12">
-                                            <hr class="text-primary">
-                                            <label for="productpackingbx">
-                                                <div class="h6">Product Packing</div>
-                                            </label> &nbsp;&nbsp;&nbsp;
-                                            <input type="checkbox" data-open="productpackingbox" id="productpackingbx" class="hiddenbxbtn" @if(($carton_details->standard_carton ?? '') != '' || ($carton_details->carton_weight ?? '') != '' || ($carton_details->carton_length ?? '') != '' || ($carton_details->carton_width ??  '') != '' || ($carton_details->carton_height ?? '') != '') checked  @endif>
-                                        </div>
-                                    </div>
-                                    <div class="row d-none" id="productpackingbox">
-                                        <div class="col-md-6 col-12">
-                                            <label class="">{{ __('Standard Carton Pcs')}}</label>
-                                                <div class="form-group">
-                                                    <input class="form-control" name="standard_carton" type="text" id="standard_carton" value="{{ $carton_details->standard_carton ?? old('standard_carton') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 col-12">
-                                                <label class="">{{ __('Carton Actual Weight')}}</label>
-                                                <div class="form-group">
-                                                    <input class="form-control" name="carton_weight" type="number" id="carton_weight" value="{{ $carton_details->carton_weight ?? old('carton_weight') }}">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-6 col-12">
-                                                <label class="">{{ __('Carton Length')}}</label>
-                                                <div class="form-group">
-                                                    <input class="form-control" name="carton_length" type="number" id="carton_length"  value="{{ $carton_details->carton_length ??  old('carton_length') }}" >
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-6 col-12">
-                                                <label class="">{{ __('Carton Width')}}</label>
-                                                <div class="form-group">
-                                                    <input class="form-control" name="carton_width" type="number" id="carton_width" alue="{{  $carton_details->carton_width ?? old('carton_width') }}"  >
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-6 col-12">
-                                                <label class="">{{ __('Carton Height')}}</label>
-                                                <div class="form-group">
-                                                    <input class="form-control" name="carton_height" type="number" id="carton_height" alue="{{ $carton_details->carton_height ?? old('carton_height') }}" >
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-6 col-12">
-                                                <label class="">{{ __('Carton Dimension Unit')}}</label>
-                                                <div class="form-group">
-                                                {{-- <input class="form-control" name="Carton_Dimensions_unit" type="nnumber" id="Carton_Dimensions_unit" value="{{$carton_details->Carton_Dimensions_unit ?? ''}}" > --}}
-
-                                                <select name="Carton_Dimensions_unit" class="select2" id="Carton_Dimensions_unit">
-                                                    <option value="mm" @if ($carton_details->carton_height ?? 'mm') selected @endif>mm</option>
-                                                    <option value="cms" @if ($carton_details->carton_height ?? 'cms') selected @endif>cms</option>
-                                                    <option value="inches" @if ($carton_details->carton_height ?? 'inches') selected @endif>inches</option>
-                                                    <option value="feet" @if ($carton_details->carton_height ?? 'feet') selected @endif>feet</option>
-                                                </select>
-
-                                                </div>
-                                            </div>
-
-
-                                            <div class="col-md-6 col-12">
-                                                <label class="">{{ __('UOM')}}</label>
-                                                {{-- DropDown --}}
-                                                {{-- pcs/ sets --}}
-                                                <div class="form-group">
-                                                    {{-- <input class="form-control" name="carton_unit" type="nnumber" id="carton_unit" value="{{$carton_details->carton_unit ?? ''}}" > --}}
-                                                    <select name="carton_unit" id="carton_unit" class="form-control select2">
-                                                        <option value="pcs">pcs</option>
-                                                        <option value="sets">sets</option>
+                                            <div class="form-group ">
+                                                <label for="sample_year" class="control-label">Sample Year</label>
+                                                    <select name="sample_year" id="sample_year" class="form-control select2">
+                                                        <option value="">Select Year</option>
+                                                        @php
+                                                            $selectedYear = $prodextra->sample_year ?? '';
+                                                        @endphp
+                                                        @for ($i = date('Y'); $i >= 1985; $i--)
+                                                            <option value="{{ $i }}" @if ($selectedYear == $i) selected @endif >{{ $i }}</option>
+                                                        @endfor
                                                     </select>
-                                                </div>
                                             </div>
+                                        </div>
+                                        <div class="col-md-4 col-4">
+                                            <div class="form-group ">
+                                                <label for="sample_month" class="control-label">Sample Month</label>
+                                                {{-- <input  class="form-control" name="sample_month" type="text" id="sample_month" value="{{$prodextra->sample_month ?? ''}}" > --}}
+
+                                                <select name="sample_month" id="sample_month" class="select2">
+
+                                                    <option value="">Select Sample Month</option>
+                                                    @php
+                                                        $selectedMonth = $prodextra->sample_month ?? '';
+                                                    @endphp
+                                                        @foreach ([
+                                                            'January' => 'January',
+                                                            'February' => 'February',
+                                                            'March' => 'March',
+                                                            'April' => 'April',
+                                                            'May' => 'May',
+                                                            'June' => 'June',
+                                                            'July' => 'July',
+                                                            'August' => 'August',
+                                                            'September' => 'September',
+                                                            'October' => 'October',
+                                                            'November' => 'November',
+                                                            'December' => 'December',
+                                                        ] as $monthValue => $monthName)
+                                                            {{-- <option value="{{ $monthValue }}" >{{ $monthName }}</option> --}}
+                                                             <option value="{{ $monthValue }}" @if ($selectedMonth == $monthValue) selected @endif>{{ $monthName }}</option>
+                                                        @endforeach
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-4">
+                                            <div class="form-group ">
+                                                <label for="sampling_time" class="control-label">Sampling time</label>
+                                                <input  class="form-control" name="sampling_time" type="text" id="sampling_time" value="{{$prodextra->sampling_time ?? ''}}">
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
-
 
                                 <div class="col-12">
                                     <div class="row mb-3">
@@ -1356,16 +1286,74 @@
 
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                                {{--`Theme Collection from essentials  --}}
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3>Theme Collection</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                                <div class="col-md-4 col-4"required >
+                                                    <div class="form-group ">
+                                                        <label for="collection_name" class="control-label">Theme / Collection Name</label >
+                                                        <input  class="form-control" name="collection_name" type="text" id="collection_name" value="{{ $prodextra->collection_name ?? '' }}" >
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-4">
+                                                    <div class="form-group">
+                                                        <label for="season_month" class="control-label">Season / Month</label >
+                                                        {{-- <input  class="form-control" name="season_month" type="text" id="season_month" value="{{$prodextra->season_month ?? '' }}" > --}}
+                                                        <select name="season_month" id="season_month" class="select2">
+                                                            <option value="">Select Sourcing Month</option>
+                                                            @php
+                                                                $selectedMonth = $prodextra->season_month ?? '';
+                                                            @endphp
+                                                            @foreach ([
+                                                                'January' => 'January',
+                                                                'February' => 'February',
+                                                                'March' => 'March',
+                                                                'April' => 'April',
+                                                                'May' => 'May',
+                                                                'June' => 'June',
+                                                                'July' => 'July',
+                                                                'August' => 'August',
+                                                                'September' => 'September',
+                                                                'October' => 'October',
+                                                                'November' => 'November',
+                                                                'December' => 'December',
+                                                            ] as $monthValue => $monthName)
+                                                                <option value="{{ $monthValue }}" @if ($selectedMonth == $monthValue) selected @endif>{{ $monthName }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-4">
+                                                    <div class="form-group ">
+                                                        <label for="season_year">Theme / Collection Year</label label >
+                                                        {{-- <input class="form-control" name="season_year" type="number" id="season_year" value= "{{ $prodextra->season_year ?? '0' }}"  required> --}}
+                                                        {{-- <select id="season_year"></select> --}}
+                                                        <select name="season_year" id="season_year" class="form-control select2">
+                                                            <option value="">Select Year</option>
+                                                            {{-- <option value="{{ $option->id }}" @if ($option->id == $prodextra->season_year) selected
+                                                                @endif>{{  $option->name ?? ''}}</option> --}}
+                                                            @php
+                                                                $selectedYear = $prodextra->season_year ?? '';
+                                                            @endphp
+                                                            @for ($i = date('Y'); $i >= 1985; $i--)
+                                                                <option value="{{ $i }}" @if ($selectedYear == $i) selected @endif>{{ $i }}</option>
+                                                            @endfor
+                                                        </select>
 
-                                        <div class="col-md-6 col-12">
-                                            <div class="form-group ">
-                                                <label for="remarks" class="control-label">Remarks</label>
-                                                <input  class="form-control" name="remarks" type="text" id="remarks" alue="{{$prodextra->remarks ?? old('remarks') }}" >
-                                            </div>
+
+
+
+                                                    </div>
+                                                </div>
                                         </div>
                                     </div>
                                 </div>
-                                
                                 {{-- -- Custom Fields of User 5 ` --}}
                                 @if (in_array('5', $fileds_sections))
                                     <div class="col-12">

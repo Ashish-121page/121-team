@@ -2174,8 +2174,12 @@ if (!function_exists('exchangerate')) {
 
 
 if (!function_exists('getAttributeIdByName')) {
-    function getAttributeIdByName($name,$user_id = null){
-        return ProductAttribute::where('name',$name)->where('user_id',$user_id)->first()->id ?? 0;
+    function getAttributeIdByName($name,$user_id = null,$type = 'single') {
+        if ($type == 'single') {
+            return ProductAttribute::where('name',$name)->where('user_id',$user_id)->first()->id ?? 0;
+        }else{
+            return ProductAttribute::where('name',$name)->where('user_id',$user_id)->first();
+        }
     }
 }
 
