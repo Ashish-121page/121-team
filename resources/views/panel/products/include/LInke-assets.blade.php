@@ -8,31 +8,9 @@
             <div class="modal-body">
 
                 <form>
-                    {{-- <div class="table-responsive"> --}}
-                        <div class="mb-3">
-                            <input type="text" name="searchbyname" id="searchbyname" placeholder="Search by File Name" class="form-control">
-                        </div>
-                        {{-- <table class="table">
-
-                            <thead>
-                                <tr>
-                                    <th scope="col"> # </th>
-                                    <th scope="col"> Preview </th>
-                                    <th scope="col"> Filename </th>
-                                    <th scope="col"> </th>
-                                </tr>
-                            </thead>
-                            <tbody id="updateseachassets">
-
-                                @include('panel.products.include.iframe.link-assets')
-
-
-                            </tbody>
-                        </table>
-                    </div> --}}
-
-
-
+                    <div class="mb-3">
+                        <input type="text" name="searchbyname" id="searchbyname" placeholder="Search by File Name" class="form-control">
+                    </div>
                     <div class="row">
                         <div class="col-12 d-flex flex-column justify-content-center">
                             <div class="row" id="updateseachassets">
@@ -42,7 +20,6 @@
                             <div class="row">
 
                             </div>
-
                         </div>
                     </div>
 

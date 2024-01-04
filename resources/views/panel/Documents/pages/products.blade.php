@@ -5,8 +5,6 @@
             <div class="card" style="width: 18rem;">
                 <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" class="card-img-top" alt="..." style="height:200px; background-color: #ffffff; object-fit: contain">
 
-
-
                 <div class="card-body" style="position: relative">
                     <div>
                         <b>Model Code</b>: {{ $product->model_code }}
@@ -41,3 +39,11 @@
         </div>
     @endforelse
 </div> {{-- -- End of Row --}}
+
+<div class="row mt-4">
+    <div class="col-12">
+        {{ $products->links() }}
+    </div>
+</div>
+
+

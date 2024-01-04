@@ -7,6 +7,7 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
 use App\Models\shorturl;
 use App\Models\TimeandActionModal;
+use App\Models\Quotation;
 use App\Models\CustomFields;
 use Carbon\Carbon;
 use Twilio\Rest\Client;
@@ -1965,6 +1966,21 @@ if (!function_exists('checkLockedEnquiry')) {
 
 
 
+if (!function_exists('checkQuoteSlug')) {   
+    function checkQuoteSlug($mark, $num, $userid)
+    {
+        $slug = $mark . "/" . $num;
+        $chk = Quotation::where('user_id', $userid)->where('user_slug', $slug)->first();
+        if ($chk == null) {
+            return $slug;
+        }
+        $num = $num + 1;
+        return checkQuoteSlug($mark, $num, $userid); // Added return statement
+    }
+}
+
+
+
 // Gettign Product Attribute value Name
 if (!function_exists('getAttruibuteValueById')) {
     function getAttruibuteValueById($id) {
@@ -2174,8 +2190,12 @@ if (!function_exists('exchangerate')) {
 
 
 if (!function_exists('getAttributeIdByName')) {
-    function getAttributeIdByName($name,$user_id = null){
-        return ProductAttribute::where('name',$name)->where('user_id',$user_id)->first()->id ?? 0;
+    function getAttributeIdByName($name,$user_id = null,$type = 'single') {
+        if ($type == 'single') {
+            return ProductAttribute::where('name',$name)->where('user_id',$user_id)->first()->id ?? 0;
+        }else{
+            return ProductAttribute::where('name',$name)->where('user_id',$user_id)->first();
+        }
     }
 }
 

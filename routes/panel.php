@@ -53,6 +53,7 @@ use App\Models\UserShopItem;
 |
 */
 
+// Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], function () {
 Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], function () {
     // Backend Route Start-------------------------------------------------------------------------------------
     Route::get('/clear-cache', [HomeController::class,'clearCache']);
@@ -261,6 +262,11 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
         Route::post('update/custom/fields', [settingController::class,'Updatecustomfields'])->name('update.custom.fields');
         Route::get('remove/custom/fields/{fieldId}', [settingController::class,'removecustomfields'])->name('remove.custom.fields');
+        
+        
+        Route::post('quot/setting', [settingController::class,'updateQuotsetting'])->name('quot.setting');
+        
+
 
     });
 
@@ -497,7 +503,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     // Route::get('/export/product-bulk', [BulkController::class,'exportData'])->name('product.bulk-export');
 
 
-    Route::post('/update/product-bulk', [BulkController::class,'productBulkUpdate'])->name('product.bulk-update');
+    // Route::post('/update/product-bulk', [BulkController::class,'productBulkUpdate'])->name('product.bulk-update');
     Route::get('/export/product-group/bulk', [BulkController::class,'exportProductGroupData'])->name('product.group.bulk-export');
     Route::get('/export/inventory-group/bulk', [BulkController::class,'exportInventoryStock'])->name('inventory.group.bulk-export');
     Route::post('/update/inventory-group/bulk', [BulkController::class,'inventoryGroupBulkUpdate'])->name('inventory.group.bulk-update');
@@ -561,6 +567,12 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::post('/removebg',[ImageController::class,'removeBg'])->name('removebg');
         Route::any('/changebg',[ImageController::class,'changebg'])->name('changebg');
         Route::post('/crop/image',[ImageController::class,'cropimage'])->name('crop.image');
+
+        
+        Route::get('/maya', [ImageController::class, 'showdesigner'])->name('designer');
+        Route::post('/generate-image', [ImageController::class, 'generateImage'])->name('generateImage');
+        Route::post('/generate-image-from-image', [ImageController::class, 'generateImageFromImage'])->name('generateImageFromImage');;
+
 
     });
 

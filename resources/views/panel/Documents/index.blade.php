@@ -85,9 +85,9 @@
                   </div>
                   <div class="col-4 d-flex justify-content-end align-items-center">
                     {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#BuyerModal"> --}}
-                      <button type="button" id="jwhdssu" class="btn btn-outline-primary mx-1">
-                      Create Invoice
-                    </button>
+                      {{-- <button type="button" id="jwhdssu" class="btn btn-outline-primary mx-1">
+                        Create Invoice
+                      </button> --}}
                   </div>
                 </div>
 

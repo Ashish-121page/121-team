@@ -578,7 +578,26 @@ class settingController extends Controller
             throw $th;
             return back()->with('error',"Error While Removing.");
         }
+    }
 
+
+    public function updateQuotsetting() {
+        // magicstring(request()->all());
+        
+        try {
+            $user = User::whereId(request()->get('user_id'))->first();
+            $record = [
+                'quotaion_mark' => request()->get('quotaion_mark'),
+                'quotaion_index' => request()->get('quotaion_index')
+            ];
+            $record = json_encode($record);
+            $user->settings = $record;
+            $user->save();            
+            return back()->with('success','Quotation Setting Updated');
+        } catch (\Throwable $th) {
+            throw $th;
+            return back()->with('error',"Error While Updating.");
+        }
 
     }
 

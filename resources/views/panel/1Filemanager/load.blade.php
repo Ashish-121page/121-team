@@ -15,7 +15,7 @@
             </button>
 
             <a href="{{ route('panel.filemanager.new.view') }}?view=grid&page={{ request()->get('page') ?? 1}}" class="btn btn-icon btn-outline-primary mx-1 @if (request()->get('view','default') == 'grid') active @endif">
-                <i class="fas fa-th-large"></i>
+                <i class="fas fa-th-large" ></i>
             </a>
             <a href="{{ route('panel.filemanager.new.view') }}?view=default&page={{ request()->get('page') ?? 1 }}" class="btn btn-icon btn-outline-primary mx-1 @if (request()->get('view','default') == 'default') active @endif">
                 <i class="fas fa-list"></i>
@@ -88,5 +88,5 @@
 
 <button type="button" class="btn btn-outline-primary btn-icon openupload" data-bs-toggle="modal"
     data-bs-target="#uploadfiles" style="position: fixed;bottom: 9%;right: 4%;height: 50px;width: 50px;font-size: 1.5rem;" title="Upload Assets">
-    <i class="fas fa-cloud-upload-alt"></i>
+    <i class="fas fa-cloud-upload-alt" style="line-height: 1 !important"></i>
 </button>

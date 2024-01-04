@@ -2803,90 +2803,90 @@ class NewBulkController extends Controller
                 }
 
 
-                // ` Getting Custom Attribute
-                // checking Custom Attribute Values In database
-                if ($custom_attributes != null) {
-                    foreach ($custom_attributes as $key => $custom_attribute) {
-                        echo "Property Name: ".$custom_attribute.newline();
-                        // * Getting Column Number
-                        $tmp_col = $col_list->{$custom_attribute} - 1;
+                    // ` Getting Custom Attribute
+                    // checking Custom Attribute Values In database
+                    if ($custom_attributes != null) {
+                        foreach ($custom_attributes as $key => $custom_attribute) {
+                            echo "Property Name: ".$custom_attribute.newline();
+                            // * Getting Column Number
+                            $tmp_col = $col_list->{$custom_attribute} - 1;
 
-                        // ! Checking Value if Column is Not Blank
-                        if ($temp_item[$tmp_col] != null) {
-                            if (count(explode($Array_saprator,$temp_item[$tmp_col])) > 1 ) {
-                                return back()->with('error',"Product Sapration is Not Allowed in Product Update.");
-                            }
+                            // ! Checking Value if Column is Not Blank
+                            if ($temp_item[$tmp_col] != null) {
+                                if (count(explode($Array_saprator,$temp_item[$tmp_col])) > 1 ) {
+                                    return back()->with('error',"Product Sapration is Not Allowed in Product Update.");
+                                }
 
-                            $attribute_record_default = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
-                            $attribute_record_custom = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user->id)->first();
-                            if ($attribute_record_default != null) {
-                                $attribute_record = $attribute_record_default;
-                            }else{
-                                $attribute_record = $attribute_record_custom;
-                            }
-
-
-                            if ($attribute_record == null) {
-                                return back()->with("error","Oops Something Went wrong.Try again Later!!");
-                            }else{
-                                $search_value = $temp_item[$tmp_col];
-
-                                // ` Converting Input value to Proper case
-                                $search_value = strtolower($search_value);
-                                $search_value = ucwords($search_value);
-
-                                $attribute_value_record = ProductAttributeValue::where('parent_id',$attribute_record->id)->where('attribute_value',$search_value)->first();
-                                if ($attribute_value_record == null) {
-
-                                    // -- Making Copy of Variable
-                                    $attribute_data = $attribute_record;
-
-                                    // return back()->with('error',"$search_value Does Not Exist in $custom_attribute Column  at Row $row.");
-                                    echo newline(3);
-
-                                    if ($attribute_data->value == 'any_value') {
-                                        magicstring($search_value);
-                                        ProductAttributeValue::create([
-                                            'parent_id' => $attribute_data->id,
-                                            'user_id' => auth()->id() ?? null,
-                                            'attribute_value' => $search_value,
-                                        ]);
-                                    }elseif ($attribute_data->value == 'uom') {
-                                        $pattern_without_space = '/^(\d+)x(\d+)x(\d+)x(\w+)$/';
-                                        $pattern_decimal_without_space = '/^(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\w+)$/';
-                                        $pattern_with_space = '/^(\d+)\s*X\s*(\d+)\s*X\s*(\d+)\s*X\s*(\w+)$/';
-                                        $pattern_decimal_with_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
+                                $attribute_record_default = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
+                                $attribute_record_custom = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user->id)->first();
+                                if ($attribute_record_default != null) {
+                                    $attribute_record = $attribute_record_default;
+                                }else{
+                                    $attribute_record = $attribute_record_custom;
+                                }
 
 
-                                        if (preg_match($pattern_with_space, $search_value) || preg_match($pattern_decimal_with_space, $search_value) ) {
+                                if ($attribute_record == null) {
+                                    return back()->with("error","Oops Something Went wrong.Try again Later!!");
+                                }else{
+                                    $search_value = $temp_item[$tmp_col];
+
+                                    // ` Converting Input value to Proper case
+                                    $search_value = strtolower($search_value);
+                                    $search_value = ucwords($search_value);
+
+                                    $attribute_value_record = ProductAttributeValue::where('parent_id',$attribute_record->id)->where('attribute_value',$search_value)->first();
+                                    if ($attribute_value_record == null) {
+
+                                        // -- Making Copy of Variable
+                                        $attribute_data = $attribute_record;
+
+                                        // return back()->with('error',"$search_value Does Not Exist in $custom_attribute Column  at Row $row.");
+                                        echo newline(3);
+
+                                        if ($attribute_data->value == 'any_value') {
+                                            magicstring($search_value);
                                             ProductAttributeValue::create([
                                                 'parent_id' => $attribute_data->id,
                                                 'user_id' => auth()->id() ?? null,
                                                 'attribute_value' => $search_value,
                                             ]);
-                                        }elseif (preg_match($pattern_without_space, $search_value) || preg_match($pattern_decimal_without_space, $search_value)) {
-                                            ProductAttributeValue::create([
-                                                'parent_id' => $attribute_data->id,
-                                                'user_id' => auth()->id() ?? null,
-                                                'attribute_value' => $search_value,
-                                            ]);
-                                        }
-                                        else {
-                                            $msg = "The $search_value does not match the pattern. The pattern should be L X B X H X UNIT. In column $attribute_data->name at row $row.";
-                                            return back()->with('error',$msg);
-                                        }
-                                    }else{
-                                        return back()->with('error',"$search_value Not Exist in column $attribute_data->name At Row $row");
-                                    }
+                                        }elseif ($attribute_data->value == 'uom') {
+                                            $pattern_without_space = '/^(\d+)x(\d+)x(\d+)x(\w+)$/';
+                                            $pattern_decimal_without_space = '/^(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\w+)$/';
+                                            $pattern_with_space = '/^(\d+)\s*X\s*(\d+)\s*X\s*(\d+)\s*X\s*(\w+)$/';
+                                            $pattern_decimal_with_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
 
 
-                                } // of Main IF To Check Value
+                                            if (preg_match($pattern_with_space, $search_value) || preg_match($pattern_decimal_with_space, $search_value) ) {
+                                                ProductAttributeValue::create([
+                                                    'parent_id' => $attribute_data->id,
+                                                    'user_id' => auth()->id() ?? null,
+                                                    'attribute_value' => $search_value,
+                                                ]);
+                                            }elseif (preg_match($pattern_without_space, $search_value) || preg_match($pattern_decimal_without_space, $search_value)) {
+                                                ProductAttributeValue::create([
+                                                    'parent_id' => $attribute_data->id,
+                                                    'user_id' => auth()->id() ?? null,
+                                                    'attribute_value' => $search_value,
+                                                ]);
+                                            }
+                                            else {
+                                                $msg = "The $search_value does not match the pattern. The pattern should be L X B X H X UNIT. In column $attribute_data->name at row $row.";
+                                                return back()->with('error',$msg);
+                                            }
+                                        }else{
+                                            return back()->with('error',"$search_value Not Exist in column $attribute_data->name At Row $row");
+                                        }
+
+
+                                    } // of Main IF To Check Value
+                                }
+
                             }
 
                         }
-
                     }
-                }
 
             }
 
@@ -3284,9 +3284,6 @@ class NewBulkController extends Controller
                                     }
 
                                 }
-
-
-
                             }
                         }
 

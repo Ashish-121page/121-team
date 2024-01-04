@@ -6,10 +6,10 @@
     @if (request()->has('products') || request()->has('productsgrid'))
         <div class="d-flex">
             <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&productsgrid=true&category_id={{request()->get('category_id') }}&sub_category_id={{ request()->get('sub_category_id') }}" class="btn btn-icon btn-outline-primary mx-1 @if(request()->has('productsgrid')) active @endif">
-                <i class="fas fa-th-large"></i>
+                <i class="fas fa-th-large" style="line-height:2 !important" ></i>
             </a>
             <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{request()->get('category_id') }}&sub_category_id={{ request()->get('sub_category_id') }}" class="btn btn-icon btn-outline-primary mx-1 @if(request()->has('products')) active @endif">
-                <i class="fas fa-list"></i>
+                <i class="fas fa-list" style="line-height:2 !important"></i>
             </a>
 
         </div>

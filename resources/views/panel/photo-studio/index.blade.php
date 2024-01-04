@@ -13,9 +13,11 @@
                 padding-top: 0 !important;
                 margin-top: 0px !important;
             }
-            .header-top{
+
+            .header-top {
                 display: none !important;
             }
+
             .logged-in-as {
                 display: none !important;
             }
@@ -169,6 +171,12 @@
                 color: #fff;
                 border: none;
             }
+
+            #rembgCanvas {
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
         </style>
     @endpush
 
@@ -221,9 +229,9 @@
                                 <div class="row">
                                     <div class="col-12 d-flex flex-wrap justify-content-start"
                                         style="width: 23rem;height: 50vh;overflow: auto;">
-                                        <button class="bgimage-btn tranparent-bg" type="button"></button>
+                                        {{-- <button class="bgimage-btn tranparent-bg" type="button"></button>
 
-                                        <button id="customimg-bg" class="bgimage-btn" type="button">+</button>
+                                        <button id="customimg-bg" class="bgimage-btn" type="button">+</button> --}}
 
                                         <button id="staticImg-bg" class="bgimage-btn" type="button">
                                             <img src="https://static.remove.bg/backgrounds/person/new/pexels-shonejai-1227511-size-156.jpg"
@@ -486,6 +494,12 @@
                                             <canvas id="canvasfilter"></canvas>
                                         </div>
 
+                                        <div class="Backgroudcontainer d-none" style="height: 50vh;width: 50vw">
+                                            <canvas id="rembgCanvas"></canvas>
+                                        </div>
+
+
+
                                     </div>
                                 </div>
 
@@ -696,6 +710,89 @@
 
             });
         </script>
+
+
+        {{-- For Image Backgroud --}}
+
+        <script>
+            $(".bgimage-btn").click(function(e) {
+                e.preventDefault();
+
+                let backgorundImagSRC = $(this).find('img').attr('src');
+                let forgroundImgsrc = $(".previewedit").find('img').attr('src');
+                let rembgCanvas = $("#rembgCanvas");
+                let Backgroudcontainer = $(".Backgroudcontainer");
+
+                Backgroudcontainer.removeClass('d-none');
+                $("#editpreviewimage").addClass('d-none');
+                $("#editpreviewimage").attr('src',forgroundImgsrc)
+
+
+                changeImageBackground('rembgCanvas', forgroundImgsrc, backgorundImagSRC, function(dataURL) {
+                    $("#editpreviewimage").attr('src', dataURL);
+                });
+
+                // $.alert(`You Are Trying to Change Background Image, Please Wait...`)
+                Backgroudcontainer.addClass('d-none');
+
+                $("#editpreviewimage").removeClass('d-none');
+            });
+
+            function changeImageBackground(canvasId, foregroundSrc,backgroundSrc, callback) {
+                var canvas = document.getElementById(`${canvasId}`);
+                var ctx = canvas.getContext('2d');
+                var backgroundImg = new Image();
+                var foregroundImg = new Image();
+
+                // Load the foreground image first
+                foregroundImg.onload = function() {
+                    // Set the canvas size to match the foreground image size
+                    canvas.width = this.width;
+                    canvas.height = this.height;
+
+                    // Now that the canvas is the right size, load the background image
+                    backgroundImg.src = backgroundSrc;
+                };
+
+                backgroundImg.onload = function() {
+                    // Draw the background image with 'cover' effect
+                    drawImageCover(this, ctx, canvas);
+
+                    // Draw the foreground image on top
+                    ctx.drawImage(foregroundImg, 0, 0);
+
+                    // Get the Data URL and call the callback
+                    var dataURL = canvas.toDataURL();
+                    callback(dataURL);
+
+                    // clearCanvas(canvasId);
+                };
+
+                // Set the source of the images
+                foregroundImg.src = foregroundSrc;
+                backgroundImg.crossOrigin = 'Anonymous'; // Use if needed for CORS
+                foregroundImg.crossOrigin = 'Anonymous'; // Use if needed for CORS
+            }
+
+            function drawImageCover(img, ctx, canvas) {
+                // Fill the canvas with the image
+                var scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+                var x = (canvas.width / 2) - (img.width / 2) * scale;
+                var y = (canvas.height / 2) - (img.height / 2) * scale;
+                ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+            }
+
+            function clearCanvas(canvasId) {
+                var canvas = document.getElementById(`${canvasId}`);
+                var ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+
+
+
+        </script>
+
 
 
         {{-- Cropper JS --}}

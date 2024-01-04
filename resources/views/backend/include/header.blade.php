@@ -15,7 +15,6 @@
     font-size: 16px;
 }
 
-
 .nav-item.active a::before{
         content: '';
         background-color: #8484f8;
@@ -74,29 +73,35 @@
                             </li>
 
 
+                            <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.image.designer'] ,'active' ) }}">
+                                <a href="{{ route('panel.image.designer') }}" class="a-item px-lg-3" style="color:#ccd3e4;  " >
+                                    <span>{{ 'Maya' }}</span>
+                                    {{-- AI GENERATE IMAGE --}}
+                                </a>
+                            </div>
 
 
-                        <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.user_shop_items.create'] ,'active' ) }}">
-                            <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item px-lg-3" style="color:#ccd3e4;  " >
-                                {{-- <i class="ik ik-shopping-bag"></i> --}}
-                                <span>{{ 'Manage' }}</span>
-                                {{-- Products --}}
-                            </a>
-                        </div>
+                            <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.user_shop_items.create'] ,'active' ) }}">
+                                <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item px-lg-3" style="color:#ccd3e4;  " >
+                                    {{-- <i class="ik ik-shopping-bag"></i> --}}
+                                    <span>{{ 'Manage' }}</span>
+                                    {{-- Products --}}
+                                </a>
+                            </div>
 
-                        <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.check.display'] ,'active' ) }}">
-                            <a href="{{ route('panel.check.display') }}" class="a-item px-lg-3" style="color:#ccd3e4; ">
-                                {{-- <i class="ik ik-upload"></i> --}}
-                                <span>{{ 'Display' }}</span>
-                            </a>
-                        </div>
+                            <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.check.display'] ,'active' ) }}">
+                                <a href="{{ route('panel.check.display') }}" class="a-item px-lg-3" style="color:#ccd3e4; ">
+                                    {{-- <i class="ik ik-upload"></i> --}}
+                                    <span>{{ 'Display' }}</span>
+                                </a>
+                            </div>
 
-                        <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.proposals.index','pages.proposal.picked'] ,'active' ) }}">
-                            <a href="{{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item px-lg-3" style="color:#ccd3e4; ">
-                                {{-- <i class="ik ik-tag"></i> --}}
-                                <span>{{ 'Offer' }}</span>
-                            </a>
-                        </div>
+                            <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.proposals.index','pages.proposal.picked'] ,'active' ) }}">
+                                <a href="{{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item px-lg-3" style="color:#ccd3e4; ">
+                                    {{-- <i class="ik ik-tag"></i> --}}
+                                    <span>{{ 'Offer' }}</span>
+                                </a>
+                            </div>
 
 
                         @if ($permi->documentaion == 'yes')
@@ -184,7 +189,7 @@
 
                     <div class="dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="notiDropdown" role="button" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false" style="color:#ccd3e4;"><i class="ik ik-bell"></i>
+                            aria-haspopup="true" aria-expanded="false" style="color:#ccd3e4;"><i class="ik ik-bell" style="line-height:2.3 !important"></i>
                             @if($notification->count() > 0)
                             <span class="badge bg-primary">{{ $notification->count() }}</span>
                             @endif
