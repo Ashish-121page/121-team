@@ -23,22 +23,22 @@ class FileManager extends Controller
         }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
-        
+
     }
 
     public function newview(Request $request) {
         $user_id = auth()->id();
         $filetypes = [];
         $filterfiles = [];
-        
+
         $folderPath = "public/files/$user_id";
         $linkedItems = [];
         $sortOrder = $request->get('filtername','date'); // Specify the sort order ('name', 'date', 'size')
         $sortType = $request->get('filtertype','DESC');
-        
+
         if (Storage::exists($folderPath)) {
             $files = Storage::allFiles($folderPath);
-            
+
             // ` Ascending Order
             if ($sortType == 'ASC') {
                 // Sort the files based on the specified order
@@ -71,7 +71,7 @@ class FileManager extends Controller
                     array_multisort($linkedItems,SORT_ASC,$files);
                 }
             }else{
-            
+
                 // Sort the files based on the specified order
                 if ($sortOrder === 'name') {
                     // Sort by file name
@@ -101,7 +101,7 @@ class FileManager extends Controller
                     array_multisort($linkedItems,SORT_DESC,$files);
                 }
             }
-          
+
             // Getting Folder Size
             $formattedSize = 0;
             $user_shop_item = UserShopItem::where('user_id',auth()->id())->pluck('product_id');
@@ -109,11 +109,11 @@ class FileManager extends Controller
 
             $Products = Product::whereIn('id',$user_shop_item)->paginate($limit);
             $Products_attribute = ProductExtraInfo::whereIn('product_id',$user_shop_item)->groupBy('attribute_value_id')->get();
-            
+
 
             if ($request->ajax() && $request->workload == 'linkproductsearch') {
                 // $limit = $request->get('pageliimt',5);
-                $Products = Product::whereIn('id',$user_shop_item)->where('title',"LIKE","%".$request->searchCode."%")->paginate($limit);
+                $Products = Product::whereIn('id',$user_shop_item)->where('title',"LIKE","%".$request->searchCode."%")->orwhere('model_code',"LIKE","%".$request->searchCode."%")->paginate($limit);
                 $Products_attribute = ProductExtraInfo::whereIn('product_id',$user_shop_item)->groupBy('attribute_value_id')->get();
                 return view('panel.Filemanager.modals.ProductList',compact('Products','Products_attribute'));
             }
@@ -134,10 +134,10 @@ class FileManager extends Controller
                     $files = $filterfiles;
                 }
             }
-            
+
             $page = request()->get('page', 1);
             $perPage = 24;
-            $offset = ($page - 1) * $perPage;            
+            $offset = ($page - 1) * $perPage;
             $slicedFiles = array_slice($files, $offset, $perPage);
             $paginator = new LengthAwarePaginator($slicedFiles, count($files), $perPage, $page);
 
@@ -152,10 +152,10 @@ class FileManager extends Controller
     }
 
     function renamefile(Request $request) {
-        
+
         if ($request->ajax()) {
             $countProduct = 0;
-            
+
             $user_id = auth()->id();
             $oldName = $request->oldName;
             $newName = $request->newName;
@@ -172,7 +172,7 @@ class FileManager extends Controller
 
             $OldpathInDB = "storage/files/$user_id/$oldName";
             $NewpathInDB = "storage/files/$user_id/$newName";
-            
+
             if (Storage::exists($oldFilePath)) {
                 Storage::move($oldFilePath, $newFilePath);
                 // Updating Linking of FIle
@@ -183,7 +183,7 @@ class FileManager extends Controller
                     $media->save();
                     $countProduct++;
                 }
-                
+
                 $response = ['status'=> 'Success',"Msg" => "File has been renamed.",'FileName' => $newName,'FileUpdate' => $countProduct];
                 return json_encode($response);
             } else {
@@ -198,31 +198,31 @@ class FileManager extends Controller
 
 
     function destroyfile(Request $request) {
-        
+
        try {
             $deletefiles = explode(',',$request->get('files'));
             $count = 0;
-            
-            
+
+
             foreach ($deletefiles as $key => $filePath) {
                 if (Storage::exists(decrypt($filePath))) {
 
                     $path = decrypt($filePath);
                     $path = str_replace('public','storage',$path);
-                    
+
                     $media = Media::where('path',$path)->get();
 
                     foreach ($media as $key => $value) {
                         $value->delete();
                     }
-                    
+
                     Storage::delete(decrypt($filePath));
                     $count++;
                 }else{
                     return back()->with('error',"File Does Not Exit.");
                 }
             }
-    
+
             return back()->with('success',"$count Files are Deleted Success Fully");
        } catch (\Throwable $th) {
             throw $th;
@@ -234,27 +234,33 @@ class FileManager extends Controller
         $file = $request->file('file');
 
         $user_id = auth()->id();
-        
+
         $folderPath = "public/files/$user_id";
-        
+
+        $existingFile = Storage::exists("$folderPath/{$file->getClientOriginalName()}");
+
         $fileName = $file->getClientOriginalName() ?? Str::random(10);
-    
-        $path = $file->storeAs($folderPath, $fileName);        
-        return response()->json(['path' => $path,'Filename' => $fileName]);
+
+        if ($existingFile) {
+            return response()->json(['message' => "File Exist",'Filename' => $fileName,'path' => '']);
+        }
+        $path = $file->storeAs($folderPath, $fileName);
+
+        return response()->json(['path' => $path,'Filename' => $fileName,'message' => "New File",]);
     }
 
 
     public function downloadZip(Request $request)
     {
         $filePaths = [];
-        
+
         foreach (explode(',',$request->get('files')) as $key => $value) {
             array_push($filePaths,decrypt($value));
         }
-        
+
         $user_id  = auth()->id();
         magicstring($filePaths);
-    
+
         // Create a temporary zip file
         $zipFileName = auth()->user()->name.'-images.zip';
         $zip = new ZipArchive;
@@ -268,7 +274,7 @@ class FileManager extends Controller
         }
 
         $zip->close();
-        
+
         // Set the appropriate headers for a download response
         $headers = [
             'Content-Type' => 'application/octet-stream',
@@ -284,7 +290,7 @@ class FileManager extends Controller
 
 
     public function productsaperator(Request $request) {
-        
+
         // magicstring($request->all());
 
         try {
@@ -313,11 +319,11 @@ class FileManager extends Controller
                     $delimiter = "_";
                     break;
             }
-                    
+
             // ` extracting Model Code
             $model_codes = [];
             foreach (json_decode($request->filename) as $key => $names) {
-                $names = pathinfo($names)['filename'];            
+                $names = pathinfo($names)['filename'];
                 $tmp_data = explode($delimiter,$names);
                 array_push($model_codes,$tmp_data[$alignment]);
             }
@@ -329,13 +335,13 @@ class FileManager extends Controller
 
             if ($products->count() != 0) {
                     foreach ($products as $key => $product) {
-                        
+
                         $usi = UserShopItem::where('product_id',$product->id)->where('user_id',auth()->id())->first();
                         if ($usi != null) {
 
                             $arr_images = [];
                             $exist_image = $usi->images;
-                            
+
                             $file = json_decode($request->filename)[$key1];
                             $media = new Media();
                             $media->tag = "Product_Image";
@@ -351,18 +357,18 @@ class FileManager extends Controller
 
                             // // Add images to UserShopItem
                             if(count($arr_images) > 0) {
-                                
+
                                 if ($exist_image == null || $exist_image = '') {
                                     $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
                                 }else{
                                     $usi->images =  $usi->images.','.implode(',',$arr_images) ?? null;
                                 }
-                                
+
                                 $usi->save();
                             }
 
-                            
-                            
+
+
                         }
                     }
             }
@@ -386,11 +392,11 @@ class FileManager extends Controller
             $countProduct = 0;
 
             foreach ($request->product_id as $key => $product_id) {
-                    
+
                 $prouduct_id = decrypt($product_id);
                 $arr_images = [];
-                $usi = UserShopItem::where('product_id',$prouduct_id)->where('user_id',$user_id)->first();               
-                
+                $usi = UserShopItem::where('product_id',$prouduct_id)->where('user_id',$user_id)->first();
+
                 $exist_image = $usi->images;
                 $count = 0;
                 foreach (json_decode($request->images) as $key => $value) {
@@ -413,13 +419,13 @@ class FileManager extends Controller
 
                 // // Add images to UserShopItem
                 if(count($arr_images) > 0) {
-                    
+
                     if ($exist_image == null || $exist_image = '') {
                         $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
                     }else{
                         $usi->images =  $usi->images.','.implode(',',$arr_images) ?? null;
                     }
-                    
+
                     $usi->save();
                 }
 
@@ -432,9 +438,5 @@ class FileManager extends Controller
             return back()->with('error',"There was an error while linking assets");
         }
     }
-
-
-
-
 
 }

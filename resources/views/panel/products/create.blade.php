@@ -1,5 +1,5 @@
 @extends('backend.layouts.main')
-@section('title', 'Product')
+@section('title', 'Product Create')
 @section('content')
     @php
         /**
@@ -32,7 +32,7 @@
 
         // Grouping Columns
 
-        $default_property = ['Model_Code', 'SKU Type', 'Product name', 'Category', 'Sub_Category', 'Customer_Price_without_GST', 'HSN Tax', 'HSN_Percnt'];
+        $default_property = ['Model_Code', 'SKU Type', 'Product name', 'Category', 'Sub_Category', 'Customer_Price_without_GST', 'HSN Tax', 'HSN_Percnt', 'Variation attributes'];
 
     @endphp
     <!-- push external head elements to head -->
@@ -151,7 +151,14 @@
                 bottom: ;
                 left: ;
             }
-            
+            .active{
+                background-color: transparent;
+                color: #6666cc;
+                border: none;
+                outline: none;
+                border-bottom: 1px solid #6666cc;
+            }
+
         </style>
     @endpush
 
@@ -160,14 +167,14 @@
             <div class="row align-items-end">
                 <div class="col-lg-8">
                     <div class="page-header-title">
-                        <i class="ik ik-mail bg-blue"></i>
+                        {{-- <i class="ik ik-mail bg-blue"></i> --}}
                         <div class="d-flex">
                             {{-- <h5>Add/Edit</h5> --}}
-                            @if (AuthRole() == 'User')
+                            {{-- @if (AuthRole() == 'User')
                                 <span style="margin-top: -10px;">
                                     <i class="ik ik-info fa-2x text-dark ml-2 remove-ik-class" title="help Text"></i>
                                 </span>
-                            @endif
+                            @endif --}}
                         </div>
                     </div>
                 </div>
@@ -234,7 +241,7 @@
 
 
                     {{-- @if (auth()->user() && session()->has('admin_user_id') && session()->has('temp_user_id')) --}}
-                    {{-- <div class="col-md-4 product_boxes">  
+                    {{-- <div class="col-md-4 product_boxes">
                         <a class="card" href=" @if ($acc_permissions->bulkupload == 'yes') {{ route('panel.products.search') }}?action=nonbranded @else # @endif">
                             <div class="card-header">
                                 <i class="fas fa-crown btn text-warning h5" style="font-size: 1.2rem;"></i>
@@ -251,8 +258,8 @@
                     </div> --}}
                     {{-- @endif --}}
 
-                    <div class="col-md-10 mx-auto mb-3">
-                        <button class="btn btn-secondary back_btn d-none">Back</button>
+                    <div class="col-12 col-md-10  mb-3 justify-content-start">
+                        <button class="btn btn-secondary back_btn d-none" id="back_btn">Back</button>
                     </div>
                 </div>
                 {{-- Card end --}}
@@ -416,14 +423,14 @@
                                             <div class="content">
                                                 <h5>Update Record</h5>
                                                 <span>Upload Excel Sheet to Update Products Data.</span>
-                                                
+
                                                 <input required type="file" name="file" class="form-control">
                                             </div>
                                             <div class="action" style="margin: 20px 0">
                                                 <button class="btn btn-outline-primary" type="submit">
                                                     Upload
                                                 </button>
-                                                
+
                                                 <a href="{{route('panel.bulk.product.bulk-export',auth()->id())}}" type="button"  class="btn btn-outline-primary">Fill & Upload</a>
                                             </div>
                                         </form>
@@ -524,6 +531,7 @@
             </div>
         </div>
         @include('panel.products.include.create_template')
+        @include('panel.products.include.LInke-assets')
 
 
 
@@ -538,10 +546,13 @@
         <script src="https://cdn.ckeditor.com/4.14.1/full/ckeditor.js"></script>
         <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
 
-       
+
         <script>
             $(document).ready(function () {
-                $(".hiddenbxbtn").click(function (e) { 
+
+
+
+                $(".hiddenbxbtn").click(function (e) {
                     $("#"+$(this).data('open')).toggleClass('d-none');
                 });
 
@@ -559,7 +570,7 @@
 
                 });
 
-                $(".md-step").click(function (e) { 
+                $(".md-step").click(function (e) {
                     e.preventDefault();
 
                     let stepindex = $(this).data('step');
@@ -573,15 +584,15 @@
                     $(this).addClass('active');
                     $(".stepper").addClass('d-none');
                     $('.stepper-actions').find('.previous_btn').addClass('d-none');
-                    
+
                     if (activeIndex != 1) {
                         $('.stepper-actions').find('.previous_btn').removeClass('d-none');
                     }
-                    
+
                     if(activeIndex == steps){
                         $(".next_btn").addClass('d-none');
                     }
-                    
+
                     if ($(".md-step").length == (stepindex+1)) {
                         $('.create_btn').removeClass('d-none');
                     }else{
@@ -589,9 +600,9 @@
                     }
 
                     $(".next_btn").removeClass('d-none');
-                    newwindow.removeClass('d-none')            
+                    newwindow.removeClass('d-none')
                 });
-                
+
                 $('.stepper-actions').on('click', '.previous_btn', function (e) {
                     if(activeIndex > 1){
                         $('[data-index='+activeIndex+']').addClass('d-none');
@@ -622,13 +633,13 @@
                     }
                 });
 
-                
+
             });
 
 
-        </script>       
-       
-        
+        </script>
+
+
         <script>
             $(document).ready(function() {
 
@@ -640,8 +651,8 @@
             let keyindex = $(this).data('index');
             let tag = `<div class="form-group mt-2" id="parent_${$(this).data('index')}"style="margin-bottom:0rem;">
                 <input type="checkbox" value="${$(this).val()}" id="${$(this).attr('id')}" class="selected_prop d-none" checked data-parent="parent_${$(this).data('index')}">
-                <label for="${$(this).attr('id')}" class="form-label" style="font-size: 12.8px;font-weight:700;user-select: none; width:80%">${$(this).val()}</label>                            
-                <span class="close-icon align-item-end " style="margin-left:80%:width:20%" data-parent="parent_${$(this).data('index')}">&times;</span>                                
+                <label for="${$(this).attr('id')}" class="form-label" style="font-size: 12.8px;font-weight:700;user-select: none; width:80%">${$(this).val()}</label>
+                <span class="close-icon align-item-end " style="margin-left:80%:width:20%" data-parent="parent_${$(this).data('index')}">&times;</span>
             </div>`;
 
             if ($(this).is(":checked")) {
@@ -678,7 +689,7 @@
         }
 
         });
-        
+
 
         </script>
 

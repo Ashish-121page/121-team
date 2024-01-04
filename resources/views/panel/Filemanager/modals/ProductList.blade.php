@@ -48,7 +48,7 @@
                 </td>
                 <td>   
                     @forelse ($varient as $item)
-                        <span class="badge bg-primary text-light ">{{ getAttruibuteValueById($item->attribute_value_id)->attribute_value ?? ''}}</span>
+                        <span class=" text-dark ">{{ getAttruibuteValueById($item->attribute_value_id)->attribute_value ?? ''}}</span> ,
                     @empty
                         No Varient
                     @endforelse

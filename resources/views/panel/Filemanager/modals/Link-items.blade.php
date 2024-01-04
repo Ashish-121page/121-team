@@ -30,7 +30,7 @@
                                             </svg>
                                         </span>
                                         <input type="text" class="form-control" id="searchinlinking" placeholder="Search product by sku or label" aria-label="Search" aria-describedby="basic-addon1" autofocus="true">
-                                      </div>
+                                    </div>
 
                                 </div>
 
@@ -61,7 +61,7 @@
                     <div class="row">
                         <div class="col-12">
                             {{-- ` Pagination --}}
-                            <nav aria-label="Page navigation example">
+                            <nav aria-label="Page navigation" style="width: 100%;border: 1px solid;overflow: hidden;overflow-x: auto;">
                                 <ul class="pagination">
                                     
                                     @php
@@ -101,10 +101,10 @@
                                     Results per page
                                   </button>
                                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt=10">10</a></li>
-                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt=25">25</a></li>
-                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt=50">50</a></li>
-                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt=100">100</a></li>
+                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt32=10">10</a></li>
+                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt32=25">25</a></li>
+                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt32=50">50</a></li>
+                                    <li><a class="dropdown-item" href="{{ request()->url() }}?view={{ request()->get('view','grid') }}&pageliimt32=100">100</a></li>
                                   </ul>
                                 </div>
                             </div>  

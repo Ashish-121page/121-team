@@ -30,17 +30,17 @@ $breadcrumb_arr = [
     	<div class="page-header">
             <div class="row align-items-end">
                 <div class="col-lg-8">
-                    <div class="page-header-title">
+                    {{-- <div class="page-header-title">
                         <i class="ik ik-mail bg-blue"></i>
                         <div class="d-inline">
                             <h5>Add Team</h5>
                             <span>Create a record for Team</span>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
-                <div class="col-lg-4">
+                {{-- <div class="col-lg-4">
                     @include('backend.include.breadcrumb')
-                </div>
+                </div> --}}
             </div>
         </div>
         <div class="row">

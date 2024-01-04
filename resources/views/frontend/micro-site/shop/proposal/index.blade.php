@@ -218,7 +218,7 @@
                     <input type="range" min="0" max="100" step="10"  class="form-range hdfhj" style="width: 150px" value="0" id="magrintochnage">
                 </div>
                 <div class="mx-2">
-                    <button type="button" id="changemarguin" class="btn btn-outline-primary">Add</button>   
+                    <button type="button" id="changemarguin" class="btn btn-outline-primary">Add</button>
                 </div>
             </div> --}}
             </div>
@@ -322,7 +322,7 @@
 
 
         {{-- @if (auth()->id() != $proposal->user_id)
-                @include('frontend.micro-site.shop.proposal.modal.notice')                
+                @include('frontend.micro-site.shop.proposal.modal.notice')
             @endif --}}
 
 
@@ -339,20 +339,20 @@
             </p>
         </div> --}}
 
-        
-        
+
+
         <form action="{{ route('pages.proposal.excel') }}" id="printExcel" method="post">
             @csrf
             <input type="hidden" name="tabelcontent" id="djfdgfvi" value="">
         </form>
-        
+
         @include('frontend.micro-site.shop.proposal.modal.pdfcustom')
 
         @if (session()->get('offer_attribute_count',0) != 0)
             <a class="btn btn-outline-primary d-none mx-1" id="jaya1" href="#animatedModal3" role="button">Change Style</a>
         @endif
-        
-        
+
+
 
 
     </section>
@@ -385,7 +385,7 @@
             });
             return array;
         }
-        
+
     </script>
 
     <script>
@@ -473,7 +473,7 @@
                 readURL(this);
             });
 
-            $(".openmennu").click(function (e) { 
+            $(".openmennu").click(function (e) {
                 e.preventDefault();
                 $.confirm({
                     title: 'Confirm!',
@@ -564,16 +564,6 @@
 
         }
 
-        $(document).on('click', '#export_button', function() {
-            html_table_to_excel('xlsx');
-            // let tabledata = getTableData("printproposals");
-            // $("#djfdgfvi").val(JSON.stringify(tabledata));
-            // $("#printExcel").submit();
-
-            // exportToExcel()
-        })
-
-
         $('#reset').click(function() {
             var url = $(this).data('url');
             getData(url);
@@ -641,7 +631,7 @@
                 // pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
 
 
-                // for (var i = 1; i <= totalPDFPages; i++) { 
+                // for (var i = 1; i <= totalPDFPages; i++) {
                 //     pdf.addPage(PDF_Width, PDF_Height);
                 //     pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
                 // }
@@ -682,7 +672,7 @@
             if (inputString.length > limit) {
                 return inputString.slice(0, limit);
             }
-            return inputString; 
+            return inputString;
         }
 
         $(document).ready(function() {
@@ -708,14 +698,14 @@
                 let extraImageArray = [];
 
 
-                // ` Making Array Of Price 
+                // ` Making Array Of Price
             document.querySelectorAll(".product_price").forEach(element => {
                 let price = element.innerHTML.replace(/^\s+|\s+$/gm, '');
                 price = price.replace('\n', ' ');
                 priceArray.push(price);
             });
 
-            // ` Making Array Of product-name 
+            // ` Making Array Of product-name
                 document.querySelectorAll(".product-name").forEach(element => {
                     let title = element.innerHTML.replace(/^\s+|\s+$/gm, '');
                     title = title.replace('\n', ' ');
@@ -723,7 +713,7 @@
                     titleArray.push(title);
                 });
 
-                // ` Making Array Of product-description 
+                // ` Making Array Of product-description
             document.querySelectorAll(".product-description").forEach(element => {
                 let desc = element.innerHTML.replace(/^\s+|\s+$/gm, '');
                 desc = desc.replace('\n', ' ');
@@ -731,7 +721,7 @@
                 descrArray.push(desc);
             });
 
-            // ` Making Array Of product-model 
+            // ` Making Array Of product-model
                 document.querySelectorAll(".product-model").forEach(element => {
                     let model = element.innerHTML.replace(/^\s+|\s+$/gm, '');
                     model = model.replace('\n', ' ');
@@ -739,26 +729,26 @@
                     modelArray.push(model);
                 });
 
-                // ` Making Array Of shop-image 
+                // ` Making Array Of shop-image
             document.querySelectorAll(".shop-image > a > img").forEach(element => {
                 let img = element.src.replace(/^\s+|\s+$/gm, '');
                 img = img.replace('\n', ' ');
                 passedArray.push(img);
             });
 
-            // ` Making Array Of shop-image 
+            // ` Making Array Of shop-image
                 document.querySelectorAll(".print_content0").forEach(element => {
                     let model = element.innerHTML.replace(/^\s+|\s+$/gm, '');
                     model = model.replace('\n', ' ');
                     Additional1Array.push(model);
                 });
-                // ` Making Array Of shop-image 
+                // ` Making Array Of shop-image
             document.querySelectorAll(".print_content1").forEach(element => {
                 let model = element.innerHTML.replace(/^\s+|\s+$/gm, '');
                 model = model.replace('\n', ' ');
                 Additional2Array.push(model);
             });
-            // ` Making Array Of shop-image 
+            // ` Making Array Of shop-image
                 document.querySelectorAll(".print_content2").forEach(element => {
                     let model = element.innerHTML.replace(/^\s+|\s+$/gm, '');
                     model = model.replace('\n', ' ');
@@ -772,118 +762,55 @@
                         update: 2,
                     },
                     // success: function(response) {
-                    //     console.log(response);                    
+                    //     console.log(response);
                     // }
                 });
 
                 {!! $pptTesmplate[0]->data !!}
-               
-
-
-                // console.log("Somethig Happened..");
-                // $.toast({
-                //     heading: 'Generating PPT',
-                //     text: "This powerpoint is being generated. Takes upto 30 seconds",
-                //     showHideTransition: 'slide',
-                //     icon: 'success',
-                //     loaderBg: '#f96868',
-                //     position: 'top-right'
-                //     hideAfter: 8000,
-                // });
-                
             });
         });
     </script>
-    {{-- Script for Printing Excel --}}
 
     <script>
-        // your_script.js
-        // function populateTable() {
-        //     // Populate your table with data. This is an example.
-        //     const table = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
-        //     const newRow = table.insertRow(table.length);
 
-        //     newRow.insertCell(0).innerHTML = "Data 1";
-        //     newRow.insertCell(1).innerHTML = "Data 2";
-        //     newRow.insertCell(2).innerHTML = "Data 3";
-        //     newRow.insertCell(3).innerHTML = "Data 4";
-        //     newRow.insertCell(4).innerHTML = '<img src="image.jpg" width="100" />';
-        //     // Add more rows as needed
-        // }
-        // Function to send the table data to the server and handle the response
-        
-        // function exportToExcel() {
-        //     const table = document.getElementById('printproposals');
-        //     const data = table.outerHTML;
-        //     console.log(data);
+        // {{-- ` Script for Excel Export --}}
+        $(document).on('click', '#export_button', function() {
+            // html_table_to_excel('xlsx');
+            let tabledata = getTableData('printproposals');
+            let filename = "{{ $cust_details['customer_name'] ?? 'Excel_export' }}_{{Carbon\Carbon::now()}}.xlsx";
 
-        //     // Using Axios for the AJAX request
-        //     // axios.post("{{ route('pages.proposal.excel') }}", {
-        //     //         htmlTable: data
-        //     //     }, {
-        //     //         responseType: 'blob' // Important to handle binary response data
-        //     //     })
-        //     //     .then(response => {
-        //     //         // Create a URL from the response blob and trigger download
-        //     //         const url = window.URL.createObjectURL(new Blob([response.data]));
-        //     //         const link = document.createElement('a');
-        //     //         link.href = url;
-        //     //         link.setAttribute('download', 'exported_data.xlsx'); // Set the file name
-        //     //         document.body.appendChild(link);
-        //     //         link.click();
-        //     //         document.body.removeChild(link);
-        //     //     })
-        //     //     .catch(error => console.error('Error:', error));
-        // }
+            $.ajax({
+                type: "POST",
+                url: "{{ route('pages.proposal.excel') }}",
+                data: {
+                    'tabelcontent': JSON.stringify(tabledata),
+                    'filename': filename,
+                },
+                success: function (result) {
+                    let response = JSON.parse(result);
+                    if (response.message == 'File created') {
+                        var url = response.downloadLink;
+                        var fileName = 'downloaded_file.xlsx';
 
+                        // Create a new anchor element dynamically
+                        var downloadLink = $('<a></a>')
+                            .attr('href', url)
+                            .attr('download', fileName)
+                            .appendTo('body');
 
-
-            function exportToExcel() {
-                const table = document.getElementById('printproposals');
-                const data = table.outerHTML;
-
-                $.ajax({
-                    url: "{{ route('pages.proposal.excel') }}",
-                    type: 'POST',
-                    data: {
-                        htmlTable: data
-                    },
-                    xhrFields: {
-                        responseType: 'blob'
-                    },
-                    success: function(response) {
-                        // Handle the blob response
-                        const url = window.URL.createObjectURL(response); // Use the blob response directly
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.setAttribute('download', 'exported_data.xlsx'); // Set the file name
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.error('Error:', textStatus, errorThrown);
+                        // Trigger click and remove element
+                        downloadLink[0].click();
+                        downloadLink.remove();
+                    }else{
+                        alert('Something went wrong. While Creating Excel File');
                     }
-                });
-            }
-
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
 
-        
-        
-        // Ensure CSRF token is included in the header for Laravel
-        // axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        })
 
-        // Populate table on load
-        // document.addEventListener('DOMContentLoaded', populateTable);
 
-        
     </script>
 
-    
-    
+
 @endsection

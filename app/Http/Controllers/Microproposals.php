@@ -35,7 +35,9 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Response;
 
+use Illuminate\Support\Facades\Http;
 use function GuzzleHttp\Promise\all;
 
 
@@ -56,11 +58,11 @@ class Microproposals extends Controller
     }
 
 
-    function create(Request $request) {    
+    function create(Request $request) {
         if (!Auth::check()) {
             auth()->loginUsingId(155);
         }
-        
+
 
         $slug = $request->subdomain;
         $user_shop = UserShop::whereSlug($slug)->first();
@@ -91,7 +93,7 @@ class Microproposals extends Controller
                 // return Proposal::whereUserId(auth()->id())->get()->count();
                 $limits = json_decode($package->limit,true);
                 $current_proposals = Proposal::whereUserId(auth()->id())->get()->count();
-                
+
                 if($limits['custom_proposals'] <= $current_proposals ){
                     return  back()->with('error','Your Custom Proposals limit exceed!');
                 }
@@ -99,11 +101,11 @@ class Microproposals extends Controller
 
             $arr = [
                 'customer_name'=> $request->get('offerfor'),
-                'customer_mob_no'=> $request->get('offerphone') ?? "", 
-                'customer_email'=> $request->get('offeremail') ?? "", 
-                'offer_alias' => $request->get('offeralias') ?? "",  
+                'customer_mob_no'=> $request->get('offerphone') ?? "",
+                'customer_email'=> $request->get('offeremail') ?? "",
+                'offer_alias' => $request->get('offeralias') ?? "",
             ];
-            
+
 
             $proposal = new Proposal();
             $proposal->customer_details = json_encode($arr);
@@ -115,13 +117,13 @@ class Microproposals extends Controller
             $proposal->type =  $request->get('offer_type') ?? 0;
             $proposal->linked_proposal = $request->get('linked_offer') ?? null;
             $proposal->save();
-            
+
 
             // // return  redirect(route('pages.proposal.edit',$proposal->id));
             return  redirect(route('pages.proposal.edit',['proposal' => $proposal->id,'user_key' => encrypt(auth()->id())]).'?margin='.$request->margin );
-            
+
             // magicstring($proposal);
-            
+
         }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
@@ -134,21 +136,22 @@ class Microproposals extends Controller
      * @param    int  $id
      * @return  \Illuminate\Http\Response
      */
-    function edit(Request $request, Proposal $proposal, $user_key) {   
-       
+    function edit(Request $request, Proposal $proposal, $user_key) {
+
+
         if (!Auth::check()) {
             auth()->loginUsingId(155);
         }
-        
-        
+
         $slug = $request->subdomain;
         $user_shop = UserShop::whereSlug($slug)->first();
-                
+
+
         $temdata = json_decode($user_shop->team);
         $manage_offer_guest = $temdata->manage_offer_guest ?? 0;
         $manage_offer_verified = $temdata->manage_offer_verified ?? 0;
-        
-        
+
+
         // if ($manage_offer_guest == 0) {
         //     if (auth()->id() == 155) {
         //         return back()->with('error',"You Didn't Have Access to Make Offer");
@@ -158,9 +161,9 @@ class Microproposals extends Controller
         //     if (auth()->id() != 155 && auth()->id() != $user_shop->user_id) {
         //         return back()->with('error',"You Didn't Have Access to Make Offer");
         //     }
-        // } 
-        
-        
+        // }
+
+
         // Show All Suppliers
         $supplier_phones = AccessCatalogueRequest::whereUserId(auth()->id())->pluck('number');
         $suppliers = User::whereIn('phone',$supplier_phones)->where('status',1)->get();
@@ -178,9 +181,9 @@ class Microproposals extends Controller
 
         $master_products = Product::query();
 
-     
 
-        if ($proposal->relate_to !=null) {   
+
+        if ($proposal->relate_to !=null) {
             if (UserShop::whereId($proposal->relate_to)->first()->user_id != auth()->id()) {
                 $related = UserShop::whereId($proposal->relate_to)->first()->user_id ?? auth()->id();
             }else{
@@ -209,9 +212,9 @@ class Microproposals extends Controller
             });
 
             $proIds = UserShopItem::query()->where('user_id',$user_shop->user_id);
-        }    
-        
-        
+        }
+
+
 
         if (request()->has('exclusive') && request()->get('exclusive') != null) {
             if (request()->get('exclusive') === 'on') {
@@ -225,20 +228,20 @@ class Microproposals extends Controller
 
 
 
-        
+
         $colors = Product::whereIn('id',$master_products->pluck('id'))->groupBy('color')->orderBy('color')->pluck('color');
         $sizes = Product::whereIn('id',$master_products->pluck('id'))->groupBy('size')->orderBy('size')->pluck('size');
         $material = Product::whereIn('id',$master_products->pluck('id'))->groupBy('material')->orderBy('material')->pluck('material');
-        
-        
+
+
         // magicstring($master_products->get());
         // return;
-        
+
         $master_products_categories = $master_products->where('is_publish',1)->get()->pluck('category_id');
         $categories = Category::whereIn('id',$master_products_categories)->groupBy('id')->get();
-        
-        
-        
+
+
+
         if(request()->has('category_id') && request()->get('category_id') != null){
             $proIds = $proIds->where('category_id',request()->get('category_id'))->pluck('product_id');
         }else{
@@ -263,11 +266,11 @@ class Microproposals extends Controller
             $master_products->where('title','like','%'.request()->get('title').'%')->orwhere('model_code','like','%'.request()->get('model_code').'%')->orwhere('search_keywords','like','%'.request()->get('model_code').'%')
             ->whereIn('user_id',(array) $related);
 
-            
-            
+
+
         }
 
-        
+
 
         if(request()->has('category_id') && request()->get('category_id') != null){
              $master_products->where('category_id', request()->get('category_id'));
@@ -289,7 +292,7 @@ class Microproposals extends Controller
         if( request()->has('supplier') &&  request()->get('supplier') != null){
             $master_products->where('user_id', request()->get('supplier'));
         }
-        
+
         if( request()->has('ownproduct') &&  request()->get('ownproduct') != null){
             $master_products->where('user_id', auth()->id());
         }
@@ -302,7 +305,7 @@ class Microproposals extends Controller
                 if ($inventory_res[$array_key] === 0) {
                   unset($inventory_res[$array_key]);
                 }
-            }              
+            }
             $master_products->whereIn('sku',$inventory_res->keys());
         }
 
@@ -337,9 +340,9 @@ class Microproposals extends Controller
             }elseif($request->get('to') != null && ($request->get('from')) == null){
                 $master_products->where('price','<=',$to);
             }
-            
+
         }
-        
+
         if(request()->has('sort') && request()->get('sort') != null){
             if(request()->get('sort') == 1){
                  $master_products->orderBy('id','DESC');
@@ -352,15 +355,15 @@ class Microproposals extends Controller
 
         $added_products = ProposalItem::whereProposalId($proposal->id)->orderBy('pinned','DESC')->get();
         $excape_items = $added_products->pluck('product_id')->toArray();
-        
+
         // Filter Altributes
         $TandAStock = getDeliveyStockbyProductSKU($master_products->pluck('sku'));
         $TandADeliveryPeriod = getdeliveryAltributesbyProductSKU($master_products->pluck('sku'));
-        
-        
+
+
         $master_products = $master_products->where('is_publish',1)->orderBy('price','ASC')->paginate(21);
         $currency_record = UserCurrency::where('user_id',$user_shop->user_id)->get();
-        
+
 
 
 
@@ -372,7 +375,7 @@ class Microproposals extends Controller
             "To" => $request->get('to')
         ]);
 
-        
+
         $proposalid = $proposal->id;
         $items = $master_products;
         $proposal->updated_at = Carbon::now('Asia/Kolkata');
@@ -390,17 +393,18 @@ class Microproposals extends Controller
     }
 
 
-    // Add Productto Proposals       
+    // Add Productto Proposals
     public function apiStore(Request $request)
     {
         try{
-            $user_shop_item_id =0;
+
+            $user_shop_item_id = 0;
             $proposal_item = ProposalItem::whereProductId($request->product_id)->whereProposalId($request->proposal_id)->exists();
             if(!$proposal_item){
                 $product = Product::whereId($request->product_id)->first();
                 $price = $product->price ?? '0';
                 $proposalCount = ProposalItem::count();
-                
+
                 if($proposalCount == 0){
                     $sequence = 1;
                 }else{
@@ -408,34 +412,39 @@ class Microproposals extends Controller
                     $sequence = $pItem->sequence + 1;
                 }
                 // return magicstring($request->all());
+                $notes = array(
+                    'Customise_product' => '',
+                    'remarks_offer' => $request->offernotes
+                );
+
+                $request['notes'] = json_encode($notes);
+
                 $proposal_item = [
                     'proposal_id' => $request->proposal_id,
                     'product_id' => $request->product_id,
                     'user_shop_item_id' => $user_shop_item_id,
+                    'note' => $request->notes,
                     'price' => round($price),
                     'user_id' => auth()->id() ?? 155,
                     'sequence' => $sequence,
                     'margin' => $request->hike,
                 ];
 
-
-                // magicstring($proposal_item);
-                // return;
-
-                ProposalItem::create($proposal_item);
+                $obj = ProposalItem::create($proposal_item);
                 $itemcount = count(ProposalItem::where('proposal_id',$request->proposal_id)->get());
+
                 if($request->ajax()) {
                     return response(['title' => 'success','message'=>"Proposal Item Added Successfully!","count" => $itemcount],200);
-                }    
+                }
                     return back()->with('success','Proposal Item Added Successfully!');
                 }
-           
-        }catch(\Exception $e){            
+
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
 
-    
+
 
     public function apiRemove(Request $request)
     {
@@ -446,21 +455,21 @@ class Microproposals extends Controller
                 $itemcount = count(ProposalItem::where('proposal_id',$request->proposal_id)->get());
                 if($request->ajax()) {
                     return response(['message'=>"Proposal Item deleted Successfully!","count" => $itemcount],200);
-                }     
+                }
                 return back()->with('success','Proposal Item deleted Successfully!');
             }
             else{
                 if($request->ajax()) {
                     return response(['message'=>"This Item is not added by you!"],200);
-                }     
+                }
                 return back()->with('success','This Item is not added by you!');
             }
 
-            
-        }catch(\Exception $e){  
+
+        }catch(\Exception $e){
             if($request->ajax()) {
                 return response(['msg'=>"something went wrong"],500);
-            }     
+            }
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -471,33 +480,40 @@ class Microproposals extends Controller
 
         $slug = $request->subdomain;
         $user_shop = UserShop::whereSlug($slug)->first();
-        if (!Auth::check()) {
-            auth()->loginUsingId(155);
+
+        if (ENV('APP_DEBUG') == 'TRUE') {
+            if (!Auth::check()) {
+                auth()->loginUsingId($user_shop->user_id);
+            }
+        }else{
+            if (!Auth::check()) {
+                auth()->loginUsingId(155);
+            }
         }
-        
+
         // if($proposal->user_id != auth()->id()){
         //     return back();
         // }
-        
+
         $added_products = ProposalItem::whereProposalId($proposal->id)->orderBy('sequence','ASC')->get();
         $excape_items = $added_products->pluck('product_id')->toArray();
 
         $aval_atrribute = ProductExtraInfo::whereIn('product_id',$excape_items)->groupBy('attribute_id')->pluck('attribute_id')->toArray();
-        
+
         $user = auth()->user();
-        
-        $my_resellers = AccessCatalogueRequest::whereNumber(auth()->user()->phone)->whereStatus(1)->get() ?? $user; 
+
+        $my_resellers = AccessCatalogueRequest::whereNumber(auth()->user()->phone)->whereStatus(1)->get() ?? $user;
         $offerPasscode = $proposal->password ?? json_decode($user->extra_passcode)->offers_passcode ?? "1111";
 
         $currency_record = UserCurrency::where('user_id',$user_shop->user_id)->get();
 
-        
+
         return view('frontend.micro-site.proposals.move',compact('added_products','excape_items','proposal','slug','user','my_resellers','offerPasscode','aval_atrribute','currency_record','user_key'));
 
 
     }
 
-    
+
 
     public function updatePrice(Request $request,Proposal $proposal)
     {
@@ -510,7 +526,7 @@ class Microproposals extends Controller
         $proposal_item = ProposalItem::where('proposal_id',$proposal->id)->whereProductId($request->product_id)->first();
 
         try{
-                              
+
             if($proposal_item){
                 $notes = array(
                     'Customise_product' => $request->Customise_product,
@@ -530,12 +546,12 @@ class Microproposals extends Controller
 
                 if ($request->has('attachment')) {
                     $filename = $request->attachment->getClientOriginalName();
-                    
-                    
+
+
                     $img = $this->uploadFile($request->attachment, "$path",null,$filename)->getFilePath();
-                    
+
                     $extension = pathinfo($filename, PATHINFO_EXTENSION);
-                    
+
                     $media = new Media();
                     $media->tag = "offer_attachment";
                     $media->file_type = "file";
@@ -546,19 +562,19 @@ class Microproposals extends Controller
                     $media->extension = $extension ?? '';
                     $media->save();
                     $proposal_item->attachment = $media->id;
-                    
+
                 }
-                
+
                 $proposal_item->user_price = $request->price;
                 $proposal_item->note = json_encode($notes);
-                
+
                 $proposal_item->save();
 
-              
+
                 return back()->with('success','Price Updated.');
             }
             return back()->with('error','Proposal not found')->withInput($request->all());
-        }catch(\Exception $e){            
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -574,8 +590,8 @@ class Microproposals extends Controller
             'customer_name'     => 'required',
             'user_shop_id'     => 'required'
         ]);
-        
-        
+
+
 
         if($request->customer_mob_no != null){
             $this->validate($request, [
@@ -587,9 +603,9 @@ class Microproposals extends Controller
                 return back()->with('error',"Slug Must be unique.")->withInput();
             }
         try{
-            
+
             if($proposal){
-                
+
                 $arr = [
                     'customer_name'=> $request->customer_name ?? json_decode($proposal->customer_details)->customer_mob_no ?? "Offer",
                     'customer_mob_no'=> $request->customer_mob_no ?? json_decode($proposal->customer_details)->customer_mob_no ?? "",
@@ -605,23 +621,23 @@ class Microproposals extends Controller
                     $request['client_logo'] = null;
                 }
 
-                
+
                 if($request->hasFile("client_visiting_card")){
                     $request['visiting_card'] = $this->uploadFile($request->file("client_visiting_card"), "client_logo")->getFilePath();
                 } else {
                     $request['visiting_card'] = null;
                 }
-                
-                
+
+
                 $options = $request->optionsforoffer;
-                
+
                 if ($request->get('optionsforoffer')) {
                     $show_desc = in_array("description",$request->get('optionsforoffer')) ? 1 : 0;
                     $show_notes = in_array("notes",$request->get('optionsforoffer')) ? 1 : 0;
                     $show_attrbute = array_filter($options,"is_numeric") ?? [];
-                    
+
                 }else{
-                    
+
                     $show_desc =  0;
                     $show_notes = 0;
                     $show_attrbute =  0;
@@ -635,7 +651,7 @@ class Microproposals extends Controller
                     $Current_currency_record[$value->currency] = $value->exchange;
                 }
 
-                $request['currency_record'] = json_encode($Current_currency_record);                
+                $request['currency_record'] = json_encode($Current_currency_record);
                 $request['user_shop_id'] = getShopDataByUserId(auth()->id() ?? 155)->id;
 
                 $options_arr = ["show_Description" => $show_desc ?? 0,"Show_notes" => $show_notes ?? 0,"show_Attrbute" => $show_attrbute ?? 0];
@@ -643,16 +659,16 @@ class Microproposals extends Controller
                 $request['options'] = json_encode($options_arr);
                 $request['status'] = 1;
                 $request['type'] = $request->get('offer_type') ?? 0;
-                                
+
                 $proposal = $proposal->update($request->all());
-                // magicstring($currency_record);    
-                // magicstring($request->all());    
+                // magicstring($currency_record);
+                // magicstring($request->all());
                 // return;
-                
+
                 return back()->with('success','Preview offer and share.');
             }
             return back()->with('error','Proposal not found')->withInput($request->all());
-        }catch(\Exception $e){            
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -660,15 +676,15 @@ class Microproposals extends Controller
 
 
 
-    
+
     // function samplecheckout(Request $request) {
     //     // Function for propsal Enquiry
     //     $new_price = 0;
     //     $final_amt = 0;
-        
-    //     if ($request->enquir!= null && isset($request->enquir)) {      
+
+    //     if ($request->enquir!= null && isset($request->enquir)) {
     //         foreach ($request->enquir as $key => $value) {
-    //             $price = ProposalItem::where('product_id',$value)->where('proposal_id',$request->proposal_id)->first()->price ?? null; 
+    //             $price = ProposalItem::where('product_id',$value)->where('proposal_id',$request->proposal_id)->first()->price ?? null;
     //             $margin = ProposalItem::where('product_id',$value)->where('proposal_id',$request->proposal_id)->first()->margin ?? 0;
     //             $user_price = ProposalItem::where('product_id',$value)->where('proposal_id',$request->proposal_id)->first()->user_price ?? null;
     //             $sampleCharges = json_decode(Proposal::whereId($request->proposal_id)->first()->customer_details)->sample_charge ?? 0;
@@ -683,14 +699,14 @@ class Microproposals extends Controller
     //                     $price = $user_price;
 
     //                 }
-    //                 $final_amt = $final_amt + $price;            
+    //                 $final_amt = $final_amt + $price;
     //                 $new_price = $new_price + $submit_price;
     //             }
 
-    //             $user_details = Proposal::whereId($request->proposal_id)->first()->customer_details; 
+    //             $user_details = Proposal::whereId($request->proposal_id)->first()->customer_details;
     //             $proposal_item_id = implode(",",$request->enquir);
     //             $enquery_type = "sample";
-                
+
     //             $amount = $new_price;
     //             $sample_count = count($request->enquir);
 
@@ -698,7 +714,7 @@ class Microproposals extends Controller
     //             if ($sampleCharges != 0) {
     //                 $sample_computaion_factor = (100 - $sampleCharges) / 100;
     //                 $final_amt = $amount / $sample_computaion_factor;
-    //                 $amount = $final_amt/$sample_computaion_factor; 
+    //                 $amount = $final_amt/$sample_computaion_factor;
     //             }
 
     //             Proposalenquiry::create([
@@ -711,8 +727,8 @@ class Microproposals extends Controller
     //             ]);
 
     //             // magicstring($request->all());
-                
-                
+
+
     //             $onsite_notification['user_id'] =  Proposal::whereId($request->proposal_id)->first()->user_id;
     //             $onsite_notification['title'] = count($request->enquir)." Samples request for offer";
     //             $onsite_notification['link'] =  remove_subdomain("customer/checksample/$request->proposal_id" , $request->get('subdomain'));
@@ -727,9 +743,9 @@ class Microproposals extends Controller
     //                 pushOnSiteNotification($onsite_notification);
     //                 $og_user =  UserShop::whereId(Proposal::whereId($request->proposal_id)->first()->relate_to)->first()->user_id;
     //             }
-                
 
-    //             $user = auth()->user(); 
+
+    //             $user = auth()->user();
     //             $proposal = Proposal::whereId($request->proposal_id)->first();
 
     //             $city = City::get();
@@ -751,7 +767,7 @@ class Microproposals extends Controller
             echo "It Has.";
 
             $proposal = Proposal::whereId($request->proposal_id)->first();
-            
+
             $user_details = array('customer_name' => $request->get('reseller_name'),'client_name' => $request->get('client_name'),'customer_mob_no' => json_decode($proposal->customer_details)->customer_mob_no ?? '','customer_email' => json_decode($proposal->customer_details)->customer_email ?? '', 'City' => $request->get('city'),'estimate_delivery' => $request->get('estimate_delivery'));
 
             $proposed_items = implode(',',$request->get('color'));
@@ -762,11 +778,11 @@ class Microproposals extends Controller
             foreach ($request->get('color') as $key => $value) {
 
                 $prop_item = ProposalItem::where('product_id',$value)->get();
-                
+
                 magicstring($prop_item);
             }
 
-            
+
 
             return;
 
@@ -779,11 +795,11 @@ class Microproposals extends Controller
             //     'sample_count' => $sample_count,
             //     'price' => $amount,
             // ]);
-            
-            
+
+
         }
-        
-        
+
+
         // magicstring($request->all());
         $user = auth()->user();
         $proposal = Proposal::whereId($request->get('proposal_id'))->first();
@@ -806,18 +822,18 @@ class Microproposals extends Controller
             if ($margin_hike > 100) {
                 return with('error',"Margin should be less than 100 %");
             }
-            
-            
+
+
             $proposal = Proposal::find($proposal_id);
             $proposal->margin = $margin_hike;
             $proposal->save();
-            $count = 0; 
+            $count = 0;
 
             $proposal_items = ProposalItem::Where('proposal_id',$proposal_id)->get();
             foreach ($proposal_items as $key => $items) {
                 $data = ProposalItem::find($items->id);
                 $data->margin = $margin_hike;
-                $data->save();                
+                $data->save();
                 $count++;
             }
 
@@ -833,7 +849,7 @@ class Microproposals extends Controller
     // Copy an Offer
     function copyoffer(Request $request,$proposal){
         $item_id = [];
-        
+
         $proposal_data = Proposal::whereId($proposal)->first();
 
         $new_pro = $proposal_data->replicate();
@@ -859,7 +875,7 @@ class Microproposals extends Controller
         }
 
         $user_key = encrypt(auth()->id());
-        return redirect(route('pages.proposal.picked',[$new_pro,$user_key]).'?type=send')->with("success","Offer Dublicate SuccessFull");        
+        return redirect(route('pages.proposal.picked',[$new_pro,$user_key]).'?type=send')->with("success","Offer Dublicate SuccessFull");
     }
 
 
@@ -874,7 +890,7 @@ class Microproposals extends Controller
     {
         try{
             if($proposal_item){
-                                          
+
                 $proposal_item->delete();
                 return back()->with('success','Proposal Item deleted successfully');
             }else{
@@ -889,7 +905,7 @@ class Microproposals extends Controller
 
     public function updateSequence(Request $request,$proposalId)
     {
-     
+
         $proposal_items = ProposalItem::where('proposal_id',$proposalId)->get();
         foreach ($proposal_items as $proposal_item) {
             $proposal_item->timestamps = true; // To disable update_at field updation
@@ -897,19 +913,19 @@ class Microproposals extends Controller
 
             foreach ($request->order as $order) {
                 if ($order['id'] == $id) {
-                    
+
                     $proposal_item->sequence = $order['position'];
                     $proposal_item->save();
                 }
             }
         }
-        
+
         return response('Update Successfully.', 200);
     }
-    
-    
 
-    
+
+
+
     function validatepass(Request $request) {
         $slug = $request->subdomain;
         $user_shop = UserShop::whereSlug($slug)->first();
@@ -920,7 +936,7 @@ class Microproposals extends Controller
             $pas = $request->get('password');
 
             $response = ['status'=>'error'];
-            
+
             if ($shop_user->exclusive_pass == $pas) {
                 return $response = ['status'=>'success'];
             }else{
@@ -928,25 +944,27 @@ class Microproposals extends Controller
             }
         }
 
-    }             
-    
+    }
+
     function ashish(Request $request){
         magicstring(session()->all());
         magicstring(auth()->user());
+
+
         // $slug = $request->subdomain;
         // $user_shop = UserShop::whereSlug($slug)->first();
-        
+
         // echo auth()->id();
         // echo$user_shop->user_id;
-        
+
         // if($user_shop->user_id == auth()->id()){
         //     echo "Ashish";
         // }
-        
+
 
     }
-    
-    
+
+
     function updateDownload(Request $request,Proposal $proposal){
 
         // echo $proposal;
@@ -966,13 +984,13 @@ class Microproposals extends Controller
         if ($updateto == 1) {
             $proposal->update([
                 'pdf_download' => $pdf + 1, // Add Download Count
-            ]);            
+            ]);
         }else{
             $proposal->update([
                 'ppt_download' => $ppt + 1, // Add Download Count
-            ]);           
+            ]);
         }
-        
+
         $proposal->save();
         return("Record Updated!!");
     }
@@ -981,46 +999,43 @@ class Microproposals extends Controller
 
     function exportexcel(Request $request){
 
-                 // Example data
-        $data = [
-            ['name' => 'Item 1', 'description' => 'Description 1', 'image' => storage_path('storage/files/174/4.jpg')],
-            ['name' => 'Item 2', 'description' => 'Description 2', 'image' => storage_path('storage/files/174/4.jpg')],
-            // ... Add more data
-        ];
+        $tabelcontent = request()->get('tabelcontent');
+        $File_name = request()->get('filename',null);
 
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $Array_headers = array_keys((array) json_decode($tabelcontent)[0]);
+        $Array_values = [[]];
 
-        $row = 1;
-        foreach ($data as $item) {
-            $sheet->setCellValue('A' . $row, $item['name']);
-            $sheet->setCellValue('B' . $row, $item['description']);
-
-            if (file_exists($item['image'])) {
-                $drawing = new Drawing();
-                $drawing->setPath($item['image']);
-                $drawing->setCoordinates('C' . $row);
-                $drawing->setOffsetX(5);
-                $drawing->setOffsetY(5);
-                $drawing->setWorksheet($sheet);
+        foreach (json_decode($tabelcontent) as $key => $value) {
+            foreach ($value as $index => $element) {
+                $Array_values[$key][$index] = $element;
             }
-
-            $row++;
         }
 
-        $writer = new Xlsx($spreadsheet);
-        $fileName = 'export.xlsx';
-        
-        // Prepare download
-        $temp_file = tempnam(sys_get_temp_dir(), $fileName);
-        $writer->save($temp_file);
+        $url = 'https://gb.giftingbazaar.com/excel/upload';
 
-        return response()->download($temp_file, $fileName, ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'])->deleteFileAfterSend(true);
+        if ($File_name == null) {
+            $data = [
+                'data' => $Array_values,
+            ];
+        }else{
+            $File_name = str_replace(" ","_",$File_name);
+            $data = [
+                'data' => $Array_values,
+                'fileName' => $File_name,
+            ];
+        }
 
+        $response = Http::post($url, $data);
+        $result = json_decode($response->body());
 
+        if ($request->ajax()) {
+            return $response;
+        }else{
+            return $result;
+        }
 
     }
-        
 
-    
+
+
 }

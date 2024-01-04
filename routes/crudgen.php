@@ -23,7 +23,7 @@ Route::group(['middleware' => 'auth','namespace' => 'Admin\ConstantManagement', 
     Route::get('edit/{slider_type}', ['uses' => 'SliderTypeController@edit', 'as' => 'edit']);
     Route::post('update/{slider_type}', ['uses' => 'SliderTypeController@update', 'as' => 'update']);
     Route::get('delete/{slider_type}', ['uses' => 'SliderTypeController@destroy', 'as' => 'destroy']);
-}); 
+});
 
 
 // Use to Show Proposals In Admin Panal
@@ -60,7 +60,7 @@ Route::group(['middleware' => 'auth','namespace' => 'Backend\ConstantManagement'
     Route::get('edit/{slider}', ['uses' => 'SliderController@edit', 'as' => 'edit']);
     Route::post('update/{slider}', ['uses' => 'SliderController@update', 'as' => 'update']);
     Route::get('delete/{slider}', ['uses' => 'SliderController@destroy', 'as' => 'destroy']);
-}); 
+});
 
     Route::group(['middleware' => 'auth','namespace' => 'Admin\ConstantManagement', 'prefix' => 'backend/constant-management/news-letters','as' =>'backend/constant-management.news_letters.'], function () {
         Route::get('index', ['uses' => 'NewsLetterController@index', 'as' => 'index']);
@@ -71,8 +71,8 @@ Route::group(['middleware' => 'auth','namespace' => 'Backend\ConstantManagement'
         Route::get('delete/{news_letter}', ['uses' => 'NewsLetterController@destroy', 'as' => 'destroy']);
         Route::get('/launchcampaign', ['uses' => 'NewsLetterController@launchcampaignShow', 'as' => 'launchcampaign.show']);
         Route::post('launchcampaign', ['uses' => 'NewsLetterController@runCampaign', 'as' => 'run.campaign']);
-    }); 
-    
+    });
+
 
     Route::group(['middleware' => 'auth','namespace' => 'Admin', 'prefix' => 'backend/site-content-managements','as' =>'backend.site_content_managements.'], function () {
         Route::get('index', ['uses' => 'SiteContentManagementController@index', 'as' => 'index']);
@@ -81,7 +81,7 @@ Route::group(['middleware' => 'auth','namespace' => 'Backend\ConstantManagement'
         Route::get('edit/{site_content_management}', ['uses' => 'SiteContentManagementController@edit', 'as' => 'edit']);
         Route::post('update/{site_content_management}', ['uses' => 'SiteContentManagementController@update', 'as' => 'update']);
         Route::get('delete/{site_content_management}', ['uses' => 'SiteContentManagementController@destroy', 'as' => 'destroy']);
-    }); 
+    });
     Route::group(['middleware' => 'auth','namespace' => 'Admin', 'prefix' => 'backend/constant-management/faqs','as' =>'backend/constant-management.faqs.'], function () {
         Route::get('index', ['uses' => 'FaqController@index', 'as' => 'index']);
         Route::get('create', ['uses' => 'FaqController@create', 'as' => 'create']);
@@ -100,11 +100,11 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Admin', 'prefi
     Route::get('/{order}', ['uses' => 'OrderController@show', 'as' => 'show']);
     Route::get('/status/{order}', ['uses' => 'OrderController@updateStatus', 'as' => 'update-status']);
     Route::get('/status/{order}/re-update/{s_id}', ['uses' => 'OrderController@reUpdateStatus', 'as' => 're-update-status']);
-    Route::get('invoice/{order}', ['uses' => 'OrderController@invoice', 'as' => 'invoice']);
+    // Route::get('invoice/{order}', ['uses' => 'OrderController@invoice', 'as' => 'invoice']);
     Route::get('show/{order}', ['uses' => 'OrderController@show', 'as' => 'show']);
     Route::post('update/{order}', ['uses' => 'OrderController@update', 'as' => 'update']);
     Route::get('delete/{order}', ['uses' => 'OrderController@destroy', 'as' => 'destroy']);
-});   
+});
 
 Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefix' => 'panel/brands','as' =>'panel.brands.'], function () {
         Route::get('', ['uses' => 'BrandController@index', 'as' => 'index']);
@@ -116,11 +116,11 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
         Route::post('update/details/{brand}', ['uses' => 'BrandController@legalDetailsUpdate', 'as' => 'legal-details.update']);
         Route::post('update/{brand}', ['uses' => 'BrandController@update', 'as' => 'update']);
         Route::get('delete/{brand}', ['uses' => 'BrandController@destroy', 'as' => 'destroy']);
-    }); 
-    
-    
+    });
+
+
 Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefix' => 'panel/products','as' =>'panel.products.'], function () {
-    
+
         Route::get('', ['uses' => 'ProductController@index', 'as' => 'index']);
         Route::get('inventory', ['uses' => 'ProductController@inventoryIndex', 'as' => 'inventory.index']);
         Route::post('inventory/store', ['uses' => 'ProductController@inventoryStore', 'as' => 'inventory.store']);
@@ -143,6 +143,12 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
 
         Route::get('/delete/sku/{productid}', ['uses' => 'ProductController@deleteSKu', 'as' => 'delete.sku']);
 
+
+        Route::any('/search/assets', ['uses' => 'ProductController@searchassets', 'as' => 'search.assets']);
+
+
+        Route::get('/delete/sku/varient/{productid}', ['uses' => 'ProductController@deletevariant', 'as' => 'delete.variant']);
+
         Route::get('edit/template/{template}', ['uses' => 'ProductController@edittemplate', 'as' => 'edit.template']);
         Route::post('update/template/{template}', ['uses' => 'ProductController@updatetemplate', 'as' => 'update.template']);
         Route::get('download/template/{template}', ['uses' => 'ProductController@downloadtemplate', 'as' => 'download.template']);
@@ -152,10 +158,10 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
 
         // Route::get('singlecreate',['uses' => 'ProductController@singlecreate', 'as' => 'single.create']);
 
-        
-        
-    }); 
-        
+
+
+    });
+
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/user-shops','as' =>'panel.user_shops.'], function () {
         Route::get('', ['uses' => 'UserShopController@index', 'as' => 'index']);
         Route::any('/print', ['uses' => 'UserShopController@print', 'as' => 'print']);
@@ -163,8 +169,8 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('create', ['uses' => 'UserShopController@create', 'as' => 'create']);
         Route::post('store', ['uses' => 'UserShopController@store', 'as' => 'store']);
         Route::get('/{user_shop}', ['uses' => 'UserShopController@show', 'as' => 'show']);
-        Route::get('edit/{user_shop}', ['uses' => 'UserShopController@edit', 'as' => 'edit']);        
-        Route::post('update/{user_shop}', ['uses' => 'UserShopController@update', 'as' => 'update']);  
+        Route::get('edit/{user_shop}', ['uses' => 'UserShopController@edit', 'as' => 'edit']);
+        Route::post('update/{user_shop}', ['uses' => 'UserShopController@update', 'as' => 'update']);
         Route::post('updateuser/{user_shop}', ['uses' => 'UserShopController@updateuserdetails', 'as' => 'updateuser']);
         Route::post('update/shop-view/{user_shop}', ['uses' => 'UserShopController@updateShopView', 'as' => 'update.shop-view']);
         Route::post('update/others/{user_shop}', ['uses' => 'UserShopController@otherFiledsUpdate', 'as' => 'other_fields.update']);
@@ -178,8 +184,8 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::post('testimonial', ['uses' => 'UserShopController@updateTestimonial', 'as' => 'testimonial']);
         Route::post('products/{user_shop}', ['uses' => 'UserShopController@updateProductsSection', 'as' => 'products']);
         Route::get('remove-image/{user_shop}', ['uses' => 'UserShopController@removeImage', 'as' => 'remove-shop-image']);
-    }); 
-    
+    });
+
 
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/groups','as' =>'panel.groups.'], function () {
         Route::get('', ['uses' => 'GroupController@index', 'as' => 'index']);
@@ -190,9 +196,9 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('edit/{group}', ['uses' => 'GroupController@edit', 'as' => 'edit']);
         Route::post('update/{group}', ['uses' => 'GroupController@update', 'as' => 'update']);
         Route::get('delete/{group}', ['uses' => 'GroupController@destroy', 'as' => 'destroy']);
-    }); 
-    
-    
+    });
+
+
 
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/group-users','as' =>'panel.group_users.'], function () {
         Route::get('', ['uses' => 'GroupUserController@index', 'as' => 'index']);
@@ -203,9 +209,9 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('edit/{group_user}', ['uses' => 'GroupUserController@edit', 'as' => 'edit']);
         Route::post('update/{group_user}', ['uses' => 'GroupUserController@update', 'as' => 'update']);
         Route::get('delete/{group_user}', ['uses' => 'GroupUserController@destroy', 'as' => 'destroy']);
-    }); 
-    
-    
+    });
+
+
 
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/group-products','as' =>'panel.group_products.'], function () {
         Route::get('', ['uses' => 'GroupProductController@index', 'as' => 'index']);
@@ -217,9 +223,9 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('edit/{group_product}', ['uses' => 'GroupProductController@edit', 'as' => 'edit']);
         Route::post('update', ['uses' => 'GroupProductController@update', 'as' => 'update']);
         Route::get('delete/{group_product}', ['uses' => 'GroupProductController@destroy', 'as' => 'destroy']);
-    }); 
-    
-     
+    });
+
+
 
 Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefix' => 'panel/user-shop-items','as' =>'panel.user_shop_items.'], function () {
         Route::get('', ['uses' => 'UserShopItemController@index', 'as' => 'index']);
@@ -227,7 +233,7 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
         Route::get('create', ['uses' => 'UserShopItemController@create', 'as' => 'create']);
 
         Route::get('/check-linked', ['uses' => 'UserShopItemController@linkedasset', 'as' => 'linked.asset']);
-        
+
         Route::post('store', ['uses' => 'UserShopItemController@store', 'as' => 'store']);
         Route::post('add/bulk', ['uses' => 'UserShopItemController@addBulk', 'as' => 'addbulk']);
         Route::post('remove/bulk', ['uses' => 'UserShopItemController@removebulk', 'as' => 'removebulk']);
@@ -242,7 +248,7 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
         Route::get('get/subcategory', ['uses' => 'UserShopItemController@getSubcategory', 'as' => 'get-category']);
         Route::post('update/{user_shop_item}', ['uses' => 'UserShopItemController@update', 'as' => 'update']);
         Route::post('update121/{user_shop_item}', ['uses' => 'UserShopItemController@update121', 'as' => 'update121']);
-  
+
         Route::get('update/product', ['uses' => 'UserShopItemController@updateproductshow', 'as' => 'update.product']);
         // Go to Panel.php For Post Route of Bulk 121 Product Changes Upload
 
@@ -252,9 +258,9 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
         Route::get('delete/{user_shop_item}', ['uses' => 'UserShopItemController@destroy', 'as' => 'destroy']);
         Route::get('update/product', ['uses' => 'UserShopItemController@updateproductshow', 'as' => 'update.product']);
         // Go to Panel.php For Post Route of Bulk 121 Product Changes Upload
-    }); 
-    
-    
+    });
+
+
 
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/medias','as' =>'panel.medias.'], function () {
         Route::get('', ['uses' => 'MediaController@index', 'as' => 'index']);
@@ -265,9 +271,9 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('edit/{media}', ['uses' => 'MediaController@edit', 'as' => 'edit']);
         Route::post('update/{media}', ['uses' => 'MediaController@update', 'as' => 'update']);
         Route::get('delete/{media}', ['uses' => 'MediaController@destroy', 'as' => 'destroy']);
-    }); 
-    
-    
+    });
+
+
 
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/packages','as' =>'panel.packages.'], function () {
         Route::get('', ['uses' => 'PackageController@index', 'as' => 'index']);
@@ -278,9 +284,9 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('edit/{package}', ['uses' => 'PackageController@edit', 'as' => 'edit']);
         Route::post('update/{package}', ['uses' => 'PackageController@update', 'as' => 'update']);
         Route::get('delete/{package}', ['uses' => 'PackageController@destroy', 'as' => 'destroy']);
-    }); 
-    
-    
+    });
+
+
 
 Route::group(['middleware' => 'is.admin','namespace' => 'Panel', 'prefix' => 'panel/access-codes','as' =>'panel.access_codes.'], function () {
         Route::get('', ['uses' => 'AccessCodeController@index', 'as' => 'index']);
@@ -292,16 +298,16 @@ Route::group(['middleware' => 'is.admin','namespace' => 'Panel', 'prefix' => 'pa
         Route::post('generate/code', ['uses' => 'AccessCodeController@codeGenerator', 'as' => 'generate-code']);
         Route::post('update/{access_code}', ['uses' => 'AccessCodeController@update', 'as' => 'update']);
         Route::get('delete/{access_code}', ['uses' => 'AccessCodeController@destroy', 'as' => 'destroy']);
-    }); 
+    });
 
     Route::group(['middleware' => 'auth','prefix' => 'panel/report','as' =>'panel.report.'], function () {
         Route::get('/access_code', ['uses' => 'Admin\ReportController@accessCode', 'as' => 'access-code']);
         Route::any('/user_packages', ['uses' => 'Admin\ReportController@userPackages', 'as' => 'user-packages']);
         Route::get('/user_acquisition', ['uses' => 'Admin\ReportController@userAcquisition', 'as' =>
         'user-acquisition']);
-    }); 
-    
-    
+    });
+
+
 
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/user-packages','as' =>'panel.user_packages.'], function () {
         Route::get('/', ['uses' => 'UserPackageController@index', 'as' => 'index']);
@@ -312,9 +318,9 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('edit/{user_package}', ['uses' => 'UserPackageController@edit', 'as' => 'edit']);
         Route::post('update/{user_package}', ['uses' => 'UserPackageController@update', 'as' => 'update']);
         Route::get('delete/{user_package}', ['uses' => 'UserPackageController@destroy', 'as' => 'destroy']);
-    }); 
-    
-    
+    });
+
+
 
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/product-attributes','as' =>'panel.product_attributes.'], function () {
         Route::get('', ['uses' => 'ProductAttributeController@index', 'as' => 'index']);
@@ -326,9 +332,9 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::post('update/{product_attribute}', ['uses' => 'ProductAttributeController@update', 'as' => 'update']);
         Route::get('delete/{product_attribute}', ['uses' => 'ProductAttributeController@destroy', 'as' => 'destroy']);
         Route::get('delete_val/{product_attribute_value}', ['uses' => 'ProductAttributeController@deletevalue', 'as' => 'destroy.value']);
-    }); 
-    
-    
+    });
+
+
 
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/carts','as' =>'panel.carts.'], function () {
         Route::get('', ['uses' => 'CartController@index', 'as' => 'index']);
@@ -339,10 +345,10 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('edit/{cart}', ['uses' => 'CartController@edit', 'as' => 'edit']);
         Route::post('update/{cart}', ['uses' => 'CartController@update', 'as' => 'update']);
         Route::get('delete/{cart}', ['uses' => 'CartController@destroy', 'as' => 'destroy']);
-    }); 
+    });
     Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefix' => 'panel/proposals','as' =>'panel.proposals.'], function () {
         Route::get('', ['uses' => 'ProposalController@index', 'as' => 'index']);
-       
+
         Route::any('/print', ['uses' => 'ProposalController@print', 'as' => 'print']);
         Route::get('create', ['uses' => 'ProposalController@create', 'as' => 'create']);
         Route::get('sent/{proposal}', ['uses' => 'ProposalController@sent', 'as' => 'sent']);
@@ -353,7 +359,51 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::post('update/{proposal}/price', ['uses' => 'ProposalController@updatePrice', 'as' => 'update-price']);
         Route::get('delete/{proposal}', ['uses' => 'ProposalController@destroy', 'as' => 'destroy']);
         Route::get('remove-image/{proposal}', ['uses' => 'ProposalController@removeImage', 'as' => 'remove-image']);
-    }); 
+    });
+
+    // invoice original
+
+    // Route::group(['middleware' => 'auth', 'prefix' => 'panel/invoice','as' =>'panel.invoice.'], function () {
+    //     Route::get('', ['uses' => 'invoiceController@index', 'as' => 'index']);
+
+    //     Route::any('/secondview', ['uses' => 'invoiceController@secondview', 'as' => 'secondview']);
+
+    //     Route::any('/thirdview', ['uses' => 'invoiceController@thirdview', 'as' => 'thirdview']);
+
+    //     Route::any('/fourthview', ['uses' => 'invoiceController@fourthview', 'as' => 'fourthview']);
+
+    //     Route::any('/Quotation', ['uses' => 'invoiceController@Quotation', 'as' => 'Quotation']);
+
+    // });
+
+
+    // ` Quotation linking new
+    Route::group(['middleware' => 'checkAccountPermission:documentaion', 'prefix' => 'panel/Quotation','as' =>'panel.Documents.'], function () {
+
+        Route::get('', ['uses' => 'invoiceController@index', 'as' => 'index']);
+        Route::get('/secondview', ['uses' => 'invoiceController@secondview', 'as' => 'secondview']);
+        Route::get('/thirdview', ['uses' => 'invoiceController@thirdview', 'as' => 'thirdview']);
+        Route::get('/fourthview', ['uses' => 'invoiceController@fourthview', 'as' => 'fourthview']);
+
+        Route::get('/start', ['uses' => 'invoiceController@Quotation', 'as' => 'Quotation']);
+        Route::post('/Quotation/create', ['uses' => 'invoiceController@createQuotation', 'as' => 'create.Quotation']);
+        
+        Route::get('/step-2', ['uses' => 'invoiceController@quotation2', 'as' => 'quotation2']);
+        Route::post('/Quotation/create/item', ['uses' => 'invoiceController@createQuotationitem', 'as' => 'create.Quotation.item']);
+        Route::get('/step-3', ['uses' => 'invoiceController@quotation3', 'as' => 'quotation3']);
+
+        Route::get('/step-4', ['uses' => 'invoiceController@quotation4', 'as' => 'quotation4']);
+        Route::post('/save', ['uses' => 'invoiceController@storeQuotation', 'as' => 'save.quotation']);
+
+        Route::get('/quotationpdf', ['uses' => 'invoiceController@quotationpdf', 'as' => 'quotationpdf']);
+
+        Route::get('/printexcelqt1', ['uses' => 'invoiceController@printexcelqt1', 'as' => 'printexcelqt1']);
+
+        Route::post('/printexcelqt1', ['uses' => 'invoiceController@exportexcel', 'as' => 'printexcelqt1']);
+
+
+    });
+
 
     Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/proposal-items','as' =>'panel.proposal_items.'], function () {
         Route::get('', ['uses' => 'ProposalItemController@index', 'as' => 'index']);
@@ -371,8 +421,8 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::post('update/{proposal_item}', ['uses' => 'ProposalItemController@update', 'as' => 'update']);
         Route::get('delete/{proposal_item}', ['uses' => 'ProposalItemController@destroy', 'as' => 'destroy']);
     });
-    
-    
+
+
 
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/user-shop-testimonals','as' =>'panel.user_shop_testimonals.'], function () {
         Route::get('', ['uses' => 'UserShopTestimonalController@index', 'as' => 'index']);
@@ -383,9 +433,9 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('edit/{user_shop_testimonal}', ['uses' => 'UserShopTestimonalController@edit', 'as' => 'edit']);
         Route::post('update/{user_shop_testimonal}', ['uses' => 'UserShopTestimonalController@update', 'as' => 'update']);
         Route::get('delete/{user_shop_testimonal}', ['uses' => 'UserShopTestimonalController@destroy', 'as' => 'destroy']);
-    }); 
-    
-    
+    });
+
+
 
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/teams','as' =>'panel.teams.'], function () {
         Route::get('', ['uses' => 'TeamController@index', 'as' => 'index']);
@@ -397,9 +447,9 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::post('update/{team}', ['uses' => 'TeamController@update', 'as' => 'update']);
         Route::post('user-shops/update', ['uses' => 'TeamController@userShopTeamUpdate', 'as' => 'user-shops.update']);
         Route::get('delete/{team}', ['uses' => 'TeamController@destroy', 'as' => 'destroy']);
-    }); 
-    
-    
+    });
+
+
 
 Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/price-ask-requests','as' =>'panel.price_ask_requests.'], function () {
         Route::get('', ['uses' => 'PriceAskRequestController@index', 'as' => 'index']);
@@ -416,22 +466,17 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('status/{price_ask_request}', ['uses' => 'PriceAskRequestController@status', 'as' => 'status']);
         Route::post('update/{price_ask_request}', ['uses' => 'PriceAskRequestController@update', 'as' => 'update']);
         Route::get('delete/{price_ask_request}', ['uses' => 'PriceAskRequestController@destroy', 'as' => 'destroy']);
-    }); 
+    });
 
 Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefix' => 'panel/filemanager','as' =>'panel.filemanager.'], function () {
     // Route::get('', ['uses' => 'FileManager@index', 'as' => 'index']);
     Route::get('', ['uses' => 'FileManager@newview', 'as' => 'index']);
     Route::get('/new', ['uses' => 'FileManager@newview', 'as' => 'new.view']);
-    
     Route::any('/rename', ['uses' => 'FileManager@renamefile', 'as' => 'rename']);
     Route::get('/delete', ['uses' => 'FileManager@destroyfile', 'as' => 'delete']);
     Route::post('/upload', ['uses' => 'FileManager@store', 'as' => 'upload']);
-
     Route::post('/downloadZip', ['uses' => 'FileManager@downloadZip', 'as' => 'downloadZip']);
     Route::post('/linkproduct/{user_id}', ['uses' => 'FileManager@linkproduct', 'as' => 'link.product']);
-    
     Route::post('/delimeter/Link', ['uses' => 'FileManager@productsaperator', 'as' => 'link.saperator']);
 
-
-    
-}); 
+});

@@ -56,6 +56,10 @@ class Handler extends ExceptionHandler
              'message' => 'Sorry! This action is unauthorized'
             ],401);
         }*/
+        if ($exception instanceof \Illuminate\Contracts\Encryption\DecryptException) {
+            return redirect()->back()->withErrors('There was a problem with the request. Please try again.');
+        }
+
         return parent::render($request, $exception);
     }
 }

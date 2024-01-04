@@ -1,4 +1,4 @@
-@extends('backend.layouts.main') 
+@extends('backend.layouts.main')
 @section('title', 'Category')
 
 @section('content')
@@ -41,13 +41,13 @@
 
         <div class="row my-2">
             <div class="col-12 d-flex justify-content-between">
-                <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_ide={{encrypt(auth()->id())}}" class="btn btn-outline-secondary"> 
+                <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_ide={{encrypt(auth()->id())}}" class="btn btn-outline-secondary">
                     Back
                 </a>
                 <div class="d-flex">
-                    <a class="btn btn-outline-primary mx-1" id="addcategory" href="#animatedModal" role="button">
+                    {{-- <a class="btn btn-outline-primary mx-1" id="addcategory" href="#animatedModal" role="button">
                         <i class="fa fa-plus" aria-hidden="true"></i> Create Category
-                    </a>
+                    </a> --}}
                     {{-- <button type="button" class="btn btn-outline-primary openglobal mx-1" data-bs-toggle="modal" data-bs-target="#selectGlobalMOdal">
                         Select Global Category
                     </button> --}}
@@ -57,7 +57,7 @@
 
         <div class="row">
             @if (AuthRole() == 'Admin')
-                @include('backend.constant-management.category.view.admin-view')    
+                @include('backend.constant-management.category.view.admin-view')
             @else
                 @include('backend.constant-management.category.view.user-view')
             @endif
@@ -66,19 +66,20 @@
     </div>
 
 
-      
+
 
     @include('backend.constant-management.category.include.modal')
     @include('backend.constant-management.category.include.select_global')
-    @include('backend.constant-management.category.include.add-category')
-    @include('backend.constant-management.category.include.industry')     
+    {{-- @include('backend.constant-management.category.include.add-category') --}}
+    @include('backend.constant-management.category.include.industry')
 
     <!-- push external js -->
     @push('script')
         <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
         <script>
+
             $(document).ready(function() {
-                    
+
                 $("#addcategory").animatedModal({
                     animatedIn: 'lightSpeedIn',
                     animatedOut: 'lightSpeedOut',
@@ -88,7 +89,7 @@
                     top: '24%',
                     left: '40%',
                 });
-                $("#demo01").click();
+                // $("#demo01").click();
 
                 var table = $('#category_table').DataTable({
                     responsive: true,
@@ -125,8 +126,8 @@
                     ]
                 });
 
-                
-                $(".editchange").click(function (e) { 
+
+                $(".editchange").click(function (e) {
                     e.preventDefault();
                     // Enabling Input Value
                     let box_parent = $(this).data('box-parent');
@@ -140,7 +141,7 @@
                 });
 
 
-                $(".discardchange").click(function (e) { 
+                $(".discardchange").click(function (e) {
                     e.preventDefault();
                     // Enabling Input Value
                     let box_parent = $(this).data('box-parent');
@@ -155,16 +156,16 @@
                 });
 
 
-                $(".updatechange").click(function (e) { 
+                $(".updatechange").click(function (e) {
                     e.preventDefault();
                     // {{-- ` Input Value  --}}
-                    let input_parent = $(this).data('input-parent'); 
+                    let input_parent = $(this).data('input-parent');
 
                     // {{-- ` Id Of The Category --}}
                     let typevalue = $(this).data('typevalue');
                     let text = $("#text-represent-"+input_parent.split('_')[2]);
                     let value = $("#"+input_parent).val();
-                    
+
                     $.ajax({
                         type: "GET",
                         url: "{{ route('panel.constant_management.category.update.ajax') }}",
@@ -181,12 +182,12 @@
                             $(".discardchange").click();
                         }
                     });
-                    
+
                 });
 
-                                
+
                 // Add Items
-                $(".additems").click(function (e) { 
+                $(".additems").click(function (e) {
                     e.preventDefault();
                     let parent = $(this).data('parentdata');
                     let item = `<div class="col-3 my-2">
@@ -199,14 +200,14 @@
                 });
 
 
-                $(".savebtn").click(function (e) { 
+                $(".savebtn").click(function (e) {
                     e.preventDefault();
                     let parent = $(this).data('parentdata');
                     let valuearr = [];
 
 
                     let items = document.querySelectorAll(`.added_item-${parent}`);
-                    
+
                     items.forEach(element => {
                         valuearr.push(element.value);
                     });
@@ -233,7 +234,7 @@
                 });
 
 
-                $(".collapseicon").click(function (e) { 
+                $(".collapseicon").click(function (e) {
 
                     $(this).toggleClass('btn-primary');
                     $(this).toggleClass('bg-none');
@@ -242,17 +243,18 @@
 
                 });
 
-                $("#newcatname").change(function (e) { 
+                $("#newcatname").change(function (e) {
                     e.preventDefault();
                     let newval = $(this).val();
 
 
                     let newvalue = newval.split(" > ")[1];
-                    
+                    $(this).val(newval.split(" > ")[0])
+
                     $('#tags').tagsinput('add',newvalue);
 
 
-                    
+
                     // $.ajax({
                     //     type: "GET",
                     //     url: "{{ route('panel.constant_management.category.check.global') }}",
@@ -267,7 +269,7 @@
 
                     //             console.log(response['DATA']);
                     //             $("#tags").val(response['DATA']);
-                                
+
                     //             $('#tags').tagsinput('refresh');
 
                     //         }

@@ -3,7 +3,7 @@
 
 <!-- Bootstrap CSS -->
 {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
-<div class="col-12">
+<div class="col-md-12 col-lg-12">
   <div class="row">
       <div class="col-6 d-flex justify-content-between align-items-center">
 
@@ -32,15 +32,15 @@
       </div>
       <div class="col-6 d-flex justify-content-end align-items-center">
           <a href="?view=listview" class="btn btn-outline-primary mx-1 @if(request()->get('view') == 'listview' ) active @endif"><i class="fas fa-list"></i></a>
-          <a href="?view=gridview" class="btn btn-outline-primary mx-1 @if(request()->get('view') == 'gridview' ) active @endif"><i class="fas fa-th-large"></i></a>
+          <a href="?view=gridview" class="btn btn-outline-primary mx-1 @if(request()->get('view') == 'gridview' ) active @endif"><i class="fas fa-th-large" ></i></a>
           <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-outline-primary mx-1" @if(request()->has('active') && request()->get('active') == "enquiry") active @endif id="makeoffer">Make Offer</a>
       </div>
 
   </div>
 </div>
-
-  <div class="card-body1">
-    <div class="d-flex gap-2 flex-wrap"> 
+<div class="col-md-12 col-lg-12">
+  <div class="card-body1">    
+      <div class=" d-flex gap-5 flex-wrap"> 
         @if ($proposals->count() > 0)
           @foreach ($proposals as $proposal)
               @php
@@ -54,7 +54,7 @@
 
               @endphp
 
-              <div class="cardbx m-1 col-4 product-card product-box d-flex flex-column border bg-white m-1" style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
+              <div class="cardbx mx-3 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white m-1" style="width: 25rem;;max-width: 18rem; min-height: 13.5rem;max-height: 15rem;">
                   <div class="head d-flex justify-content-between mx-3 my-2">
                       <div class="one">
                         <div style="font-weight: bold">
@@ -76,16 +76,16 @@
                       </div>
                   </div>
 
-                  <div class ="cardbody d-flex gap-2 p-4 justify-content-between" style="gap:10px;">
+                  <div class ="cardbody d-flex gap-2  justify-content-between" style="gap:10px;">
                     @foreach ($productItems as $key => $item)
                       @if ($key < 3)
                           @php
                               $mediarecord = App\Models\Media::where('type_id',$item->product_id)->where('tag','Product_Image')->first();
                           @endphp
                           @if ($mediarecord != null)   
-                                           
+                                          
                             <div style="height: 100px; width: 100px;object-fit: contain; ">
-                              <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid " style="border-radius: 10px;height: 100%; width: 100%; background-color:rgb(186, 183, 183); gap:10px; padding:0.15rem">
+                              <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid " style="border-radius: 10px;height: 80%; width: 100%;  gap:10px; padding:0.15rem">
                             </div>   
                                         
                           @endif                                                                    
@@ -94,16 +94,16 @@
                   </div>                  
                   <div class="d-flex float-end justify-content-between">  
                     
-                    <a class="btn btn-transparent w-fit" href="{{ inject_subdomain('proposal/picked/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?type=send" target="_blank" style="text-decoration: none; margin-bottom: 10px; color:primary ">
+                    <a class="btn btn-transparent w-fit" href="{{ inject_subdomain('proposal/picked/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?type=send" target="_blank" style="text-decoration: none; padding:6px 0px;">
                       <i class="fas fa-download" style="color:#6666cc"></i> 
                     </a>                    
-                      <a class="btn btn-transparent w-fit " href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: none; margin-bottom:22px ">
-                        <i class="fas fa-edit fa-lg" style="color:#6666cc"></i> 
+                      <a class="btn btn-transparent w-fit " href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: none; padding:6px 0px; ">
+                        <i class="fas fa-edit fa-lg" style="color:#6666cc; margin-right:0px;"></i> 
                       </a>                      
                       
                     @if ($proposal->status == 1)                     
                       @if ($product_count != 0)                                               
-                          <button class="btn-link text-primary copybtn w-fit mx-1"  value="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline; border:none; margin-bottom:22px">
+                          <button class="btn-link text-primary copybtn w-fit mx-1"  value="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline; border:none; padding: 0px;">
                               <i class="uil-link-alt"></i> Copy Link
                           </button>                                                
                       @endif                                            
@@ -112,21 +112,22 @@
                           </a> 
                     @endif
                     @if ($proposal->status == 1)                                                                                  
-                      <button href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="text-danger delete-item mx-1" style="text-decoration: underline; margin-bottom:22px; border:none;background-color:#ffff">
-                          <i class="uil uil-trash h6"></i> Delete
+                      <button href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="text-danger delete-item mx-1" style="text-decoration: underline;  border:none;background-color:#ffff">
+                          <i class="fas fa-trash"></i>
                       </button>                                                                                   
                     @endif 
 
-                                                                                                           
-                                                   
+                                                                                                          
+                                                  
                   </div>
             
-               </div>
-             
+              </div>
+            
           @endforeach
         @endif      
-    </div>      
+      </div>         
   </div>
+</div> 
 
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

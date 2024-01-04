@@ -366,7 +366,7 @@
 
 <section class="section p-0">
 
-    
+
     {{-- Over The Layer Content --}}
     @if ( isset($proposalid) && $proposalid != -1)
         <div class="ydfgwej">
@@ -384,8 +384,8 @@
             </a>
         </div>
     @endif
-    
-    
+
+
     <div class="container mt-3">
 
 
@@ -397,7 +397,7 @@
                             <div class="col-3 d-flex justify-content-start ">
                                 @if ( isset($proposalid) && $proposalid != -1)
                                     <button class="btn btn-outline-secondary" id="openqr" type="button">Scan QR Codes</button>
-    
+
                                 @else
                                     @if ($manage_offer_guest || $manage_offer_verified)
                                         @if (auth()->id() == 155)
@@ -413,12 +413,12 @@
                                         @endif
                                     @endif
                                 @endif
-                                    
+
                             </div>
-    
+
                             <div class="col-9 d-flex justify-content-start">
                                 <div class="input-group border rounded">
-                                    <input type="text" id="quicktitle" value="{{ request()->get('title') }}" name="title" class="form-control border-0" placeholder="Quick Search : Name or Model Code">
+                                    <input type="text" id="quicktitle" value="{{ request()->get('title') }}" name="title" class="form-control border-0" placeholder="Quick Search : Name, Model Code, Keywords">
                                     <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit"><i class="uil uil-search"></i></button>
                                 </div>
                             </div>
@@ -467,7 +467,7 @@
                                         <span class="remove-tag" data-color="{{ $Color }}" title="click to Remove {{$name}}">x</span>
                                     </span>
                                 @endforeach
-                            @endif                                     
+                            @endif
                         @endforeach
 
                     </div>
@@ -476,12 +476,12 @@
             {{-- Fixed NAvigation Bar End --}}
         </div>
 
-        
-        
-        
+
+
+
         <div class="row">
             {{-- Side Bar --}}
-            <div class="col-lg-3 col-md-4 col-12 adwas">
+            <div class="col-md-4 col-lg-3  col-12 adwas">
                 <div class="text-right pl-3 filterMobile" style="margin-top: 10%;">
                     <i title="filter" class="uil uil-bars up_arrow show_mobile_filter" style="font-size: 23px;"></i>
                     <i class="uil uil-times down_arrow close_mobile_filter" style="font-size: 23px;"></i>
@@ -499,7 +499,7 @@
                                     <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder=" Max ">
                                     <button class="price_go_btn ms-2" type="submit">GO</button>
                                 </div>
-                            
+
                             {{-- categories Ashish --}}
                             <div class="widget">
                                 <!-- Categories -->
@@ -529,7 +529,7 @@
                                                 <h5 class="form-check" style="display: flex;align-items: center;gap: 6px;">
                                                     <input class="form-check-input filterCategory" type="radio" value="{{ $item->id }}" id="category{{ $item->id }}" name="category_id" @if((request()->has('category_id') && request()->get('category_id') ==  $item->id )) checked @endif>
                                                     <label for="category{{ $item->id }}" class="form-check-label fltr-lbl mt-2">
-                                                        {{$item->name}} 
+                                                        {{$item->name}}
                                                         {{--  Category Count --}}
                                                         <span style="font-size: 11px">({{ getProductCountViaCategoryId($item->id,$user_shop->user_id) }})</span>
                                                     </label>
@@ -538,11 +538,11 @@
                                             @if(request()->has('category_id') && request()->get('category_id') ==  $item->id )
                                                 @php
                                                     $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
-                                                @endphp                                                 
+                                                @endphp
                                                     <div style="padding-left: 25px; display: flex;align-items: center;gap: 6px;">
                                                     <ul class="list-unstyled custom-scrollbar">
                                                         @foreach ($subcategories as $subcategorie)
-                                                            <li>        
+                                                            <li>
                                                                 <h5 class="form-check">
                                                                     <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
                                                                     <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
@@ -557,10 +557,10 @@
                                                         @endforeach
                                                     </ul>
                                                 </div>
-                                            @endif    
+                                            @endif
                                         @endforeach
                                     @endif
-                                </ul>   
+                                </ul>
                                         </div>
                                     </div>
                                 </div>
@@ -718,15 +718,24 @@
                         </div>
                     </form>
                 </div>
-
-                <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn" form="searchform">Filter</button>
+            {{-- <div class="col-md-3 col-lg-4"> --}}
+                <div class="row justify-content-between">
+                    <div class="col-md-6 col-lg-6">
+                        <button type="submit" class="btn btn-sm mt-2 d-block btn-primary w-100" id="filterBtn" form="searchform">Filter</button>
+                    </div>
+                    <div class="col-md-6 col-lg-6">
+                        <a class="btn btn-sm mt-2 d-block btn-primary w-100" href="{{ route('pages.shop-index')}}" id="resetButton">Reset</a>
+                    </div>
+                </div>
+                {{-- <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn" form="searchform">Filter</button>
                 @if (isset($proposalid) && $proposalid != -1 )
                     <a class="btn mt-2 d-block btn-primary w-100" href="{{ route('pages.proposal.edit',['proposal' => $proposalid,'user_key' => $user_key]) }}?margin=0" id="resetButton">Reset</a>
                 @else
                     <a class="btn mt-2 d-block btn-primary w-100" href="{{route('pages.shop-index')}}" id="resetButton">Reset</a>
-                @endif
+                @endif --}}
+            {{-- </div> --}}
 
-                
+
             </div><!--end col-->
 
 
@@ -736,19 +745,23 @@
                     <div class="row align-items-center">
 
                         @if (count($currency_record) != 0)
-                            <div class="col-md-4 col-6 mt-sm-0 pt-2 pt-sm-0 mb-3">
+                            {{-- <div class="col-md-4 col-6 mt-sm-0 pt-2 pt-sm-0 mb-3"> --}}
+                            <div class="col-md-6 col-6 mt-sm-0 pt-2 pt-sm-0 mb-3">
+
                                 <div class="container" id="selector">
                                     <select class="form-control select_box" id="changeCurrency" name="Currency">
                                         <option aria-readonly="true" disabled>Change Currency</option>
                                         @foreach ($currency_record as $item)
-                                        <option value="{{ $item->id }}" @if ($item->id == (Session::get('Currency_id') ?? 'INR')) selected @endif > {{ $item->currency }}</option>
+                                            <option value="{{ $item->id }}" @if ($item->id == (Session::get('Currency_id') ?? 'INR')) selected @endif > {{ $item->currency }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                         @endif
-                        
-                        <div class="col-12 col-md-4">
+
+                        {{-- <div class="col-12 col-md-4"> --}}
+                        <div class="col-6 col-md-6">
+
                             <div class="container" id="selector">
                                 <select class="form-control input-lg select_box" id="productSort" name="sort">
                                     <option @if(request()->get('sort') == 2) selected @endif value="2">Price: low to high</option>
@@ -759,7 +772,7 @@
                             </div>
                         </div>
 
-                        
+
                         <div class="col-6 col-md-4 d-flex justify-content-end ">
                             <div class="m-2 d-flex gap-2">
                                 <button id="gridview" class="btn btn-outline-primary"><i class="fas fa-th-large"></i></button>
@@ -777,8 +790,8 @@
                     @else
                         @include('frontend.micro-site.shop.loadIndex')
                     @endif
-                    
-                        
+
+
                         {{-- <div class="d-flex justify-content-center">
                             {{ $items->appends(request()->query())->links() }}
                         </div> --}}
@@ -794,7 +807,7 @@
                                 </div>
                             </div> --}}
                         </div>
-                    </div>
+            </div>
 
 
             <!--end col-->
@@ -1329,7 +1342,7 @@
         var contianer = $("#dfjrgd");
         var qsearch = false;
 
-        $(".nextpage").click(function (e) { 
+        $(".nextpage").click(function (e) {
             e.preventDefault();
             if (qsearch === false) {
                 if (total_page >= crr_page+1) {
@@ -1340,7 +1353,7 @@
             }
         });
 
-        function getData(pages) { 
+        function getData(pages) {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
 
@@ -1373,10 +1386,10 @@
                         $("#gridview").click();
                     }
                 }
-            });        
+            });
         }
         // ! OnKey Up Load Ajax...
-        $("#quicktitle").keyup(function (e) { 
+        $("#quicktitle").keyup(function (e) {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
             let thisval = this.value;
@@ -1407,7 +1420,7 @@
                             'searchVal_{{$key}}' : urlParams.getAll("searchVal_{{$key}}[]"),
                         @endforeach
                     @endif
-                    
+
                 },
                 success: function (response) {
                     $(".dfjrgd").empty().html(response);
@@ -1417,15 +1430,15 @@
                         $("#gridview").click();
                     }
                 }
-            });   
+            });
 
 
         });
 
-        
+
     </script>
 
-    
+
     @endif
 
 
@@ -1451,10 +1464,10 @@
         });
     </script>
 
-    
+
     <script>
-        
-        $(".makeoffer").click(function (e) { 
+
+        $(".makeoffer").click(function (e) {
             e.preventDefault();
             var url = $(this).attr('href');
             // var msg = "<input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Name'> <br> <input type='text' id='offeremail' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Email (Optional)'> <br> <input type='number' maxlength='10' id='offerphone' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Phone (Optional)'>";
@@ -1486,7 +1499,7 @@
                                     return false;
                                 }
                                 url = url+"&offerfor="+margin+"&offerphone="+offerphone+"&offeremail="+offeremail+"&offeralias="+alias+"&offerpersonname="+personname;
-                                window.location.href = url;               
+                                window.location.href = url;
                                 // console.log(url);
                         }
                     },

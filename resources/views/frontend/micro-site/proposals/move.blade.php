@@ -2,7 +2,7 @@
 @section('title', 'Proposal')
 @section('content')
     @php
-    
+
     $breadcrumb_arr = [['name' => 'Edit Proposal', 'url' => 'javascript:void(0);', 'class' => '']];
     $user = auth()->user();
     $proposal_options = json_decode($proposal->options);
@@ -24,7 +24,7 @@
     <!-- push external head elements to head -->
     @push('head')
     <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"> 
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css">
     {{-- Animated modal --}}
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.css">
@@ -41,7 +41,7 @@
             .error {
                 color: red;
             }
-            
+
             #file-input{
                 padding:10px;
                 background-color:#6666CC;
@@ -75,7 +75,7 @@
                 right: 10px;
                 top: 10px;
             }
-           
+
             .prdct-pinned {
                 position: absolute;
                 width: 30px;
@@ -83,7 +83,7 @@
                 left: 10px;
                 top: 10px;
             }
-           
+
             .prdct-pinned input{
                 visibility: hidden;
             }
@@ -137,7 +137,7 @@
                     display: flex;
                 }
 
-                
+
 
                 @media (max-width: 767px) {
                     .cust-display {
@@ -299,14 +299,18 @@
                     overflow-y: hidden!important;
                     overflow-x: hidden!important;
 
-                }                   
+                }
+                .header-top {
+                    display: block !important;
+                    padding-left: 0px !important;
+                }
 
         </style>
         @if (auth()->id() != 155)
         <style>
                 .header-top {
                     display: block !important;
-                    padding-left: 0 !important;
+                    padding-left: 0px !important;
                 }
 
                 #back,#navbar-fullscreen{
@@ -318,7 +322,7 @@
                 }
         </style>
     @endif
-        
+
     @endpush
 @php
     $customer_details = json_decode($proposal->customer_details) ?? '';
@@ -332,7 +336,7 @@
     $customer_email = $customer_details->customer_email ?? '';
     $customer_alias = $customer_details->offer_alias ?? '';
     $sample_charge = json_decode($proposal->customer_details)->sample_charge ?? '';
-    $user_shop_record = App\Models\UserShop::whereId($proposal->user_shop_id)->first();                
+    $user_shop_record = App\Models\UserShop::whereId($proposal->user_shop_id)->first();
 
 @endphp
 
@@ -351,8 +355,8 @@
                 </div> --}}
 
                 <div class="row">
-                    <div class="col-md-10 mx-auto">
-                  
+                    <div class="col-md-12 col-lg-12">
+
                         <div class="card">
                             <div class="card-header">
                                 @if(request()->get('type') == 'search')
@@ -361,9 +365,9 @@
                                     <h6>Choose & Markup Products</h6>
                                 @elseif(request()->get('type') == 'picked')
                                     <h6>Picked Products</h6>
-                                @else   
+                                @else
                                 <h6>Send Products</h6>
-                                @endif 
+                                @endif
                                 <div class="ml-2 badge badge-{{ getProposalStatus($proposal->status)['color'] }}">{{ getProposalStatus($proposal->status)['name'] }}</div>
                             </div>
                             <div class="card-body">
@@ -384,9 +388,9 @@
                                                         <div class="mx-2">
                                                             <button id="hikebtn" class="btn btn-outline-primary mx-2 my-2 my-md-0 my-sm-0 ">Update</button>
                                                         </div>
-                                                    </div>    
+                                                    </div>
                                                 @endif
-                                            </div>                                       
+                                            </div>
                                             <div class="col-12 col-md-4">
                                                 @if($added_products->count() > 0 )
                                                     <div class="d-flex justify-content-between justify-content-md-end justify-content-sm-end">
@@ -395,7 +399,7 @@
                                                     </div>
                                                 @endif
                                             </div>
-                                            
+
                                         </div>
 
 
@@ -408,7 +412,7 @@
                                                         if($product != null){
                                                             $product_record = App\Models\UserShopItem::whereProductId($product->id)->whereUserId(auth()->id())->first() ?? null;
                                                         }else{
-                                                            $product_record = null; 
+                                                            $product_record = null;
                                                         }
                                                         if($product_record){
                                                             $proposal_item_record = App\Models\ProposalItem::where('proposal_id',$proposal->id)->whereProductId($product->id)->whereUserShopItemId($product_record->id)->first();
@@ -428,34 +432,34 @@
                                                                 <a href="{{ route('pages.proposals.destroy',$proposal_item->id) }}" class="btn remove-item mr-2">
                                                                     <i class="fas fa-trash" style="color: #ff0c0c;font-size: 3vh"></i>
                                                                 </a>
-                                                                
+
                                                             </div>
                                                             <div class="card-body text-center">
                                                                 <div class="profile-pic">
                                                                     <div class="row">
                                                                         <div class="col-md-12 pt-2 text-center p-0" style="margin-top: -15px;">
                                                                             <span class="mb-0 ">{{$product->title??"--"}}</span>
-                                                                            
+
                                                                             <br>
-                                                                            
+
                                                                             {{-- @if(isset($product->category_id) || isset($product->sub_category))
                                                                             <span>{{fetchFirst('App\Models\Category',$product->sub_category,'name','--')}}</span> <br>
                                                                             @endif --}}
                                                                             @if (isset(getBrandRecordByProductId($proposal_item->product_id)->name))
                                                                                 <span>Brand: {{ (getBrandRecordByProductId($proposal_item->product_id)->name ?? '--') }}</span> <br>
                                                                             @endif
-                                                                            
-                                                                            
+
+
                                                                             {{-- <div>
                                                                                 <span> {{ $product->color ?? '' }}</span> <span> , </span><span> {{ $product->size ?? '' }}</span>
                                                                             </div> --}}
-                                                                           
+
                                                                             {{-- @php
                                                                                 $own_shop = App\Models\UserShop::whereUserId(auth()->id())->first();
                                                                                 if($product != null){
-                                                                                    $usi = productExistInUserShop($product->id,auth()->id(),$own_shop->id);  
+                                                                                    $usi = productExistInUserShop($product->id,auth()->id(),$own_shop->id);
                                                                                 }else{
-                                                                                    $usi = null; 
+                                                                                    $usi = null;
                                                                                 }
                                                                             @endphp --}}
                                                                             {{-- <span>{{ isset($usi) ? 'Ref Id: '.($usi->id) : 'Ref Id: ###' }}</span> <br> --}}
@@ -479,7 +483,7 @@
                                                                                 <span>
                                                                                     {{ $currency_symbol }}
                                                                                     {{ isset($price) ? number_format(round($price,2)) : '' }}
-                                                                                </span> 
+                                                                                </span>
                                                                                 <br>
                                                                             {{-- Shop Price:<span> {{ (isset($product_record) && $product_record->price > 0) ?  format_price($product_record->price) : 'Ask for Price' }}</span> --}}
                                                                             {{-- <br> --}}
@@ -493,33 +497,38 @@
                                                                                         $price  = $price/$margin_factor;
                                                                                     }
                                                                                     $margin = "Margin Added: ".$proposal_item->margin."%";
-
+                                                                                    $userPrice = null;
                                                                                 }else{
                                                                                     $price = $proposal_item->user_price;
+                                                                                    $userPrice = $proposal_item->user_price;
                                                                                     $margin = "Custom Price";
                                                                                 }
                                                                                 $price = exchangerate($price,$exhangerate,$HomeCurrency);
                                                                                 // $user = session()->get('temp_user_id') ?? session()->get('user_id');
                                                                                 $user = auth()->id() ?? session()->get('user_id') ?? session()->get('temp_user_id');
+                                                                                $ashus = json_decode($proposal_item->note);
                                                                             @endphp
-                                                                            @if ($proposal->user_id == $user)
+
+                                                                            {{-- @if ($proposal->user_id == $user) --}}
                                                                                 {{-- <span>Offer Price: {{ format_price($price) }}</span> --}}
                                                                                 <br>
                                                                                 <span>Offer Price:
                                                                                     {{ $currency_symbol }}
-                                                                                    {{ isset($price) ? number_format(round($price,2)) : '' }}    
-                                                                                </span> 
-                                                                                <a href="javascript:void(0)" data-product="{{ $proposal_item->product_id }}" class="edit-price" > 
+                                                                                    @if ($userPrice != null)
+                                                                                        {{ $userPrice }}
+                                                                                    @else
+                                                                                        {{  $userPrice ?? isset($price) ? number_format(round($price,2)) : '' }}
+                                                                                    @endif
+                                                                                </span>
+                                                                                <a href="javascript:void(0)" data-product="{{ $proposal_item->product_id }}" data-notes="{!! $ashus->remarks_offer ?? '' !!}"  data-price="{{ $userPrice ?? $price ?? '' }}" class="edit-price" >
                                                                                     <i class="fas fa-pencil-alt text-primary"></i>
                                                                                 </a>
-                                                                            @endif
+                                                                            {{-- @endif --}}
 
 
                                                                             @if ($proposal_item->note != null)
                                                                             <br>
-                                                                                @php
-                                                                                    $ashus = json_decode($proposal_item->note);
-                                                                                @endphp
+
                                                                                 <span>Customisation: {!! $ashus->remarks_offer !!}</span>
                                                                                 {{-- <br>
                                                                                 <span>Customise: {!! $ashus->Customise_product !!}</span> --}}
@@ -563,7 +572,7 @@
                                             @csrf
                                             <input type="hidden" name="user_id" value="{{ decrypt($user_key) }}">
                                             <input type="hidden" name="user_shop_id" value="{{ getShopDataByUserId(decrypt($user_key))->id }}">
-                                        <div class="col-md-6">
+                                        <div class="col-md-12 col-lg-6">
                                             <div class="col-md-12 ">
                                                 <div class="d-flex justify-content-between">
                                                     <div class="">
@@ -582,21 +591,21 @@
                                                                 </div>
 
                                                                 {{-- commmented save and preview buttons --}}
-                                                                
-                                                                
+
+
 
                                                             {{-- @if ($proposal->status == 1 && $proposal->type == 0) --}}
-                                                                {{-- <div class="">                                               
+                                                                {{-- <div class="">
                                                                     @if ($customer_mob_no != null)
                                                                         <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
-                                                                        </a>    
+                                                                        </a>
                                                                     @else
                                                                         <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
                                                                         </a>
                                                                     @endif
-                                                                    
+
                                                                     <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
                                                                         <i class="far fa-envelope"></i>
                                                                     </a>
@@ -606,17 +615,17 @@
                                                             {{--` Share Offer for Makeing Offer --}}
 
                                                             {{-- @if ($proposal->status == 1 && $proposal->type == 1) --}}
-                                                                {{-- <div class="">                                               
+                                                                {{-- <div class="">
                                                                     @if ($customer_mob_no != null)
                                                                         <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
-                                                                        </a>    
+                                                                        </a>
                                                                     @else
                                                                         <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
                                                                         </a>
                                                                     @endif
-                                                                    
+
                                                                     <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
                                                                         <i class="far fa-envelope"></i>
                                                                     </a>
@@ -627,7 +636,7 @@
 
                                                         {{-- @if ($proposal->type == 1)
                                                             <button class="btn btn-outline-primary btn-sm copyLInk" type="button" data-link="{{ inject_subdomain('proposal/create', $slug_guest, false, false)}}?linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" >Copy LInk <i class="far fa-copy"></i> </button>
-                                                        @endif  
+                                                        @endif
 
                                                         @if ($proposal->status == 1 && $proposal->type == 0)
                                                             <div class="">
@@ -652,7 +661,7 @@
                                                                 id="slug" value="{{ $proposal->slug }}">
                                                         </div>
                                                     </div>
-                                                   
+
                                                         <div class="col-md-12 col-12">
                                                             <div class="row">
                                                             <div class="col-5">
@@ -671,19 +680,19 @@
                                                                     <datalist id="mycustomer">
                                                                         @if ($my_resellers != null)
                                                                             @forelse ($my_resellers as $my_reseller)
-                                                                                <option value="{{ App\User::whereId($my_reseller->user_id)->first()->name ." ,".UserShopNameByUserId($my_reseller->user_id) }}">{{ App\User::whereId($my_reseller->user_id)->first()->name ." ,".UserShopNameByUserId($my_reseller->user_id) }}</option>    
+                                                                                <option value="{{ App\User::whereId($my_reseller->user_id)->first()->name ." ,".UserShopNameByUserId($my_reseller->user_id) }}">{{ App\User::whereId($my_reseller->user_id)->first()->name ." ,".UserShopNameByUserId($my_reseller->user_id) }}</option>
                                                                             @empty
-                                                                                
+
                                                                             @endforelse
 
                                                                         @endif
                                                                     </datalist>
                                                                 </div>
                                                             </div>
-                                               
 
-                                                            {{-- original alias, phone and email --}}                                                 
-                                                            <div class="col-5"> 
+
+                                                            {{-- original alias, phone and email --}}
+                                                            <div class="col-5">
                                                                 <div class="form-group {{ $errors->has('customer_alias') ? 'has-error' : '' }}">
                                                                     <label for="customer_alias" class="control-label">Alias (optional)</label>
                                                                     <input class="form-control" name="customer_alias" type="text" id="customer_alias" value="{{ $customer_alias }}">
@@ -730,7 +739,7 @@
                                                                             <input type="text" name="offer_currency" disabled class="form-control" value="{{ $proposal->offer_currency ?? session()->get('currency_name') ?? 'INR' }}">
                                                                           </div>
                                                                         {{-- <div class="input-group">
-                                                                           
+
                                                                             <select name="offer_currency" id="offer_currency" class="form-group select2">
                                                                                 @foreach ($currency_record as $item)
                                                                                 <option value="{{ $item->currency }}" @if ($item->currency == ($proposal->offer_currency ?? 'INR')) selected @endif > {{ $item->currency }}</option>
@@ -768,7 +777,7 @@
 
 
 
-                                                    @if ($proposal->relate_to == $proposal->user_shop_id)   
+                                                    @if ($proposal->relate_to == $proposal->user_shop_id)
                                                        <div class="row d-none">
                                                             <div class="col-md-6">
                                                                 <div class="card-body">
@@ -784,7 +793,7 @@
                                                                                 <img class="image-preview" src="" alt="" title=''/>
                                                                             </div>
                                                                         @endif
-                                                                </div>                                             
+                                                                </div>
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <div class="card-body">
@@ -801,18 +810,18 @@
                                                                             <img class="image-preview-vs" src="" alt="" title=''/>
                                                                         </div>
                                                                     @endif
-                                                                </div>          
+                                                                </div>
                                                             </div>
                                                        </div>
                                                     @endif
 
 
-                                                    
-                                                    
+
+
 
                                                 </div> {{-- End Of ROw --}}
 
-                                                {{-- download buttons --}}                                               
+                                                {{-- download buttons --}}
                                                     {{-- <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between ">
                                                         <div class="col-6">
                                                             <div class="row mt-3" style="display: flex;
@@ -825,7 +834,7 @@
                                                             <div class="row mt-3" style="display: flex;
                                                             align-items: center;">
                                                                 <p >Download PPT:</p>
-                                                                <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">       
+                                                                <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">
                                                                 <button onclick="getPPT()" type="button" class="btn btn-outline-info" style="position: relative; right: 5rem;"><i class="fa fa-download"></i>Download</button>
                                                                 </div>
                                                             </div>
@@ -834,13 +843,13 @@
                                                                 <p style= "mt-5 !important"> Export Excel:</p>
                                                                 <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3 " style="margin-left: 100px">
                                                                 <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i>Download</button>
-                                                            </div> 
+                                                            </div>
                                                             </div>
                                                         </div>
                                                     </div> --}}
-                                                    
+
                                                     {{-- buttons --}}
-                                                    {{-- <div class="col-md-8 ">                                    
+                                                    {{-- <div class="col-md-8 ">
                                                     <div class="row d-flex justify-content-center justify-content-sm-between justify-content-md-between my-3">
                                                         <button class="btn btn-outline-primary"  id="" type="button">Link</button>
                                                         <button class="btn btn-outline-success"  id="" type="button">Copy</button>
@@ -848,37 +857,37 @@
                                                         <button class="btn btn-outline-info"  id="" type="button">E</button>
                                                     </div>
                                                 </div> --}}
-                                               
-                                                    
-                                                
+
+
+
                                                     {{--<div class="row">
                                                         <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">
                                                             <div class="col-6">
                                                                 <div class="row mt-3">
                                                                     <button onclick="getPDF();" class="btn btn-outline-primary " type="button" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Download</button>
                                                                 </div>
-                                                                <div class="row mt-3"> 
+                                                                <div class="row mt-3">
                                                                 <button onclick="getPPT()" type="button" class="btn btn-outline-info" style="position: relative; right: 5rem;"><i class="fa fa-download"></i> Download</button>
                                                                 </div>
                                                                 <div class="row mt-3">
                                                                 <button class="btn btn-outline-success" style="position: relative; right: 5rem;" id="export_button" type="button"><i class="fa fa-download"></i> Download</button>
-                                                                </div>   
-                                                            </div>                                                   
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>--}}
-                                                 
-                                            
 
 
-                                            
-                                            
+
+
+
+
                                                     {{-- original custom fields --}}
                                                     {{-- <div class="col-md-6 float-start"> --}}
                                                             {{-- <div class="form-group">
                                                                 <label for="passcode" class="form-label">Enter Passcode <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </label>
                                                                 <input type="text" class="form-control" placeholder="0 0 0 0" name="password" id="passcode" maxlength="4" oninvalid="alert('Enter minimum 4 digit passcode')" value="{{ $offerPasscode ?? ""}}" required>
                                                             </div> --}}
-                                                
+
                                                     {{-- <div class="h6">Fields to include <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </div>
                                                     <select name="optionsforoffer[]" class="select2" multiple>
                                                         <option value="description" @if (json_decode($proposal->options)->show_Description ?? 0) selected @endif>Description</option>
@@ -886,18 +895,18 @@
                                                         @if ($proposal->relate_to == $proposal->user_shop_id)
                                                             <option value="notes" @if (json_decode($proposal->options)->Show_notes ?? 0) selected @endif>Notes</option>
                                                         @endif
-                                                        
+
                                                         @foreach ($aval_atrribute as $item)
-                                                            <option value="{{ $item }}" 
+                                                            <option value="{{ $item }}"
                                                             @if ($proposal->options != null && isset(json_decode($proposal->options)->show_Attrbute))
                                                                 @if (in_array($item,((array) json_decode($proposal->options)->show_Attrbute) ?? ['']))
-                                                                    selected 
+                                                                    selected
                                                                 @endif
                                                             @endif
                                                             >{{ getAttruibuteById($item)->name ?? '' }}</option>
                                                         @endforeach
                                                     </select>
-                                            
+
 
                                                     @if ($proposal->relate_to == $proposal->user_shop_id)
                                                         <div class="form-group my-3">
@@ -906,7 +915,7 @@
                                                         </div>
                                                     @endif
 
-                                                    
+
                                                     @if ($proposal->relate_to == $proposal->user_shop_id)
                                                         <div class="form-group my-3 d-none">
                                                             <label class="form-label" for="sample_charge"> Sample %age increase </label>
@@ -926,7 +935,7 @@
                                                 </div> --}}
 
 
- 
+
                                                 <div class="col-md-12 ">
                                                     <div class="d-flex justify-content-between mt-5">
                                                         <div class="">
@@ -944,36 +953,36 @@
                                                         </div>
 
                                                                 {{-- commented save and preview buttons --}}
-                                                                    
+
                                                                 {{-- @if ($proposal->status == 1 && $proposal->type == 0) --}}
-                                                                    {{-- <div class="">                                               
+                                                                    {{-- <div class="">
                                                                         @if ($customer_mob_no != null)
                                                                             <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                                 <i class="fab fa-whatsapp" class=""></i>
-                                                                            </a>    
+                                                                            </a>
                                                                         @else
                                                                             <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                                 <i class="fab fa-whatsapp" class=""></i>
                                                                             </a>
                                                                         @endif
-                                                                        
+
                                                                         <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
                                                                             <i class="far fa-envelope"></i>
                                                                         </a>
                                                                     </div> --}}
                                                                     {{-- @endif          --}}
                                                                     {{-- @if ($proposal->status == 1 && $proposal->type == 1) --}}
-                                                                        {{-- <div class="">                                               
+                                                                        {{-- <div class="">
                                                                             @if ($customer_mob_no != null)
                                                                                 <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                                     <i class="fab fa-whatsapp" class=""></i>
-                                                                                </a>    
+                                                                                </a>
                                                                             @else
                                                                                 <a href="https://api.whatsapp.com/send?text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                                     <i class="fab fa-whatsapp" class=""></i>
                                                                                 </a>
                                                                             @endif
-                                                                            
+
                                                                             <a href="mailto:{{ $customer_email ?? "no-reply@121.page" }}?subject=121.Page%20offer&body=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank"  class="btn btn-primary">
                                                                                 <i class="far fa-envelope"></i>
                                                                             </a>
@@ -985,8 +994,8 @@
                                                             {{-- @if ($proposal->type == 1)
                                                                 <button class="btn btn-outline-primary btn-sm copyLInk" type="button" data-link="{{ inject_subdomain('proposal/create', $slug_guest, false, false)}}?linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" >Copy LInk <i class="far fa-copy"></i> </button>
                                                             @endif   --}}
-                                                            
-                                                            
+
+
                                                         {{-- @if ($proposal->status == 1 && $proposal->type == 0)
                                                             <div class="">
                                                                 <div class="form-group mx-2">
@@ -1015,19 +1024,19 @@
         Please Wait...
     </div>
     @include('frontend.micro-site.proposals.modal.updateprice')
-    
+
     {{-- @include('frontend.micro-site.proposals.modal.change_style') --}}
 
     @if (request()->has('type') && request()->get('type') == 'send' && $proposal->status == 1 && $proposal->type == 0)
         @include('frontend.micro-site.proposals.offeroptions')
     @endif
-    
 
-    
-    
-    
 
-    
+
+
+
+
+
 
     <!-- push external js -->
     @push('script')
@@ -1038,8 +1047,8 @@
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
         <script>
             $(document).ready(function () {
-                        
-                $("#magrintochnage").change(function (e) { 
+
+                $("#magrintochnage").change(function (e) {
                     e.preventDefault();
                     $("#range_bar").html($(this).val());
                 });
@@ -1050,8 +1059,8 @@
                         color: '#6666CC',
                         jackColor: '#fff'
                     });
-                
-                
+
+
 
                     // Copy Text To Clipboard
                     function copyTextToClipboard(text) {
@@ -1072,17 +1081,17 @@
                             });
                     }
 
-                    $(".copyLInk").click(function (e) { 
+                    $(".copyLInk").click(function (e) {
                         e.preventDefault();
                         var link = $(this).data('link');
                         copyTextToClipboard(link);
                     });
-                        
+
             });
-        </script>  
-              
+        </script>
+
         <script>
-            
+
             var hike = $('#hike').val();
 
             function updateURLParam(key,val){
@@ -1129,7 +1138,7 @@
             };
 
 
-            
+
             $('#hikebtn').click(function() {
                 hike = $("#magrintochnage").val();
                 var route = "{{ route('pages.proposals.updatemargin') }}";
@@ -1146,16 +1155,16 @@
                     }
                 });
             });
-            
+
             $('.input-check').click(function(){
-            
+
                 if($(this).prop('checked')){
                     var route = "{{ route('panel.proposal_items.api.store') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}"+"&hike="+hike;
                     $.ajax({
                         url: route,
                         method: "get",
                         success: function(res){
-                        
+
                         }
                     });
                 }else{
@@ -1164,16 +1173,16 @@
                         url: route,
                         method: "get",
                         success: function(res){
-                            
+
                         }
                     });
                 }
             });
 
             // Add Product To Pin
-            
+
             $('.input-checkpin').click(function(){
-            
+
                 if($(this).prop('checked')){
                     var  id = $(this).val();
                     // var img = ;?
@@ -1186,7 +1195,7 @@
                             $("img."+id).attr('src', "{{ asset('frontend/assets/svg/bookmark_added.svg')}}");
                         }
                     });
-                
+
                 }else{
                     $("img."+id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg')}}");
                     var route = "{{ route('panel.proposal_items.api.removepin') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}";
@@ -1220,7 +1229,7 @@
                         }
                     })
                 }
-            }) 
+            })
             $(document).ready(function() {
                     $('#suppliers').select2({
                         placeholder : "All Suppliers",
@@ -1248,7 +1257,7 @@
                     }],
                     dom: "<'row'<'col-sm-2'l><'col-sm-7 text-center'B><'col-sm-3'f>>tipr",
                     buttons: [
-                        
+
                     ]
 
                 });
@@ -1422,21 +1431,27 @@
             $(".file-input-vs").change(function() {
                 readURLVS(this,);
             });
-            
-            
+
+
             $(".edit-price").click(function() {
-                var product_id =$(this).data('product');
+                var product_id = $(this).data('product');
+                var remark = $(this).data('notes');
+                var price = $(this).data('price');
+
                 $('.productId').val(product_id);
+                $("#remarks_offer").val(remark);
+                $("#price").val(price);
                 $('#pickedProductEdit').modal('show');
+
             });
 
-            @if(request()->get('my_product') == 1) 
+            @if(request()->get('my_product') == 1)
                 setTimeout(() => {
                 $('#my_product').trigger('click');
                 }, 500);
             @endif
 
-            
+
                 $('#select-all').click(function(){
                     $(document).find('#ajax-loading').show();
                     var interval = 10;
@@ -1450,14 +1465,14 @@
                                 }, interval);
                                 interval += 150;
                             }
-                            
+
                             setTimeout(() => {
                                 $(document).find('#ajax-loading').hide();
                             }, 9000);
                         });
                     }
-                    
-                
+
+
                 });
                 $('.unSelectAll').click(function(){
                     var interval = 10;
@@ -1497,8 +1512,8 @@
                     });
                     console.log(order);
                     $.ajax({
-                        type: "POST", 
-                        dataType: "json", 
+                        type: "POST",
+                        dataType: "json",
                         // url: "{{ url('pages/update/sequence') }}"+'/'+"{{$proposal->id}}",
                         url: "{{ route('pages.proposals.updateSequence',$proposal->id) }}",
                         data: {
@@ -1535,7 +1550,7 @@
                     }
                 });
 
-                
+
                 // custom Loder
 
                 window.addEventListener('load', () =>{
@@ -1546,10 +1561,10 @@
         </script>
 
 
-        
-    
+
+
     <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
-    
+
 
     <script>
         $(".jaya2").animatedModal({

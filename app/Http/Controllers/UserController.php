@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  *
 
@@ -43,13 +43,13 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    
+
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-   
+
     public function index(Request $request)
     {
         $length = 50;
@@ -72,18 +72,18 @@ class UserController extends Controller
         if($request->has('isSupplier') && $request->get('isSupplier') != null){
              $users->where('is_supplier','=',1);
         }
-         
+
         $users= $users->latest()->paginate($length);
         if ($request->ajax()) {
-            return view('user.load', ['users' => $users])->render();  
+            return view('user.load', ['users' => $users])->render();
         }
-        return view('user.index', compact('roles','users'));  
+        return view('user.index', compact('roles','users'));
 
         return view('user.users', compact('roles'));
     }
     public function print(Request $request){
         $users = collect($request->records['data']);
-        return view('user.print', ['users' => $users])->render();  
+        return view('user.print', ['users' => $users])->render();
     }
 
 
@@ -109,7 +109,7 @@ class UserController extends Controller
             return redirect()->back()->with('error', $bug);
         }
     }
-    
+
     public function userlog($u_id = null, $role=null)
     {
         try {
@@ -128,7 +128,7 @@ class UserController extends Controller
     }
 
     public function store(Request $request)
-    { 
+    {
         // return $request->all();
         // create user
         $validator = Validator::make($request->all(), [
@@ -164,7 +164,7 @@ class UserController extends Controller
             return redirect()->back()->with('error','This access code is already redeemed!');
             }
         }
-        
+
         if ($validator->fails()) {
             return redirect()->back()->withInput()->with('error', $validator->messages()->first());
         }
@@ -180,7 +180,7 @@ class UserController extends Controller
                 'NBD_Cat_ID' => $request->nbdcatid,
             ]);
 
-            // check role if User and industry id is not fillable then 
+            // check role if User and industry id is not fillable then
             if($request->role == 3 && ($request->industry_id == null || $request->industry_id == '')){
                 if(!$request->industry_id){
                     $user->update([
@@ -203,9 +203,10 @@ class UserController extends Controller
             $manangebrands = $request->manangebrands;
             $managegroup = $request->managegroup;
             $offers = $request->offers;
-            
-            $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers ];
- 
+            $documentaion = $request->documentaion;
+
+            $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers,"documentaion" => $documentaion ];
+
             $user->country = $request->country;
             $user->state = $request->state;
             $user->city = $request->city;
@@ -251,9 +252,9 @@ class UserController extends Controller
                 }else{
                     $shop_name =  $request->name."'s Shop";
                 }
-            
-               
-                
+
+
+
                 // return $user->id;
                 $user_shop = UserShop::create([
                     'user_id' => $user->id,
@@ -270,16 +271,16 @@ class UserController extends Controller
                     'story' => json_encode($story),
                     'features' => json_encode($features),
                     'team' => json_encode($team),
-                    'email' => $user->email,    
+                    'email' => $user->email,
                 ]);
                 // Create Price Groups for User
                 syncSystemPriceGroups($user->id);
                     // Code Has
                     if ($request->access_code != null && $chk_code) {
 
-                        // Update Access Code 
+                        // Update Access Code
                         $chk_code->update([
-                            'redeemed_user_id' => $user->id,  
+                            'redeemed_user_id' => $user->id,
                             'redeemed_at' => now()
                         ]);
 
@@ -289,7 +290,7 @@ class UserController extends Controller
 
                         // Assign Trial Package
                         $package = Package::whereId(1)->first();
-                        
+
                         if($package){
                             if($package->duration == null){
                                     $duration = 30;
@@ -305,7 +306,7 @@ class UserController extends Controller
                             $package_child->limit = $package->limit;
                             $package_child->save();
                         }
-                        
+
                     }else{
                         $user->update([
                             'is_supplier' => 0,
@@ -330,7 +331,7 @@ class UserController extends Controller
                         }
                     }
 
-            
+
             }
             if ($user) {
                 return redirect('panel/users/index')->with('success', 'New user created!');
@@ -380,7 +381,7 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return back()->with('error','Password must have at least 6 characters!');
             }
-            
+
             if ($request->password !== $request->confirm_password) {
                 return back()->with('error', 'Password and confirm password does not match !');
             }
@@ -396,9 +397,10 @@ class UserController extends Controller
         $manangebrands = $request->manangebrands;
         $managegroup = $request->managegroup;
         $offers = $request->offers;
+        $documentaion = $request->documentaion;
 
 
-        $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers ];
+        $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers,"documentaion" => $documentaion ];
 
 
 
@@ -418,7 +420,7 @@ class UserController extends Controller
                 $user->is_verified = 1;
             }else{
                 $user->email_verified_at = null;
-                $user->is_verified = 0; 
+                $user->is_verified = 0;
             }
             $user->dob=$request->dob;
             $user->industry_id=json_encode($request->industry_id) ?? null;
@@ -432,13 +434,13 @@ class UserController extends Controller
             }else{
                 $user->is_supplier = 0;
             }
-            
+
             if ($request->get('ekyc_status')) {
                 $user->ekyc_status = $request->ekyc_status;
             }else{
                 $user->ekyc_status = 0;
             }
-            
+
             $user->pincode=$request->pincode;
             $user->address=$request->address;
 
@@ -484,10 +486,10 @@ class UserController extends Controller
             'document_back' => $document_back,
             'admin_remark' => null,
             'last_site' => $request->last_site,
-            'account_type' =>  $request->acc_type, 
+            'account_type' =>  $request->acc_type,
             'remarks' => $request->remarks,
         ];
-                
+
         $ekyc_info = json_encode($ekyc_info);
         $user->update([
            'ekyc_info' =>$ekyc_info,
@@ -512,7 +514,7 @@ class UserController extends Controller
     }
 
     public function updateEkycStatus(Request $request)
-    {   
+    {
         $user = User::whereId($request->user_id)->firstOrFail();
         $ekyc_info = json_decode($user->ekyc_info);
 
@@ -529,7 +531,7 @@ class UserController extends Controller
             'user_remark' => $ekyc_info->remarks,
             'account_type' => $ekyc_info->account_type,
             'last_site' => $ekyc_info->last_site,
-        ];   
+        ];
 
         $new_ekyc_info = json_encode($new_ekyc_info);
         if($request->status == 1){
@@ -568,7 +570,7 @@ class UserController extends Controller
             pushOnSiteNotification($onsite_notification);
 
         }
-        
+
         $user->update([
            'ekyc_info' =>$new_ekyc_info,
            'ekyc_status' => $request->status,
@@ -576,7 +578,7 @@ class UserController extends Controller
 
         return redirect()->back()->with('success','eKYC update successfully!');
     }
-    
+
     public function profile()
     {
         $user = auth()->user();
@@ -599,8 +601,8 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'The number is associated with another user!',
                 'title' => 'Error',
-            ]); 
-        }            
+            ]);
+        }
         if(strlen($phone) > 10 || strlen($phone) < 10){
             return response()->json([
                 'message' => 'Please Enter Valid Number',
@@ -665,14 +667,14 @@ class UserController extends Controller
                         return redirect()->back()->with('This email is associated with another account');
                     }
                 }
-                
+
                 // Checking Phone Uniqueness
                 if($user->email != $request->email){
                     $chkEmail =  User::wherePhone($request->phone)->first();
                     if($chkEmail){
                         return redirect()->back()->with('This phone is associated with another account');
                     }
-                }                    
+                }
 
                     $phone = $request->phone;
                     $user->name=$request->name;
@@ -742,7 +744,7 @@ class UserController extends Controller
 
 
     public function updateAdditionalNumber(Request $request){
-        
+
         // $this->validate($request, [
         //     'additional_numbers' => 'required'
         // ]);
@@ -797,19 +799,19 @@ class UserController extends Controller
         $phones = [];
         if($user){
             $existing_numbers = json_decode($user->additional_numbers, true);
-            
+
             foreach($existing_numbers as $key => $ex_number){
                 if($ex_number != $number){
                     $phones[] = $ex_number;
                 }
             }
-        
+
             $user->additional_numbers = json_encode($phones);
             $user->save();
             return back()->with('success','Number Deleted Successfully!');
         }
     }
-    
+
     public function updatePassword(Request $request, $id)
     {
 
@@ -829,7 +831,7 @@ class UserController extends Controller
             return back()->with('error', 'Password and confirm password does not match !');
         }
         if (Hash::check($request->old_password, $user->password)) {
-           
+
             try {
                 User::find($id)->update([
                     'password' => Hash::make($request->password),
@@ -851,21 +853,21 @@ class UserController extends Controller
             } else {
                 $user   = User::find($id);
 
-                
+
                 session(['admin_user_id' => auth()->id()]);
                 session(['temp_user_id' => $user->id]);
                 auth()->logout();
-                
+
                 // Login.
                 auth()->loginUsingId($user->id);
-    
+
                 // Redirect.
                 return redirect(route('panel.dashboard'));
             }
         } catch (\Exception $e) {
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
-    }  
+    }
 
 
 
@@ -890,8 +892,8 @@ class UserController extends Controller
                 }
 
                 $user_shop = UserShop::whereUserId($id)->first()->id;
-                
-                
+
+
                 // Unpublish all user shop linking.
                 $scoped_shop_products = UserShopItem::where('parent_shop_id',$user_shop)->get();
                 foreach($scoped_shop_products as $scoped_shop_product){
@@ -909,7 +911,7 @@ class UserController extends Controller
                     $scoped_shop_product->update(['is_published' => 1]);
                 }
             }
-            
+
             return redirect('panel/users/index')->with('success', 'User status Updated!');
         } catch (\Exception $e) {
             return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -928,7 +930,7 @@ class UserController extends Controller
         // Get User Details
         $user   = User::find($id);
         $usershop = UserShop::where('user_id',$id)->first();
-        
+
         $proposal = DB::table('proposals')->where('user_id', $id)->delete();
 
         $acr_sender = DB::table('access_catalogue_requests')->where('user_id', $id)->delete();
@@ -937,13 +939,13 @@ class UserController extends Controller
 
         // Deleting Products
         $product = DB::table('products')->where('user_id', $id)->delete();
-        
+
         // ! uncomment Those Code For Sending Notifications
         // Get All USer Shop Items
-        // $UserShopItem = UserShopItem::where('user_id',$id)->get(); 
+        // $UserShopItem = UserShopItem::where('user_id',$id)->get();
 
         // $othershops = UserShopItem::where('parent_shop_id',$usershop->id)->get();
-        // foreach($othershops as $other){            
+        // foreach($othershops as $other){
         //     $other->is_published = 0;
         //     $other->save();
 
@@ -953,8 +955,8 @@ class UserController extends Controller
         //     pushOnSiteNotification($onsite_notification);
         // }
 
-        // Delete All UserShop Items 
-        $UserShopItem = DB::table('user_shop_items')->where('user_id', $id)->delete(); 
+        // Delete All UserShop Items
+        $UserShopItem = DB::table('user_shop_items')->where('user_id', $id)->delete();
 
         $groups =  DB::table('groups')->where('user_id', $id)->get();
 
@@ -962,16 +964,16 @@ class UserController extends Controller
         print_r($groups);
         echo  "</pre>";
 
-        
+
         foreach ($groups as $group) {
             // Get User Group Items and Delete
             $groups_product = DB::table('group_products')->where('group_id', $group->id)->delete();
-        }   
+        }
 
         $groups = DB::table('groups')->where('user_id', $id)->delete();
 
         $user_package = UserPackage::where('user_id',$id)->delete();
-        
+
         $proposal_items = DB::table('proposal_items')->where('user_id', $id)->delete();
 
         // Delet User Media Directory
@@ -980,10 +982,10 @@ class UserController extends Controller
         Storage::deleteDirectory($del_path);
 
         $user_shop = UserShop::where('user_id',$id)->delete();
-        
+
         if ($user) {
             $user->delete();
-            return redirect('panel/users/index')->with('success', 'User removed!');      
+            return redirect('panel/users/index')->with('success', 'User removed!');
         } else {
             return redirect('panel/users/index')->with('error', 'User not found');
         }

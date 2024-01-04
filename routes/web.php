@@ -50,8 +50,8 @@ Route::group(['middleware' => 'subdomain'],  function () {
             Route::post('/contact/store', [MicroSiteController::class,'contactStore'])->name('contact.store');
             Route::get('/shop/proposal/{proposal_slug}', [ProposalController::class,'shopProposalIndex'])->name('proposal.shop-index');
             Route::get('/shop', [MicroSiteController::class,'shopIndex'])->name('shop-index');
-            
-            // Making Propsals in 
+
+            // Making Propsals in
             Route::get('/proposal/create', [Microproposals::class,'create'])->name('proposal.create');
             Route::get('/proposal/edit/{proposal}/{user_key}', [Microproposals::class,'edit'])->name('proposal.edit');
 
@@ -68,6 +68,7 @@ Route::group(['middleware' => 'subdomain'],  function () {
             Route::get('/marginupdate', [Microproposals::class,'marginupdate'])->name('proposals.updatemargin');
             Route::get('/destroy/{proposal_item}', [Microproposals::class,'destroy'])->name('proposals.destroy');
             Route::post('/update/sequence/{proposal_id}', [Microproposals::class,'updateSequence'])->name('proposals.updateSequence');
+            
             Route::get('/microashish', [Microproposals::class,'ashish'])->name('proposals.checkashish');
 
             Route::get('/update/download/{proposal}', [Microproposals::class,'updateDownload'])->name('proposals.update.download');
@@ -137,13 +138,13 @@ Route::get('/user-shop-cs-filler', function () {
         \UniSharp\LaravelFilemanager\Lfm::routes();
     });
     // Frontend Route Start-------------------------------------------------------------------------------------
-      
+
         // Website Controller
         Route::get('/', [WebsiteController::class,'index'])->name('website.index');
         Route::get('/microsite-proxy', [WebsiteController::class,'microSiteProxy'])->name('microsite.proxy');
         Route::get('/demo', [WebsiteController::class,'demoform'])->name('demoform');
-        Route::get('/Dtask', [WebsiteController::class,'formjaya'])->name('jayaform23');
-        
+        Route::get('/dtask', [WebsiteController::class,'formjaya'])->name('jayaform23');
+
         Route::get('/feedback', [WebsiteController::class,'feedbackform'])->name('feedbackform');
         Route::get('/about', [WebsiteController::class,'about'])->name('about');
         Route::get('/plans', [WebsiteController::class,'planIndex'])->name('plan.index');
@@ -158,25 +159,27 @@ Route::get('/user-shop-cs-filler', function () {
         Route::post('/start/resend-otp','WebsiteController@resendStartOTP')->name('join.resend-otp');
         Route::post('/otp-validate', [WebsiteController::class,'joinValidateOTP'])->name('join-otp-validate');
         Route::post('/poll/question/store',[WebsiteController::class,'questionStore'])->name('user-enquiry.questions.store');
-        
+
         Route::get('/expired', [WebsiteController::class,'expired'])->name('expired');
-        
-        
+
+
         // Paytm Routes
         Route::get('/initiate','PaytmController@initiate')->name('initiate.payment');
         Route::post('/payment','PaytmController@pay')->name('make.payment');
         Route::post('/payment/status', 'PaytmController@paymentCallback')->name('status');
         // Paytm Routes
-        
+
         Route::post('/newsletter/store', [HomeController::class,'storeNewsletter'])->name('newsletter.store');
         Route::get('/article/{slug}', [HomeController::class,'showArticle'])->name('article.show');
 
         //Blog Controller
         Route::get('/blog', [BlogController::class,'index'])->name('blog.index');
         Route::get('/blog/{id}', [BlogController::class,'show'])->name('blog.show');
-        
-        // Todo: Custom Routes 
+
+        // Todo: Custom Routes
         Route::any('/ashish', [DevRouteController::class,'ashish']);
+
+
         Route::any('/excel', [NewBulkController::class,'testExports']);
 
         Route::get('/jaya', [DevRouteController::class,'jaya']);
@@ -187,36 +190,36 @@ Route::get('/user-shop-cs-filler', function () {
         Route::get('/short/{id}', [WebsiteController::class,'shorturlrefer']);
 
         Route::group(['namespace' => '/customer', 'prefix' => 'customer', 'as' => 'customer.'], function () {
-           Route::get('/dashboard', [CustomerController::class,'dashboard'])->name('dashboard'); 
-           Route::get('/checksample/{proposal}', [CustomerController::class,'checksample'])->name('checksample'); 
-           Route::get('/lockEnquiry/{proposal}', [CustomerController::class,'lockEnquiry'])->name('lock.enquiry'); 
-           Route::post('/lockEnquiry', [CustomerController::class,'lockEnquirystore'])->name('lock.enquiry.store'); 
+           Route::get('/dashboard', [CustomerController::class,'dashboard'])->name('dashboard');
+           Route::get('/checksample/{proposal}', [CustomerController::class,'checksample'])->name('checksample');
+           Route::get('/lockEnquiry/{proposal}', [CustomerController::class,'lockEnquiry'])->name('lock.enquiry');
+           Route::post('/lockEnquiry', [CustomerController::class,'lockEnquirystore'])->name('lock.enquiry.store');
            Route::post('/survey', [CustomerController::class,'survey'])->name('survey');
-           Route::get('/verify-mail', [CustomerController::class,'VerifyMail'])->name('verify.mail'); 
-           Route::get('/support-ticket/{id}', [CustomerController::class,'supportTicketShow'])->name('ticket.show'); 
-           Route::get('/support-ticket/{id}/{status}', [CustomerController::class,'ticketStatusClose'])->name('ticket.status.update'); 
-           Route::post('/ticket/chat/store', [CustomerController::class,'ticketChatStore'])->name('ticket.chat.store'); 
-           Route::get('/notification', [CustomerController::class,'notification'])->name('notification'); 
-           Route::get('/notification/{id}', [CustomerController::class,'notificationShow'])->name('notification.show'); 
+           Route::get('/verify-mail', [CustomerController::class,'VerifyMail'])->name('verify.mail');
+           Route::get('/support-ticket/{id}', [CustomerController::class,'supportTicketShow'])->name('ticket.show');
+           Route::get('/support-ticket/{id}/{status}', [CustomerController::class,'ticketStatusClose'])->name('ticket.status.update');
+           Route::post('/ticket/chat/store', [CustomerController::class,'ticketChatStore'])->name('ticket.chat.store');
+           Route::get('/notification', [CustomerController::class,'notification'])->name('notification');
+           Route::get('/notification/{id}', [CustomerController::class,'notificationShow'])->name('notification.show');
            Route::post('/access-code/validate', [CustomerController::class,'validateAccessCode'])->name('access-code-validate');
            Route::post('/scan-code', [CustomerController::class,'scanCode'])->name('scan-code');
-           Route::get('/invoice/{id}', [CustomerController::class,'invoice'])->name('invoice'); 
-           Route::get('/remove-img/{user_shop}', [CustomerController::class,'removeImg'])->name('remove-img'); 
-           Route::post('/Update-settings', [settingController::class,'update'])->name('update.settings'); 
+           Route::get('/invoice/{id}', [CustomerController::class,'invoice'])->name('invoice');
+           Route::get('/remove-img/{user_shop}', [CustomerController::class,'removeImg'])->name('remove-img');
+           Route::post('/Update-settings', [settingController::class,'update'])->name('update.settings');
 
-           Route::get('/my-enquiry', [CustomerController::class,'chatIndex'])->name('chat.index'); 
-           Route::post('/update-about/{shop_id}', [CustomerController::class,'updateShopAbout'])->name('update.shop.update'); 
-           Route::post('/request/catalogue', [CustomerController::class,'requestCatalogueCustomer'])->name('request.catalogue'); 
-           Route::get('/my-enquiry/{id}', [CustomerController::class,'chatShow'])->name('chat.show'); 
+           Route::get('/my-enquiry', [CustomerController::class,'chatIndex'])->name('chat.index');
+           Route::post('/update-about/{shop_id}', [CustomerController::class,'updateShopAbout'])->name('update.shop.update');
+           Route::post('/request/catalogue', [CustomerController::class,'requestCatalogueCustomer'])->name('request.catalogue');
+           Route::get('/my-enquiry/{id}', [CustomerController::class,'chatShow'])->name('chat.show');
            Route::post('/profile/update/{id}', [CustomerController::class,'profileUpdate'])->name('profile.update');
            Route::post('/shop/update/{id}', [CustomerController::class,'shopUpdate'])->name('shop.update');
            Route::post('/industry/update/{id}', [CustomerController::class,'industryUpdate'])->name('industry.update');
            Route::get('/order-history', [CustomerController::class,'orderHistory'])->name('order-history');
-            Route::post('/order-status/update/', [CustomerController::class,'updateOrderStatus'])->name('order.update'); 
+            Route::post('/order-status/update/', [CustomerController::class,'updateOrderStatus'])->name('order.update');
            Route::post('/address/store', [UserAddressController::class,'store'])->name('address.store');
            Route::get('/address/store', [UserAddressController::class,'store'])->name('address.storeget');
-           Route::post('/address/update/', [UserAddressController::class,'update'])->name('address.update'); 
-           Route::get('/address/delete/{id}', [UserAddressController::class,'destroy'])->name('address.delete'); 
+           Route::post('/address/update/', [UserAddressController::class,'update'])->name('address.update');
+           Route::get('/address/delete/{id}', [UserAddressController::class,'destroy'])->name('address.delete');
 
         });
 
@@ -233,7 +236,7 @@ Route::get('/user-shop-cs-filler', function () {
             Route::get('/resend-otp', [CustomerLoginController::class,'resendOTP'])->name('resend-otp');
         });
 
-        
+
         Route::get('/page', function () {
             return view('frontend.index');
         });
@@ -244,7 +247,7 @@ Route::get('/user-shop-cs-filler', function () {
         Route::post('login', [LoginController::class,'login']);
         // Route::get('register', [RegisterController::class,'showRegistrationForm'])->name('register');
         // Route::post('register', [RegisterController::class,'register']);
-        
+
         // Socialite Routes
         Route::get('login/{provider}', [SocialLoginController::class, 'login'])->name('social.login');
         Route::get('login/{provider}/callback', [SocialLoginController::class, 'login']);
@@ -253,7 +256,7 @@ Route::get('/user-shop-cs-filler', function () {
         Route::get('/email/verify', function () {
             return view('auth.verify');
         })->name('verification.notice');
-        
+
         Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
             $request->fulfill();
             return redirect('panel/dashboard');
@@ -278,13 +281,13 @@ Route::get('/user-shop-cs-filler', function () {
         Route::post('password/email', [ForgotPasswordController::class,'sendResetLinkEmail'])->name('password.email');
         Route::get('password/reset/{token}', [ResetPasswordController::class,'showResetForm'])->name('password.reset');
         Route::post('password/reset', [ResetPasswordController::class,'reset'])->name('password.update');
-        
-        
-        
+
+
+
         // Frontend Route END-------------------------------------------------------------------------------------
-        
-        
-        
+
+
+
         Route::group(['middleware' => 'auth'], function () {
             // logout route
             Route::get('/logout', [LoginController::class,'logout']);

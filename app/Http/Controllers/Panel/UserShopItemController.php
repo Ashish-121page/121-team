@@ -116,6 +116,7 @@ class UserShopItemController extends Controller
                     if($request->has('search') && $request->get('search') != null){
                         $product->where('title','like', '%' . $request->get('search') . '%')
                                 ->orWhere('model_code','like', '%' . $request->get('search') . '%')
+                                ->orWhere('search_keywords','like', '%' . $request->get('search') . '%')
                                 ->orWhere('id','like', '%' . $request->get('search') . '%')
                                 ->orWhereHas('product_items',function($q) use($request){
                                     $q->where('id','like', '%' . $request->get('search') . '%');
@@ -150,6 +151,7 @@ class UserShopItemController extends Controller
                     if($request->has('search') && $request->get('search') != null){
                         $product->where('title','like', '%' . $request->get('search') . '%')
                                 ->orWhere('model_code','like', '%' . $request->get('search') . '%')
+                                ->orWhere('search_keywords','like', '%' . $request->get('search') . '%')    
                                 ->orWhere('id','like', '%' . $request->get('search') . '%') 
                                 ->orWhereHas('product_items',function($q) use($request){
                                     $q->where('id','like', '%' . $request->get('search') . '%');

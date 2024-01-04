@@ -14,6 +14,7 @@
             max-height: 65vh;
             overflow-y: auto;
         }
+    
 
        
 </style>
@@ -64,7 +65,7 @@
             <div class="row">
                 <!-- start message area-->
                 <!-- end message area-->
-                <div class="col-md-12">
+                <div class="col-md-12 col-lg-12">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between">
                             <h1>Offers</h1>

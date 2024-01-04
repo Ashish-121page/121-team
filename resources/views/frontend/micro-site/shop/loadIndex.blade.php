@@ -11,7 +11,7 @@
             $record = App\Models\UserCurrency::where('currency',$product->base_currency)->where('user_id',$user_shop->user_id)->first();
             $exhangerate = Session::get('Currency_exchange') ?? 1;
             $HomeCurrency = $record->exchange ?? 1;
-            $currency_symbol = Session::get('currency_name') ?? 'INR';
+            $currency_symbol = Session::get('currency_name') ?? $product->base_currency ?? 'INR';
             
             $price = exchangerate($price,$exhangerate,$HomeCurrency);
 

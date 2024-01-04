@@ -1,9 +1,9 @@
-@extends('backend.layouts.main') 
+@extends('backend.layouts.main')
 @section('title', 'Product Attribute')
 @section('content')
 @php
 /**
- * Product Attribute 
+ * Product Attribute
  *
  * @category  zStarter
  *
@@ -70,23 +70,26 @@ $breadcrumb_arr = [
                             <input type="hidden" value="{{getShopDataByUserId(auth()->id())->id ?? null}}" name="user_shop_id">
 
                             <div class="row">
-                                                            
-                                <div class="col-md-12 col-12"> 
+
+                                <div class="col-md-12 col-12">
                                     <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
                                         <label for="name" class="control-label">Name<span class="text-danger">*</span></label>
                                         <input required  class="form-control" name="name" type="text" id="name" value="{{old('name')}}" placeholder="Enter Name" >
                                     </div>
                                 </div>
-                                                                                            
-                                <div class="col-md-6 col-12 d-none"> 
+
+                                <div class="col-md-12 col-12">
                                     <div class="form-group">
                                         <label for="type">Type</label>
-                                        <select required name="type" id="type" class="form-control select2">
+                                        <select required name="type" id="type" class="form-control select2" id="selecttype">
                                             <option value="" readonly>Select Type</option>
+                                            <option value="any_value">Text</option>
+                                            <option value="uom">UOM</option>
+                                            <option value="dropdown">Dropdown</option>
                                     </select>
                                     </div>
                                 </div>
-                                <div class="col-md-12 col-12"> 
+                                <div class="col-md-12 col-12 dropdownbx d-none">
                                     <div class="form-group mb-0">
                                         <label for="input">{{ __('Values')}}</label>
                                     </div>
@@ -94,7 +97,7 @@ $breadcrumb_arr = [
                                         <input style="width: 100%" name="value[]" type="text" id="tags" class="form-control" value="">
                                     </div>
                                 </div>
-                                                            
+
                                 <div class="col-md-12 ml-auto">
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary">Create</button>
@@ -117,7 +120,19 @@ $breadcrumb_arr = [
         <script src="{{ asset('backend/js/form-advanced.js') }}"></script>
         <script>
             $('#ProductAttributeForm').validate();
-            $('#tags').tagsinput('items');                                      
+            $('#tags').tagsinput('items');
+            $(document).ready(function () {
+                $(".select2").change(function (e) {
+                    e.preventDefault();
+                    if ($(this).val() != 'dropdown') {
+                        $(".dropdownbx").addClass('d-none');
+                    }else{
+                        $(".dropdownbx").removeClass('d-none');
+                    }
+                });
+            });
+
+
         </script>
     @endpush
 @endsection
