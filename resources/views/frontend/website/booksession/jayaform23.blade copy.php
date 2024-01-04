@@ -278,16 +278,12 @@ $no_footer = 1;
 
         <div class="progress-container">
             <div class="progress-bar" id="myBar"></div>
-        </div>
-
-        <span class=" text-break my-3 px-3 h3 ti">New DTask and Rtask</span>
-
+        </div>       
         <form
             action="forms/d/e/1FAIpQLSecMyXvlfocH8rJJ0KNVA1xy9tjXVZFBW7EfdlbycdVw98Zig/formResponse" 
             method="post">
 
             <!-- Hidden Section -->
-
             <div class="hidden_content">
                 <input type="hidden" name="entry.975582590" id="assign">
                 <input type="hidden" name="entry.1652210707" id="highPriorityCheckbox">
@@ -295,11 +291,8 @@ $no_footer = 1;
                 <input type="hidden" name="entry.879293343" id="refr">
                 <input type="hidden" name="entry.112864257" id="work1">
                 <input type="hidden" name="entry.857368045" id="ogname">
-                <!---Name-->
                 <input type="hidden" name="entry.348108511" id="ogphone">
-                <!---phone-->
-                <input type="hidden" name="entry.479807686" id="ogmail">
-                <!---Email-->
+                <input type="hidden" name="entry.479807686" id="ogmail">                
             </div>
 
             <!-- Hidden Section -->
@@ -308,134 +301,59 @@ $no_footer = 1;
 
             <!-- Section 1 -->
 
-            <div class="cols p1 active">
-                <div class="inpbx">
-                    <label for="gname">What Do You</label>
-                    <select name="reference" class="my-2 form-control w-100" id="reference" required>
-                        <option value="">Choose</option>
-                        <option value="option1">D. Task</option>
-                        <option value="option2">R. Task</option>
-                        
-                      </select>
-                    {{-- <button type="button" class="btn btn-primary" onclick="next()">Ok <i
-                            class="uil-check fs-5"></i></button> --}}
-                </div>
-                {{-- <img src="{{ asset('storage/backend/booksession/name_1.svg') }}" class="img-1"> --}}
-            </div>
 
 
             <!-- Section 2 -->
-            <div class="cols p2 active">
+            <div class="cols p1 active">
                 <div class="inpbx">
-                    <label for="gname">Add D.Task</label>
-                    <small>What is The Work <span class="text-red">*</span> </small>
-                    <input type="text" placeholder=". . . ." name="work1" class="my-2 form-control" id="work1" required>                   
+                    <div class="row">                    
+                    <label>What is The Work <span class="text-red">*</span> </label>
+                    <input type="text" placeholder=". . . ." name="work1" class="my-2 form-control" id="work1" required> 
                 </div>
-                {{-- <img src="{{ asset('storage/backend/booksession/name_1.svg') }}" class="img-1"> --}}
+                <div class="row mt-4">
+                    <label for="refr">Reference</label>                                
+                    <input type="text" placeholder="" name="refr" class="my-2 form-control" id="refr" required>  
+                </div> 
+                <div class="row mt-4">
+                    <label for="assign">Assign to </label>               
+                    <select name="assign" class="my-2 form-control " id="assign" required>
+                        <option value="choose">Choose</option>
+                        <option value="option1">Ashish</option>
+                        <option value="option2">Dolly</option>
+                        <option value="option3">Harish</option>
+                        <option value="option4">Jaya</option>
+                        <option value="option5">Saurabh</option>
+                        <option value="option6">Waitlist</option>
+                        <option value="option7"></option>
+                    </select> 
+                </div>               
+                                  
+                </div>              
             </div>
-
-            <div class="cols p3 active">
+           
+              <div class="cols p2">
                 <div class="inpbx">
-                    <label for="gname">Reference
-                    <small></small>
-                    </label>
-                    <input type="text" placeholder=". . . ." name="refr" class="my-2 form-control" id="refr" required>
-                    {{-- <button type="button" class="btn btn-primary" onclick="next()">Ok <i
-                            class="uil-check fs-5"></i></button> --}}
-                </div>
-                
-            </div>
-
-            <div class="cols p4 active">
-                <div class="inpbx">
-                  <label for="">Assign to
-                    <small></small>
-                  </label>
-                  <select name="reference" class="my-2 form-control w-100" id="assign" required>
-                    <option value="">Choose</option>
-                    <option value="option1">Ashish</option>
-                    <option value="option2">Dolly</option>
-                    <option value="option3">Harish</option>
-                    <option value="option4">Jaya</option>
-                    <option value="option5">Saurabh</option>
-                    <option value="option6">Waitlist</option>
-                    <option value="option7"></option>
-                  </select>
-                  {{-- <button type="button" class="btn btn-primary" onclick="next()">Ok <i
-                    class="uil-check fs-5"></i></button> --}}
-                </div>
-              </div>
-
-              <div class="cols p5">
-                <div class="inpbx">
-                    <label for="gdate">Work Start Date<span class="text-red">*</span></label>
-                    <small>Date</small>
-                    <input type="date" name="gdate" id="gdate" class="my-2 form-control" required min="2023-08-16">                                                           
-                </div>
+                    <div class="row">
+                        <label for="startdate">Work Start Date<span class="text-red">*</span></label>                        
+                        <input type="date" name="startdate" id="startdate" class="my-2 form-control" required min="2023-08-16"> 
+                    </div>
+                    <div class="row mt-4">
+                        <label for="pdate">Plan Date</label>                        
+                        <input type="date" name="pdate" id="pdate" class="my-2 form-control" required min="2023-08-16"> 
+                    </div>
+                    <div class="row mt-4"> 
+                        <label for="highPriorityCheckbox">Priority<span class="text-red">*</span></label>
+                        <div class="form-group" >
+                            <input class="form-check-input" type="checkbox" value="high" id="highPriorityCheckbox" >
+                            <label class="form-check-label" style="width:90%;" for="highPriorityCheckbox">High Priority</label>                                                           
+                        </div>
+                    </div>
+                    <div class="mt-5 align-items-center ">
+                        <button type="submit" class="btn btn-primary submit ">Submit</button>
+                    </div>
              </div>
-            <div class="cols p6">
-                <div class="inpbx">
-                    <label for="gdate">Plan Date</label>
-                    <small>Date</small>
-                    <input type="date" name="gdate" id="gdate" class="my-2 form-control" required min="2023-08-16">                                                            
-                </div>                                
-            </div>
-
-            <div class="cols p7 justify-content-start">
-                <div class="">
-                  <label for="priority">Priority<span class="text-red">*</span></label>
-                  <div class="form-group" >
-                    <input class="form-check-input" type="checkbox" value="high" id="highPriorityCheckbox" >
-                    <label class="form-check-label" style="width:90%;" for="highPriorityCheckbox">High Priority</label>
-                  </div>
-                 
-                </div>
-              </div>
-              
-              {{-- <div class="cols p7">
-                <div class="">
-                  <label for="priority">Priority<span class="text-red">*</span></label>
-                  <div class="form-check1   " style="width:100%; height:100%;">
-                    <input class="form-check-input" type="checkbox" value="high" id="highPriorityCheckbox" style="width:10%; border:1px solid">
-                    <label class="form-check-label" style="width:90%;" for="highPriorityCheckbox">High Priority</label>
-                  </div>
-                  <div class="form-check" style="width:100%; height:100%;">
-                    <input class="form-check-input" type="checkbox" value="other" id="otherPriorityCheckbox" style="width:10%; border:1px solid">
-                    <label class="form-check-label" for="otherPriorityCheckbox">Other</label>
-                    <textarea class="form-control" style="width:90%;" id="otherPriorityTextArea" rows="3" disabled></textarea>
-                  </div>
-                </div>
-              </div> --}}
-
-              
-
-            
-
-
-            <!-- Section 3 -->
-
-            
-
-
-
-            <!-- Section 4 -->
-
-            {{-- <div class="cols p8
-            ">
-                <div class="inpbx">
-                    <label for="gdate">Select Session Time <span class="text-red">*</span></label>
-
-                    <input type="date" name="gdate" id="gdate" class="my-2 form-control" required min="2023-08-16">
-                    <input type="time" name="gtime" id="gtime" class="my-2 form-control" min="10:30" max="18:00"
-                        required>
-                    <small class="fs-6">Choose Between 10:30 to 18:00</small>
-                    <br>
-                    <button type="submit" class="btn btn-primary submit">Submit</button>
-                </div> --}}
-                {{-- <img src="{{ asset('storage/backend/booksession/time1.svg') }}" class="img-submit" style="transform: scale(80%);"> --}}
-            {{-- </div> --}}
-            <button type="submit" class="btn btn-primary submit">Submit</button>
-
+           
+                           
         </form>
 
         <div class="controlbtn">
@@ -456,133 +374,48 @@ $no_footer = 1;
 @endsection
 @section('InlineScript')
 <script>
-    // When the user scrolls the page, execute myFunction
-    window.onscroll = function () {
-        myFunction()
-    };
+    $(document).ready(function(){
+  // Function to move to the next field
+  function moveToNextField(currentField, nextField) {
+    $(currentField).removeClass('active'); // Remove 'active' class from current field
+    $(nextField).addClass('active'); // Add 'active' class to next field
+    $(nextField).find('input, select').first().focus(); // Focus on the first input/select in the next field
+  }
 
-    $("form").submit(function (e) { 
-        // e.preventDefault();
-        window.open("https://www.121.page");
-    });
-    
-    function myFunction() {
-        var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        var scrolled = (winScroll / height) * 100;
-        document.getElementById("myBar").style.width = scrolled + "%";
+  // Listen for keyup event on input fields and select dropdown
+
+  $("#assign").change(function (e) { 
+    e.preventDefault();
+    $("#Nextbtn").click();
+});
+
+$("#highPriorityCheckbox")
+
+  // Functionality for the 'Next' button click
+  $('#next').on('click', function(){
+    var currentField = $('.cols.active');
+    var nextField = currentField.next('.cols');
+
+    if (nextField.length !== 0) {
+      moveToNextField(currentField, nextField);
+    } else {
+      $('form').submit(); // Submit the form if there are no more fields
     }
+  });
 
+//   // Functionality for the 'Previous' button click
+  $('#prev').on('click', function(){
+    var currentField = $('.cols.active');
+    var prevField = currentField.prev('.cols');
 
-    let currSlide = 1;
-    const SLIDE_LENGTH = $('.cols').length;
-    $("#next").click(function () {
-        currSlide = currSlide === SLIDE_LENGTH ? 1 : ++currSlide;
-        // console.log(currSlide);
-        $('html,body').animate({
-                scrollTop: $(`.p${currSlide}`).offset().top
-            },
-            'slow');
-    });
-
-
-    $("#prev").click(function () {
-        console.log(currSlide);
-        $('html,body').animate({
-                scrollTop: $(`.p${currSlide}`).offset().top -  $(`.p${currSlide}`).outerHeight()
-            },
-            'slow');
-        currSlide = currSlide === SLIDE_LENGTH ? 1 : --currSlide;
-    });
-
-
-
-    function next() {
-        currSlide = currSlide === SLIDE_LENGTH ? 1 : ++currSlide;
-        // console.log(currSlide);
-        $('html,body').animate({
-                scrollTop: $(`.p${currSlide}`).offset().top
-            },
-            'slow');
-
+    if (prevField.length !== 0) {
+      moveToNextField(currentField, prevField);
     }
+  });
+});
 
 
 
-    // for Updating a Google Form Feilds
-
-    // For name
-    $("#gname").on('keyup', function () {
-        var a = $(this).val();
-        $("#ogname").val(a)
-    });
-
-    // For Phone
-    $("#gphone").on('keyup', function () {
-        var a = $(this).val();
-        $("#ogphone").val(a)
-    });
-
-    // For Email
-    $("#email").on('keyup', function () {
-        var a = $(this).val();
-        $("#ogmail").val(a)
-    });
-
-
-    // for date month and year
-
-    $('#gdate').on('change', function () {
-        var newVal = $(this).val().split(
-                '-'), //renamed new_val to newVal, always stick to one naming convention
-            dateParts = {
-                year: parseInt(newVal[0], 10),
-                month: parseInt(newVal[1], 10),
-                day: parseInt(newVal[2], 10)
-            };
-        console.log(dateParts);
-        $("#ogyear").val(dateParts.year)
-        $("#ogmonth").val(dateParts.month)
-        $("#ogday").val(dateParts.day)
-
-
-    });
-
-    $('#gtime').on('change', function () {
-        var newVal = $(this).val().split(
-                ':'), //renamed new_val to newVal, always stick to one naming convention
-            timeParts = {
-                hour: parseInt(newVal[0], 10),
-                min: parseInt(newVal[1], 10)
-            };
-
-        $("#oghour").val(timeParts.hour)
-        $("#ogmin").val(timeParts.min)
-
-
-        const fields = document.querySelectorAll('.inpbx input, .inpbx select');
-
-        fields.forEach(field => {
-        field.addEventListener('keyup', (event) => {
-            const nextField = event.target.nextElementSibling;
-            if (nextField && event.target.value) {
-            // Focus on the next field if it exists and the current field has a value
-            nextField.focus();
-            }
-        });
-        });
-
-
-        
-    // const otherPriorityCheckbox = document.getElementById('otherPriorityCheckbox');
-    // const otherPriorityTextArea = document.getElementById('otherPriorityTextArea');
-
-    // otherPriorityCheckbox.addEventListener('change', () => {
-    //   otherPriorityTextArea.disabled = !otherPriorityCheckbox.checked;
-    // });
-
-  
-
-    });
+   
 </script>
 @endsection
