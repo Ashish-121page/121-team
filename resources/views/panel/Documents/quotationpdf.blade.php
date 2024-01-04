@@ -16,7 +16,7 @@
     @endphp
   <div class="mb-4">
     <h1 class="h3 mb-3 font-weight-normal">{{ $Userrecord->buyerName ?? '' }}</h1>
-    <h6>{{ $QuotationRecord->slug ?? '' }}</h6>
+    <h6>{{ $QuotationRecord->user_slug ?? $QuotationRecord->slug ?? '' }}</h6>
     <hr>
     <p style="font-size: 0.85rem;">
       <b>Issue Date:</b> {{ $Userrecord->CreatedOn ?? '' }} <br>

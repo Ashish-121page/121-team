@@ -378,7 +378,7 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
 
 
     // ` Quotation linking new
-    Route::group(['middleware' => 'checkAccountPermission:documentaion', 'prefix' => 'panel/Quotation','as' =>'panel.Documents.'], function () {
+    Route::group([ 'prefix' => 'panel/Quotation','as' =>'panel.Documents.'], function () {
 
         Route::get('', ['uses' => 'invoiceController@index', 'as' => 'index']);
         Route::get('/secondview', ['uses' => 'invoiceController@secondview', 'as' => 'secondview']);
@@ -389,6 +389,8 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::post('/Quotation/create', ['uses' => 'invoiceController@createQuotation', 'as' => 'create.Quotation']);
         
         Route::get('/step-2', ['uses' => 'invoiceController@quotation2', 'as' => 'quotation2']);
+        Route::post('/uploadFile', ['uses' => 'invoiceController@uploadFileQuote', 'as' => 'quotation.uploadFile']);
+
         Route::post('/Quotation/create/item', ['uses' => 'invoiceController@createQuotationitem', 'as' => 'create.Quotation.item']);
         Route::get('/step-3', ['uses' => 'invoiceController@quotation3', 'as' => 'quotation3']);
 

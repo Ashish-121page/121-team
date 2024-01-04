@@ -112,7 +112,7 @@
                                                         value="{{ $record->id }}">
                                                 </td>
                                                 <td>
-                                                    {{ $record->slug }}
+                                                    {{ $record->user_slug ?? $record->slug  }}
                                                 </td>
                                                 <td>
                                                     {{ $jsonData->buyerName ?? '-' }}
@@ -151,6 +151,7 @@
 
         </div>
     </div>
+
 
     <script src="{{ asset('backend/js/index-page.js') }}"></script>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>

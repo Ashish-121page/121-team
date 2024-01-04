@@ -23,16 +23,18 @@
 
                                 <div class="col-3">
                                     <div style="display: flex;align-content: center;justify-content: start;margin: 10px">
-                                        <input type="checkbox" name="column-Default[]" id="column-product_img" class="mx-2">
+                                        <input type="checkbox" name="column-Default[]" id="column-product_img" class="mx-2" checked>
                                         <label for="column-product_img" class="mb-0">{{ __("Product Image") }}</label>
                                     </div>
                                 </div>
 
                             </div>
                         </div>
-                        <div class="col-12 col-lg-12 col-md-12 my-3">
-                            <input type="checkbox" id="select-All-Default">
-                            <div class="h5">Default Attribute</div>
+                        <div class="col-12 col-lg-12 col-md-12 my-3 d-flex align-items-center">
+                            <div class="form-group">
+                                <label for="select-All-Default" class="mx-2 h6"> Default Attribute </label>
+                                <input type="checkbox" id="select-All-Default">
+                            </div>
 
                         </div>
                         <div class="-12 col-lg-12 col-md-12">

@@ -80,8 +80,9 @@
                     <a href="{{ request()->url() }}?open=custinp" class="btn btn-outline-primary @if (request()->get('open') == 'custinp') active @endif mx-1">
                         Custom Input
                     </a>
-
-
+                    <a href="{{ request()->url() }}?open=quotation" class="btn btn-outline-primary @if (request()->get('open') == 'quotation') active @endif mx-1">
+                        Quotation
+                    </a>
                 </div>
             </div>
 
@@ -111,6 +112,8 @@
                 @include('backend.constant-management.category.view.user-view')
             @elseif (request()->has('open') && request()->get('open') == 'custinp')
                 @include('panel.settings.pages.CustomField')
+            @elseif (request()->has('open') && request()->get('open') == 'quotation')
+                @include('panel.settings.pages.Quotation')
             @else
                 @include('panel.settings.pages.Template')
             @endif

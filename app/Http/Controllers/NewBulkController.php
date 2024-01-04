@@ -2265,76 +2265,6 @@ class NewBulkController extends Controller
         return redirect(route('panel.filemanager.index'))->with('success', 'Good News! '.$count.' records created successfully!');
     }
 
-
-    // public function ProductSheetExport(Request $request,User $user_id)
-    // {
-    //     // Fetch All attriubutes
-    //     $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
-    //     $custom_attributes = (array) json_decode($user_id->custom_attriute_columns) ?? ['Colours','Size','Material'];
-    //     $custom_fields = (array) json_decode($user_id->custom_fields) ?? [];
-    //     $Export_columns = [];
-
-    //     // Getting sections custom Inputs Columns
-    //     $custom_col1 = [];
-    //     $custom_col4 = [];
-    //     $custom_col5 = [];
-
-
-    //     foreach ($custom_fields as $index => $custom_field) {
-    //         if ($custom_field->ref_section == 1) {
-    //             array_push($custom_col1,$custom_field->text);
-    //         }
-
-    //         if ($custom_field->ref_section == 4) {
-    //             array_push($custom_col4,$custom_field->text);
-    //         }
-
-    //         if ($custom_field->ref_section == 5) {
-    //             array_push($custom_col5,$custom_field->text);
-    //         }
-    //     }
-
-    //     $default_attribute['custom_input_1'] = $custom_col1;
-    //     $default_attribute['custom_input_4'] = $custom_col4;
-    //     $default_attribute['custom_input_5'] = $custom_col5;
-
-
-    //     foreach ($default_attribute as $key => $valueArr) {
-    //         foreach ($valueArr as $key => $value) {
-    //             array_push($Export_columns,$value);
-    //         }
-    //     }
-
-    //     // Merging All attributes
-    //     $merged_array = array_merge($Export_columns,$custom_attributes);
-
-    //     ini_set('max_execution_time', 0);
-    //     ini_set('memory_limit', '4000M');
-    //     try {
-    //         $spreadSheet = new Spreadsheet();
-    //         $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
-    //         $spreadSheet->getActiveSheet()->fromArray($merged_array,null,'A3');
-    //         $Excel_writer = new Xls($spreadSheet);
-
-    //         $mytime = Carbon::now();
-    //         $user = auth()->user();
-    //         $fileName = "$user->name Exported Data-".$mytime->toDateTimeString();
-
-    //         header('Content-Type: application/vnd.ms-excel');
-    //         header("Content-Disposition: attachment;filename=$fileName.xls");
-    //         header('Cache-Control: max-age=0');
-    //         ob_end_clean();
-    //         $Excel_writer->save('php://output');
-    //         exit();
-    //     } catch (Exception $e) {
-    //         $response = ['msg'=> "Error While Creating Excel File.. Try Again Later."];
-    //         return $response;
-    //     }
-    //     return back()->with('success',"Download Started !!");
-    // }
-
-
-
     public function ProductSheetExport(Request $request,User $user_id){
         // Fetch All attriubutes
         $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
@@ -2347,6 +2277,7 @@ class NewBulkController extends Controller
         $custom_col4 = [];
         $custom_col5 = [];
 
+        $custom_col_values = [];
 
 
         // return;
@@ -2363,6 +2294,15 @@ class NewBulkController extends Controller
             if ($custom_field->ref_section == 5) {
                 array_push($custom_col5,$custom_field->text);
             }
+
+            if ($custom_field->value != '' && $custom_field->value != null) {
+                $tmp_val = [];
+                $tmp_val[$custom_field->text] = $custom_field->value;
+                if ($tmp_val != '' && $tmp_val != null) {
+                    array_push($custom_col_values,$tmp_val);
+                }
+
+            }
         }
 
         $default_attribute['custom_input_1'] = $custom_col1;
@@ -2376,11 +2316,14 @@ class NewBulkController extends Controller
             }
         }
 
+        // magicstring($custom_col_values);
+        // return;
+
+
         // Merging All attributes
         $merged_array = array_merge($Export_columns,$custom_attributes);
         $FirstSheetName = "Entry Sheet";
         $SecondSheetName = "Data Validation Sheet";
-
 
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
@@ -2410,7 +2353,6 @@ class NewBulkController extends Controller
                     $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
                 }
 
-
                 $attribute_values = ProductAttributeValue::where('parent_id',$attribute_rec->id)->pluck('attribute_value')->toArray();
 
                 $optionsArray = array_chunk($attribute_values,1);
@@ -2434,25 +2376,75 @@ class NewBulkController extends Controller
                 $validation->setShowInputMessage(true);
                 $validation->setShowErrorMessage(true);
                 $validation->setShowDropDown(true);
-                $validation->setErrorTitle('Input error');
-                $validation->setError('Value is not in the list.');
-                $validation->setPromptTitle('Pick from list');
-                $validation->setPrompt('Please pick a value from the drop-down list.');
+                $validation->setErrorTitle('Pick from list or Create');
+                $validation->setError('Please pick value from dropdown-list OR In excel, replace cell to enter new value . Before upload on 121, update new value in Custom fields.');
+                $validation->setPromptTitle('Pick from list or Create');
+                $validation->setPrompt('Please pick value from dropdown-list OR In excel, replace cell to enter new value . Before upload on 121, update new value in Custom fields.');
 
                 // Corrected the formula string
                 $validation->setFormula1("'$SecondSheetName'!$" . $excelColumn . "\$2:\$" . $excelColumn . "\$" . (count($attribute_values) + 1 ));
 
 
-
+                // Skip Validation for Any value and UOM in Custom Properties
+                if ($attribute_rec->value == 'any_value' || $attribute_rec->value == 'uom') {
+                    continue;
+                }
                 // Apply the validation to each cell in the range A1:A100
                 for ($i = 1; $i <= 100; $i++) {
-
                     $cellCoordinate = $ActualSheetColIndex . strval($i + 3);
                     $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
                 }
 
 
             }
+
+
+
+
+
+            $ashu_arr_name = [[]];
+            foreach ($custom_fields as $key => $custom_field) {
+
+                $optionsArray = [];
+                $index = $index + 1;
+                $dropdownSheet->setCellValue([$index,'1'],$custom_field->text);
+
+                if ($custom_field->value != '') {
+
+                    // $myarr = explode(',',$custom_field->value);
+
+                    // array_push($ashu_arr_name,$myarr);
+
+                    $optionsArray = array_chunk(explode(',',$custom_field->value),1);
+
+                    $excelColumn = $this->numToExcelColumn($index);
+                    $startCell = $excelColumn . '2';
+
+                    $dropdownSheet->fromArray(
+                        $optionsArray,
+                        null,
+                        $startCell
+                    );
+
+                    $ActualSheetColIndex = array_search($custom_field->text, $merged_array);
+                    $ActualSheetColIndex = $this->numToExcelColumn($ActualSheetColIndex + 1);
+
+                    $validation->setFormula1("'$SecondSheetName'!$" . $excelColumn . "\$2:\$" . $excelColumn . "\$" . (count($optionsArray) + 1 ));
+
+                    // Apply the validation to each cell in the range A1:A100
+                    for ($i = 1; $i <= 100; $i++) {
+                        $cellCoordinate = $ActualSheetColIndex . strval($i + 3);
+                        $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                    }
+
+
+
+                }
+
+            }
+
+            // // magicstring($ashu_arr_name);
+            // return;
 
 
             // Prepare the response for a downloadable file
@@ -2465,7 +2457,7 @@ class NewBulkController extends Controller
                 $writer->save('php://output');
             }, 200, [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'Content-Disposition' => 'attachment;filename="workbook_with_separate_dropdown_sheet.xlsx"',
+                'Content-Disposition' => 'attachment;filename="Exported Data.xlsx"',
                 'Cache-Control' => 'max-age=0',
                 // Optional: Set the content length if possible
                 //'Content-Length' => $fileSize,
@@ -2477,19 +2469,6 @@ class NewBulkController extends Controller
         }
 
     }
-
-
-    function numToExcelColumn($num) {
-        $char = '';
-        while ($num > 0) {
-            $remainder = ($num - 1) % 26;
-            $char = chr(65 + $remainder) . $char;
-            $num = floor(($num - $remainder) / 26);
-        }
-        return $char;
-    }
-
-
 
     // @ This Function Will Be USe in Admin Panel For Changeing Order of Excel Sheet
     public function updateExcelShow(Request $request) {
@@ -2559,13 +2538,8 @@ class NewBulkController extends Controller
         }
     }
 
-    // Export Product Data
     function exportData(Request $request,User $user_id){
         try {
-        {
-            // $products = Product::whereUserId($user_id->id)->take('120')->get();
-            // magicstring($request->all());
-            // return;
 
             if ($request->has('products')) {
                 $ids = explode(',',$request->products);
@@ -2581,31 +2555,71 @@ class NewBulkController extends Controller
                 $products = Product::whereUserId($user_id->id)->get();
             }
 
-            // $products_array [] = array(
-            //     'Id','Model_Code','Category','Sub_Category','Group ID','Image_main','image_name_front','image_name_back','image_name_side1','image_name_side2','image_name_poster','Additional Image Use ^^','Product name','Video URL','description','Search keywords','Brand Name','Base_currency','Selling Price_Unit','Customer_Price_without_GST','Shop_Price_VIP_Customer','Shop_Price_Reseller','mrpIncl tax','HSN Tax','HSN_Percnt','Copyright/ Exclusive item','Exclusive Buyer Name','Theme / Collection Name','Season / Month','Theme / Collection Year','Sample Year','Sample Month','Sampling time','CBM','Production time (days)','MBQ','MBQ_units','Remarks','Vendor Sourced from','Vendor price','Product Cost_Unit','Vendor currency','Sourcing Year','Sourcing month','Gross weight','Net weight','Weight_unit','Product length','Product width','Product height','Dimensions_unit','Carton length','Carton width','Carton height','Carton_Dimensions_unit','standard_carton_pcs','carton_weight_actual','unit','artwork_url',
-            // );
+            $filename = "Exported Data -$user_id->name -".$mytime->toDateTimeString();
 
-            $products_array [] = array(
-                'Id','Model_Code','Category','Sub_Category','Group ID','Image_main','image_name_front','image_name_back','image_name_side1','image_name_side2','image_name_poster','Additional Image Use ^^','Product name','description','Search keywords','Brand Name','Base_currency','Selling Price_Unit','Customer_Price_without_GST','mrpIncl tax','HSN Tax','HSN_Percnt','Exclusive Buyer Name','Theme / Collection Name','Season / Month','Theme / Collection Year','Sample Year','Sample Month','Sampling time','CBM','Production time (days)','MBQ','MBQ_units','Remarks','Vendor Sourced from','Vendor price','Product Cost_Unit','Vendor currency','Sourcing Year','Sourcing month','Gross weight','Net weight','Weight_unit','Product length','Product width','Product height','Dimensions_unit','Carton length','Carton width','Carton height','Carton_Dimensions_unit','standard_carton_pcs','carton_weight_actual','unit',
-            );
+            // * Start: Marging Both Array Custom And Default Attributes
+            $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
+            $custom_attributes = (array) json_decode($user_id->custom_attriute_columns) ?? ['Colours','Size','Material'];
+            $custom_fields = (array) json_decode($user_id->custom_fields) ?? [];
+            $value_to_remove = ['Variation attributes','SKU Type'];
+            $custom_fields_Name = [];
+            $custom_fields_id = [];
 
-            $custom_attribute = json_decode(auth()->user()->custom_attriute_columns);
-            // $products_array = $products_array[0],$custom_attribute);
-            foreach ($custom_attribute as $key => $value) {
-                array_push($products_array[0],$value);
+            $delfault_cols = ['id'];
+            $col_index =0;
+
+            // Getting sections custom Inputs Columns
+            $custom_col1 = [];
+            $custom_col4 = [];
+            $custom_col5 = [];
+            $custom_col_values = [];
+
+            foreach ($custom_fields as $index => $custom_field) {
+                if ($custom_field->ref_section == 1) {
+                    array_push($custom_col1,$custom_field->text);
+                }
+
+                if ($custom_field->ref_section == 4) {
+                    array_push($custom_col4,$custom_field->text);
+                }
+
+                if ($custom_field->ref_section == 5) {
+                    array_push($custom_col5,$custom_field->text);
+                }
+
+                array_push($custom_fields_Name,$custom_field->text);
+                array_push($custom_fields_id,$custom_field->id);
             }
 
-            unset($custom_attribute[0],$custom_attribute[1],$custom_attribute[2]);
+            $default_attribute['custom_input_1'] = $custom_col1;
+            $default_attribute['custom_input_4'] = $custom_col4;
+            $default_attribute['custom_input_5'] = $custom_col5;
 
+            foreach ($default_attribute as $key => $valueArr) {
+                foreach ($valueArr as $value) {
+                    if ($value_to_remove != null && !in_array($value,$value_to_remove)) {
+                        array_push($delfault_cols,$value);
+                    }
+                }
+            }
 
-            // magicstring($products_array);
+            $delfault_cols = array_merge($delfault_cols,$custom_attributes);
+            $merged_array1 = [];
 
-            // return;
+            foreach ($delfault_cols as $key => $cols) {
+                $merged_array1[$cols] = $cols;
+            }
+
+            $merged_array = [$merged_array1];
+
 
             $reseller_group = Group::whereUserId(auth()->id())->where('name',"Reseller")->first();
             $vip_group = Group::whereUserId(auth()->id())->where('name',"VIP")->first();
-            foreach($products as $pkey => $product)
-            {
+
+
+
+            foreach($products as $pkey => $product){
+
                 $additional_images_tmp = [];
                 $additional_images = [];
                 $usi = UserShopItem::whereUserId(auth()->id())->where('product_id',$product->id)->latest()->first();
@@ -2651,6 +2665,7 @@ class NewBulkController extends Controller
                     $carton_height = null;
                     $Carton_Dimensions_unit = null;
                 }
+
                 if($product->is_publish == 0){
                     $usi->update([
                         'is_published' => 0
@@ -2665,6 +2680,15 @@ class NewBulkController extends Controller
 
                 $additional_images = implode("^^",$additional_images_tmp);
 
+
+                // Getting Custom Input Values
+                $custom_fields_value = [];
+                foreach ($custom_fields_Name as $keyIndex => $fields_Name) {
+                    $FieldValue = CustomFields::where('product_id',$product->id)->where('relatation_name',$custom_fields_id[$keyIndex])->first();
+                    $custom_fields_value[$fields_Name] = $FieldValue->value ?? '';
+                }
+
+
                 // $common_attribute = ['Colour','Size','Material'];
                 $color_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',1)->groupBy('attribute_value_id')->pluck('attribute_value_id');
 
@@ -2672,7 +2696,6 @@ class NewBulkController extends Controller
 
                 $material_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',3)->groupBy('attribute_value_id')->pluck('attribute_value_id');
 
-                $extraInfoData = ProductExtraInfo::where('product_id',$product->id)->first();
 
                 $color_Val = [];
                 if ($color_array != null) {
@@ -2704,114 +2727,103 @@ class NewBulkController extends Controller
                 }
 
 
-                $PRODUCT_ATTRIBUTE_ARRAY = [];
-                if ($custom_attribute != null) {
-                    foreach ($custom_attribute as $attributes) {
-                        $id = getAttributeIdByName($attributes,auth()->id());
-
-                        $attribute_array = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$id)->groupBy('attribute_value_id')->pluck('attribute_value_id');
-
-                        $ashu = [];
-                        if ($attribute_array != null) {
-                            foreach ($attribute_array as $key => $value) {
-                                $ashu[$key] = getAttruibuteValueById($value)->attribute_value;
-                            }
-                        }else{
-                            $ashu = '';
-                        }
-
-                        $PRODUCT_ATTRIBUTE_ARRAY[$attributes] = implode("^^",$ashu);
+                $extraInfoData = ProductExtraInfo::where('product_id',$product->id)->first();
+                $custom_attributes_value = [];
+                foreach ($custom_attributes as $key => $value) {
+                    $attr_info = getAttributeIdByName($value,$user_id->id);
+                    if ($attr_info == null) {
+                        $attr_info = getAttributeIdByName($value);
+                    }
+                    $info = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$attr_info)->first();
+                    if ($info != null) {
+                        $custom_attributes_value[$value] = getAttruibuteValueById($info->attribute_value_id)->attribute_value ?? '';
+                    }else{
+                        $custom_attributes_value[$value] = '';
                     }
                 }
 
-
-                $allowed_array = ['Yes','YES','yes',1,true,'Hn'];
-
-                $products_array[] = array(
-                    'Id' => $product->id,
-                    "Model Code"=> $product->model_code,
-                    "Global Category"=> $product->category->name ?? "",
-                    "Global Sub-category"=>$product->subcategory->name ?? "",
-                    'Cust_tag_group' =>$extraInfoData->Cust_tag_group ?? '',
-                    "Image_main"=> isset($product->medias[0]) ? ($product->medias[0]->file_name ?? "") : null,
-                    "image_name_front"=>isset($product->medias[1]) ? ($product->medias[1]->file_name ?? ""): null,
-                    "image_name_back"=>isset($product->medias[2]) ? ($product->medias[2]->file_name ?? ""): null,
-                    "image_name_side1"=>isset($product->medias[3]) ? ($product->medias[3]->file_name ?? ""): null,
-                    "image_name_side2"=>isset($product->medias[4]) ? ($product->medias[4]->file_name ?? ""): null,
-                    "image_name_poster"=>isset($product->medias[5]) ? ($product->medias[5]->file_name ?? ""): null,
-                    "Additional Image Use ^^" => $additional_images,
-                    "Product Name"=> $product->title ?? "",
-                    // "Video URL"=>$product->video_url ?? '',
-                    'Description' =>$product->description ?? '',
-                    'search_keywords' => $product->search_keywords ?? '',
-                    'brand_name' => $extraInfoData->brand_name ?? '',
+                $merged_array2 = [
+                    'id' => $product->id,
+                    'Model_Code' => $product->model_code,
+                    'Product_name' => $product->title ?? "",
+                    'Category' => $product->category->name ?? "",
+                    'Sub_Category' => $product->subcategory->name ?? "",
+                    'Group_ID' => $extraInfoData->Cust_tag_group ?? '',
                     'Base_currency' => $product->base_currency ?? 'INR',
-                    'Selling Price_Unit' => $product->selling_price_unit ?? '',
-                    "Customer_Price_without_GST"=> $usi->price ?? "",
-                    // "Shop_Price_VIP_Customer"=> $vip_group_product->price ?? "",
-                    // "Shop_Price_Reseller"=> $reseller_group_product->price ?? "",
-                    "mrp Incl tax"=>$product->mrp,
-                    "HSN Tax"=>$product->hsn,
-                    "HSN_Percnt"=>$product->hsn_percent,
-                    // 'allow_resellers' => (in_array(($extraInfoData->allow_resellers ?? 'No'),$allowed_array) ? 'Yes' : 'No') ?? 'No',
-                    // 'Publish (it will be 0 for unpublish or 1 for publish)' => (in_array($product->is_publish,$allowed_array) ? "Yes" : "No") ?? "No" ,
-                    // 'Exclusive' => (in_array($product->exclusive,$allowed_array) ? 'Yes' : 'No') ?? 'No',
-                    'exclusive_buyer_name' => $extraInfoData->exclusive_buyer_name ?? '',
-                    'collection_name' => $extraInfoData->collection_name ?? '',
-                    'season_month' => $extraInfoData->season_month ?? '',
-                    'season_year' => $extraInfoData->season_year ?? '',
-                    // 'sample_available' => (in_array(($extraInfoData->sample_available ?? 'No'),$allowed_array) ? "Yes" : 'No') ?? 'No',
-                    'sample_year' => $extraInfoData->sample_year ?? '',
-                    'sample_month' => $extraInfoData->sample_month ?? '',
-                    'sampling_time' => $extraInfoData->sampling_time ?? '',
-                    'CBM' => $extraInfoData->CBM ?? '',
-                    'production_time' => $extraInfoData->production_time ?? '',
-                    'MBQ' => $extraInfoData->MBQ ?? '',
-                    'MBQ_unit' => $extraInfoData->MBQ_unit ?? '',
-                    'remarks' => $extraInfoData->remarks ?? '',
-                    'vendor_sourced_from' => $extraInfoData->vendor_sourced_from ?? '',
-                    'vendor_price' => $extraInfoData->vendor_price ?? '',
-                    'product_cost_unit' => $extraInfoData->product_cost_unit ?? '',
-                    'vendor_currency' => $extraInfoData->vendor_currency ?? '',
-                    'sourcing_year' => $extraInfoData->sourcing_year ?? '',
-                    'sourcing_month' => $extraInfoData->sourcing_month ?? '',
-                    'Gross weight' => $gross_weight,
-                    'Net weight' =>$weight,
-                    'weight_unit' =>$unit,
-                    'Product length' =>$length,
-                    'Product width' =>$width,
-                    'Product height' =>$height,
-                    'Dimensions_unit' =>$length_unit,
-                    'Carton length' => $carton_length,
-                    'Carton width' => $carton_width,
-                    'Carton height' => $carton_height,
-                    'Carton_Dimensions_unit' => $Carton_Dimensions_unit,
-                    'standard_carton_pcs' =>$standard_carton,
-                    'carton_weight_actual' =>$carton_weight,
-                    'unit' =>$carton_unit,
-                    // 'artwork_url' => $product->artwork_url,
-                    'Color' => implode("^^",$color_Val) ?? '',
-                    'Size' => implode("^^",$size_Val) ?? '',
-                    "Material" => implode("^^",$material_Val) ?? '',
-                );
+                    'Selling_Price_Unit' => $product->selling_price_unit ?? '',
+                    'Customer_Price_without_GST' => '',
+                    'mrpIncl_tax' => $product->mrp,
+                    'Brand_Name' => $extraInfoData->brand_name ?? '',
+                    'HSN_Code' => $product->hsn,
+                    'HSN_Percnt' => $product->hsn_percent,
+                    'Search_keywords' => $product->search_keywords ?? '',
+                    'description' => $product->description ?? '',
+                    'Sample_Year' => $extraInfoData->sample_year ?? '',
+                    'Sample_Month' => $extraInfoData->sample_month ?? '',
+                    'Sampling_time' => $extraInfoData->sampling_time ?? '',
+                    'Exclusive_Buyer_Name' => $extraInfoData->exclusive_buyer_name ?? '',
+                    'Theme_Collection_Name' => $extraInfoData->collection_name ?? '',
+                    'Season_Month' => $extraInfoData->season_month ?? '',
+                    'Theme_Collection_Year' => $extraInfoData->season_year ?? '',
+                    // Custom Inputs
+                    'Image_main' => isset($product->medias[0]) ? ($product->medias[0]->file_name ?? "") : null,
+                    'image_name_front' => isset($product->medias[1]) ? ($product->medias[1]->file_name ?? ""): null,
+                    'image_name_back' => isset($product->medias[2]) ? ($product->medias[2]->file_name ?? ""): null,
+                    'image_name_side1' => isset($product->medias[3]) ? ($product->medias[3]->file_name ?? ""): null,
+                    'image_name_side2' => isset($product->medias[4]) ? ($product->medias[4]->file_name ?? ""): null,
+                    'image_name_poster' => isset($product->medias[5]) ? ($product->medias[5]->file_name ?? ""): null,
+                    'Additional_Image_Use' => $additional_images ?? '',
+                    'Gross_weight' =>  $gross_weight ?? '',
+                    'Net_weight' => $weight ?? '',
+                    'Weight_unit' => $unit ?? '',
+                    'Product_length' => $length ?? '',
+                    'Product_width' => $width ?? '',
+                    'Product_height' => $height ?? '',
+                    'Dimensions_unit' => $length_unit ?? '',
+                    'Carton_length' => $carton_length ?? '',
+                    'Carton_width' => $carton_width ?? '',
+                    'Carton_height' => $carton_height ?? '',
+                    'Carton_Dimensions_unit' => $Carton_Dimensions_unit ?? '',
+                    'standard_carton_pcs' => $standard_carton ?? '',
+                    'carton_weight_actual' => $carton_weight ?? '',
+                    'unit' => $carton_unit ?? '',
+                    'Vendor_Sourced_from' =>  $extraInfoData->vendor_sourced_from ?? '',
+                    'Vendor_price' =>  $extraInfoData->vendor_price ?? '',
+                    'Product_Cost_Unit' =>  $extraInfoData->product_cost_unit ?? '',
+                    'Vendor_currency' =>  $extraInfoData->vendor_currency ?? '',
+                    'Sourcing_Year' =>  $extraInfoData->sourcing_year ?? '',
+                    'Sourcing_month' =>  $extraInfoData->sourcing_month ?? '',
+                    'Remarks' =>  $extraInfoData->remarks ?? '',
+
+                    // -- Properties Goes Here....
+                ];
+
+                $merged_array2 = array_merge($merged_array2,$custom_fields_value);
+                $merged_array2 = array_merge($merged_array2,$custom_attributes_value);
 
 
-                foreach ($PRODUCT_ATTRIBUTE_ARRAY as $index => $value) {
-                    array_push($products_array[$pkey+1],$value);
+                foreach ($merged_array2 as $keyHeader2 => $header2) {
+                    if (in_array($keyHeader2,$delfault_cols)) {
+                        $index = array_search($keyHeader2,$delfault_cols);
+                        $merged_array[$pkey+1][$index] = $header2;
+                    }else{
+                        echo "Not Found".$keyHeader2.newline();
+                    }
+                    ksort($merged_array[$pkey+1]);
                 }
             }
 
+            $this->productBulkExport($merged_array,$filename);
 
+            return back()->with('success',' Export Excel File Successfully.');
 
-            // magicstring(array_keys($products_array[1]));
-
-            $this->productBulkExport($products_array);
-            // return back()->with('success',' Export Excel File Successfully');
-            }
         } catch (\Throwable $th) {
             throw $th;
+            return back()->with('error','Something Went Wrong.');
         }
+
     }
+
 
     public function productBulkUpdate(Request $request) {
 
@@ -2831,126 +2843,49 @@ class NewBulkController extends Controller
                 $rows[] = $cells;
             }
 
+            $header = array_slice($rows,2)[0];
             $rows = array_slice($rows,3);
             $master = $rows;
-
             $user = auth()->user();
             $custom_attributes = json_decode($user->custom_attriute_columns);
-
             $allowArray = ['Yes','yes','YES',1,true,"TRUE","True"];
             $debuging_mode = 0;
-
             $Array_saprator = "^^";
 
-            $ProductidIndex = 0;
-            $Model_CodeIndex = 1;
-            $CategoryIndex = 2;
-            $Sub_CategoryIndex = 3;
-            $GroupIDIndex = 4;
-            $ImageMainIndex = 5;
-            $ImageFrontIndex = 6;
-            $ImageBackIndex  = 7;
-            $ImageSide1Index = 8;
-            $ImageSide2Index = 9;
-            $ImagePosterIndex = 10;
-            $AdditionalImageIndex = 11;
-            $ProductnameIndex = 12;
-            $VideoURLIndex = 13;
-            $descriptionIndex = 14;
-            $SearchkeywordsIndex = 15;
-            $BrandNameIndex = 16;
-            $Base_currencyIndex = 17;
-            $SellingPrice_UnitIndex = 18;
-            $Customer_Price_without_GSTIndex = 19;
-            $Shop_Price_VIP_CustomerIndex = 20;
-            $Shop_Price_ResellerIndex = 21;
-            $mrpIncltaxIndex = 22;
-            $HSNTaxIndex = 23;
-            $HSN_PercntIndex = 24;
-            // $Allow_ResellersIndex = 25;
-            // $Live_ActiveINdex = 26;
-            $Copyright_Exclusive_itemIndex = 25;
-            $ExclusiveBuyerNameIndex = 26;
-            $ThemeCollectionNameIndex = 27;
-            $Season_MonthIndex = 28;
-            $ThemeCollectionYearIndex = 29;
-            // $SampleStockavailable = 32;
-            $SampleYearIndex = 30;
-            $SampleMonthIndex = 31;
-            $SamplingtimeIndex = 32;
-            $CBMIndex = 33;
-            $ProductiontimeIndex = 34;
-            $MBQIndex = 35;
-            $MBQ_unitsIndex = 36;
-            $RemarksINdex = 37;
-            $VendorSourcedfromIndex = 38;
-            $VendorpriceIndex = 39;
-            $ProductCost_UnitIndex = 40;
-            $VendorcurrencyIndex = 41;
-            $SourcingYearIndex = 42;
-            $SourcingmonthIndex = 43;
-            $GrossweightIndex = 44;
-            $Netweightindex = 45;
-            $Weight_unitIndex = 46;
-            $ProductlengthIndex = 47;
-            $ProductwidthIndex = 48;
-            $ProductheightIndex = 49;
-            $Dimensions_unitIndex = 50;
-            $CartonlengthIndex = 51;
-            $CartonwidthIndex = 52;
-            $CartonheightIndex = 53;
-            $Carton_Dimensions_unitIndex = 54;
-            $standard_carton_pcsOIndex = 55;
-            $carton_weight_actualIndex = 56;
-            $unitIndex = 57;
-            $artwork_urlIndex = 58;
-
-
-
-
-
-            // * Start: Marging Both Array Custom And Default Attributes
-            $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
-            $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
-            $num = end($delfault_cols) +1;
-            $new_custom_attribute = [];
-            foreach ($user_custom_col_list as $key => $value) {
-                $new_custom_attribute += [$value => $num];
-                $num++;
+            // ` Putting up variable in Their Index
+            foreach ($header as $index => $columns) {
+                ${'col_'.$columns} = $index;
             }
 
-            // ` Col LIst in Form of Object
-            $col_list = (object) array_merge((array)$delfault_cols,$new_custom_attribute);
-            // * End: Marging Both Array Custom And Default Attributes
 
-            // ! Validating Loop
-            foreach ($master as $key => $temp_item) {
-                $row = $key+4;
+            // ` Validating Loop Start
 
-                // ! Validate Product Id
+            foreach ($master as $tmp_key => $tmp_item) {
+                $row = $tmp_key + 4;
+                // echo "Row No: ".$row.newline();
 
-                $chk_product = Product::whereId($temp_item[$ProductidIndex])->where('user_id',$user->id)->get();
-
-                if (count($chk_product) == 0) {
-                    return back()->with('error',"Product Doesn't Exist");
+                if (${'col_Model_Code'} == null) {
+                    return back()->with('error',"Model Code Column is Required");
                 }
 
-                // ! Checking Category
-                if ($temp_item[$CategoryIndex] == null) {
-                    return back()->with('error',"category is Blank At Row $row");
+                if (${'col_Product_name'} == null) {
+                    return back()->with('error',"Product Name Column is Required");
+                }
+
+                if (${'col_Category'} == null) {
+                    return back()->with('error',"Category Column is Required");
                 }else{
-                    $chk = Category::where('name',$temp_item[$CategoryIndex])->get();
+                    $chk = Category::where('name',$tmp_item[${'col_Category'} ])->get();
                     if (count($chk) == 0) {
                         return back()->with('error',"category is not Exist At Row $row");
                     }
                     $categoryID = $chk[0]->id;
                 }
 
-                // ! Checking Sub Category
-                if ($temp_item[$Sub_CategoryIndex] == null) {
-                    return back()->with('error',"Sub category is Blank At Row $row");
+                if (${'col_Sub_Category'} == null) {
+                    return back()->with('error',"Sub Category Column is Required");
                 }else{
-                    $chk = Category::where('name',$temp_item[$Sub_CategoryIndex])->where('parent_id',$categoryID)->get();
+                    $chk = Category::where('name',$tmp_item[${'col_Sub_Category'}])->where('parent_id',$categoryID)->get();
 
                     if (count($chk) == 0) {
                         return back()->with('error',"Sub category is not Exist At Row $row");
@@ -2960,473 +2895,389 @@ class NewBulkController extends Controller
 
 
                 // ` Getting Custom Attribute
-                // checking Custom Attribute Values In database
+
                 if ($custom_attributes != null) {
-                    foreach ($custom_attributes as $key => $custom_attribute) {
-                        echo "Property Name: ".$custom_attribute.newline();
-                        // * Getting Column Number
-                        $tmp_col = $col_list->{$custom_attribute} - 1;
+                    foreach ($custom_attributes as $index => $custom_attribute) {
 
-                        // ! Checking Value if Column is Not Blank
-                        if ($temp_item[$tmp_col] != null) {
-                            if (count(explode($Array_saprator,$temp_item[$tmp_col])) > 1 ) {
-                                return back()->with('error',"Product Sapration is Not Allowed in Product Update.");
-                            }
+                        // Getting Attribute Records from DB....
+                        $attr_Record = getAttributeIdByName($custom_attribute,$user->id,'whole');
+                        if ($attr_Record == null) {
+                            $attr_Record = getAttributeIdByName($custom_attribute,null,'whole');
+                        }
 
-                            $attribute_record_default = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
-                            $attribute_record_custom = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user->id)->first();
-                            if ($attribute_record_default != null) {
-                                $attribute_record = $attribute_record_default;
-                            }else{
-                                $attribute_record = $attribute_record_custom;
-                            }
+                        if ($attr_Record == null) {
+                            return back()->with('error',"Custom Attribute $custom_attribute is not Exist At Row $row");
+                        }
+
+                        // Getting Attribute Value Records from DB....
+                        $search_value = $tmp_item[${'col_'.$custom_attribute}];
+
+                        // ` Converting Input value to Proper case
+                        $search_value = strtolower($search_value);
+                        $search_value = ucwords($search_value);
+
+                        if ($search_value != null) {
+                            $attr_value_Record = ProductAttributeValue::where('parent_id',$attr_Record->id)->where('attribute_value',$search_value)->first();
+                            if ($attr_value_Record == null) {
+                                if ($attr_Record->value == 'any_value') {
+                                    ProductAttributeValue::create([
+                                        'parent_id' => $attr_Record->id,
+                                        'user_id' => auth()->id() ?? null,
+                                        'attribute_value' => $search_value,
+                                    ]);
+                                }elseif ($attr_Record->value == 'uom') {
+                                    $pattern_without_space = '/^(\d+)x(\d+)x(\d+)x(\w+)$/';
+                                    $pattern_decimal_without_space = '/^(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\w+)$/';
+                                    $pattern_with_space = '/^(\d+)\s*X\s*(\d+)\s*X\s*(\d+)\s*X\s*(\w+)$/';
+                                    $pattern_decimal_with_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
 
 
-                            if ($attribute_record == null) {
-                                return back()->with("error","Oops Something Went wrong.Try again Later!!");
-                            }else{
-                                $search_value = $temp_item[$tmp_col];
-
-                                // ` Converting Input value to Proper case
-                                $search_value = strtolower($search_value);
-                                $search_value = ucwords($search_value);
-
-                                $attribute_value_record = ProductAttributeValue::where('parent_id',$attribute_record->id)->where('attribute_value',$search_value)->first();
-                                if ($attribute_value_record == null) {
-
-                                    // -- Making Copy of Variable
-                                    $attribute_data = $attribute_record;
-
-                                    // return back()->with('error',"$search_value Does Not Exist in $custom_attribute Column  at Row $row.");
-                                    echo newline(3);
-
-                                    if ($attribute_data->value == 'any_value') {
-                                        magicstring($search_value);
+                                    if (preg_match($pattern_with_space, $search_value) || preg_match($pattern_decimal_with_space, $search_value) ) {
                                         ProductAttributeValue::create([
-                                            'parent_id' => $attribute_data->id,
+                                            'parent_id' => $attr_Record->id,
                                             'user_id' => auth()->id() ?? null,
                                             'attribute_value' => $search_value,
                                         ]);
-                                    }elseif ($attribute_data->value == 'uom') {
-                                        $pattern_without_space = '/^(\d+)x(\d+)x(\d+)x(\w+)$/';
-                                        $pattern_decimal_without_space = '/^(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\w+)$/';
-                                        $pattern_with_space = '/^(\d+)\s*X\s*(\d+)\s*X\s*(\d+)\s*X\s*(\w+)$/';
-                                        $pattern_decimal_with_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
-
-
-                                        if (preg_match($pattern_with_space, $search_value) || preg_match($pattern_decimal_with_space, $search_value) ) {
-                                            ProductAttributeValue::create([
-                                                'parent_id' => $attribute_data->id,
-                                                'user_id' => auth()->id() ?? null,
-                                                'attribute_value' => $search_value,
-                                            ]);
-                                        }elseif (preg_match($pattern_without_space, $search_value) || preg_match($pattern_decimal_without_space, $search_value)) {
-                                            ProductAttributeValue::create([
-                                                'parent_id' => $attribute_data->id,
-                                                'user_id' => auth()->id() ?? null,
-                                                'attribute_value' => $search_value,
-                                            ]);
-                                        }
-                                        else {
-                                            $msg = "The $search_value does not match the pattern. The pattern should be L X B X H X UNIT. In column $attribute_data->name at row $row.";
-                                            return back()->with('error',$msg);
-                                        }
-                                    }else{
-                                        return back()->with('error',"$search_value Not Exist in column $attribute_data->name At Row $row");
+                                    }elseif (preg_match($pattern_without_space, $search_value) || preg_match($pattern_decimal_without_space, $search_value)) {
+                                        ProductAttributeValue::create([
+                                            'parent_id' => $attr_Record->id,
+                                            'user_id' => auth()->id() ?? null,
+                                            'attribute_value' => $search_value,
+                                        ]);
+                                    }
+                                    else {
+                                        $msg = "The $search_value does not match the pattern. The pattern should be L X B X H X UNIT. In column $attr_Record->name at row $row.";
+                                        return back()->with('error',$msg);
                                     }
 
+                                }else{
+                                    return back()->with('error',"Custom Attribute Value $search_value is not Exist At Row $row");
+                                }
 
-                                } // of Main IF To Check Value
+
+
                             }
-
                         }
 
                     }
                 }
-
             }
 
+            // ` Validating Loop End
 
-            // return;
+            // ` Loop For Uploading Data start
 
-            // ! Updating Loop
-            foreach ($master as $key => $value) {
+            foreach ($master as $key => $item) {
                 $row = $key + 4;
+                echo "Row No: ".$row.newline();
 
-                $categoryID  = '';
-                $SubCategoryId = '';
+                // Getting Product Records
+                $product = Product::where('id',$item[${'col_id'}])->first();
+                // Getting Product Extra Info
+                $product_extra_info = ProductExtraInfo::where('product_id',$item[${'col_id'}])->first();
+                // Getting Product Custom Fields
+                $custom_fields = CustomFields::where('product_id',$item[${'col_id'}])->get();
+
+                // Getting New Category
+                $chk = Category::where('name',$item[${'col_Category'} ])->get();
+                if (count($chk) == 0) {
+                    return back()->with('error',"category is not Exist At Row $row");
+                }
+                $categoryID = $chk[0]->id;
+
+                $chk = Category::where('name',$item[${'col_Sub_Category'}])->where('parent_id',$categoryID)->get();
+
+                if (count($chk) == 0) {
+                    return back()->with('error',"Sub category is not Exist At Row $row");
+                }
+                $SubCategoryId = $chk[0]->id;
 
                 $carton_details = [
-                    'standard_carton' => $value[$standard_carton_pcsOIndex],
-                    'carton_weight' => $value[$carton_weight_actualIndex],
-                    'carton_unit' => $value[$unitIndex] ?? '',
-                    'carton_length' => $value[$CartonlengthIndex],
-                    'carton_width' => $value[$CartonwidthIndex],
-                    'carton_height' => $value[$CartonheightIndex],
-                    'Carton_Dimensions_unit' => $value[$Carton_Dimensions_unitIndex],
+                    'standard_carton' => $item[${'col_standard_carton_pcs'}],
+                    'carton_weight' => $item[${'col_carton_weight_actual'}],
+                    'carton_unit' => $item[${'col_unit'}] ?? '',
+                    'carton_length' => $item[${'col_Carton_length'}],
+                    'carton_width' => $item[${'col_Carton_width'}],
+                    'carton_height' => $item[${'col_Carton_height'}],
+                    'Carton_Dimensions_unit' => $item[${'col_Carton_Dimensions_unit'}],
                  ];
+
                  $shipping = [
-                     'height' => $value[$ProductheightIndex],
-                     'gross_weight' => $value[$GrossweightIndex],
-                     'weight' => $value[$Netweightindex],
-                     'width' => $value[$ProductwidthIndex],
-                     'length' => $value[$ProductlengthIndex],
-                     'unit' => $value[$Weight_unitIndex],
-                     'length_unit' => $value[$Dimensions_unitIndex],
+                     'height' => $item[${'col_Product_height'}],
+                     'gross_weight' => $item[${'col_Gross_weight'}],
+                     'weight' => $item[${'col_Net_weight'}],
+                     'width' => $item[${'col_Product_width'}],
+                     'length' => $item[${'col_Product_length'}],
+                     'unit' => $item[${'col_Weight_unit'}],
+                     'length_unit' => $item[${'col_Dimensions_unit'}],
                  ];
 
                 //  magicstring($shipping);
                 //  return;
-                 $carton_details = json_encode($carton_details);
-                 $shipping = json_encode($shipping);
+                $carton_details = json_encode($carton_details);
+                $shipping = json_encode($shipping);
 
-
-
-                // Checking Category
-                if ($value[$CategoryIndex] == null) {
-                    return back()->with('error',"category is Blank At Row $row");
-                }else{
-                    $chk = Category::where('name',$value[$CategoryIndex])->get();
-                    if (count($chk) == 0) {
-                        return back()->with('error',"category is not Exist At Row $row");
-                    }
-                    $categoryID = $chk[0]->id;
-                }
-
-
-                if ($value[$Sub_CategoryIndex] == null) {
-                    return back()->with('error',"Sub category is Blank At Row $row");
-                }else{
-                    $chk = Category::where('name',$value[$Sub_CategoryIndex])->where('parent_id',$categoryID)->get();
-
-                    if (count($chk) == 0) {
-                        return back()->with('error',"Sub category is not Exist At Row $row");
-                    }
-
-                    $SubCategoryId = $chk[0]->id;
-                }
-
-                // Extra Info
-                ProductExtraInfo::where('product_id',$value[$ProductidIndex])->update([
-                    // 'allow_resellers' =>  $value[$Allow_ResellersIndex] ?? '0',
-                    'exclusive_buyer_name' => $value[$ExclusiveBuyerNameIndex] ?? '',
-                    'collection_name' => $value[$ThemeCollectionNameIndex] ?? '',
-                    'season_month' => $value[$Season_MonthIndex] ?? '',
-                    'season_year' => $value[$ThemeCollectionYearIndex] ?? '',
-                    // 'sample_available' => $value[$SampleStockavailable] ?? '',
-                    'sample_year' => $value[$SampleYearIndex] ?? '',
-                    'sample_month' => $value[$SampleMonthIndex] ?? '',
-                    'sampling_time' => $value[$SamplingtimeIndex] ?? '',
-                    'sourcing_month' => $value[$SourcingmonthIndex] ?? '',
-                    'remarks' => $value[$RemarksINdex] ?? '',
-                    'production_time' => $value[$ProductiontimeIndex] ?? '',
-                    'CBM' => $value[$CBMIndex] ?? '',
-                    'MBQ' => $value[$MBQIndex] ?? '',
-                    'MBQ_unit' => $value[$MBQ_unitsIndex] ?? '',
-                    'vendor_sourced_from' => $value[$VendorSourcedfromIndex] ?? '',
-                    'vendor_price' => $value[$VendorpriceIndex] ?? '',
-                    'product_cost_unit' => $value[$ProductCost_UnitIndex] ?? '',
-                    'vendor_currency' => $value[$VendorcurrencyIndex] ?? '',
-                    'sourcing_year' => $value[$SourcingYearIndex] ?? '',
-                    'brand_name' => $value[$BrandNameIndex] ?? '',
-                    'Cust_tag_group' => $value[$GroupIDIndex] ?? '',
+                // ` Extra Info Update
+                ProductExtraInfo::where('product_id',$item[${'col_id'}])->update([
+                    'allow_resellers' => 'no',
+                    'exclusive_buyer_name' => $item[${'col_Exclusive_Buyer_Name'}] ?? '',
+                    'collection_name' => $item[${'col_Theme_Collection_Name'}] ?? '',
+                    'season_month' => $item[${'col_Season_Month'}] ?? '',
+                    'season_year' => $item[${'col_Theme_Collection_Year'}] ?? '',
+                    'sample_available' => '0',
+                    'sample_year' => $item[${'col_Sample_Year'}] ?? '',
+                    'sample_month' => $item[${'col_Sample_Month'}] ?? '',
+                    'sampling_time' => $item[${'col_Sampling_time'}] ?? '',
+                    'remarks' => $item[${'col_Remarks'}] ?? '',
+                    'vendor_sourced_from' => $item[${'col_Vendor_Sourced_from'}] ?? '',
+                    'vendor_price' => $item[${'col_Vendor_price'}] ?? '',
+                    'product_cost_unit' => $item[${'col_Product_Cost_Unit'}] ?? '',
+                    'vendor_currency' => $item[${'col_Exclusive_Buyer_Name'}] ?? '',
+                    'sourcing_year' => $item[${'col_Sourcing_Year'}] ?? '',
+                    'sourcing_month' => $item[${'col_Sourcing_month'}] ?? '',
+                    'brand_name' => $item[${'col_Brand_Name'}],
+                    'Cust_tag_group' => $item[${'col_Group_ID'}],
                 ]);
 
-                // !! Updating Attribute Value !!
-                // checking Custom Attribute Values In database
+
+                // ` Getting Custom Attribute   z
                 if ($custom_attributes != null) {
-                    foreach ($custom_attributes as $key => $custom_attribute) {
-                        echo $custom_attribute.newline();
-                        // * Getting Column Number
-                        $tmp_col = $col_list->{$custom_attribute} - 1;
+                    foreach ($custom_attributes as $index => $custom_attribute) {
 
-                        // ! Checking Value if Column is Not Blank
-                        if ($value[$tmp_col] != null) {
-                            if (count(explode($Array_saprator,$value[$tmp_col])) > 1 ) {
-                                return back()->with('error',"Product Sapration is Not Allowed in Product Update.");
-                            }
-
-                            $attribute_record_default = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
-                            $attribute_record_custom = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user->id)->first();
-                            if ($attribute_record_default != null) {
-                                $attribute_record = $attribute_record_default;
-                            }else{
-                                $attribute_record = $attribute_record_custom;
-                            }
-
-
-                            if ($attribute_record == null) {
-                                // return back()->with("error","Oops Something Went wrong.Try again Later!!");
-
-                            }else{
-                                $search_value = $value[$tmp_col];
-                                $attribute_value_record = ProductAttributeValue::where('parent_id',$attribute_record->id)->where('attribute_value',$search_value)->first();
-
-                                if ($attribute_value_record == null) {
-                                    return back()->with('error',"$search_value Does Not Exist in $custom_attribute Column  at Row $row.");
-                                }
-
-                                $chk = ProductExtraInfo::where('product_id',$value[$ProductidIndex])->where('attribute_id',$attribute_record->id)->get();
-
-
-                                if (count($chk) != 0) {
-                                    ProductExtraInfo::where('product_id',$value[$ProductidIndex])->where('attribute_id',$attribute_record->id)->update([
-                                        'attribute_value_id' => $attribute_value_record->id,
-                                    ]);
-                                }else{
-                                    ProductExtraInfo::create([
-                                        'product_id' => $value[$ProductidIndex],
-                                        // 'allow_resellers' =>  $value[$Allow_ResellersIndex] ?? 'No',
-                                        'exclusive_buyer_name' => $value[$ExclusiveBuyerNameIndex] ?? '',
-                                        'collection_name' => $value[$ThemeCollectionNameIndex] ?? '',
-                                        'season_month' => $value[$Season_MonthIndex] ?? '',
-                                        'season_year' => $value[$ThemeCollectionYearIndex] ?? '',
-                                        // 'sample_available' => $value[$SampleStockavailable] ?? '',
-                                        'sample_year' => $value[$SampleYearIndex] ?? '',
-                                        'sample_month' => $value[$SampleMonthIndex] ?? '',
-                                        'sampling_time' => $value[$SamplingtimeIndex] ?? '',
-                                        'sourcing_month' => $value[$SourcingmonthIndex] ?? '',
-                                        'remarks' => $value[$RemarksINdex] ?? '',
-                                        'production_time' => $value[$ProductiontimeIndex] ?? '',
-                                        'CBM' => $value[$CBMIndex] ?? '',
-                                        'MBQ' => $value[$MBQIndex] ?? '',
-                                        'MBQ_unit' => $value[$MBQ_unitsIndex] ?? '',
-                                        'vendor_sourced_from' => $value[$VendorSourcedfromIndex] ?? '',
-                                        'vendor_price' => $value[$VendorpriceIndex] ?? '',
-                                        'product_cost_unit' => $value[$ProductCost_UnitIndex] ?? '',
-                                        'vendor_currency' => $value[$VendorcurrencyIndex] ?? '',
-                                        'sourcing_year' => $value[$SourcingYearIndex] ?? '',
-                                        'brand_name' => $value[$BrandNameIndex] ?? '',
-                                        'Cust_tag_group' => $value[$GroupIDIndex] ?? '',
-                                        'attribute_value_id' => $attribute_value_record->id,
-                                        'attribute_id' => $attribute_record->id
-                                    ]);
-                                }
-                            }
-
+                        // Getting Attribute Records from DB....
+                        $attr_Record = getAttributeIdByName($custom_attribute,$user->id,'whole');
+                        if ($attr_Record == null) {
+                            $attr_Record = getAttributeIdByName($custom_attribute,null,'whole');
                         }
 
+                        if ($attr_Record == null) {
+                            return back()->with('error',"Custom Attribute $custom_attribute is not Exist At Row $row");
+                        }
+
+                        // Getting Attribute Value Records from DB....
+                        $search_value = $item[${'col_'.$custom_attribute}];
+
+                        if($search_value != null){
+                            // ` Converting Input value to Proper case
+                            $search_value = strtolower($search_value);
+                            $search_value = ucwords($search_value);
+
+                            echo "Attribute Name: ".$search_value.newline();
+                            $checKinG_value = ProductExtraInfo::where('product_id',$item[${'col_id'}])->where('attribute_id',$attr_Record->id)->first();
+
+
+                            $attribute_value_record = ProductAttributeValue::where('attribute_value',$search_value)->where('parent_id',$attr_Record->id)->first();;
+
+                            if ($checKinG_value == null) {
+                                ProductExtraInfo::create([
+                                    'product_id' => $item[${'col_id'}],
+                                    'attribute_id' => $attr_Record->id,
+                                    'attribute_value_id' => $attribute_value_record->id,
+                                    'user_id' => auth()->id() ?? null,
+                                    'user_shop_id' => getShopDataByUserId(auth()->user()->id)->id ?? null,
+                                    'allow_resellers' => 'no',
+                                    'exclusive_buyer_name' => $item[${'col_Exclusive_Buyer_Name'}] ?? '',
+                                    'collection_name' => $item[${'col_Theme_Collection_Name'}] ?? '',
+                                    'season_month' => $item[${'col_Season_Month'}] ?? '',
+                                    'season_year' => $item[${'col_Theme_Collection_Year'}] ?? '',
+                                    'sample_available' => '0',
+                                    'sample_year' => $item[${'col_Sample_Year'}] ?? '',
+                                    'sample_month' => $item[${'col_Sample_Month'}] ?? '',
+                                    'sampling_time' => $item[${'col_Sampling_time'}] ?? '',
+                                    'remarks' => $item[${'col_Remarks'}] ?? '',
+                                    'vendor_sourced_from' => $item[${'col_Vendor_Sourced_from'}] ?? '',
+                                    'vendor_price' => $item[${'col_Vendor_price'}] ?? '',
+                                    'product_cost_unit' => $item[${'col_Product_Cost_Unit'}] ?? '',
+                                    'vendor_currency' => $item[${'col_Exclusive_Buyer_Name'}] ?? '',
+                                    'sourcing_year' => $item[${'col_Sourcing_Year'}] ?? '',
+                                    'sourcing_month' => $item[${'col_Sourcing_month'}] ?? '',
+                                    'brand_name' => $item[${'col_Brand_Name'}],
+                                    'Cust_tag_group' => $item[${'col_Group_ID'}],
+                                ]);
+                            }else{
+                                $checKinG_value->attribute_id = $attr_Record->id;
+                                $checKinG_value->attribute_value_id = $attribute_value_record->id;
+                                $checKinG_value->save();
+                            }
+                        }
                     }
                 }
 
-
-                // if (in_array($value[$SampleStockavailable],$allowArray)) {
-                //     $chk_inventory_exist = true;
-                // }else{
-                //     $chk_inventory_exist = 0;
-                // }
-                // $need_inventory = in_array($value[$SampleStockavailable],$allowArray) ? true : false ?? false;
-
-
-                // Product Info
-                $product_obj = Product::whereId($value[$ProductidIndex])->first();
-
-                Product::whereId($value[$ProductidIndex])->update(
+                Product::whereId($item[${'col_id'}])->update(
                 [
-                    'title' => $value[$ProductnameIndex] ?? '',
-                    'model_code' => $value[$Model_CodeIndex] ?? '',
+                    'title' => $item[${'col_Product_name'}] ?? '',
+                    'model_code' => $item[${'col_Product_name'}] ?? '',
                     'category_id' => $categoryID ?? '',
                     'sub_category' => $SubCategoryId ?? '',
-                    'description' => $value[$descriptionIndex] ?? '',
+                    'description' => $item[${'col_description'}] ?? '',
                     'carton_details' => $carton_details ?? '',
                     'shipping' => $shipping ?? '',
-                    // 'manage_inventory' => (in_array($value[$SampleStockavailable],$allowArray,true) ? 1 : 0 ) ?? 0,
-                    // 'is_publish' => (in_array($value[$Live_ActiveINdex],$allowArray,true) ? 1 : 0 ) ?? 0,
-                    'price' =>  $value[$Customer_Price_without_GSTIndex] ?? '',
-                    'min_sell_pr_without_gst' => $value[$Customer_Price_without_GSTIndex] ?? '',
-                    'hsn' => $value[$HSNTaxIndex] ?? '',
-                    'hsn_percent' => $value[$HSN_PercntIndex] ?? '',
-                    'mrp' => $value[$mrpIncltaxIndex] ?? '',
-                    'video_url' => $value[$VideoURLIndex] ?? '',
-                    'search_keywords' => $value[$SearchkeywordsIndex] ?? '',
-                    'artwork_url' => $value[$artwork_urlIndex] ?? '',
-                    'exclusive' => (in_array($value[$Copyright_Exclusive_itemIndex],$allowArray,true) ? 1 : 0) ?? 0,
-                    'base_currency' =>  $value[$Base_currencyIndex] ?? '',
-                    'selling_price_unit' => $value[$SellingPrice_UnitIndex] ?? '',
+                    'price' =>  $item[${'col_Customer_Price_without_GST'}] ?? '',
+                    'min_sell_pr_without_gst' => $item[${'col_Customer_Price_without_GST'}] ?? '',
+                    'hsn' => $item[${'col_HSN_Code'}] ?? '',
+                    'hsn_percent' => $item[${'col_HSN_Percnt'}] ?? '',
+                    'mrp' => $item[${'col_mrpIncl_tax'}] ?? '',
+                    'search_keywords' => $item[${'col_Search_keywords'}] ?? '',
+                    'exclusive' => 0,
+                    'base_currency' =>  $item[${'col_Base_currency'}] ?? '',
+                    'selling_price_unit' => $item[${'col_Selling_Price_Unit'}] ?? '',
                 ]);
 
-                // User Shop Item Info and Price Group
-                $usi = UserShopItem::whereUserId(auth()->id())->where('product_id',$value[$ProductidIndex])->first();
 
-                // echo $value[$ProductidIndex];
-
-                // magicstring($usi);
-                // return;
-
+                $usi = UserShopItem::whereUserId(auth()->id())->where('product_id',$item[${'col_id'}])->first();
                 $reseller_group = Group::whereUserId(auth()->id())->where('name',"Reseller")->first();
                 $vip_group = Group::whereUserId(auth()->id())->where('name',"VIP")->first();
-                $reseller_group_product = GroupProduct::where('group_id',$reseller_group->id ?? 0)->where('product_id',$value[$ProductidIndex])->first();
-                $vip_group_product = GroupProduct::where('group_id',$vip_group->id??0)->where('product_id',$value[$ProductidIndex])->first();
-                $chk_inventroy = Inventory::where('product_id',$value[$ProductidIndex])->where('user_id',auth()->id())->get();
-
-
-                // if (in_array($value[$SampleStockavailable],$allowArray)) {
-                //     if (count($chk_inventroy) == 0) {
-                //         // magicstring($request->all());
-                //         Inventory::create([
-                //             'user_shop_item_id' => $usi->id,
-                //             'product_id' => $value[$ProductidIndex],
-                //             'product_sku' => $product_obj->sku,
-                //             'user_id' => auth()->id(),
-                //             'stock' => 0,
-                //             'parent_id' => 0,
-                //             'prent_stock' => 0,
-                //         ]);
-                //     }else{
-                //         getinventoryByproductId($product_obj->id)->update(['status'=>1]);
-                //     }
-                // }else{
-                //     if (count($chk_inventroy) != 0) {
-                //         getinventoryByproductId($product_obj->id)->update(['status'=>0]);
-                //     }
-                // }
-
+                $reseller_group_product = GroupProduct::where('group_id',$reseller_group->id ?? 0)->where('product_id',$item[${'col_id'}])->first();
+                $vip_group_product = GroupProduct::where('group_id',$vip_group->id??0)->where('product_id',$item[${'col_id'}])->first();
+                $chk_inventroy = Inventory::where('product_id',$item[${'col_id'}])->where('user_id',auth()->id())->get();
                 if($usi){
-                    // $usi->is_published = (in_array($value[$Live_ActiveINdex],$allowArray) ? 1 : 0 ) ?? 0;
-                    $usi->price = $value[$Customer_Price_without_GSTIndex];
+                    $usi->is_published = 1;
+                    $usi->price = $item[${'col_Customer_Price_without_GST'}];
                     $usi->category_id = $categoryID;
                     $usi->sub_category_id = $SubCategoryId;
                     $usi->save();
                 }
 
                 if($reseller_group_product){
-                    $reseller_group_product->price = $value[$Shop_Price_ResellerIndex] ?? 0;
+                    $reseller_group_product->price = $item[${'col_mrpIncl_tax'}] ?? 0;
                     $reseller_group_product->save();
                 }
                 if($vip_group_product){
-                    $vip_group_product->price = $value[$Shop_Price_VIP_CustomerIndex] ?? 0;
+                    $vip_group_product->price = $item[${'col_mrpIncl_tax'}] ?? 0;
                     $vip_group_product->save();
                 }
-
-
-
+                $product_obj = Product::whereId($item[${'col_id'}])->first();
                 if(isset($product_obj->medias[0]) && $product_obj->medias[0]->id){
                     Media::whereId($product_obj->medias[0]->id)->update([
-                        'file_name' => $value[$ImageMainIndex],
-                        'path' => "storage/files/".auth()->id()."/".$value[$ImageMainIndex]
+                        'file_name' => $item[${'col_Image_main'}],
+                        'path' => "storage/files/".auth()->id()."/".$item[${'col_Image_main'}]
                     ]);
                 }else{
-                    if(isset($value[$ImageMainIndex])){
+                    if(isset($item[${'col_Image_main'}])){
                         $media = new Media();
                         $media->tag = "Product_Image";
                         $media->file_type = "Image";
                         $media->type = "Product";
                         $media->type_id = $product_obj->id;
-                        $media->file_name = $value[$ImageMainIndex];
-                        $media->path = "storage/files/".auth()->id()."/".$value[$ImageMainIndex];
-                        $media->extension = explode('.',$value[$ImageMainIndex])[1] ?? '';
+                        $media->file_name = $item[${'col_Image_main'}];
+                        $media->path = "storage/files/".auth()->id()."/".$item[${'col_Image_main'}];
+                        $media->extension = explode('.',$item[${'col_Image_main'}])[1] ?? '';
                         $media->save();
                     }
                 }
 
+
+
                 if(isset($product_obj->medias[1]) && $product_obj->medias[1]->id){
                     Media::whereId($product_obj->medias[1]->id)->update([
-                        'file_name' => $value[$ImageFrontIndex],
-                        'path' => "storage/files/".auth()->id()."/".$value[$ImageFrontIndex]
+                        'file_name' => $item[${'col_image_name_front'}],
+                        'path' => "storage/files/".auth()->id()."/".$item[${'col_image_name_front'}]
                     ]);
                 }else{
-                    if(isset($value[$ImageFrontIndex])){
+                    if(isset($item[${'col_image_name_front'}])){
                         $media = new Media();
                         $media->tag = "Product_Image";
                         $media->file_type = "Image";
                         $media->type = "Product";
                         $media->type_id = $product_obj->id;
-                        $media->file_name = $value[$ImageFrontIndex];
-                        $media->path = "storage/files/".auth()->id()."/".$value[$ImageFrontIndex];
-                        $media->extension = explode('.',$value[$ImageFrontIndex])[1] ?? '';
+                        $media->file_name = $item[${'col_image_name_front'}];
+                        $media->path = "storage/files/".auth()->id()."/".$item[${'col_image_name_front'}];
+                        $media->extension = explode('.',$item[${'col_image_name_front'}])[1] ?? '';
                         $media->save();
                     }
                 }
 
                 if(isset($product_obj->medias[2]) && $product_obj->medias[2]->id){
                     Media::whereId($product_obj->medias[2]->id)->update([
-                        'file_name' => $value[$ImageBackIndex],
-                        'path' => "storage/files/".auth()->id()."/".$value[$ImageBackIndex]
+                        'file_name' => $item[${'col_image_name_back'}],
+                        'path' => "storage/files/".auth()->id()."/".$item[${'col_image_name_back'}]
                     ]);
                 }else{
-                    if(isset($value[$ImageBackIndex])){
+                    if(isset($item[${'col_image_name_back'}])){
                         $media = new Media();
                         $media->tag = "Product_Image";
                         $media->file_type = "Image";
                         $media->type = "Product";
                         $media->type_id = $product_obj->id;
-                        $media->file_name = $value[$ImageBackIndex];
-                        $media->path = "storage/files/".auth()->id()."/".$value[$ImageBackIndex];
-                        $media->extension = explode('.',$value[$ImageBackIndex])[1] ?? '';
+                        $media->file_name = $item[${'col_image_name_back'}];
+                        $media->path = "storage/files/".auth()->id()."/".$item[${'col_image_name_back'}];
+                        $media->extension = explode('.',$item[${'col_image_name_back'}])[1] ?? '';
                         $media->save();
                     }
                 }
+
 
                 if(isset($product_obj->medias[3]) && $product_obj->medias[3]->id){
                     Media::whereId($product_obj->medias[3]->id)->update([
-                        'file_name' => $value[$ImageSide1Index],
-                        'path' => "storage/files/".auth()->id()."/".$value[$ImageSide1Index]
+                        'file_name' => $item[${'col_image_name_side1'}],
+                        'path' => "storage/files/".auth()->id()."/".$item[${'col_image_name_side1'}]
                     ]);
                 }else{
-                    if(isset($value[$ImageSide1Index])){
+                    if(isset($item[${'col_image_name_side1'}])){
                         $media = new Media();
                         $media->tag = "Product_Image";
                         $media->file_type = "Image";
                         $media->type = "Product";
                         $media->type_id = $product_obj->id;
-                        $media->file_name = $value[$ImageSide1Index];
-                        $media->path = "storage/files/".auth()->id()."/".$value[$ImageSide1Index];
-                        $media->extension = explode('.',$value[$ImageSide1Index])[1] ?? '';
+                        $media->file_name = $item[${'col_image_name_side1'}];
+                        $media->path = "storage/files/".auth()->id()."/".$item[${'col_image_name_side1'}];
+                        $media->extension = explode('.',$item[${'col_image_name_side1'}])[1] ?? '';
                         $media->save();
                     }
                 }
 
-                if(isset($product_obj->medias[4]) && $product_obj->medias[4]->id){
-                    Media::whereId($product_obj->medias[4]->id)->update([
-                        'file_name' => $value[$ImageSide2Index],
-                        'path' => "storage/files/".auth()->id()."/".$value[$ImageSide2Index]
+
+
+                // image_name_side2
+                if(isset($product_obj->medias[3]) && $product_obj->medias[3]->id){
+                    Media::whereId($product_obj->medias[3]->id)->update([
+                        'file_name' => $item[${'col_image_name_side2'}],
+                        'path' => "storage/files/".auth()->id()."/".$item[${'col_image_name_side2'}]
                     ]);
                 }else{
-                    if(isset($value[$ImageSide2Index])){
+                    if(isset($item[${'col_image_name_side2'}])){
                         $media = new Media();
                         $media->tag = "Product_Image";
                         $media->file_type = "Image";
                         $media->type = "Product";
                         $media->type_id = $product_obj->id;
-                        $media->file_name = $value[$ImageSide2Index];
-                        $media->path = "storage/files/".auth()->id()."/".$value[$ImageSide2Index];
-                        $media->extension = explode('.',$value[$ImageSide2Index])[1] ?? '';
+                        $media->file_name = $item[${'col_image_name_side2'}];
+                        $media->path = "storage/files/".auth()->id()."/".$item[${'col_image_name_side2'}];
+                        $media->extension = explode('.',$item[${'col_image_name_side2'}])[1] ?? '';
                         $media->save();
                     }
                 }
 
-                if(isset($product_obj->medias[5]) && $product_obj->medias[5]->id){
-                    Media::whereId($product_obj->medias[5]->id)->update([
-                        'file_name' => $value[$ImagePosterIndex],
-                        'path' => "storage/files/".auth()->id()."/".$value[$ImagePosterIndex]
+                // image_name_poster
+                if(isset($product_obj->medias[3]) && $product_obj->medias[3]->id){
+                    Media::whereId($product_obj->medias[3]->id)->update([
+                        'file_name' => $item[${'col_image_name_poster'}],
+                        'path' => "storage/files/".auth()->id()."/".$item[${'col_image_name_poster'}]
                     ]);
                 }else{
-                    if(isset($value[$ImagePosterIndex])){
+                    if(isset($item[${'col_image_name_poster'}])){
                         $media = new Media();
                         $media->tag = "Product_Image";
                         $media->file_type = "Image";
                         $media->type = "Product";
                         $media->type_id = $product_obj->id;
-                        $media->file_name = $value[$ImagePosterIndex];
-                        $media->path = "storage/files/".auth()->id()."/".$value[$ImagePosterIndex];
-                        $media->extension = explode('.',$value[$ImagePosterIndex])[1] ?? '';
+                        $media->file_name = $item[${'col_image_name_poster'}];
+                        $media->path = "storage/files/".auth()->id()."/".$item[${'col_image_name_poster'}];
+                        $media->extension = explode('.',$item[${'col_image_name_poster'}])[1] ?? '';
                         $media->save();
                     }
                 }
 
-
-                if ($value[$AdditionalImageIndex]) {
-                    foreach (explode("^^",$value[$AdditionalImageIndex]) as $key => $value) {
+                if ($item[${'col_Additional_Image_Use'}]) {
+                    foreach (explode("^^",$item[${'col_Additional_Image_Use'}]) as $key => $value) {
                         foreach ($product_obj->medias as $key1 => $media) {
                             if ($key1 > 5) {
-
                                 if (isset($product_obj->medias[$key1]) && $product_obj->medias[$key1]->id) {
                                     Media::whereId($product_obj->medias[$key1]->id)->update([
                                         'file_name' => $value,
                                         'path' => "storage/files/".auth()->id()."/".$value
                                     ]);
                                 }else{
-
                                     if(isset($value)){
                                         $media = new Media();
                                         $media->tag = "Product_Image";
@@ -3440,21 +3291,22 @@ class NewBulkController extends Controller
                                     }
 
                                 }
-
-
-
                             }
                         }
-
                     }
                 }
+
                 $count++;
+
             }
+
 
             return back()->with("success","$count Records are Updated SuccessFully");
 
+            // ` Loop For Uploading Data End
         } catch (\Throwable $th) {
             throw $th;
+            return back()->with("error","Something Went Wrong");
         }
 
     }
@@ -5684,12 +5536,10 @@ class NewBulkController extends Controller
                         $product_chk = Product::where('sku',$sku_code)->get();
                         if (count($product_chk) != 0) {
                             $product_exist = $product_chk[0];
-
                         } # If end (Product Exist in Record)
                         else{
                             $product_exist = null;
                         }
-
 
                         $carton_details = [
                             'standard_carton' => (isset(${'standard_carton_pcs'})) ? $item[${'standard_carton_pcs'}] : '',
@@ -6239,11 +6089,24 @@ class NewBulkController extends Controller
     }
 
 
-
     public function testExports() {
         echo "Done";
         return;
     }
+
+
+    function numToExcelColumn($num) {
+        $char = '';
+        while ($num > 0) {
+            $remainder = ($num - 1) % 26;
+            $char = chr(65 + $remainder) . $char;
+            $num = floor(($num - $remainder) / 26);
+        }
+        return $char;
+    }
+
+
+
 
 
 }

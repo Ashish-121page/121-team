@@ -23,6 +23,7 @@ use App\Models\Setting;
 use App\Models\UserShopItem;
 use App\Models\Usertemplates;
 use App\Models\CustomFields;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -396,11 +397,27 @@ class ProductController extends Controller
                 $fileds_sections = array_column($user_custom_fields, 'ref_section');
                 $fileds_sections_names = [];
                 $fileds_sections_ids = array_column($user_custom_fields, 'id');
-
-
             }
 
-            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups','user_custom_col_list','product','productExtra','varient_basis','attribute_value_id','medias','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','fileds_sections','user_custom_fields'));
+
+            $user_id = auth()->id();
+            $folderPath = "public/files/$user_id";
+
+            if (Storage::exists($folderPath)) {
+                $files = Storage::allFiles($folderPath);    
+                $page = request()->get('pageassets', 1);
+                $perPage = 30;
+                $offset = ($page - 1) * $perPage;
+                $slicedFiles = array_slice($files, $offset, $perPage);
+                $paginator = new LengthAwarePaginator($slicedFiles, count($files), $perPage, $page);
+
+            }else{
+                $paginator = [];
+                $files = [];
+            }
+
+
+            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups','user_custom_col_list','product','productExtra','varient_basis','attribute_value_id','medias','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','fileds_sections','user_custom_fields','paginator'));
 
         }catch(\Exception $e){
             // return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -1345,33 +1362,31 @@ class ProductController extends Controller
 
 
                             if($request->avl_assets != null){
-                                foreach (explode(",",$request->avl_assets) as $key => $value) {
-                                    Media::whereId($value)->first()->replicate()->fill([
+                                $arr_images = [];
+                                foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
+                                    $filetype = explode('/',Storage::mimeType($value));
+                                    $filename =basename($value);
+                                    $path = "storage/files/$user->id/$filename";
+                                    $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                                    $rec = Media::create([
                                         'type' => 'Product',
                                         'type_id' => $product_obj->id,
-                                    ])->save();
+                                        'file_name' => $filename,
+                                        'path' => $path,
+                                        'extension' => $extension,
+                                        'file_type' => 'Image',
+                                        'tag' => 'Product_Image',
+                                    ]);
+    
+                                    array_push($arr_images,$rec->id);
+                                }
+    
+                                if(count($arr_images) > 0) {
+                                    $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                    $usi->save();
                                 }
                             }
-
-
-                            if($request->avl_assets != null){
-                                foreach (explode(",",$request->avl_assets) as $key => $value) {
-                                    Media::whereId($value)->first()->replicate()->fill([
-                                        'type' => 'Product',
-                                        'type_id' => $product_obj->id,
-                                    ])->save();
-                                }
-                            }
-
-
-
-                            if ($usi->images != null) {
-                                $usi->images =  $usi->images.",".$request->exist_img.",".$request->avl_assets ?? null;
-                            }else{
-                                $usi->images =  $request->exist_img.",".$request->avl_assets ?? null;
-                            }
-
-                            $usi->save();
+    
                         }
 
                         $parentAttribute = ProductAttributeValue::whereId($second)->first();
@@ -1697,22 +1712,31 @@ class ProductController extends Controller
                         }
 
                         if($request->avl_assets != null){
-                            foreach (explode(",",$request->avl_assets) as $key => $value) {
-                                Media::whereId($value)->first()->replicate()->fill([
+                            $arr_images = [];
+                            foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
+                                $filetype = explode('/',Storage::mimeType($value));
+                                $filename =basename($value);
+                                $path = "storage/files/$user->id/$filename";
+                                $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                                $rec = Media::create([
                                     'type' => 'Product',
                                     'type_id' => $product_obj->id,
-                                ])->save();
+                                    'file_name' => $filename,
+                                    'path' => $path,
+                                    'extension' => $extension,
+                                    'file_type' => 'Image',
+                                    'tag' => 'Product_Image',
+                                ]);
+
+                                array_push($arr_images,$rec->id);
+                            }
+
+                            if(count($arr_images) > 0) {
+                                $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                $usi->save();
                             }
                         }
 
-
-                        if ($usi->images) {
-                            $usi->images =  $usi->images.",".$request->exist_img.",".$request->avl_assets ?? null;
-                        }else{
-                            $usi->images =  $request->exist_img.",".$request->avl_assets ?? null;
-                        }
-
-                        $usi->save();
 
                     }
 
@@ -2007,37 +2031,34 @@ class ProductController extends Controller
 
 
                     if($request->avl_assets != null){
+                        $arr_images = [];
                         foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
-                            Media::whereId($value)->first()->replicate()->fill([
+                            $filetype = explode('/',Storage::mimeType($value));
+                            $filename =basename($value);
+                            $path = "storage/files/$user->id/$filename";
+                            $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                            $rec = Media::create([
                                 'type' => 'Product',
                                 'type_id' => $product_obj->id,
-                            ])->save();
+                                'file_name' => $filename,
+                                'path' => $path,
+                                'extension' => $extension,
+                                'file_type' => 'Image',
+                                'tag' => 'Product_Image',
+                            ]);
+
+                            array_push($arr_images,$rec->id);
+                        }
+
+                        if(count($arr_images) > 0) {
+                            $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                            $usi->save();
                         }
                     }
 
-                    if ($usi->images) {
-                        if ($request->avl_assets != null) {
-                            $usi->images =  $usi->images.",".$request->exist_img.",".implode(",",$request->avl_assets) ?? null;
-                        }else{
-                            $usi->images =  $usi->images.",".$request->exist_img ?? null;
-                        }
-
-                    }else{
-                        if ($request->avl_assets != null) {
-                            $usi->images =  $request->exist_img.",".implode(",",$request->avl_assets) ?? null;
-                        }else{
-                            $usi->images =  $request->exist_img."," ?? null;
-                        }
-
-                    }
-
-                    $usi->save();
                 }
             }
             else{
-
-
-
                 $is_empty = true;
                 $reseller_group = Group::whereUserId($user->id)->where('name',"Reseller")->first();
                 if(!$reseller_group){
@@ -2282,23 +2303,32 @@ class ProductController extends Controller
 
 
                         if($request->avl_assets != null){
+                            $arr_images = [];
                             foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
-                                Media::whereId($value)->first()->replicate()->fill([
+                                $filetype = explode('/',Storage::mimeType($value));
+                                $filename =basename($value);
+                                $path = "storage/files/$user->id/$filename";
+                                $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                                $rec = Media::create([
                                     'type' => 'Product',
                                     'type_id' => $product_obj->id,
-                                ])->save();
+                                    'file_name' => $filename,
+                                    'path' => $path,
+                                    'extension' => $extension,
+                                    'file_type' => 'Image',
+                                    'tag' => 'Product_Image',
+                                ]);
+
+                                array_push($arr_images,$rec->id);
+                            }
+
+                            if(count($arr_images) > 0) {
+                                $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                $usi->save();
                             }
                         }
 
-
-
-                        if ($usi->images) {
-                            $usi->images =  $usi->images.",".$request->exist_img.",".($request->avl_assets[0] ?? null);
-                        }else{
-                            $usi->images =  $request->exist_img.",".($request->avl_assets[0] ?? null);
-                        }
-
-                        $usi->save();
+                      
                         $is_empty = false;
 
                     }
@@ -2480,22 +2510,31 @@ class ProductController extends Controller
 
 
                     if($request->avl_assets != null){
-                        foreach (explode(",",$request->avl_assets) as $key => $value) {
-                            Media::whereId($value)->first()->replicate()->fill([
+                        $arr_images = [];
+                        foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
+                            $filetype = explode('/',Storage::mimeType($value));
+                            $filename =basename($value);
+                            $path = "storage/files/$user->id/$filename";
+                            $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                            $rec = Media::create([
                                 'type' => 'Product',
                                 'type_id' => $product_obj->id,
-                            ])->save();
+                                'file_name' => $filename,
+                                'path' => $path,
+                                'extension' => $extension,
+                                'file_type' => 'Image',
+                                'tag' => 'Product_Image',
+                            ]);
+
+                            array_push($arr_images,$rec->id);
+                        }
+
+                        if(count($arr_images) > 0) {
+                            $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                            $usi->save();
                         }
                     }
 
-
-                    if ($usi->images) {
-                        $usi->images =  $usi->images.",".$request->exist_img.",".$request->avl_assets ?? null;
-                    }else{
-                        $usi->images =  $request->exist_img.",".$request->avl_assets ?? null;
-                    }
-
-                    $usi->save();
 
                     $count++;
                 }
@@ -2508,7 +2547,7 @@ class ProductController extends Controller
 
             // magicstring($folderPath);
             // return;
-            $msg =  "Product Crated with Varient $count";
+            $msg =  "Product Created with Varient $count";
             // return back()->with('success',$msg);
 
 

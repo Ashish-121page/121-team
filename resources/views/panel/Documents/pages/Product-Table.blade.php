@@ -1,7 +1,7 @@
 <table class="table" id="sdhfidsj">
     <thead>
         <tr>
-            <td colspan="4"></td>
+            <td colspan="5"></td>
             <td colspan="3" id="four" class="text-center">Selling Price</td>
 
             @foreach (json_decode($user->custom_attriute_columns) as $item)
@@ -18,6 +18,7 @@
             <th><input type="checkbox" aria-label="Checkbox for following text input"></th>
             <!-- Checkbox header -->
             <th class="sdeds">ID</th>
+            <th>image</th>
             <th>Title</th>
             <th>Model Code</th>
             {{-- <th>Variant ID</th> --}}
@@ -58,8 +59,14 @@
                 <td class="sdeds">
                     {{ $QuotationItem->id }}
                 </td>
-                <td class="sticky-col second-col">{{ $product->title }}</td>
+                <td class="sticky-col second-col">
+                    <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" style="height: 85px; width: 85px;object-fit: contain">
+                </td>
                 <td class="sticky-col third-col">
+                    {{ $product->title }}
+                </td>
+                
+                <td class="sticky-col">
                     {{ $product->model_code }}
                 </td>
                 {{-- <td>

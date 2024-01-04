@@ -58,7 +58,7 @@
                         <button class="btn btn-secondary" onclick="goBack()" type="button">
                             <i class="fas fa-chevron-left"></i>
                         </button>
-                        <h5 class="ms-3 mt-5 mb-0" style="margin-left: 30px !important;">{{ $QuotationRecord->slug }}</h5>
+                        <h5 class="ms-3 mt-5 mb-0" style="margin-left: 30px !important;">{{ $QuotationRecord->user_slug ?? $QuotationRecord->slug  }}</h5>
                     </div>
 
                 </div>
@@ -98,7 +98,7 @@
                         </div>
                         <a href="#" class="btn btn-outline-success mx-1" role="button" aria-expanded="false"
                             data-bs-toggle="modal" data-bs-target="#AttriModal">
-                            Customize Table
+                            Add Fields
                         </a>
                         <a href="#" class="btn btn-dark mx-1" aria-expanded="false" id="saveQuote">
                             Save quotation
@@ -208,7 +208,7 @@ z
 
 
             $("#select-All-Default").click(function(e) {
-                e.preventDefault();
+                // e.preventDefault();
                 $(".choosefields").attr('checked', true);
                 $(this).attr('checked', true);
 
@@ -356,11 +356,12 @@ z
         });
 
 
-        $(document).ready(function() {
-            $('.priceEdit[contenteditable]').on('input', function() {
-                $(this).text($(this).text().replace(/[^0-9.]/g, ''));
-            });
-        });
+        // $(document).ready(function() {
+        //     $('.priceEdit[contenteditable]').on('input', function() {
+        //         $(this).text($(this).text().replace(/[^0-9.]/g, ''));                
+        //     });
+        // });
+
 
 
     </script>
