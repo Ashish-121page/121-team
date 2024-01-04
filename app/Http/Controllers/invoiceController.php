@@ -96,14 +96,26 @@ class invoiceController extends Controller
             $quotation_date = date('Y-m-d H:i:s');
             $currency_record = UserCurrency::where('user_id',auth()->id())->get();
 
-
-            // $customer_name = json_decode(request()->get('buyerObj'))->buyerName;
+            
+            $user = auth()->user();
+            // $user = User::whereId('174')->first();
+            
+            
+            $userset = json_decode($user->settings);
+            if ($userset != null && $userset->quotaion_mark != null && $userset->quotaion_index != null) {
+                $mark = checkQuoteSlug($userset->quotaion_mark,$userset->quotaion_index,$user->id);
+            }else{
+                $mark = null;
+            }
+            
+        
             $customer_name = "Quotation";
 
             $exchange_rate = [];
             foreach($currency_record as $currency){
                 $exchange_rate[$currency->currency] = $currency->exchange;
             }
+            
             $exchange_rate = json_encode($exchange_rate);
 
 
@@ -115,7 +127,8 @@ class invoiceController extends Controller
                 'total_amount' => 0,
                 'additional_notes' => null,
                 'exchange_rate' => $exchange_rate,
-                'slug' => getUniqueProposalSlug($customer_name)
+                'slug' => getUniqueProposalSlug($customer_name),
+                'user_slug' => $mark
             ];
 
             $data = Quotation::create($record);
@@ -134,16 +147,22 @@ class invoiceController extends Controller
     }
 
 
+
+
     public function quotation2() {
 
         if ( request()->has('typeId') && request()->get('typeId') != '') {
             $record = Quotation::whereId(request()->get('typeId'))->first();
+            $quote_flles = Media::where('type_id',$record->id)->where('type','UserShop')->where('tag','quote_files')->get();
+
+
+
 
         }else{
             return back()->with('Error occurred while retrieving the record. Please try again later.');
         }
 
-        return view('panel.Documents.quotation2',compact('record'));
+        return view('panel.Documents.quotation2',compact('record','quote_flles'));
     }
 
 
@@ -201,29 +220,38 @@ class invoiceController extends Controller
 
     }
 
-
-    public function quotation3() {
-
+    public function quotation3()
+    {
         $user = auth()->user();
-        $pagelength = request()->get('pagelength',500);
+        $pagelength = request()->get('pagelength', 24);
         $quotation_id = request()->get('typeId');
 
-        $products = Product::where('user_id',$user->id)->paginate($pagelength);
-        $QuotationItem = QuotationItem::where('quotation_id',$quotation_id)->whereIn('product_id',$products->pluck('id'))->pluck('product_id')->toArray();
-
+        $products = Product::query()
+            ->where('user_id', $user->id);
 
         if (request()->has('searchProduct') && request()->get('searchProduct') != '') {
             $query = request()->get('searchProduct');
-            $products = Product::where('user_id',$user->id)->
-                        where('model_code',"LIKE",'%'.$query."%")->
-                        orwhere('title',"LIKE",'%'.$query."%")->
-                        orwhere('sku',"LIKE",'%'.$query."%")->
-                        paginate($pagelength);
-            return view('panel.Documents.pages.products', compact('products','QuotationItem'));
+            $products->where(function ($innerQuery) use ($query) {
+                $innerQuery->where('model_code', 'LIKE', '%' . $query . '%')
+                    ->orWhere('title', 'LIKE', '%' . $query . '%')
+                    ->orWhere('sku', 'LIKE', '%' . $query . '%');
+            });
+            $products = $products->paginate($pagelength);
+            $QuotationItem = QuotationItem::where('quotation_id', $quotation_id)
+                ->whereIn('product_id', $products->pluck('id'))
+                ->pluck('product_id')
+                ->toArray();
+
+            return view('panel.Documents.pages.products', compact('products', 'QuotationItem'));
         }
 
-        return view('panel.Documents.quotation3', compact('products','QuotationItem'));
+        $products = $products->paginate($pagelength);
+        $QuotationItem = QuotationItem::where('quotation_id', $quotation_id)
+            ->whereIn('product_id', $products->pluck('id'))
+            ->pluck('product_id')
+            ->toArray();
 
+        return view('panel.Documents.quotation3', compact('products', 'QuotationItem'));
     }
 
 
@@ -356,7 +384,40 @@ class invoiceController extends Controller
 
     }
 
+    function uploadFileQuote(Request $request){
 
+        try {
+            $file = $request->file('uploadFiles');
+            $file_extension = $file->getClientOriginalExtension();
+
+            $og_file_name = $file->getClientOriginalName();
+            $tmp_filename = \Str::random(35).'.'.$file_extension;
+            $user_id = auth()->id();
+
+            $file_type = explode('/',$file->getMimeType())[0];
+
+            
+            $folderPath = "app/public/files/$user_id/quote_files";
+            $uploaded_path = $file->move(storage_path($folderPath), $tmp_filename)->getpath();
+            
+
+            $media = new Media();
+            $media->file_name = $og_file_name;
+            $media->path = $uploaded_path;
+            $media->extension = $file_extension;
+            $media->file_type = $file_type;
+            $media->tag = 'quote_files';
+            $media->type_id = $request->get('typeId');
+            $media->type = 'UserShop';
+            $media->save();
+        
+            return back()->with('success','File Uploaded Successfully');
+        } catch (\Throwable $th) {
+            return back()->with('error','Error Occurred While Uploading File');
+            //throw $th;
+        }
+
+    }
 
 
 }

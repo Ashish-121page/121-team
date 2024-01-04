@@ -46,7 +46,8 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="d-flex align-items-center gap-3 ">
-                                                <button class="btn btn-secondary mx-2" onclick="goBack()" value="Back" type="button">Back</button>
+                                                <button class="btn btn-secondary mx-2" onclick="goBack()" value="Back"
+                                                    type="button">Back</button>
 
                                                 <h5 class="mt-5">Enquiry Details</h5>
 
@@ -120,7 +121,7 @@
                                             {{-- <td class="no-export action_btn">
                                                 <input type="checkbox" id="checkallinp">
                                             </td> --}}
-                                            <td class="col-2">{{ $record->slug }}</td>
+                                            <td class="col-2">{{ $record->user_slug ?? $record->slug }}</td>
                                             <td class="col-2">{{ $json->buyerName }}</td>
                                             <td class="col-2"> {{ $json->buyerEmail }} </td>
                                             <td class="col-2"> {{ $json->companyName }} </td>
@@ -150,26 +151,65 @@
                                     <div class="text-center">
                                         <p class="card-text h-4">You have not added quotation for this buyer</p>
                                         <p class="card-text text-muted">Add your own quotation or create new</p>
-                                        <button type="button" class="btn btn-outline-danger mx-2">Upload
-                                            quotation</button>
-                                        <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $record->id }}" id="nnnbk" class="btn btn-primary mx-2">Create quotation</a>
-
-
-
+                                        <button type="button" class="btn btn-outline-primary mx-2 " data-toggle="modal"
+                                            data-target="#uploadModal">
+                                            Upload quotation
+                                        </button>
+                                        <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $record->id }}"
+                                            id="nnnbk" class="btn btn-primary mx-2">Create quotation</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        @if ($quote_flles->count() != 0)
+                            <div class="col-12">
+                                <div class="h6">Uploaded Files</div>
+                                <table class="table">
+                                    <thead>
+                                        <th>#</th>
+                                        <th>File Name</th>
+                                        <th>File Download</th>
+                                    </thead>
+
+                                    <tbody>
+                                        @forelse ($quote_flles as $quote_flle)
+                                            <tr>
+                                                <td>
+                                                    {{ $loop->iteration }}
+                                                </td>
+                                                <td>
+                                                    {{ $quote_flle->file_name }}
+                                                </td>
+                                                <td>
+                                                    <a href="{{ asset($quote_flle->path) }}" download="{{ $quote_flle->file_name }}"
+                                                        class="btn btn-outline-primary mx-2">Download</a>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            Nothing to show Here...
+                                        @endforelse
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                        
+
+
                     </div>
 
                 </div>
             </div>
         </div>
         {{-- @include('panel.Documents.modals.buyer') --}}
-
-
-
     </div>
+
+
+
+    @include('panel.Documents.modals.upload')
+
+
     <script src="{{ asset('backend/js/index-page.js') }}"></script>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
     <script src="{{ asset('backend/plugins/jquery.repeater/jquery.repeater.min.js') }}"></script>

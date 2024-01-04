@@ -177,7 +177,7 @@
                 background-repeat: no-repeat;
                 background-position: center;
             }
-            
+
         </style>
     @endpush
 
@@ -224,8 +224,6 @@
                                         <div class="Backgroudcontainer d-none" style="height: 50vh;width: 50vw">
                                             <canvas id="rembgCanvas"></canvas>
                                         </div>
-
-
 
                                     </div>
                                 </div>
@@ -622,12 +620,7 @@
                                 }
                             </script>
                         </div>
-                    </div>
-
-                    
-
-
-                    
+                    </div>                 
 
 
 

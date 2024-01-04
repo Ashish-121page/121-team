@@ -7,6 +7,7 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
 use App\Models\shorturl;
 use App\Models\TimeandActionModal;
+use App\Models\Quotation;
 use App\Models\CustomFields;
 use Carbon\Carbon;
 use Twilio\Rest\Client;
@@ -1960,6 +1961,21 @@ if (!function_exists('checkLockedEnquiry')) {
     function checkLockedEnquiry($product_id,$user_id){
         $now = Carbon::now();
         return LockEnquiry::where('product_id','LIKE','%'.$product_id.'%')->where('user_id',$user_id)->where('expiry_date','<=',$now)->first();
+    }
+}
+
+
+
+if (!function_exists('checkQuoteSlug')) {   
+    function checkQuoteSlug($mark, $num, $userid)
+    {
+        $slug = $mark . "/" . $num;
+        $chk = Quotation::where('user_id', $userid)->where('user_slug', $slug)->first();
+        if ($chk == null) {
+            return $slug;
+        }
+        $num = $num + 1;
+        return checkQuoteSlug($mark, $num, $userid); // Added return statement
     }
 }
 

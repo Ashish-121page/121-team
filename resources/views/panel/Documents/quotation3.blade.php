@@ -193,8 +193,6 @@
     <script>
         document.getElementById('check_all').addEventListener('change', function() {
             let checkboxs = $(".custom-chk");
-
-
             if (this.checked) {
                 // window.location.href = "{{ route('panel.Documents.quotation4') }}";
                 $.each(checkboxs, function(indexInArray, valueOfElement) {
@@ -213,9 +211,7 @@
 
                 });
             }
-
         });
-
 
         $(document).ready(function() {
             $(".custom-chk").click(function(e) {
@@ -247,28 +243,102 @@
                         }
                     }
                 });
-                $(this).children('input').attr('checked', true);
+                if ($(this).children('input').attr('checked') == 'checked') {
+                    $(this).children('input').attr('checked', false);                  
+                }else{
+                  $(this).children('input').attr('checked', true);
+
+                }
+                
             });
 
 
             // Ajax Search
-            $("#searchValue").keyup(function(e) {
-                let loadproductbx = $("#loadproduct");
+            $("#searchValue").on('input', function() {
+              let loadproductbx = $("#loadproduct");
+              if ($(this).val() != '') {
+                $.ajax({
+                  type: "GET",
+                  url: "{{ route('panel.Documents.quotation3') }}",
+                  data: {
+                    searchProduct: $(this).val()
+                  },
+                  success: function(response) {
+                    loadproductbx.html(response);
+                    // Recalling Funcion
+                    $(".custom-chk").click(function(e) {
+                        e.preventDefault();
+                        console.log("Adding a product to the quotation");
+                        const precord = $(this).children('input').data('record');
+                        const pvalue = $(this).children('input').val();
 
-                if ($(this).val() != '') {
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ route('panel.Documents.quotation3') }}",
-                        data: {
-                            searchProduct: $(this).val()
-                        },
-                        success: function(response) {
-                            loadproductbx.html(response)
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ route('panel.Documents.create.Quotation.item') }}",
+                            data: {
+                                '_token': "{{ csrf_token() }}",
+                                'precord': precord,
+                                'pid': pvalue,
+                                'quotation_id': localStorage.getItem("record_id-Quotation"),
+                                'currency': 'INR'
+                            },
+                            dataType: "json",
+                            success: function(response) {
+                                if (response.status == 'success') {
+                                    $.toast({
+                                        text: response.message,
+                                        showHideTransition: 'fade',
+                                        icon: response.status,
+                                        stack: 6,
+                                        position: 'bottom-right'
+                                    })
+                                }
+                            }
+                        });
+                        if ($(this).children('input').attr('checked') == 'checked') {
+                            $(this).children('input').attr('checked', false);                  
+                        }else{
+                          $(this).children('input').attr('checked', true);
+
+                        }
+                        
+                    });
+
+                    document.getElementById('check_all').addEventListener('change', function() {
+                        let checkboxs = $(".custom-chk");
+                        if (this.checked) {
+                            // window.location.href = "{{ route('panel.Documents.quotation4') }}";
+                            $.each(checkboxs, function(indexInArray, valueOfElement) {
+                                if ($(this).children('input').prop('checked') != true) {
+                                    $(this).children('input').trigger('click')
+                                }
+                                $(this).children('input').prop('checked', true)
+
+                            });
+                        } else {
+                            $.each(checkboxs, function(indexInArray, valueOfElement) {
+                                if ($(this).children('input').prop('checked') != false) {
+                                    $(this).children('input').trigger('click')
+                                }
+                                $(this).children('input').prop('checked', false)
+
+                            });
                         }
                     });
-                }
-
+                    
+                  },
+                  error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                  }
+                });
+              } else {
+                loadproductbx.empty();
+              }
             });
+
+            
+
+
 
             $("#createvariant").animatedModal();
 

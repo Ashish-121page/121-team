@@ -1568,10 +1568,10 @@
             });
         });
 
-        $('a.page-link').attr("href","#");
+        $('a.page-link').not('a.pageassets').attr("href","#");
 
         $("li.page-item").click(function (e) {
-            $('a.page-link').attr("href","#");
+            $('a.page-link').not('a.pageassets').attr("href","#");
             e.preventDefault();
             console.log($(this).children('a').html());
 
