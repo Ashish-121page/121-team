@@ -1,9 +1,13 @@
+@php
+    $Userrecord = json_decode($QuotationRecord->customer_info) ?? null;
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quotation Format</title>
+<title> {{ $Userrecord->companyName ?? '' }} - {{ json_decode($entity_details->details)->entity_name ?? '' }} Quotation</title>
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
@@ -11,9 +15,7 @@
 
 <div class="container mt-5">
 
-    @php
-        $Userrecord = json_decode($QuotationRecord->customer_info) ?? null;
-    @endphp
+
   <div class="mb-4">
     <h1 class="h3 mb-3 font-weight-normal">{{ $Userrecord->buyerName ?? '' }}</h1>
     <h6>{{ $QuotationRecord->user_slug ?? $QuotationRecord->slug ?? '' }}</h6>
@@ -21,10 +23,10 @@
     <p style="font-size: 0.85rem;">
       <b>Issue Date:</b> {{ $Userrecord->CreatedOn ?? '' }} <br>
       <b>Company Details:</b> {{ $Userrecord->companyName ?? '' }}
-      @if ($QuotationRecord->additional_notes ?? '' != '')
+      {{-- @if ($QuotationRecord->additional_notes ?? '' != '')
         <br>
         <b>Remarks:</b> {{ $QuotationRecord->additional_notes ?? '' }}
-      @endif
+      @endif --}}
     </p>
   </div>
 

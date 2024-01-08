@@ -68,7 +68,7 @@ Route::group(['middleware' => 'subdomain'],  function () {
             Route::get('/marginupdate', [Microproposals::class,'marginupdate'])->name('proposals.updatemargin');
             Route::get('/destroy/{proposal_item}', [Microproposals::class,'destroy'])->name('proposals.destroy');
             Route::post('/update/sequence/{proposal_id}', [Microproposals::class,'updateSequence'])->name('proposals.updateSequence');
-            
+
             Route::get('/microashish', [Microproposals::class,'ashish'])->name('proposals.checkashish');
 
             Route::get('/update/download/{proposal}', [Microproposals::class,'updateDownload'])->name('proposals.update.download');
@@ -95,6 +95,7 @@ Route::group(['middleware' => 'subdomain'],  function () {
             Route::post('/enquiry', [MicroSiteController::class,'storeEnquiry'])->name('store-enquiry');
             Route::get('/thank-you', [MicroSiteController::class,'thankYou'])->name('thank-you');
             Route::get('/change-currency',[MicroSiteController::class,'chagecurrency'])->name('change.currency');
+            
         });
 });
 

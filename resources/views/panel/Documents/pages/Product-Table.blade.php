@@ -1,18 +1,6 @@
 <table class="table" id="sdhfidsj">
     <thead>
-        <tr>
-            <td colspan="5"></td>
-            <td colspan="3" id="four" class="text-center">Selling Price</td>
 
-            @foreach (json_decode($user->custom_attriute_columns) as $item)
-                @php
-                    $tmp_name = str_replace(' ','_',$item);
-                    $tmp_ID = str_replace(',','',$tmp_name);
-                @endphp
-                <td class="Change-{{$tmp_ID}} d-none"></td>
-            @endforeach
-
-        </tr>
 
         <tr>
             <th><input type="checkbox" aria-label="Checkbox for following text input"></th>
@@ -26,21 +14,22 @@
             <th>Currency</th>
             <th>
                 Price
-                <i class="fas fa-pencil-alt"></i>
             </th>
+            <th>Quantity</th>
             <th>Unit</th>
+            <th>Total</th>
             @foreach (json_decode($user->custom_attriute_columns) as $item)
                 @php
-                    $tmp_name = str_replace(' ','_',$item);
-                    $tmp_ID = str_replace(',','',$tmp_name);
+                    $tmp_name = str_replace(' ', '_', $item);
+                    $tmp_ID = str_replace(',', '', $tmp_name);
                 @endphp
-                <th class="Change-{{$tmp_ID}} d-none">{{ $item }}</th>
+                <th class="Change-{{ $tmp_ID }} d-none">{{ $item }}</th>
             @endforeach
         </tr>
 
     </thead>
     <tbody>
-        @forelse ($QuotationItems as $QuotationItem)
+        @forelse ($QuotationItems as $index => $QuotationItem)
             @php
                 $product = App\Models\Product::whereId($QuotationItem->product_id)->first();
                 // $varients = getAllPropertiesofProductById($product->id)->pluck('attribute_value_id','attribute_id');
@@ -60,12 +49,14 @@
                     {{ $QuotationItem->id }}
                 </td>
                 <td class="sticky-col second-col">
-                    <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" style="height: 85px; width: 85px;object-fit: contain">
+                    <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
+                        alt="" style="height: 85px; width: 85px;object-fit: contain">
                 </td>
-                <td class="sticky-col third-col">
+                <td class="sticky-col third-col" style="width: 250px;text-wrap: wrap;text-align: left;">
+                    {{-- {{ Str::limit($product->title, 20, '...') }} --}}
                     {{ $product->title }}
                 </td>
-                
+
                 <td class="sticky-col">
                     {{ $product->model_code }}
                 </td>
@@ -75,16 +66,22 @@
                 <td>
                     <select name="coo" id="coo" class="form-control select2">
                         @foreach ($countries as $country)
-                            <option value="{{ $country->name }}" @if($country->name == 'India') selected @endif >{{ $country->name }}</option>
+                            <option value="{{ $country->name }}" @if ($country->name == 'India') selected @endif>
+                                {{ $country->name }}</option>
                         @endforeach
                     </select>
                 </td>
                 <td class="currencySelect">
                     {{ $QuotationItem->currency ?? 'INR' }}
                 </td>
-                <td contenteditable="true" class="priceEdit">
-                    {{ $QuotationItem->Price ?? '0' }}
+                <td  class="priceEdit">
+                    <input type="number" value="{{ $QuotationItem->Price ?? '0' }}" class="form-control pricenum" id="pricenum_{{ $index }}">
                 </td>
+
+                <td class="qunatitynum">
+                    <input type="number" id="qunatitynum_{{ $index }}" class="form-control qunatitynum" value="1" pattern="^\d+$" step='1'>
+                </td>
+
                 <td>
                     {{-- {{ $QuotationItem->unit ?? 'per-piece' }} --}}
                     <select name="unit" id="unit" class="form-control" style="width: min-content !important">
@@ -93,14 +90,21 @@
                         <option value="per-box">per-box</option>
                     </select>
                 </td>
+
+                <td class="totalnum" id="totalnum_{{ $index }}">
+                    {{ '0' }}
+                </td>
+
                 @foreach (json_decode($user->custom_attriute_columns) as $item)
                     @php
-                        $tmp_name = str_replace(' ','_',$item);
-                        $tmp_ID = str_replace(',','',$tmp_name);
-                        $varientDetails = App\Models\ProductAttribute::where('name',$item)->first();
-                        $ProductVarient = App\Models\ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$varientDetails->id)->first();
+                        $tmp_name = str_replace(' ', '_', $item);
+                        $tmp_ID = str_replace(',', '', $tmp_name);
+                        $varientDetails = App\Models\ProductAttribute::where('name', $item)->first();
+                        $ProductVarient = App\Models\ProductExtraInfo::where('product_id', $product->id)
+                            ->where('attribute_id', $varientDetails->id)
+                            ->first();
                     @endphp
-                    <td class="Change-{{$tmp_ID}} d-none">
+                    <td class="Change-{{ $tmp_ID }} d-none">
                         @if ($ProductVarient != null)
                             {{ getAttruibuteValueById($ProductVarient->attribute_value_id)->attribute_value }}
                         @else
@@ -120,3 +124,37 @@
         @endforelse
     </tbody>
 </table>
+
+
+<script>
+    $(document).ready(function() {
+
+
+        $('.qunatitynum').on('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+
+
+            let newquan = parseFloat($(this).val());
+            let price = $("#pricenum_" + $(this).attr('id').split('_')[1]).val();
+            let total = newquan * price;
+
+            let formattedTotal = total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+            $("#totalnum_" + $(this).attr('id').split('_')[1]).html(formattedTotal);
+        });
+
+
+        $('.pricenum').on('input', function(e) {
+            let newquan = parseFloat($(this).val());
+            let price = $("#qunatitynum_" + $(this).attr('id').split('_')[1]).val();
+            let total = newquan * price;
+            let formattedTotal = total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+            $("#totalnum_" + $(this).attr('id').split('_')[1]).html(formattedTotal);
+        });
+
+
+
+
+    });
+</script>

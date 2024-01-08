@@ -122,10 +122,10 @@
                                                 <input type="checkbox" id="checkallinp">
                                             </td> --}}
                                             <td class="col-2">{{ $record->user_slug ?? $record->slug }}</td>
-                                            <td class="col-2">{{ $json->buyerName }}</td>
-                                            <td class="col-2"> {{ $json->buyerEmail }} </td>
-                                            <td class="col-2"> {{ $json->companyName }} </td>
-                                            <td class="col-2"> {{ $record->quotation_date }} </td>
+                                            <td class="col-2">{{ $json->buyerName ?? $json->person_name ?? '' }}</td>
+                                            <td class="col-2"> {{ $json->buyerEmail ?? $json->person_email ?? '' }} </td>
+                                            <td class="col-2"> {{ $json->companyName ?? '' }} </td>
+                                            <td class="col-2"> {{ $record->quotation_date ?? '' }} </td>
                                         </tr>
 
                                     </tbody>
@@ -140,7 +140,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h5 class="card-title">History (0)</h5>
+                                        <h5 class="card-title text-danger ">History (0)</h5>
                                         <!-- Placeholder for the dots -->
                                         <div class="d-flex">
                                             {{-- <span class="badge bg-secondary mx-1">&nbsp;</span>
@@ -156,7 +156,7 @@
                                             Upload quotation
                                         </button>
                                         <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $record->id }}"
-                                            id="nnnbk" class="btn btn-primary mx-2">Create quotation</a>
+                                            id="nnnbk" class="btn btn-primary mx-2">Go Next</a>
                                     </div>
                                 </div>
                             </div>
@@ -194,7 +194,7 @@
                                 </table>
                             </div>
                         @endif
-                        
+
 
 
                     </div>

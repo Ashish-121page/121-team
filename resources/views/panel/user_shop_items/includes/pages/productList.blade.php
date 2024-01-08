@@ -160,7 +160,13 @@
                     {{-- @if($scoped_product->varient_products()->count() - 1 > 0) --}}
                     <span class="d-flex justify-content-between w-85">
                         <span><b>Variants:</b> {{ $scoped_product->varient_products()->count()}} Products </span>
-                        <a href="{{ route('panel.products.edit',$scoped_product->id) }}?type={{ encrypt('editmainksku') }}" class="btn-link text-primary">Edit</a>
+
+                        @if ($scoped_product->varient_products()->count() > 1)
+                            <a href="{{ route('panel.products.edit',$scoped_product->id) }}?type={{ encrypt('editmainksku') }}" class="btn-link text-primary">Edit</a>
+                        @else
+                            <a href="{{ route('panel.products.edit',$scoped_product->id) }}" class="btn-link text-primary">Edit</a>
+                        @endif
+
                     </span>
                     {{-- @endif --}}
                 </div>

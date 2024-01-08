@@ -386,8 +386,11 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('/fourthview', ['uses' => 'invoiceController@fourthview', 'as' => 'fourthview']);
 
         Route::get('/start', ['uses' => 'invoiceController@Quotation', 'as' => 'Quotation']);
-        Route::post('/Quotation/create', ['uses' => 'invoiceController@createQuotation', 'as' => 'create.Quotation']);
+        Route::get('/create', ['uses' => 'invoiceController@createQuotationform', 'as' => 'create.Quotation.form']);
         
+        Route::post('/Quotation/create', ['uses' => 'invoiceController@createQuotation', 'as' => 'create.Quotation']);
+        Route::get('/check/slug', ['uses' => 'invoiceController@checkslug', 'as' => 'Quotation.check.slug']);
+
         Route::get('/step-2', ['uses' => 'invoiceController@quotation2', 'as' => 'quotation2']);
         Route::post('/uploadFile', ['uses' => 'invoiceController@uploadFileQuote', 'as' => 'quotation.uploadFile']);
 
@@ -401,7 +404,7 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
 
         Route::get('/printexcelqt1', ['uses' => 'invoiceController@printexcelqt1', 'as' => 'printexcelqt1']);
 
-        Route::post('/printexcelqt1', ['uses' => 'invoiceController@exportexcel', 'as' => 'printexcelqt1']);
+        Route::post('/printexcelqt1', ['uses' => 'invoiceController@exportexcel', 'as' => 'printexcelqt1.print']);
 
 
     });

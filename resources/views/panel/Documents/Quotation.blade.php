@@ -30,9 +30,9 @@
                     </div>
 
                     {{-- @if ($acc_permissions->quoatations == 'yes') --}}
-                        <div class="sidebar-section h6">
-                            <a class="" href="{{ route('panel.Documents.Quotation', 'active') }}">Quotations</a>
-                        </div>
+                    <div class="sidebar-section h6">
+                        <a class="" href="{{ route('panel.Documents.Quotation', 'active') }}">Quotations</a>
+                    </div>
                     {{-- @endif --}}
                     <div class="sidebar-section h6">
                         <a href="{{ route('panel.Documents.index') }}">Invoice</a>
@@ -58,9 +58,14 @@
                         </div>
                         <div class="col-4 d-flex justify-content-end align-items-center">
                             {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#BuyerModal"> --}}
-                            <button type="button" id="bjkhkh" class="btn btn-outline-primary mx-1">
+                            {{-- <button type="button" id="bjkhkh" class="btn btn-outline-primary mx-1">
                                 Create new quotation
-                            </button>
+                            </button> --}}
+
+                            <a href="{{ route('panel.Documents.create.Quotation.form') }}" class="btn btn-outline-primary mx-1">
+                                Create new quotation
+                            </a>
+                        </div>
                         </div>
                     </div>
 
@@ -105,6 +110,7 @@
                                         @forelse ($Quotation as $record)
                                             @php
                                                 $jsonData = json_decode($record->customer_info) ?? '';
+
                                             @endphp
                                             <tr>
                                                 <td>
@@ -112,13 +118,13 @@
                                                         value="{{ $record->id }}">
                                                 </td>
                                                 <td>
-                                                    {{ $record->user_slug ?? $record->slug  }}
+                                                    {{ $record->user_slug ?? $record->slug }}
                                                 </td>
                                                 <td>
-                                                    {{ $jsonData->buyerName ?? '-' }}
+                                                    {{ $jsonData->buyerName ?? $jsonData->person_name ?? '' }}
                                                 </td>
                                                 <td>
-                                                    {{ $jsonData->buyerEmail ?? '-' }}
+                                                    {{ $jsonData->buyerEmail ?? $jsonData->person_email ?? '-' }}
                                                 </td>
                                                 <td>
                                                     {{ $jsonData->companyName ?? '-' }}
@@ -152,6 +158,8 @@
         </div>
     </div>
 
+    <input type="hidden" id="viehdu" value="{{ $Quotation->pluck('customer_info') }}"'>
+
 
     <script src="{{ asset('backend/js/index-page.js') }}"></script>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
@@ -163,12 +171,53 @@
     <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        var viehdu = $('#viehdu').val();
+        viehdu = JSON.parse(viehdu);
+
+
+
+
         $(document).ready(function() {
+
+
+
+
             $("#bjkhkh").click(function(e) {
                 e.preventDefault();
                 var url = $(this).attr('href');
-                var msg =
-                    "<div class='col-lg-12 col-md-12'><div class='row'><div class='col-lg-12 col-md-12'><label for='buyerName'>Buyer Name:</label><br><input type='text' id='buyerName' name='buyerName' class='form-control border rounded' placeholder='Enter'></div><div class='col-lg-12 col-md-12'><label for='buyerEmail'>Buyer Email:</label><br><input type='text' id='buyerEmail' name='buyerEmail' class='form-control border rounded' placeholder='Enter'></div><div class='col-lg-12 col-md-12'><label for='companyName'>Company Name (optional):</label><br><input type='text' id='companyName' name='companyName' class='form-control border rounded' placeholder='Enter'></div></div></div>";
+
+
+                var msg = `
+                    <div class='col-lg-12 col-md-12'>
+                    <div class='row'>
+                        <div class="col-lg-12 col-md-12 my-2">
+                            <label for='basis'>Select Basis:</label><br>
+                            <select id="basissd" class="select form-control">
+                                <option value="newone">New Entry</option>
+                                ${viehdu.map((item, index) => {
+                                    return `<option value="${index}">${JSON.parse(item).buyerName}</option>`;
+                                })}
+                            </select>
+                        </div>
+                        <div class='col-lg-12 col-md-12 makemehide'>
+                            <label for='buyerName'>Buyer Name:</label><br>
+                            <input type='text' id='buyerName' name='buyerName' class='form-control border rounded' placeholder='Enter' required>
+                        </div>
+                        <div class='col-lg-12 col-md-12 makemehide'>
+                            <label for='buyerEmail'>Buyer Email:</label><br>
+                            <input type='text' id='buyerEmail' name='buyerEmail' class='form-control border rounded' placeholder='Enter'>
+                        </div>
+                        <div class='col-lg-12 col-md-12 makemehide'>
+                            <label for='companyName'>Company Name (optional):</label><br>
+                            <input type='text' id='companyName' name='companyName' class='form-control border rounded' placeholder='Enter'>
+                        </div>
+                    </div>
+                    </div>
+                `;
+
+
+                // var msg =
+                //     "<div class='col-lg-12 col-md-12'><div class='row'><div class='col-lg-12 col-md-12'><label for='buyerName'>Buyer Name:</label><br><input type='text' id='buyerName' name='buyerName' class='form-control border rounded' placeholder='Enter'></div><div class='col-lg-12 col-md-12'><label for='buyerEmail'>Buyer Email:</label><br><input type='text' id='buyerEmail' name='buyerEmail' class='form-control border rounded' placeholder='Enter'></div><div class='col-lg-12 col-md-12'><label for='companyName'>Company Name (optional):</label><br><input type='text' id='companyName' name='companyName' class='form-control border rounded' placeholder='Enter'></div></div></div>";
 
                 $.confirm({
                     draggable: true,
@@ -192,6 +241,12 @@
                                     companyName: companyName.value,
                                     CreatedOn: dt.toLocaleString()
                                 };
+
+                                if (buyerName.value == '') {
+                                    buyerName.focus();
+                                    $.alert("Please enter buyer name");
+                                    return false;
+                                }
 
                                 jsonBuyerObj = JSON.stringify(buyerObj);
 
@@ -233,10 +288,8 @@
                 $("#890out").select2()
             });
 
-
-
-
-
         });
+
+
     </script>
 @endsection

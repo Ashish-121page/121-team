@@ -221,7 +221,7 @@
                                                 </div>
                                                 <div class="col-8">
                                                     <input type="text" name="Cust_tag_group" class="form-control"
-                                                        placeholder="">                                                    
+                                                        placeholder="">
                                                 </div>
                                             </div> --}}
 
@@ -288,57 +288,85 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td> 1 </td>
-                                                        <td> Main SKU </td>
-                                                        <td>
-                                                            <a href="{{ route('panel.products.edit', $product->id) }}?type={{ encrypt('editmainksku') }}"
-                                                                class="btn btn-outline-primary @if ($product->id == $product->id && request()->has('type') && request()->get('type') != null) active @endif">
-                                                                Main SKU
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    @foreach ($product_variant_combo as $product_variant)
-                                                        @php
-                                                            $tmp_props = [];
-                                                        @endphp
+
+
+                                                    @if (count($product_variant_combo[0]) == 0)
                                                         <tr>
-                                                            <td> {{ $loop->iteration + 1 }} </td>
+                                                            <td> 1 </td>
+                                                            <td> Main SKU </td>
                                                             <td>
-                                                                @foreach ($product_variant as $key => $item)
-                                                                    @php
-                                                                        $tmp_props[$key] = getAttruibuteValueById($item)->attribute_value ?? '';
-                                                                    @endphp
-                                                                @endforeach
-                                                                {{ implode(' , ', $tmp_props) }}
-                                                            </td>
-                                                            <td>
-                                                                @php
-                                                                    $proid = App\Models\ProductExtraInfo::whereIn('attribute_value_id', $product_variant)
-                                                                        ->wherein('product_id', $available_products)
-                                                                        ->where('user_id', $product->user_id)
-                                                                        ->where('group_id', $product->sku)
-                                                                        ->first();
-                                                                @endphp
-                                                                @if ($proid != null)
-                                                                    <a href="{{ route('panel.products.edit', $proid->product_id) }}"
-                                                                        class="btn btn-outline-primary @if ($product->id == $proid->product_id && !request()->has('type') && request()->get('type') == null) active @endif ">
-                                                                        <i class="fa fa-pen"></i>
-                                                                    </a>
-                                                                    <a href="{{ route('panel.products.delete.sku', encrypt($proid->product_id)) }}"
-                                                                        class="btn btn-outline-danger delete-btn">
-                                                                        <i class="fa fa-trash"></i>
-                                                                    </a>
-                                                                @endif
+                                                                <a href="{{ route('panel.products.edit', $product->id) }}"
+                                                                    class="btn btn-outline-primary @if (!request()->has('type') && request()->get('type') == null) active @endif ">
+                                                                    <i class="fa fa-pen"></i>
+                                                                </a>
                                                             </td>
                                                         </tr>
+                                                    @else
 
-                                                        @php
-                                                            if ($proid != null) {
-                                                                $available_products = array_diff($available_products, [$proid->product_id]);
-                                                            }
-                                                        @endphp
-                                                    @endforeach
+                                                    {{-- ` This Loop Will Only Through When Variants Are Available --}}
+                                                        <tr>
+                                                            <td> 1 </td>
+                                                            <td> Main SKU </td>
+                                                            <td>
+                                                                <a href="{{ route('panel.products.edit', $product->id) }}?type={{ encrypt('editmainksku') }}"
+                                                                    class="btn btn-outline-primary @if ($product->id == $product->id && request()->has('type') && request()->get('type') != null) active @endif">
+                                                                    Main SKU
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        @forelse ($product_variant_combo as $product_variant)
+                                                        {{-- my work --}}
+                                                            @php
+                                                                $tmp_props = [];
+                                                            @endphp
+                                                            <tr>
+                                                                <td> {{ $loop->iteration + 1 }} </td>
+                                                                <td>
+                                                                    @foreach ($product_variant as $key => $item)
+                                                                        @php
+                                                                            $tmp_props[$key] = getAttruibuteValueById($item)->attribute_value ?? '';
+                                                                        @endphp
+                                                                    @endforeach
+                                                                    {{ implode(' , ', $tmp_props) }}
+                                                                </td>
+                                                                <td>
+                                                                    @php
+                                                                        $proid = App\Models\ProductExtraInfo::whereIn('attribute_value_id', $product_variant)
+                                                                            ->wherein('product_id', $available_products)
+                                                                            ->where('user_id', $product->user_id)
+                                                                            ->where('group_id', $product->sku)
+                                                                            ->first();
+                                                                    @endphp
+                                                                    @if ($proid != null)
+                                                                        <a href="{{ route('panel.products.edit', $proid->product_id) }}"
+                                                                            class="btn btn-outline-primary @if ($product->id == $proid->product_id && !request()->has('type') && request()->get('type') == null) active @endif ">
+                                                                            <i class="fa fa-pen"></i>
+                                                                        </a>
+                                                                        <a href="{{ route('panel.products.delete.sku', encrypt($proid->product_id)) }}"
+                                                                            class="btn btn-outline-danger delete-btn">
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </a>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+
+                                                            @php
+                                                                if ($proid != null) {
+                                                                    $available_products = array_diff($available_products, [$proid->product_id]);
+                                                                }
+                                                            @endphp
+
+
+                                                        {{-- my work --}}
+                                                        @empty
+                                                            <tr>
+                                                                <td colspan="3"> There is Nothing to Show </td>
+                                                            </tr>
+                                                        @endforelse
+
+                                                    @endif
+
+
                                                 </tbody>
                                             </table>
 
@@ -569,7 +597,7 @@
 
 
 
-                                                        
+
 
                                                         {{-- `Shipping Details  TO BE DELETED --}}
 
@@ -588,7 +616,7 @@
                                                                                 ($prodextra->MBQ ?? '0') != '' ||
                                                                                 ($prodextra->MBQ_unit ?? '0') != '' ||
                                                                                 ($prodextra->remarks ?? '') != '') checked @endif>
-                                                                                
+
                                                                 </div>
                                                             </div>
                                                             <div class="row d-none" id="productshippingbox">
@@ -629,7 +657,7 @@
                                                                             value="{{ $prodextra->MBQ_unit ?? '0' }}">
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                             </div>
                                                         </div>
 
@@ -807,6 +835,11 @@
                                                                     type="file" id="img"
                                                                     value="{{ $product->img }}">
                                                             </div>
+                                                            <p class="pb-3 my-2 alert alert-warning">
+                                                                <i class="ik ik-info mr-1"></i>If there are any duplicate file names, they will replace the existing ones.
+                                                                <br>
+                                                                <i class="ik ik-info mr-1"></i> Multiple images can be selected at once by using the control key.
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1101,848 +1134,795 @@
                                             </div>
                                 </div>
 
-                    <div class="stepper d-none" data-index="3">
-                        <div class="card">
-                            {{-- <div class="card-header">
-                                <h3>Basic Product Info</h3>
-                            </div> --}}
-                            <div class="row">
-                                <div class="card-body">
+                            <div class="stepper d-none" data-index="3">
+                                <div class="card">
+                                    {{-- <div class="card-header">
+                                        <h3>Basic Product Info</h3>
+                                    </div> --}}
                                     <div class="row">
-
-                                        {{-- ` PRODUCT SAMPLE DETAILS GROUP --}}
-                                        <div class="col-12">
-                                            <div class="row mb-3">
-                                                <div class="col-12">
-                                                    <hr class="text-primary">
-                                                    <label for="productsamplebx">
-                                                        <div class="h6">Sample Details</div>
-                                                    </label>
-                                                    <br>
-                                                    <input type="checkbox" data-open="productsamplebox" id="productsamplebx"
-                                                        class="hiddenbxbtn" @if (($prodextra->sample_available ?? '') != '' || ($prodextra->sampling_time ?? '') != '') checked @endif>
-                                                </div>
-                                            </div>
-
-                                            <div class="row d-none" id="productsamplebox">
-                                                <div class="col-md-4 col-4 d-none">
-                                                    <div class="form-group ">
-                                                        <label for="sample_available" class="control-label">Sample / Stock
-                                                            available</label>
-                                                        <input class="form-control" name="sample_available" type="text"
-                                                            id="sample_available" value="{{ $prodextra->sample_available ?? '' }}">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4 col-4">
-                                                    <div class="form-group ">
-                                                        <label for="sample_year" class="control-label">Sample Year</label>
-                                                        {{-- <input  class="form-control" name="sample_year" type="text" id="sample_year" value="{{$prodextra->sample_year ?? ''}}" > --}}
-                                                        <select name="sample_year" id="sample_year" class="form-control select2">
-                                                            <option value="">Select Year</option>
-                                                            {{-- <option value="{{ $option->id }}" @if ($option->id == $prodextra->season_year) selected
-                                                                                        @endif>{{  $option->name ?? ''}}</option> --}}
-                                                            @php
-                                                                $selectedYear = $prodextra->sample_year ?? '';
-                                                            @endphp
-                                                            @for ($i = date('Y'); $i >= 1985; $i--)
-                                                                <option value="{{ $i }}"
-                                                                    @if ($selectedYear == $i) selected @endif>
-                                                                    {{ $i }}</option>
-                                                            @endfor
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4 col-4">
-                                                    <div class="form-group ">
-                                                        <label for="sample_month" class="control-label">Sample Month</label>
-                                                        {{-- <input  class="form-control" name="sample_month" type="text" id="sample_month" value="{{$prodextra->sample_month ?? ''}}" > --}}
-
-                                                        <select name="sample_month" id="sample_month" class="select2">
-
-                                                            <option value="">Select Sample Month</option>
-                                                            @php
-                                                                $selectedMonth = $prodextra->sample_month ?? '';
-                                                            @endphp
-                                                            @foreach ($months as $monthValue => $monthName)
-                                                                <option value="{{ $monthValue }}"
-                                                                    @if ($selectedMonth == $monthValue) selected @endif>
-                                                                    {{ $monthName }}</option>
-                                                            @endforeach
-                                                        </select>
-
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4 col-4">
-                                                    <div class="form-group ">
-                                                        <label for="sampling_time" class="control-label">Sampling time</label>
-                                                        <input class="form-control" name="sampling_time" type="text"
-                                                            id="sampling_time" value="{{ $prodextra->sampling_time ?? '' }}">
-                                                    </div>
-                                                </div>                                               
-
-                                            </div>
+                                        <div class="card-body">
                                             <div class="row">
-                                                {{-- <div class="col-md-6 col-12 @if ($product->exclusive != 1) d-none @endif"
-                                                id="productexclusivebuyernamebox"> --}}
-                                                <div class="col-md-4 col-4 @if ($product->exclusive != 1) @endif" id="productexclusivebuyernamebox">
+
+                                                {{-- ` PRODUCT SAMPLE DETAILS GROUP --}}
+                                                <div class="col-12">
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <hr class="text-primary">
+                                                            <label for="productsamplebx">
+                                                                <div class="h6">Sample Details</div>
+                                                            </label>
+                                                            <br>
+                                                            <input type="checkbox" data-open="productsamplebox" id="productsamplebx"
+                                                                class="hiddenbxbtn" @if (($prodextra->sample_available ?? '') != '' || ($prodextra->sampling_time ?? '') != '') checked @endif>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row d-none" id="productsamplebox">
+                                                        <div class="col-md-4 col-4 d-none">
+                                                            <div class="form-group ">
+                                                                <label for="sample_available" class="control-label">Sample / Stock
+                                                                    available</label>
+                                                                <input class="form-control" name="sample_available" type="text"
+                                                                    id="sample_available" value="{{ $prodextra->sample_available ?? '' }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4 col-4">
+                                                            <div class="form-group ">
+                                                                <label for="sample_year" class="control-label">Sample Year</label>
+                                                                {{-- <input  class="form-control" name="sample_year" type="text" id="sample_year" value="{{$prodextra->sample_year ?? ''}}" > --}}
+                                                                <select name="sample_year" id="sample_year" class="form-control select2">
+                                                                    <option value="">Select Year</option>
+                                                                    {{-- <option value="{{ $option->id }}" @if ($option->id == $prodextra->season_year) selected
+                                                                                                @endif>{{  $option->name ?? ''}}</option> --}}
+                                                                    @php
+                                                                        $selectedYear = $prodextra->sample_year ?? '';
+                                                                    @endphp
+                                                                    @for ($i = date('Y'); $i >= 1985; $i--)
+                                                                        <option value="{{ $i }}"
+                                                                            @if ($selectedYear == $i) selected @endif>
+                                                                            {{ $i }}</option>
+                                                                    @endfor
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4 col-4">
+                                                            <div class="form-group ">
+                                                                <label for="sample_month" class="control-label">Sample Month</label>
+                                                                {{-- <input  class="form-control" name="sample_month" type="text" id="sample_month" value="{{$prodextra->sample_month ?? ''}}" > --}}
+
+                                                                <select name="sample_month" id="sample_month" class="select2">
+
+                                                                    <option value="">Select Sample Month</option>
+                                                                    @php
+                                                                        $selectedMonth = $prodextra->sample_month ?? '';
+                                                                    @endphp
+                                                                    @foreach ($months as $monthValue => $monthName)
+                                                                        <option value="{{ $monthValue }}"
+                                                                            @if ($selectedMonth == $monthValue) selected @endif>
+                                                                            {{ $monthName }}</option>
+                                                                    @endforeach
+                                                                </select>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4 col-4">
+                                                            <div class="form-group ">
+                                                                <label for="sampling_time" class="control-label">Sampling time</label>
+                                                                <input class="form-control" name="sampling_time" type="text"
+                                                                    id="sampling_time" value="{{ $prodextra->sampling_time ?? '' }}">
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        {{-- <div class="col-md-6 col-12 @if ($product->exclusive != 1) d-none @endif"
+                                                        id="productexclusivebuyernamebox"> --}}
+                                                        <div class="col-md-4 col-4 @if ($product->exclusive != 1) @endif" id="productexclusivebuyernamebox">
+                                                            <div class="form-group">
+                                                                <label for="exclusive_buyer_name" class="control-label">Exclusive Buyer Name</label>
+                                                                <input class="form-control" name="exclusive_buyer_name"
+                                                                    type="text" id="exclusive_buyer_name"
+                                                                    value="{{ $prodextra->exclusive_buyer_name ?? '' }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {{-- `Theme Collection from essentials  --}}
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h6>Theme Collection</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-md-4 col-4"required>
+                                                                <div class="form-group ">
+                                                                    <label for="collection_name" class="control-label">Theme / Collection Name</label>
+                                                                    <input class="form-control" name="collection_name" type="text" id="collection_name" value="{{ $prodextra->collection_name ?? '' }}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4 col-4">
+                                                                <div class="form-group">
+                                                                    <label for="season_month" class="control-label">Season / Month</label>
+                                                                    {{-- <input  class="form-control" name="season_month" type="text" id="season_month" value="{{$prodextra->season_month ?? '' }}" > --}}
+                                                                    <select name="season_month" id="season_month" class="select2">
+                                                                        <option value="">Select Sourcing Month</option>
+                                                                        @php
+                                                                            $selectedMonth = $prodextra->season_month ?? '';
+                                                                        @endphp
+                                                                        @foreach ($months as $monthValue => $monthName)
+                                                                            <option value="{{ $monthValue }}"
+                                                                                @if ($selectedMonth == $monthValue) selected @endif>
+                                                                                {{ $monthName }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4 col-4">
+                                                                <div class="form-group ">
+                                                                    <label for="season_year">Theme / Collection Year</label label>
+                                                                    {{-- <input class="form-control" name="season_year" type="number" id="season_year" value= "{{ $prodextra->season_year ?? '0' }}"  required> --}}
+                                                                    {{-- <select id="season_year"></select> --}}
+                                                                    <select name="season_year" id="season_year" class="form-control select2">
+                                                                        <option value="">Select Year</option>
+                                                                        {{-- <option value="{{ $option->id }}" @if ($option->id == $prodextra->season_year) selected
+                                                                                                    @endif>{{  $option->name ?? ''}}</option> --}}
+                                                                        @php
+                                                                            $selectedYear = $prodextra->season_year ?? '';
+                                                                        @endphp
+                                                                        @for ($i = date('Y'); $i >= 1985; $i--)
+                                                                            <option value="{{ $i }}"
+                                                                                @if ($selectedYear == $i) selected @endif>
+                                                                                {{ $i }}</option>
+                                                                        @endfor
+                                                                    </select>
+
+
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+
+
+
+
+
+                                                {{-- -- Custom Fields of User 4 ` --}}
+                                                @if (in_array('4', $fileds_sections))
+                                                    <div class="col-12">
+                                                        <div class="h5">Custom Cols</div>
+                                                    </div>
+                                                    @if ($user_custom_fields != null)
+                                                        <div class="col-12">
+                                                            <div class="row">
+                                                                @foreach ($user_custom_fields as $user_custom_field)
+                                                                    @if ($user_custom_field['ref_section'] === '4')
+                                                                        <div class="col-6">
+                                                                            <div class="form-group">
+                                                                                <label
+                                                                                    for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
+                                                                                {!! $user_custom_field['tag'] !!}
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endif
+
+                                                <div class="col-md-4 col-4 d-none">
                                                     <div class="form-group">
-                                                        <label for="exclusive_buyer_name" class="control-label">Exclusive Buyer Name</label>
-                                                        <input class="form-control" name="exclusive_buyer_name"
-                                                            type="text" id="exclusive_buyer_name"
-                                                            value="{{ $prodextra->exclusive_buyer_name ?? '' }}">
+                                                        <label for="video_url">Video Url </label>
+                                                        <input type="url" name="video_url" class="form-control"
+                                                            value="{{ $product->video_url }}" id="video_url">
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-md-4 col-4 d-none">
+                                                    <div class="form-group {{ $errors->has('artwork_url') ? 'has-error' : '' }}">
+                                                        <label for="artwork_url" class="control-label">Art Work Reference</label>
+                                                        <input class="form-control" name="artwork_url" type="url"
+                                                            id="artwork_url" value="{{ $product->artwork_url }}"
+                                                            placeholder="Enter Artwork URL">
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {{-- `Theme Collection from essentials  --}}
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h6>Theme Collection</h6>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-md-4 col-4"required>
-                                                        <div class="form-group ">
-                                                            <label for="collection_name" class="control-label">Theme / Collection Name</label>
-                                                            <input class="form-control" name="collection_name" type="text" id="collection_name" value="{{ $prodextra->collection_name ?? '' }}">
-                                                        </div>
+                                    </div>
+                                </div>
+                                {{-- plotting basic header fields end --}}
+                                <div class="card d-none">
+                                    <div class="card-header">
+                                        <h3>Content</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group {{ $errors->has('features') ? 'has-error' : '' }}">
+                                                    <div class="alert alert-info">
+                                                        Add Product Features With New Line Each
                                                     </div>
-                                                    <div class="col-md-4 col-4">
+                                                    <label for="features" class="control-label">Features</label>
+                                                    <textarea name="features" class="form-control" id="features cols="30" rows="5">{{ $product->features }}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-6">
+                                                <div
+                                                    class="form-group {{ $errors->has('meta_description') ? 'has-error' : '' }}">
+                                                    <label for="meta_description" class="control-label">Meta Description</label>
+                                                    <textarea name="meta_description" class="form-control" id="meta_description" cols="30" rows="3">{{ $product->meta_description ?? old('meta_description') }}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-6">
+                                                <div class="form-group {{ $errors->has('meta_keywords') ? 'has-error' : '' }}">
+                                                    <label for="meta_keywords" class="control-label">Meta Keywords</label>
+                                                    <textarea name="meta_keywords" class="form-control" id="meta_keywords" cols="30" rows="3">{{ $product->meta_keywords ?? old('meta_keywords') }}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stepper d-none" data-index="4">
+                                <div class="card ">
+                                    <div class="col-12 d-none">
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <hr class="text-primary">
+                                                <label for="productexclusivebx">
+                                                    <div class="h6">Exclusive </div>
+                                                </label>
+                                                <br>
+                                                <input type="checkbox" data-open="productexclusivebox" id="productexclusivebx"
+                                                    class="hiddenbxbtn">
+                                            </div>
+                                        </div>
+                                        <div class="row d-none" id="productexclusivebox">
+                                            <div class="col-md-6 col-12">
+                                                <div class="form-check pl-0">
+                                                    <label for="exclubtn" class="mr-3">
+                                                        Copyright/ Exclusive item
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input type="checkbox" class="custom-control-input" id="exclubtn"
+                                                        data-open="productexclusivebuyernamebox" value="1" name="exclusive"
+                                                        @if ($product->exclusive == 1) checked @endif >
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                    {{-- --Moved --}}
+                                    <div class="col-12 my-2">
+                                        <div class="h6 card-header" style="padding: 0px;">
+                                            <h6>Properties</h6>
+                                        </div>
+                                    </div>
+
+                                    {{-- ` PRODUCT WEIGHT GROUP --}}
+                                    <div class="col-12">
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <hr class="text-primary">
+                                                <label for="weightbox">
+                                                    <div class="h6">Product Weight</div>
+                                                </label> &nbsp;&nbsp;&nbsp;
+                                                <input type="checkbox" data-open="weightboxbtn" id="weightbox" class="hiddenbxbtn" @if ($shipping->gross_weight ?? ('' != '' || $shipping->weight ?? '' != '')) checked @endif>
+                                            </div>
+                                        </div>
+                                        <div class="row d-none" id="weightboxbtn">
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group ">
+                                                    <label for="gross_weight"
+                                                        class="control-label">Gross Weight</label>
+                                                    <input class="form-control" name="gross_weight"
+                                                        type="text" id="gross_weight"
+                                                        value="{{ $shipping->gross_weight ?? '' }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4 col-4">
+                                                <label class="">{{ __('Net Weight') }}</label>
+                                                <div class="form-group">
+                                                    <input class="form-control" name="weight"
+                                                        type="nnumber" id="weight"
+                                                        value="{{ $shipping->weight ?? '' }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4 col-4">
+                                                <label class="">{{ __('Weight UOM') }}</label>
+                                                {{-- Drop Down --}}
+                                                {{-- gms/kgs --}}
+                                                <div class="form-group">
+                                                    <select name="unit" id="unit"
+                                                        class="form-control select2">
+                                                        <option
+                                                            @if (($shipping->unit ?? '') == 'gms') selected @endif
+                                                            value="gms">gms</option>
+                                                        <option
+                                                            @if (($shipping->unit ?? '') == 'kgs') selected @endif
+                                                            value="kgs">kgs</option>
+                                                    </select>
+                                                    {{-- <input class="form-control" name="unit" type="nnumber" id="unit" value="{{$shipping->unit ?? ''}}" > --}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- ` PRODUCT DIMENSION GROUP --}}
+                                    <div class="col-12">
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <hr class="text-primary">
+                                                <label for="productdimensionsbx">
+                                                    <div class="h6">Product Dimensions</div>
+                                                </label> &nbsp;&nbsp;&nbsp;
+                                                <input type="checkbox"
+                                                    data-open="productdimensionsbox"
+                                                    id="productdimensionsbx" class="hiddenbxbtn"
+                                                    @if ($shipping->length ?? ('' != '' || $shipping->width ?? ('' != '' || $shipping->height ?? '' != ''))) checked @endif>
+                                            </div>
+                                        </div>
+                                        <div class="row d-none" id="productdimensionsbox">
+
+                                            <div class="col-md-6 col-12">
+                                                <label class="Length">{{ __('Length') }}</label>
+                                                <div class="form-group">
+                                                    <input class="form-control" name="length"
+                                                        type="nnumber" id="length"
+                                                        value="{{ $shipping->length ?? '' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-12">
+                                                <label class="">{{ __('Width') }}</label>
+                                                <div class="form-group">
+                                                    <input class="form-control" name="width"
+                                                        type="nnumber" id="width"
+                                                        value="{{ $shipping->width ?? '' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-12">
+                                                <label class="">{{ __('Height') }}</label>
+                                                <div class="form-group">
+                                                    <input class="form-control" name="height"
+                                                        type="nnumber" id="height"
+                                                        value="{{ $shipping->height ?? '' }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 col-12">
+                                                <label class="">{{ __('LWH UOM') }}</label>
+                                                {{-- DropDown --}}
+                                                {{-- mm/cms/inches/feet --}}
+                                                {{-- @dd($shipping) --}}
+                                                <div class="form-group">
+                                                    <select name="length_unit" id="length_unit"
+                                                        class="form-control select2">
+                                                        <option
+                                                            @if (($shipping->length_unit ?? '') == 'mm') selected @endif
+                                                            value="mm">mm</option>
+                                                        <option
+                                                            @if (($shipping->length_unit ?? '') == 'cms') selected @endif
+                                                            value="cms">cms</option>
+                                                        <option
+                                                            @if (($shipping->length_unit ?? '') == 'inches') selected @endif
+                                                            value="inches">inches</option>
+                                                        <option
+                                                            @if (($shipping->length_unit ?? '') == 'feet') selected @endif
+                                                            value="feet">feet</option>
+                                                    </select>
+                                                    {{-- <input class="form-control" name="length_unit" type="nnumber" id="length_unit" value="{{$shipping->length_unit ?? ''}}" > --}}
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    {{-- `PRODUCT PACKING --}}
+                                    <div class="col-12">
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <hr class="text-primary">
+                                                <label for="productpackingbx">
+                                                    <div class="h6">Product Packing</div>
+                                                </label> &nbsp;&nbsp;&nbsp;
+                                                <input type="checkbox" data-open="productpackingbox"
+                                                    id="productpackingbx" class="hiddenbxbtn"
+                                                    @if (
+                                                        $carton_details->standard_carton ??
+                                                            ('' != '' || $carton_details->carton_weight ??
+                                                                ('' != '' || $carton_details->carton_length ??
+                                                                    ('' != '' || $carton_details->carton_width ??
+                                                                        ('' != '' || $carton_details->carton_height ?? '' != ''))))) checked @endif>
+                                            </div>
+                                        </div>
+
+                                        <div class="row d-none" id="productpackingbox">
+                                            <div class="col-md-6 col-12">
+                                                <label
+                                                    class="">{{ __('Standard Carton Pcs') }}</label>
+                                                <div class="form-group">
+                                                    <input class="form-control" name="standard_carton"
+                                                        type="text" id="standard_carton"
+                                                        value="{{ $carton_details->standard_carton ?? '' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-12">
+                                                <label
+                                                    class="">{{ __('Carton Actual Weight') }}</label>
+                                                <div class="form-group">
+                                                    <input class="form-control" name="carton_weight"
+                                                        type="number" id="carton_weight"
+                                                        value="{{ $carton_details->carton_weight ?? '' }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 col-12">
+                                                <label
+                                                    class="">{{ __('Carton Length') }}</label>
+                                                <div class="form-group">
+                                                    <input class="form-control" name="carton_length"
+                                                        type="number" id="carton_length"
+                                                        value="{{ $carton_details->carton_length ?? '' }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 col-12">
+                                                <label class="">{{ __('Carton Width') }}</label>
+                                                <div class="form-group">
+                                                    <input class="form-control" name="carton_width"
+                                                        type="number" id="carton_width"
+                                                        value="{{ $carton_details->carton_width ?? '' }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 col-12">
+                                                <label
+                                                    class="">{{ __('Carton Height') }}</label>
+                                                <div class="form-group">
+                                                    <input class="form-control" name="carton_height"
+                                                        type="number" id="carton_height"
+                                                        value="{{ $carton_details->carton_height ?? '' }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 col-12">
+                                                <label
+                                                    class="">{{ __('Carton Dimension Unit') }}</label>
+                                                <div class="form-group">
+                                                    {{-- <input class="form-control" name="Carton_Dimensions_unit" type="nnumber" id="Carton_Dimensions_unit" value="{{$carton_details->Carton_Dimensions_unit ?? ''}}" > --}}
+
+                                                    <select name="Carton_Dimensions_unit"
+                                                        class="select2" id="Carton_Dimensions_unit">
+                                                        <option value="mm">mm</option>
+                                                        <option value="cms">cms</option>
+                                                        <option value="inches">inches</option>
+                                                        <option value="feet">feet</option>
+                                                    </select>
+
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-md-6 col-12">
+                                                <label class="">{{ __('UOM') }}</label>
+                                                {{-- DropDown --}}
+                                                {{-- pcs/ sets --}}
+                                                <div class="form-group">
+                                                    {{-- <input class="form-control" name="carton_unit" type="nnumber" id="carton_unit" value="{{$carton_details->carton_unit ?? ''}}" > --}}
+                                                    <select name="carton_unit" id="carton_unit"
+                                                        class="form-control select2">
+                                                        <option
+                                                            @if (($carton_details->carton_unit ?? '') == 'pcs') selected @endif
+                                                            value="pcs">pcs</option>
+                                                        <option
+                                                            @if (($carton_details->carton_unit ?? '') == 'sets') selected @endif
+                                                            value="sets">sets</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-12">
+
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <hr class="text-primary">
+                                                <label for="productsourcedbx">
+                                                    <div class="h6">Sourced from Outside</div>
+                                                </label>
+                                                <br>
+                                                <input type="checkbox" data-open="productsourcedbox" id="productsourcedbx"
+                                                    class="hiddenbxbtn" @if (
+                                                        ($prodextra->vendor_sourced_from ?? '') != '' ||
+                                                            ($prodextra->vendor_price ?? '') != '' ||
+                                                            ($prodextra->vendor_currency ?? '') != '' ||
+                                                            ($prodextra->product_cost_unit ?? '') != '') checked @endif>
+                                            </div>
+                                        </div>
+                                        <div class="row d-none" id="productsourcedbox">
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group ">
+                                                    <label for="vendor_sourced_from" class="control-label">Vendor Sourced
+                                                        from</label>
+                                                    <input class="form-control" name="vendor_sourced_from" type="text"
+                                                        id="vendor_sourced_from"
+                                                        value="{{ $prodextra->vendor_sourced_from ?? '' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group ">
+                                                    <label for="vendor_price" class="control-label">Vendor Price</label>
+                                                    <input class="form-control" name="vendor_price" type="text"
+                                                        id="vendor_price" value="{{ $prodextra->vendor_price ?? '' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group ">
+                                                    <label for="product_cost_unit" class="control-label">Product Cost Unit</label>
+                                                    <input class="form-control" name="product_cost_unit" type="text"
+                                                        id="product_cost_unit"
+                                                        value="{{ $prodextra->product_cost_unit ?? '' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group ">
+                                                    <label for="vendor_currency" class="control-label">Vendor Currency</label>
+                                                    <input class="form-control" name="vendor_currency" type="text"
+                                                        id="vendor_currency" value="{{ $prodextra->vendor_currency ?? '' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group ">
+                                                    <label for="sourcing_year" class="control-label">Sourcing Year</label>
+
+                                                    <select name="sourcing_year" id="sourcing_year" class="form-control select2">
+                                                        <option value="">Select Year</option>
+                                                        @php
+                                                            $selectedYear = $prodextra->sourcing_year ?? '';
+                                                        @endphp
+                                                        @for ($i = date('Y'); $i >= 1985; $i--)
+                                                            <option value="{{ $i }}"
+                                                                @if ($selectedYear == $i) selected @endif>
+                                                                {{ $i }}</option>
+                                                        @endfor
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-4">
+                                                <div class="form-group ">
+                                                    <label for="sourcing_month" class="control-label">Sourcing Month</label>
+                                                    <select name="sourcing_month" id="sourcing_month" class="select2">
+                                                        <option>Select Sourcing Month</option>
+                                                        @php
+                                                            $selectedMonth = $prodextra->sourcing_month ?? '';
+                                                        @endphp
+                                                        @foreach ($months as $monthValue => $monthName)
+                                                            <option value="{{ $monthValue }}"
+                                                                @if ($selectedMonth == $monthValue) selected @endif>
+                                                                {{ $monthName }}</option>
+                                                        @endforeach
+                                                    </select>
+
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-12">
+                                                <div class="form-group ">
+                                                    <label for="remarks"
+                                                        class="control-label">Remarks</label>
+                                                    <input class="form-control" name="remarks"
+                                                        type="text" id="remarks"
+                                                        value="{{ $prodextra->remarks ?? '' }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                    {{-- -- Custom Fields of User 5 ` --}}
+                                    @if (in_array('5', $fileds_sections))
+                                        <div class="col-12">
+                                            <div class="h5">Custom Cols</div>
+                                        </div>
+                                        @if ($user_custom_fields != null)
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    @foreach ($user_custom_fields as $user_custom_field)
+                                                        @if ($user_custom_field['ref_section'] === '5')
+                                                            <div class="col-6">
+                                                                <div class="form-group">
+                                                                    <label
+                                                                        for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
+                                                                    {!! $user_custom_field['tag'] !!}
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+
+
+                            <div class="stepper d-none" data-index="5">
+                                <div class="card">
+                                    <div class="col-12">
+                                        <div class="row mb-3 mx-1">
+                                            <div class="col-12">
+                                                <hr class="text-primary">
+                                                <label for="productpropertiesbx">
+                                                    <div class="h6">Properties</div>
+                                                </label> &nbsp;&nbsp;&nbsp;
+                                                <input type="checkbox" data-open="productpropertiesbox" id="productpropertiesbx"
+                                                    class="hiddenbxbtn" @if ($attribute_value_id != null) checked @endif>
+                                            </div>
+
+                                            <div class="row d-none" id="productpropertiesbox">
+                                                @foreach ($user_custom_col_list as $key => $item)
+                                                    {{-- ` Getting Product Property Values --}}
+                                                    @php
+                                                        $system = App\Models\ProductAttribute::where('name', $item)
+                                                            ->where('user_id', null)
+                                                            ->first();
+                                                        $own = App\Models\ProductAttribute::where('name', $item)
+                                                            ->where('user_id', auth()->id())
+                                                            ->first();
+                                                        if ($system != null) {
+                                                            $records = $system;
+                                                        } else {
+                                                            $records = $own;
+                                                        }
+                                                        $parent = $records;
+                                                        $og = $records;
+                                                        $records = App\Models\ProductAttributeValue::where('parent_id', $parent->id)->get();
+
+                                                    @endphp
+                                                    {{-- <div class="col-md-6 col-12">
                                                         <div class="form-group">
-                                                            <label for="season_month" class="control-label">Season / Month</label>
-                                                            {{-- <input  class="form-control" name="season_month" type="text" id="season_month" value="{{$prodextra->season_month ?? '' }}" > --}}
-                                                            <select name="season_month" id="season_month" class="select2">
-                                                                <option value="">Select Sourcing Month</option>
-                                                                @php
-                                                                    $selectedMonth = $prodextra->season_month ?? '';
-                                                                @endphp
-                                                                @foreach ($months as $monthValue => $monthName)
-                                                                    <option value="{{ $monthValue }}"
-                                                                        @if ($selectedMonth == $monthValue) selected @endif>
-                                                                        {{ $monthName }}</option>
+                                                            <label
+                                                                for="properties_{{ $key }}">{{ $item }}</label>
+                                                            <select name="properties[]" id="properties_{{ $key }}"
+                                                                class="select2" @if (in_array($og->id,$variant_basis_tmp)) required @endif
+                                                                @if ($product->id == $product->id && request()->has('type') && decrypt(request()->get('type')) == 'editmainksku') multiple @endif>
+                                                                <option value="">Select One</option>
+                                                                @foreach ($records as $record)
+                                                                    <option value="{{ $record->id }}"
+                                                                        @if (in_array($record->id, $attribute_value_id)) selected @endif>
+                                                                        {{ $record->attribute_value }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-4 col-4">
-                                                        <div class="form-group ">
-                                                            <label for="season_year">Theme / Collection Year</label label>
-                                                            {{-- <input class="form-control" name="season_year" type="number" id="season_year" value= "{{ $prodextra->season_year ?? '0' }}"  required> --}}
-                                                            {{-- <select id="season_year"></select> --}}
-                                                            <select name="season_year" id="season_year" class="form-control select2">
-                                                                <option value="">Select Year</option>
-                                                                {{-- <option value="{{ $option->id }}" @if ($option->id == $prodextra->season_year) selected
-                                                                                            @endif>{{  $option->name ?? ''}}</option> --}}
+                                                    </div> --}}
+
+                                                    {{-- <p>
+                                                        {{ magicstring($attribute_value_id); }}
+                                                    </p> --}}
+
+                                                    @if (count($records) != 0 && $parent->value != 'any_value' && $parent->value != 'uom')
+                                                        <div class="col-md-6 col-12">
+                                                            <div class="form-group">
+                                                                <label for="properties_{{$key}}">{{ $item }}</label>
+                                                                <select name="properties[]" id="properties_{{$key}}" class="select2">
+                                                                    <option value="">Select One</option>
+                                                                    @foreach ($records as $record)
+                                                                        <option value="{{ $record->id }}"  @if (in_array($record->id, $attribute_value_id)) selected @endif>{{ $record->attribute_value }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    @elseif ($parent->value == 'uom')
+                                                        <div class="col-md-6 col-12">
+                                                            <div class="form-group">
+
+                                                                <label for="properties_{{$key}}">{{ $item }}</label>
                                                                 @php
-                                                                    $selectedYear = $prodextra->season_year ?? '';
+                                                                    $eeduhfj = App\Models\ProductExtraInfo::where('product_id', $product->id)->where('attribute_id',$parent->id)->first();
+
+                                                                    if ($eeduhfj != null) {
+                                                                        $record = App\Models\ProductAttributeValue::where('id', $eeduhfj->attribute_value_id)->first() ?? '';
+                                                                        $value = explode("x",$record->attribute_value) ?? '';
+                                                                    }
                                                                 @endphp
-                                                                @for ($i = date('Y'); $i >= 1985; $i--)
-                                                                    <option value="{{ $i }}"
-                                                                        @if ($selectedYear == $i) selected @endif>
-                                                                        {{ $i }}</option>
-                                                                @endfor
-                                                            </select>
+                                                                <div class="d-flex">
+                                                                    <input type="number" min="0" class="form-control" name="any_value-{{$item}}[L]" id="properties_{{$key}}" placeholder="Length" value="{{ $value[0] ?? '' }}">
 
+                                                                    <input type="number" min="0" class="form-control" name="any_value-{{$item}}[W]" id="properties_{{$key}}" placeholder="Width" value="{{ $value[1] ?? '' }}">
 
+                                                                    <input type="number" min="0" class="form-control" name="any_value-{{$item}}[H]" id="properties_{{$key}}" placeholder="Height" value="{{ $value[2] ?? '' }}">
 
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-
-                                        
-
-                                        
-
-
-                                        {{-- -- Custom Fields of User 4 ` --}}
-                                        @if (in_array('4', $fileds_sections))
-                                            <div class="col-12">
-                                                <div class="h5">Custom Cols</div>
-                                            </div>
-                                            @if ($user_custom_fields != null)
-                                                <div class="col-12">
-                                                    <div class="row">
-                                                        @foreach ($user_custom_fields as $user_custom_field)
-                                                            @if ($user_custom_field['ref_section'] === '4')
-                                                                <div class="col-6">
-                                                                    <div class="form-group">
-                                                                        <label
-                                                                            for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
-                                                                        {!! $user_custom_field['tag'] !!}
-                                                                    </div>
+                                                                    <select name="any_value-{{$item}}[U]" id="any_value-{{$item}}" class="form-control select2">
+                                                                        <option value="">Select Unit</option>
+                                                                        <option value="mm" @if (($value[3] ?? '') == 'mm') selected @endif>MM</option>
+                                                                        <option value="cm" @if (($value[3] ?? '') == 'cm') selected @endif>CM</option>
+                                                                        <option value="inches" @if (($value[3] ?? '') == 'inches') selected @endif>Inches</option>
+                                                                        <option value="feet" @if (($value[3] ?? '') == 'feet') selected @endif>Feet</option>
+                                                                    </select>
                                                                 </div>
-                                                            @endif
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endif
 
-                                        <div class="col-md-4 col-4 d-none">
-                                            <div class="form-group">
-                                                <label for="video_url">Video Url </label>
-                                                <input type="url" name="video_url" class="form-control"
-                                                    value="{{ $product->video_url }}" id="video_url">
-                                            </div>
-                                        </div>
-
-
-                                        <div class="col-md-4 col-4 d-none">
-                                            <div class="form-group {{ $errors->has('artwork_url') ? 'has-error' : '' }}">
-                                                <label for="artwork_url" class="control-label">Art Work Reference</label>
-                                                <input class="form-control" name="artwork_url" type="url"
-                                                    id="artwork_url" value="{{ $product->artwork_url }}"
-                                                    placeholder="Enter Artwork URL">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {{-- plotting basic header fields end --}}
-                        <div class="card d-none">
-                            <div class="card-header">
-                                <h3>Content</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group {{ $errors->has('features') ? 'has-error' : '' }}">
-                                            <div class="alert alert-info">
-                                                Add Product Features With New Line Each
-                                            </div>
-                                            <label for="features" class="control-label">Features</label>
-                                            <textarea name="features" class="form-control" id="features cols="30" rows="5">{{ $product->features }}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-6">
-                                        <div
-                                            class="form-group {{ $errors->has('meta_description') ? 'has-error' : '' }}">
-                                            <label for="meta_description" class="control-label">Meta Description</label>
-                                            <textarea name="meta_description" class="form-control" id="meta_description" cols="30" rows="3">{{ $product->meta_description ?? old('meta_description') }}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-6">
-                                        <div class="form-group {{ $errors->has('meta_keywords') ? 'has-error' : '' }}">
-                                            <label for="meta_keywords" class="control-label">Meta Keywords</label>
-                                            <textarea name="meta_keywords" class="form-control" id="meta_keywords" cols="30" rows="3">{{ $product->meta_keywords ?? old('meta_keywords') }}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="stepper d-none" data-index="4">
-                        <div class="card ">
-                            <div class="col-12 d-none">
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <hr class="text-primary">
-                                        <label for="productexclusivebx">
-                                            <div class="h6">Exclusive </div>
-                                        </label>
-                                        <br>
-                                        <input type="checkbox" data-open="productexclusivebox" id="productexclusivebx"
-                                            class="hiddenbxbtn">
-                                    </div>
-                                </div>
-                                <div class="row d-none" id="productexclusivebox">
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-check pl-0">
-                                            <label for="exclubtn" class="mr-3">
-                                                Copyright/ Exclusive item
-                                                <span class="text-danger">*</span>
-                                            </label>
-                                            <input type="checkbox" class="custom-control-input" id="exclubtn"
-                                                data-open="productexclusivebuyernamebox" value="1" name="exclusive"
-                                                @if ($product->exclusive == 1) checked @endif >
-                                        </div>
-                                    </div>
-
-                                    
-                                </div>
-                            </div>
-
-                            {{-- --Moved --}}
-                            <div class="col-12 my-2">
-                                <div class="h6 card-header" style="padding: 0px;">
-                                    <h6>Properties</h6>
-                                </div>
-                            </div>
-
-                            {{-- ` PRODUCT WEIGHT GROUP --}}
-                            <div class="col-12">
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <hr class="text-primary">
-                                        <label for="weightbox">
-                                            <div class="h6">Product Weight</div>
-                                        </label> &nbsp;&nbsp;&nbsp;
-                                        <input type="checkbox" data-open="weightboxbtn" id="weightbox" class="hiddenbxbtn" @if ($shipping->gross_weight ?? ('' != '' || $shipping->weight ?? '' != '')) checked @endif>                                                                                                                    
-                                    </div>
-                                </div>
-                                <div class="row d-none" id="weightboxbtn">
-                                    <div class="col-md-4 col-4">
-                                        <div class="form-group ">
-                                            <label for="gross_weight"
-                                                class="control-label">Gross Weight</label>
-                                            <input class="form-control" name="gross_weight"
-                                                type="text" id="gross_weight"
-                                                value="{{ $shipping->gross_weight ?? '' }}">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4 col-4">
-                                        <label class="">{{ __('Net Weight') }}</label>
-                                        <div class="form-group">
-                                            <input class="form-control" name="weight"
-                                                type="nnumber" id="weight"
-                                                value="{{ $shipping->weight ?? '' }}">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4 col-4">
-                                        <label class="">{{ __('Weight UOM') }}</label>
-                                        {{-- Drop Down --}}
-                                        {{-- gms/kgs --}}
-                                        <div class="form-group">
-                                            <select name="unit" id="unit"
-                                                class="form-control select2">
-                                                <option
-                                                    @if (($shipping->unit ?? '') == 'gms') selected @endif
-                                                    value="gms">gms</option>
-                                                <option
-                                                    @if (($shipping->unit ?? '') == 'kgs') selected @endif
-                                                    value="kgs">kgs</option>
-                                            </select>
-                                            {{-- <input class="form-control" name="unit" type="nnumber" id="unit" value="{{$shipping->unit ?? ''}}" > --}}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- ` PRODUCT DIMENSION GROUP --}}
-                            <div class="col-12">
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <hr class="text-primary">
-                                        <label for="productdimensionsbx">
-                                            <div class="h6">Product Dimensions</div>
-                                        </label> &nbsp;&nbsp;&nbsp;
-                                        <input type="checkbox"
-                                            data-open="productdimensionsbox"
-                                            id="productdimensionsbx" class="hiddenbxbtn"
-                                            @if ($shipping->length ?? ('' != '' || $shipping->width ?? ('' != '' || $shipping->height ?? '' != ''))) checked @endif>
-                                    </div>
-                                </div>
-                                <div class="row d-none" id="productdimensionsbox">
-
-                                    <div class="col-md-6 col-12">
-                                        <label class="Length">{{ __('Length') }}</label>
-                                        <div class="form-group">
-                                            <input class="form-control" name="length"
-                                                type="nnumber" id="length"
-                                                value="{{ $shipping->length ?? '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <label class="">{{ __('Width') }}</label>
-                                        <div class="form-group">
-                                            <input class="form-control" name="width"
-                                                type="nnumber" id="width"
-                                                value="{{ $shipping->width ?? '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <label class="">{{ __('Height') }}</label>
-                                        <div class="form-group">
-                                            <input class="form-control" name="height"
-                                                type="nnumber" id="height"
-                                                value="{{ $shipping->height ?? '' }}">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6 col-12">
-                                        <label class="">{{ __('LWH UOM') }}</label>
-                                        {{-- DropDown --}}
-                                        {{-- mm/cms/inches/feet --}}
-                                        {{-- @dd($shipping) --}}
-                                        <div class="form-group">
-                                            <select name="length_unit" id="length_unit"
-                                                class="form-control select2">
-                                                <option
-                                                    @if (($shipping->length_unit ?? '') == 'mm') selected @endif
-                                                    value="mm">mm</option>
-                                                <option
-                                                    @if (($shipping->length_unit ?? '') == 'cms') selected @endif
-                                                    value="cms">cms</option>
-                                                <option
-                                                    @if (($shipping->length_unit ?? '') == 'inches') selected @endif
-                                                    value="inches">inches</option>
-                                                <option
-                                                    @if (($shipping->length_unit ?? '') == 'feet') selected @endif
-                                                    value="feet">feet</option>
-                                            </select>
-                                            {{-- <input class="form-control" name="length_unit" type="nnumber" id="length_unit" value="{{$shipping->length_unit ?? ''}}" > --}}
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            {{-- `PRODUCT PACKING --}}
-                            <div class="col-12">
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <hr class="text-primary">
-                                        <label for="productpackingbx">
-                                            <div class="h6">Product Packing</div>
-                                        </label> &nbsp;&nbsp;&nbsp;
-                                        <input type="checkbox" data-open="productpackingbox"
-                                            id="productpackingbx" class="hiddenbxbtn"
-                                            @if (
-                                                $carton_details->standard_carton ??
-                                                    ('' != '' || $carton_details->carton_weight ??
-                                                        ('' != '' || $carton_details->carton_length ??
-                                                            ('' != '' || $carton_details->carton_width ??
-                                                                ('' != '' || $carton_details->carton_height ?? '' != ''))))) checked @endif>
-                                    </div>
-                                </div>
-
-                                <div class="row d-none" id="productpackingbox">
-                                    <div class="col-md-6 col-12">
-                                        <label
-                                            class="">{{ __('Standard Carton Pcs') }}</label>
-                                        <div class="form-group">
-                                            <input class="form-control" name="standard_carton"
-                                                type="text" id="standard_carton"
-                                                value="{{ $carton_details->standard_carton ?? '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <label
-                                            class="">{{ __('Carton Actual Weight') }}</label>
-                                        <div class="form-group">
-                                            <input class="form-control" name="carton_weight"
-                                                type="number" id="carton_weight"
-                                                value="{{ $carton_details->carton_weight ?? '' }}">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6 col-12">
-                                        <label
-                                            class="">{{ __('Carton Length') }}</label>
-                                        <div class="form-group">
-                                            <input class="form-control" name="carton_length"
-                                                type="number" id="carton_length"
-                                                value="{{ $carton_details->carton_length ?? '' }}">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6 col-12">
-                                        <label class="">{{ __('Carton Width') }}</label>
-                                        <div class="form-group">
-                                            <input class="form-control" name="carton_width"
-                                                type="number" id="carton_width"
-                                                value="{{ $carton_details->carton_width ?? '' }}">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6 col-12">
-                                        <label
-                                            class="">{{ __('Carton Height') }}</label>
-                                        <div class="form-group">
-                                            <input class="form-control" name="carton_height"
-                                                type="number" id="carton_height"
-                                                value="{{ $carton_details->carton_height ?? '' }}">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6 col-12">
-                                        <label
-                                            class="">{{ __('Carton Dimension Unit') }}</label>
-                                        <div class="form-group">
-                                            {{-- <input class="form-control" name="Carton_Dimensions_unit" type="nnumber" id="Carton_Dimensions_unit" value="{{$carton_details->Carton_Dimensions_unit ?? ''}}" > --}}
-
-                                            <select name="Carton_Dimensions_unit"
-                                                class="select2" id="Carton_Dimensions_unit">
-                                                <option value="mm">mm</option>
-                                                <option value="cms">cms</option>
-                                                <option value="inches">inches</option>
-                                                <option value="feet">feet</option>
-                                            </select>
-
-                                        </div>
-                                    </div>
-
-
-                                    <div class="col-md-6 col-12">
-                                        <label class="">{{ __('UOM') }}</label>
-                                        {{-- DropDown --}}
-                                        {{-- pcs/ sets --}}
-                                        <div class="form-group">
-                                            {{-- <input class="form-control" name="carton_unit" type="nnumber" id="carton_unit" value="{{$carton_details->carton_unit ?? ''}}" > --}}
-                                            <select name="carton_unit" id="carton_unit"
-                                                class="form-control select2">
-                                                <option
-                                                    @if (($carton_details->carton_unit ?? '') == 'pcs') selected @endif
-                                                    value="pcs">pcs</option>
-                                                <option
-                                                    @if (($carton_details->carton_unit ?? '') == 'sets') selected @endif
-                                                    value="sets">sets</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-
-                            <div class="col-12">
-                                
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <hr class="text-primary">
-                                        <label for="productsourcedbx">
-                                            <div class="h6">Sourced from Outside</div>
-                                        </label>
-                                        <br>
-                                        <input type="checkbox" data-open="productsourcedbox" id="productsourcedbx"
-                                            class="hiddenbxbtn" @if (
-                                                ($prodextra->vendor_sourced_from ?? '') != '' ||
-                                                    ($prodextra->vendor_price ?? '') != '' ||
-                                                    ($prodextra->vendor_currency ?? '') != '' ||
-                                                    ($prodextra->product_cost_unit ?? '') != '') checked @endif>
-                                    </div>
-                                </div>
-                                <div class="row d-none" id="productsourcedbox">
-                                    <div class="col-md-4 col-4">
-                                        <div class="form-group ">
-                                            <label for="vendor_sourced_from" class="control-label">Vendor Sourced
-                                                from</label>
-                                            <input class="form-control" name="vendor_sourced_from" type="text"
-                                                id="vendor_sourced_from"
-                                                value="{{ $prodextra->vendor_sourced_from ?? '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-4">
-                                        <div class="form-group ">
-                                            <label for="vendor_price" class="control-label">Vendor Price</label>
-                                            <input class="form-control" name="vendor_price" type="text"
-                                                id="vendor_price" value="{{ $prodextra->vendor_price ?? '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-4">
-                                        <div class="form-group ">
-                                            <label for="product_cost_unit" class="control-label">Product Cost Unit</label>
-                                            <input class="form-control" name="product_cost_unit" type="text"
-                                                id="product_cost_unit"
-                                                value="{{ $prodextra->product_cost_unit ?? '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-4">
-                                        <div class="form-group ">
-                                            <label for="vendor_currency" class="control-label">Vendor Currency</label>
-                                            <input class="form-control" name="vendor_currency" type="text"
-                                                id="vendor_currency" value="{{ $prodextra->vendor_currency ?? '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-4">
-                                        <div class="form-group ">
-                                            <label for="sourcing_year" class="control-label">Sourcing Year</label>
-
-                                            <select name="sourcing_year" id="sourcing_year" class="form-control select2">
-                                                <option value="">Select Year</option>
-                                                @php
-                                                    $selectedYear = $prodextra->sourcing_year ?? '';
-                                                @endphp
-                                                @for ($i = date('Y'); $i >= 1985; $i--)
-                                                    <option value="{{ $i }}"
-                                                        @if ($selectedYear == $i) selected @endif>
-                                                        {{ $i }}</option>
-                                                @endfor
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-4">
-                                        <div class="form-group ">
-                                            <label for="sourcing_month" class="control-label">Sourcing Month</label>
-                                            <select name="sourcing_month" id="sourcing_month" class="select2">
-                                                <option>Select Sourcing Month</option>
-                                                @php
-                                                    $selectedMonth = $prodextra->sourcing_month ?? '';
-                                                @endphp
-                                                @foreach ($months as $monthValue => $monthName)
-                                                    <option value="{{ $monthValue }}"
-                                                        @if ($selectedMonth == $monthValue) selected @endif>
-                                                        {{ $monthName }}</option>
-                                                @endforeach
-                                            </select>
-
-
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group ">
-                                            <label for="remarks"
-                                                class="control-label">Remarks</label>
-                                            <input class="form-control" name="remarks"
-                                                type="text" id="remarks"
-                                                value="{{ $prodextra->remarks ?? '' }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-
-
-                            {{-- -- Custom Fields of User 5 ` --}}
-                            @if (in_array('5', $fileds_sections))
-                                <div class="col-12">
-                                    <div class="h5">Custom Cols</div>
-                                </div>
-                                @if ($user_custom_fields != null)
-                                    <div class="col-12">
-                                        <div class="row">
-                                            @foreach ($user_custom_fields as $user_custom_field)
-                                                @if ($user_custom_field['ref_section'] === '5')
-                                                    <div class="col-6">
-                                                        <div class="form-group">
-                                                            <label
-                                                                for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
-                                                            {!! $user_custom_field['tag'] !!}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
-                            @endif
-                        </div>
-                    </div>
+                                                    @else
 
-
-                    <div class="stepper d-none" data-index="5">
-                        <div class="card">
-                            <div class="col-12">
-                                <div class="row mb-3 mx-1">
-                                    <div class="col-12">
-                                        <hr class="text-primary">
-                                        <label for="productpropertiesbx">
-                                            <div class="h6">Properties</div>
-                                        </label> &nbsp;&nbsp;&nbsp;
-                                        <input type="checkbox" data-open="productpropertiesbox" id="productpropertiesbx"
-                                            class="hiddenbxbtn" @if ($attribute_value_id != null) checked @endif>
-                                    </div>
-
-                                    <div class="row d-none" id="productpropertiesbox">
-                                        @foreach ($user_custom_col_list as $key => $item)
-                                            {{-- ` Getting Product Property Values --}}
-                                            @php
-                                                $system = App\Models\ProductAttribute::where('name', $item)
-                                                    ->where('user_id', null)
-                                                    ->first();
-                                                $own = App\Models\ProductAttribute::where('name', $item)
-                                                    ->where('user_id', auth()->id())
-                                                    ->first();
-                                                if ($system != null) {
-                                                    $records = $system;
-                                                } else {
-                                                    $records = $own;
-                                                }
-                                                $parent = $records;
-                                                $og = $records;
-                                                $records = App\Models\ProductAttributeValue::where('parent_id', $records->id)->get();
-
-                                            @endphp
-                                            {{-- <div class="col-md-6 col-12">
-                                                <div class="form-group">
-                                                    <label
-                                                        for="properties_{{ $key }}">{{ $item }}</label>
-                                                    <select name="properties[]" id="properties_{{ $key }}"
-                                                        class="select2" @if (in_array($og->id,$variant_basis_tmp)) required @endif
-                                                        @if ($product->id == $product->id && request()->has('type') && decrypt(request()->get('type')) == 'editmainksku') multiple @endif>
-                                                        <option value="">Select One</option>
-                                                        @foreach ($records as $record)
-                                                            <option value="{{ $record->id }}"
-                                                                @if (in_array($record->id, $attribute_value_id)) selected @endif>
-                                                                {{ $record->attribute_value }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div> --}}
-
-                                            {{-- <p>
-                                                {{ magicstring($attribute_value_id); }}
-                                            </p> --}}
-
-                                            @if (count($records) != 0 && $parent->value != 'any_value' && $parent->value != 'uom')
-                                                <div class="col-md-6 col-12">
-                                                    <div class="form-group">
-                                                        <label for="properties_{{$key}}">{{ $item }}</label>
-                                                        <select name="properties[]" id="properties_{{$key}}" class="select2">
-                                                            <option value="">Select One</option>
-                                                            @foreach ($records as $record)
-                                                                <option value="{{ $record->id }}"  @if (in_array($record->id, $attribute_value_id)) selected @endif>{{ $record->attribute_value }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            @elseif ($parent->value == 'uom')
-                                                <div class="col-md-6 col-12">
-                                                    <div class="form-group">
-
-                                                        <label for="properties_{{$key}}">{{ $item }}</label>
+                                                        @if ($parent->value == 'uom')
+                                                            @continue
+                                                        @endif
                                                         @php
                                                             $eeduhfj = App\Models\ProductExtraInfo::where('product_id', $product->id)->where('attribute_id',$parent->id)->first();
 
                                                             if ($eeduhfj != null) {
                                                                 $record = App\Models\ProductAttributeValue::where('id', $eeduhfj->attribute_value_id)->first() ?? '';
-                                                                $value = explode("x",$record->attribute_value) ?? '';
                                                             }
                                                         @endphp
-                                                        <div class="d-flex">
-                                                            <input type="number" min="0" class="form-control" name="any_value-{{$item}}[L]" id="properties_{{$key}}" placeholder="Length" value="{{ $value[0] ?? '' }}">
 
-                                                            <input type="number" min="0" class="form-control" name="any_value-{{$item}}[W]" id="properties_{{$key}}" placeholder="Width" value="{{ $value[1] ?? '' }}">
-
-                                                            <input type="number" min="0" class="form-control" name="any_value-{{$item}}[H]" id="properties_{{$key}}" placeholder="Height" value="{{ $value[2] ?? '' }}">
-
-                                                            <select name="any_value-{{$item}}[U]" id="any_value-{{$item}}" class="form-control select2">
-                                                                <option value="">Select Unit</option>
-                                                                <option value="mm" @if (($value[3] ?? '') == 'mm') selected @endif>MM</option>
-                                                                <option value="cm" @if (($value[3] ?? '') == 'cm') selected @endif>CM</option>
-                                                                <option value="inches" @if (($value[3] ?? '') == 'inches') selected @endif>Inches</option>
-                                                                <option value="feet" @if (($value[3] ?? '') == 'feet') selected @endif>Feet</option>
-                                                            </select>
+                                                        <div class="col-md-6 col-12">
+                                                            <div class="form-group">
+                                                                <label for="properties_{{$key}}">{{ $item }}    </label>
+                                                                <input type="text" class="form-control" name="any_value-{{$item}}" id="properties_{{$key}}" value="{{ $record->attribute_value ?? '' }}">
+                                                            </div>
                                                         </div>
+                                                    @endif
 
-                                                    </div>
-                                                </div>
-                                            @else
+                                                @endforeach
+                                            </div>
+                                        </div>
 
-                                                @if ($parent->value == 'uom')
-                                                    @continue
-                                                @endif
-                                                @php
-                                                    $eeduhfj = App\Models\ProductExtraInfo::where('product_id', $product->id)->where('attribute_id',$parent->id)->first();
 
-                                                    if ($eeduhfj != null) {
-                                                        $record = App\Models\ProductAttributeValue::where('id', $eeduhfj->attribute_value_id)->first() ?? '';
-                                                    }
-                                                @endphp
+                                    </div>
 
-                                                <div class="col-md-6 col-12">
-                                                    <div class="form-group">
-                                                        <label for="properties_{{$key}}">{{ $item }}    </label>
-                                                        <input type="text" class="form-control" name="any_value-{{$item}}" id="properties_{{$key}}" value="{{ $record->attribute_value ?? '' }}">
-                                                    </div>
-                                                </div>
-                                            @endif
+                                </div>
+                            </div>
 
-                                        @endforeach
+
+
+                            @if ($product->user_id != null)
+                                <input type="hidden" name="user_id" value="{{ $product->user_id }}">
+                            @else
+                                <div class="col-md-4 col-12">
+                                    <div class="form-group">
+                                        <label for="user_id">User</label>
+                                        <select name="user_id" id="user_id"
+                                            class="form-control select2 </div>
+                                                                <option value=""
+                                            readonly>Select User </option>
+                                            @foreach (UserList() as $option)
+                                                <option value="{{ $option->id }}"
+                                                    {{ old('user_id') == $option->id ? 'Selected' : '' }}>
+                                                    {{ $option->name ?? '' }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
-
-
+                            @endif
+                            <div class="col-md-4 col-12 d-none">
+                                <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select name="status" id="status" class="form-control select2" required>
+                                        <option value="" readonly>Select Status</option>
+                                        @foreach (getProductStatus() as $option)
+                                            <option value="{{ $option['id'] }}"
+                                                @if ($option['id'] == $product->status) selected @endif>{{ $option['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
 
-                        </div>
-                    </div>
-
-
-
-                    @if ($product->user_id != null)
-                        <input type="hidden" name="user_id" value="{{ $product->user_id }}">
-                    @else
-                        <div class="col-md-4 col-12">
-                            <div class="form-group">
-                                <label for="user_id">User</label>
-                                <select name="user_id" id="user_id"
-                                    class="form-control select2 </div>
-                                                        <option value=""
-                                    readonly>Select User </option>
-                                    @foreach (UserList() as $option)
-                                        <option value="{{ $option->id }}"
-                                            {{ old('user_id') == $option->id ? 'Selected' : '' }}>
-                                            {{ $option->name ?? '' }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    @endif
-                    <div class="col-md-4 col-12 d-none">
-                        <div class="form-group">
-                            <label for="status">Status</label>
-                            <select name="status" id="status" class="form-control select2" required>
-                                <option value="" readonly>Select Status</option>
-                                @foreach (getProductStatus() as $option)
-                                    <option value="{{ $option['id'] }}"
-                                        @if ($option['id'] == $product->status) selected @endif>{{ $option['name'] }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    {{-- <div class="stepper d-none" data-index="7">
-                                            <div class="card ">
-                                                <div class="row d-flex justify-content-center">
-                                                    <div class="col-md-10 col-12">
-
-                                                        <table class="table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th scope="col">#</th>
-                                                                    <th scope="col">Varients</th>
-                                                                    <th scope="col">Edit</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                   @foreach ($product_variant_combo as $product_variant)
-                                                                        <tr>
-                                                                            <td> {{ $loop->iteration }} </td>
-                                                                            <td>
-                                                                                @foreach ($product_variant as $key => $item)
-                                                                                    {{ getAttruibuteValueById($item)->attribute_value }}
-                                                                                    @if ($key < count($product_variant) - 1)
-                                                                                        ,
-                                                                                    @endif
-                                                                                @endforeach
-                                                                            </td>
-                                                                            <td>
-                                                                                @php
-                                                                                   $proid =  App\Models\ProductExtraInfo::whereIn('attribute_value_id',$product_variant)->wherein('product_id',$available_products)->where('user_id',$product->user_id)->where('group_id',$product->sku)->first();
-                                                                                   @endphp
-                                                                                @if ($proid != null)
-                                                                                    <a href="{{ route('panel.products.delete.sku',encrypt($proid->product_id)) }}" class="btn btn-outline-danger delete-btn">
-                                                                                        Delete
-                                                                                    </a>
-
-                                                                                    <a href="{{ route('panel.products.edit',$proid->product_id) }}" class="btn btn-outline-primary">
-                                                                                        Edit
-                                                                                    </a>
-                                                                                @endif
-                                                                            </td>
-                                                                        </tr>
-
-                                                                        @php
-                                                                            if ($proid != null) {
-                                                                                $available_products = array_diff($available_products, [$proid->product_id]);
-                                                                            }
-                                                                        @endphp
-                                                                   @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                                </div>
-                                        </div> --}}
 
                     <div class="alert alert-info d-none">
                         <p class="mb-0">Changing any field will result in unpublishing SKUs from all linked sellers.</p>
@@ -2230,7 +2210,7 @@
                 @if (!request()->has('type'))
                     CKEDITOR.replace('description', options);
                 @else
-                    // Diable All Fields in Main SKU
+                    // Disable All Fields in Main SKU            
                     $("input , Select , textarea").attr('disabled','true')
                 @endif
             });

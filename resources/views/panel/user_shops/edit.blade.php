@@ -15,7 +15,7 @@
     $breadcrumb_arr = [['name' => 'Seller Profile', 'url' => 'javascript:void(0);', 'class' => '']];
 
     $user = App\User::whereId($user_shop->user_id)->first();
-    
+
     if($user){
         $ekyc = json_decode($user->ekyc_info);
     }
@@ -49,7 +49,7 @@
             }
 
         </style>
-    @endpush  
+    @endpush
 
     <div class="container-fluid">
         <div class="page-header">
@@ -96,7 +96,7 @@
                                     <a data-active="shop-details" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "shop-details") active  @endif" id="pills-general-tab" data-toggle="pill" href="#last-month" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Account Info')}}</a>
                                 </li>
                             @endif
-                                
+
 
                             {{-- <li class="nav-item ">
                                 <a data-active="page-feature" class="mr-2 active-swicher  btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "page-feature") active  @endif" id="pills-general-tab" data-toggle="pill" href="#page-feature" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('My Page')}}</a>
@@ -108,22 +108,22 @@
                                 </li>
                             @endif
 
-                          
+
 
                             <li class="nav-item ">
                                 <a data-active="about-section" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "about-section") active  @endif" id="pills-general-tab" data-toggle="pill" href="#about-section" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Brief Intro')}}</a>
                             </li>
-                            
-                           
+
+
                             <li class="nav-item">
-                                <a data-active="my-address" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "my-address") active  @endif" id="pills-my-address-tab" data-toggle="pill" href="#my-address-area" role="tab" aria-controls="pills-my-address" aria-selected="false">{{ __('My Address')}}</a>
+                                <a data-active="my-address" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "my-address") active  @endif" id="pills-my-address-tab" data-toggle="pill" href="#my-address-area" role="tab" aria-controls="pills-my-address" aria-selected="false">{{ __('Entities')}}</a>
                             </li>
 
                             <li class="nav-item ">
                                 <a data-active="shop-passcodes" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "shop-passcodes") active  @endif" id="pills-settings2-tab" data-toggle="pill" href="#pills-settings2" role="tab" aria-controls="pills-settings2" aria-selected="false">{{ __('Passcodes')}}</a>
                             </li>
 
-                            
+
 
                             <li class="nav-item">
                                 <a data-active="security" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "security") active  @endif" id="pills-features-tab" data-toggle="pill" href="#features" role="tab" aria-controls="pills-features" aria-selected="false">{{ __('Security')}}</a>
@@ -141,7 +141,7 @@
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == "shop-details") active show @endif" id="last-month" role="tabpanel" aria-labelledby="pills-general-tab">
                                 <div class="row">
                                     <div class="col-lg-8">
-                                      
+
                                         {{-- <form action="{{ route('panel.user_shops.update',$user_shop->id) }}" method="post" enctype="multipart/form-data" id="UserShopForm"> --}}
                                         <form action="{{ route('customer.profile.update',$user->id) }}" method="post" enctype="multipart/form-data" id="UserShopForm">
                                             <input type="hidden" name="status" value="1">
@@ -152,7 +152,7 @@
                                                     <p class="mb-0">This changes Shop QR & make earlier ones non-usable</p>
                                                 </div>
                                             </div> --}}
-                                            <div class="row mt-3">        
+                                            <div class="row mt-3">
                                                 <div class="col-md-6 col-12">
                                                     <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                                                         <label for="name" class="control-label">Business Name</label>
@@ -171,7 +171,7 @@
                                                         </div>
 
                                                         <input @if($user->email_verified_at != null) @endif type="email" placeholder="test@test.com" class="form-control" name="email" id="email" value="{{ $user->email }}">
-                                                    </div>  
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-6 col-12 ">
                                                     <div class="form-group">
@@ -183,7 +183,7 @@
                                                         </div>
                                                         </div>
                                                         <input @if($user->phone_no_verified_at != null) readonly @endif type="phone_no" placeholder="test@test.com" class="form-control" name="phone" id="phone_no" value="{{ $user->phone }}">
-                                                    </div>  
+                                                    </div>
                                                 </div>
                                                 @if(AuthRole() == 'Admin')
                                                     <div class="col-md-12 ">
@@ -202,7 +202,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </form> 
+                                        </form>
 
                                         @if(AuthRole() == 'Admin')
                                             <form action="{{ route('customer.update.settings') }}" method="post" class="my-4">
@@ -214,7 +214,7 @@
                                                     <div class="col">
                                                         <label for="">Public Display</label> <br>
                                                         <input type="checkbox" @if($user_shop->shop_view == 1) checked @endif value="1" name="shop_view" class="js-single"/>
-                                                    </div>  
+                                                    </div>
                                                     <div class="col">
                                                         <label for="auto_acr" title="Enable You A Feature That Auto Accepting Catelogue Request">Auto Accept Request</label> <br>
                                                         <input type="checkbox" @if($user_shop->auto_acr == 1) checked @endif value="1" name="auto_acr" id="auto_acr" class="js-acr"/>
@@ -223,7 +223,7 @@
                                                         $teamdata = json_decode($user_shop->team);
                                                         $teamdata->team_visiblity = $teamdata->team_visiblity ?? 0;
                                                     @endphp
-                                                    
+
                                                     <div class="col">
                                                         <label for="public_about" title="Enable You A Feature That Auto Accepting Catelogue Request py-2">Public Team</label> <br>
                                                         <input type="checkbox" @if (isset($teamdata) && $teamdata != null && $teamdata->team_visiblity) checked @endif value="1" name="public_about" id="public_about" class="js-about"/>
@@ -244,7 +244,7 @@
                                                         <div class="form-group">
                                                             <label for="name">{{ __('Name')}}<span class="text-red">*</span></label>
                                                             <input type="text" placeholder="Enter Name" class="form-control" name="name" id="name" value="{{ $user->name }}">
-                                                        </div>  
+                                                        </div>
                                                     </div>
                                                     <div class="col-md-6 d-none">
                                                         <div class="form-group">
@@ -256,9 +256,9 @@
                                                                 @endif
                                                             </div>
                                                             <input @if($user->email_verified_at != null) readonly @endif type="email" placeholder="test@test.com" class="form-control" name="email" id="email" value="{{ $user->email }}">
-                                                        </div>  
+                                                        </div>
                                                     </div>
-                                                    
+
                                                     {{-- Additioal Phone Fields --}}
                                                     <div class="col-md-6">
                                                         <div class="form-group">
@@ -304,7 +304,7 @@
                                                                 <span><b>{{ json_decode($data->question) }}</b></span>
                                                                 <br><br>
                                                                 <p>
-                                                                    @forelse (json_decode($data->response) ?? [] as $item) 
+                                                                    @forelse (json_decode($data->response) ?? [] as $item)
                                                                         {{ $loop->iteration.". ". $item }} <br>
                                                                     @empty
                                                                         Didn't Filled Yet.
@@ -314,7 +314,7 @@
                                                         </div>
                                                     @endif
 
-                                                    
+
 
 
                                                     <div class="col-md-6 d-none">
@@ -328,14 +328,14 @@
                                                                     <option value="{{ $category->id }}" @if(isset($industry)) {{ in_array($category->id,$industry) ? 'selected' :'' }} @endif> {{ $category->name }}</option>
                                                                 @endforeach
                                                             </select>
-                                                        </div>  
+                                                        </div>
                                                     </div>
                                                     <div class="col-md-4 d-none">
                                                         <div class="form-group">
                                                             <label for="dob">{{ __('DOB')}}<span class="text-red">*</span></label>
                                                             <input id="" class="form-control" type="date" name="dob" placeholder="Select your birth date" value="{{ $user->dob }}" />
                                                             <div class="help-block with-errors"></div>
-                                                        </div>  
+                                                        </div>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <div class="form-group d-none">
@@ -353,19 +353,19 @@
                                                                             <i class="helper"></i>{{ __('Female')}}
                                                                         </label>
                                                                     </div>
-                                                            </div>                                        
+                                                            </div>
                                                             <div class="help-block with-errors"></div>
                                                         </div>
                                                     </div>
-                                                    
-                                                    
-                                                
+
+
+
                                                     <div class="col-md-12 d-none">
                                                         <div class="form-group">
                                                             <label for="address">{{ __('Address')}}<span class="text-red">*</span></label>
                                                             <textarea name="address" name="address" rows="5" class="form-control" placeholder="Enter Address">{{ $user->address }}</textarea>
-                                                        </div>  
-                                                    </div>                                    
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="d-flex justify-content-center">
                                                     {{-- <button type="submit" class="btn btn-primary">Update</button> --}}
@@ -373,8 +373,8 @@
                                             </form>
 
                                         @endif
-                                      
-                                       
+
+
                                     </div>
                                      {{-- <div class="col-lg-4">
                                         <div class="sticky">
@@ -383,7 +383,7 @@
                                     </div> --}}
                                 </div>
                             </div>
-                            
+
 
 
                             {{-- New Pill 1 By Ashish --}}
@@ -413,8 +413,8 @@
                                                         @if(isset($about) && isset($about['img']))
                                                             <div>
                                                                 <img src="{{ asset($about['img']) }}" alt="" style="height: 100px;">
-                                                            </div> 
-                                                        @endif   
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12 col-12">
@@ -441,7 +441,7 @@
                                                                 <input class="form-control" name="title" type="text" id="title"
                                                                 value="{{ $story['title'] ?? '' }}" placeholder="Enter Title">
                                                             </div>
-                                                        </div>  
+                                                        </div>
                                                         <div class="col-md-6 col-12 my-3">
                                                             <div class="form-group {{ $errors->has('cta_link') ? 'has-error' : '' }}">
                                                                 <label for="cta_link" class="control-label">Catalogue</label>
@@ -504,40 +504,40 @@
                                                                 @endif
                                                             </div>
                                                         </div>
-                                                        
-                                                        <div class="col-md-12 col-12 mt-3"> 
+
+                                                        <div class="col-md-12 col-12 mt-3">
                                                             <div class="form-group {{ $errors->has('description') ? 'has-error' : ''}}">
                                                                 <label for="description" class="control-label mb-2">Description</label>
                                                                 <textarea name="description" class="form-control" id="description1" cols="30" rows="10">{{ $story['description'] ?? '' }}</textarea>
                                                             </div>
                                                         </div>
 
-                                                        
-                                                        
+
+
                                                         <div class="col-md-12 mt-3">
                                                             <div class="form-group">
                                                                 <button type="submit" class="btn btn-primary">Update</button>
                                                                 <a href="{{ inject_subdomain('about-us', $user_shop->slug)}}#story" target="_blank" class="btn btn-outline-primary">Preview</a>
                                                             </div>
-                                                        </div>    
-                                                    </div> 
-                                                </form> 
+                                                        </div>
+                                                    </div>
+                                                </form>
                                             </div>
                                         @endif
-                                                
+
                                         {{-- Testimonial Form --}}
                                         <h6 class="my-3 d-none">Testimonials Section</h6>
                                         <form action="{{ route('panel.user_shops.testimonial') }}" method="post" class="d-none" enctype="multipart/form-data">
                                             @csrf
-                                            
+
                                             <input type="hidden" name="user_shop_id" value="{{ $user_shop->id }}">
                                             <div class="row mt-3">
                                                 <div class="col-md-12 col-12">
                                                     <div class="form-group {{ $errors->has('title') ? 'has-error' : '' }}">
-                                                        
+
                                                             <label for="title" class="control-label">Title</label>
-                                                            
-                                                    
+
+
                                                         <input class="form-control" name="title" type="text" id="title"
                                                             value="{{ $testimonial['title'] ?? '' }}" required placeholder="Enter Title">
                                                     </div>
@@ -554,9 +554,9 @@
                                                         <button type="submit" class="btn btn-primary">Update</button>
                                                         <a href="{{ inject_subdomain('home', $user_shop->slug)}}#testimonial" target="_blank" class="btn btn-outline-primary">Preview</a>
                                                     </div>
-                                                </div> 
+                                                </div>
                                                 <div class="col-md-12"><hr></div>
-                                                
+
                                                 <div class="col-md-12">
                                                     <div class="d-flex justify-content-between my-3">
                                                         <h6>Testimonials</h6>
@@ -578,11 +578,11 @@
                                                                                             <img src="{{ ($item->image) ? asset($item->image) : asset('frontend/assets/img/placeholder.png') }}" alt="" style="height:60px;width:60px;object-fit:contain;" class="rounded mt-2">
                                                                                         @endif
                                                                                     </div>
-                                                                                    
+
                                                                                     <div class="col-6 pl-5 pt-2 text-left">
                                                                                         <h6 class="mb-0">{{\Str::limit($item->name, 10) }}
                                                                                         </h6>
-                                                                                    
+
                                                                                         <span class="mt-2"> {{\Str::limit($item->designation, 10)}}
                                                                                         </span>
                                                                                         <p>
@@ -622,7 +622,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div> 
+                                            </div>
                                         </form>
 
                                         {{-- Team Form --}}
@@ -637,7 +637,7 @@
                                                             <label for="title" class="control-label">Title</label>
                                                             <input class="form-control" placeholder="Enter Title" name="title" required type="text" id="title" value="{{ $team['title'] ?? '' }}">
                                                         </div> --}}
-                                                    </div>  
+                                                    </div>
                                                     <div class="col-md-12 col-12">
                                                         {{-- <div class="form-group {{ $errors->has('description') ? 'has-error' : '' }}">
                                                             <label for="description" class="control-label">Description</label>
@@ -651,8 +651,8 @@
                                                             <a href="{{ inject_subdomain('about-us', $user_shop->slug)}}#team" class="btn btn-outline-primary" target="_blank">Preview</a>
                                                         </div>
                                                     </div>  --}}
-                                                </div>    
-                                            
+                                                </div>
+
                                                 <div class="row">
                                                     <div class="col-md-12"><hr></div>
                                                     <div class="col-md-12">
@@ -676,11 +676,11 @@
                                                                                                 <img src="{{ ($item->image) ? asset($item->image) : asset('frontend/assets/img/placeholder.png') }}" alt="" style="height:60px;width:60px;object-fit:contain;" class="rounded mt-2">
                                                                                             @endif
                                                                                         </div>
-                                                                                        
+
                                                                                         <div class="col-6 pl-5 pt-2 text-left">
                                                                                             <h6 class="mb-0">{{\Str::limit($item->name, 10) }}
                                                                                             </h6>
-                                                                                        
+
                                                                                             <span class="mt-2"> {{\Str::limit($item->designation, 10)}}
                                                                                             </span>
                                                                                             <p>{{$item->contact_number}}</p>
@@ -716,11 +716,11 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div> 
+                                                </div>
                                         </form>
 
 
-                                       
+
                                     </div>
                                      {{-- <div class="col-lg-4">
                                         <div class="sticky">
@@ -729,7 +729,7 @@
                                     </div> --}}
                                 </div>
                             </div>
-                            
+
                             {{-- New Pill 2 By Ashish --}}
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == "page-feature") active show @endif" id="page-feature" role="tabpanel" aria-labelledby="pills-general-tab">
                                 <div class="row d-none">
@@ -765,7 +765,7 @@
                                                 @php
                                                     $contact_info = json_decode($user_shop->contact_info)
                                                 @endphp
-                                                {{-- Display None Fields --}} 
+                                                {{-- Display None Fields --}}
                                                 <div class="col-md-6 col-12">
                                                     <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                                                         <label for="name" class="control-label">Display Name</label>
@@ -773,8 +773,8 @@
                                                         <input class="form-control" name="name" type="text" id="name"
                                                             value="{{ $user_shop->name }}" placeholder="Enter Name">
                                                     </div>
-                                                </div>                                               
-                                                
+                                                </div>
+
                                                 <div class="col-md-6 col-12 ">
                                                     <div class="form-group">
                                                         <label for="email">Email Us</label>
@@ -793,12 +793,12 @@
                                                         <label for="name" class="control-label">Page Finder</label>
 
                                                         <input required class="form-control" name="slug" type="text" id="txtName"
-                                                            value="{{ $user_shop->slug }}" placeholder="Enter Slug" @if (authrole() != 'Admin') readonly @endif > 
+                                                            value="{{ $user_shop->slug }}" placeholder="Enter Slug" @if (authrole() != 'Admin') readonly @endif >
                                                             <span class="text-danger" id="lblError"></span>
 
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="col-md-12 col-12 ">
                                                     <div class="form-group">
                                                         <label for="whatsapp">Whatsapp Phone</label>
@@ -812,9 +812,9 @@
                                                         </span>
                                                     </div>
                                                 </div>
-                                                
-                                                
-                                     
+
+
+
                                                 <div class="col-md-6 col-12">
                                                     <div class="form-group {{ $errors->has('logo') ? 'has-error' : '' }}">
                                                         <label for="logo" class="control-label">Upload Business Logo</label>
@@ -838,7 +838,7 @@
                                                         @endif
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="col-md-12">
                                                     @php
                                                         $social = json_decode($user_shop->social_links);
@@ -881,8 +881,8 @@
                                                         <input type="url" name="social_link[pint_link]" class="form-control" value="{{ @$social->pint_link }}" >
                                                     </div>
                                                 </div>
-                                            
-                                                
+
+
                                                 <div class="col-md-12">
                                                     <button type="submit" class="btn btn-primary">Update</button>
                                                 </div>
@@ -924,21 +924,21 @@
                                                     <div class="form-group">
                                                         <label for="offers_passcode" class="control-label">{{ __('Default offers passcode')}}<span class="text-danger">*</span></label>
                                                         <input type="tel" maxlength="4" minlength="4" placeholder="Enter Offers Passcode" class="form-control" name="offers_passcode" id="offers_passcode" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->offers_passcode ?? '' }}@endif">
-                                                    </div>  
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-6 col-12 mt-3">
                                                     <div class="form-group">
                                                         <label for="reseller_pass" class="control-label">{{ __('Reseller Passcode')}}<span class="text-danger">*</span></label>
                                                         <input type="text" placeholder="Enter Reseller Passcode" class="form-control" name="reseller_pass" id="reseller_pass" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->reseller_pass ?? '' }}@endif" required>
-                                                    </div>  
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-6 col-12 mt-3">
                                                     <div class="form-group">
                                                         <label for="vip_pass" class="control-label">{{ __('VIP Passcode')}}<span class="text-danger">*</span></label>
                                                         <input type="text" placeholder="Enter VIP Passcode" class="form-control" name="vip_pass" id="vip_pass" value="@if (isset($extra_pass) && $extra_pass!= "" ){{ $extra_pass->vip_pass ?? '' }}@endif"  required>
-                                                    </div>  
+                                                    </div>
                                                 </div> --}}
-                                            </div>  
+                                            </div>
                                             <button type="submit" class="btn btn-success mt-3"> Update Code</button>
                                         </form>
                                     </div>
@@ -955,8 +955,8 @@
                             <!---<div class="tab-pane fade @if(request()->has('active') && request()->get('active') == 'my-info') show active @endif" id="previous-month" role="tabpanel" aria-labelledby="pills-setting-tab">
                                 <div class="row">
                                     @if($user)
-                                        <div class="col-lg-8">                                         
-                                            
+                                        <div class="col-lg-8">
+
                                             <form action="{{ route('panel.user_shops.story',$user_shop->id) }}" method="post" enctype="multipart/form-data">
                                                 @csrf
                                                 <h6 class="my-3">About Section</h6>
@@ -967,7 +967,7 @@
                                                             <input class="form-control" name="title" type="text" id="title"
                                                                 value="{{ $story['title'] ?? '' }}" placeholder="Enter Title">
                                                         </div>
-                                                    </div>  
+                                                    </div>
                                                     <div class="col-md-6 col-12">
                                                         <div class="form-group {{ $errors->has('cta_link') ? 'has-error' : '' }}">
                                                             <label for="cta_link" class="control-label">Button Link</label>
@@ -1005,19 +1005,19 @@
                                                             <textarea class="form-control" name="description" type="text" id="description" placeholder="Enter Description"
                                                                 value="">{{ $story['description'] ?? '' }}</textarea>
                                                         </div>
-                                                    </div> 
+                                                    </div>
                                                     <div class="col-md-12 mx-auto">
                                                         <div class="form-group">
                                                             <button type="submit" class="btn btn-primary">Update</button>
                                                             <a href="{{ inject_subdomain('about-us', $user_shop->slug)}}#story" target="_blank" class="btn btn-outline-primary">Preview</a>
                                                         </div>
-                                                    </div>    
-                                                </div> 
-                                            </form> 
+                                                    </div>
+                                                </div>
+                                            </form>
                                         </div>
-                                    @else     
+                                    @else
                                         <p class="p-5 m-2 text-center">
-                                            This shop is not connected with any user account. 
+                                            This shop is not connected with any user account.
                                         </p>
                                     @endif
                                     <div class="col-lg-4">
@@ -1029,7 +1029,7 @@
                             </div>--->
 
 
-                            
+
 
 
 
@@ -1038,7 +1038,7 @@
 
 
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == 'my-address') show active @endif" id="my-address-area" role="tabpanel" aria-labelledby="pills-setting-tab">
-                                
+
                                 <div class="row">
                                     <div class="col-lg-8">
                                         {{-- <h6>Site Address</h6>
@@ -1111,8 +1111,8 @@
                                         </form> --}}
                                         <hr>
                                         <div class="d-flex justify-content-between my-3">
-                                            <h6 class="mt-1">Billing Address</h6>
-                                            <a href="javascript:void(0);" class="btn btn-primary addAddress" data-id="{{ auth()->id() }}">Add Address</a>
+                                            <h6 class="mt-1">Entities</h6>
+                                            <a href="javascript:void(0);" class="btn btn-primary addAddress" data-id="{{ auth()->id() }}">Add Entity</a>
                                         </div>
 
                                         <div class="row">
@@ -1124,21 +1124,30 @@
                                                     <div class="m-1 p-2 border rounded">
                                                         <div class="mb-2">
                                                               <div class="d-flex align-items-center justify-content-between">
-                                                                <h6 class="m-0 p-0">{{ $address->type == 0 ? "Billing" : "Site" }} Address:</h6>
+                                                                {{-- <h6 class="m-0 p-0">{{ $address->type == 0 ? "Billing" : "Site" }} Address:</h6> --}}
+                                                                <h6>
+                                                                    {{ substr($address_decoded['acronym'] ?? $address_decoded['entity_name'], 0, 12) . (strlen($address_decoded['acronym'] ?? $address_decoded['entity_name']) > 12 ? '..' : '') }}
+                                                                </h6>
                                                                 <div>
                                                                     <a href="javascript:void(0)" class="text-primary editAddress mb-0" title="Edit Address" data-id="{{ $address }}" data-original-title="Edit" ><i class="ik ik-edit"></i></a>
                                                                     <a href="{{ route('customer.address.delete',$address->id) }}" class="text-primary delete-item mb-0" title=""data-original-title="delete" ><i class="ik ik-trash"></i></a>
                                                                 </div>
                                                               </div>
                                                     </div>
-                                                        <div class="pt-4 border-top">
-                                                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                                        <div class="pt-1 border-top">
+                                                            <div class="d-flex align-items-center justify-content-between">
                                                                 <div>
+                                                                    <p class="text-muted mb-1">
+                                                                        {{ $address_decoded['entity_name'] }} <br>
+                                                                        {{ $address_decoded['gst_number'] }} <br>
+                                                                        {{ $address_decoded['iec_number'] }} <br>
+                                                                    </p>
+
                                                                     <p class="text-muted mb-1">{{ $address_decoded['address_1'] }}</p>
                                                                     <p class="text-muted mb-1">{{ $address_decoded['address_2'] }}</p>
                                                                     <p class="text-muted mb-1">
                                                                         {{ CountryById($address_decoded['country']) }},
-                                                                        {{ StateById( $address_decoded['state']) }}, 
+                                                                        {{ StateById( $address_decoded['state']) }},
                                                                         {{ CityById( $address_decoded['city']) }}
                                                                     </p>
                                                                     <p class="text-muted">{{ $address_decoded['pincode'] ?? '' }}</p>
@@ -1147,14 +1156,14 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @empty 
+                                            @empty
                                                 <div class="text-center mx-auto">
                                                     <p>No Addresses yet!</p>
                                                 </div>
                                             @endforelse
                                         </div>
                                     </div>
-                                
+
                                      {{-- <div class="col-lg-4">
                                         <div class="sticky">
                                             <img src="{{ asset('frontend/assets/img/shop/screenshot.png') }}" alt="" class="screen-shot-image">
@@ -1175,7 +1184,7 @@
                                                         <input required class="form-control" name="title" type="text" id="title"
                                                             value="{{ $about['title'] ?? '' }}" placeholder="Enter Title">
                                                     </div>
-                                                </div>  
+                                                </div>
                                                 <div class="col-md-6 col-12">
                                                     <div class="form-group {{ $errors->has('img') ? 'has-error' : '' }}">
                                                         <label for="img" class="control-label">Image</label>
@@ -1186,8 +1195,8 @@
                                                             @endif
                                                     </div>
                                                 </div>
-                                                
-                                                
+
+
                                                 {{-- <div class="col-md-12 col-12">
                                                     <div class="form-group {{ $errors->has('content') ? 'has-error' : '' }}">
                                                         <label for="content" class="control-label">Content</label>
@@ -1195,7 +1204,7 @@
                                                             value="">{{ $about['content'] ?? '' }}</textarea>
                                                     </div>
                                                 </div> --}}
-                                                
+
                                                  <div class="col-md-12 col-12">
                                                     <div class="form-group {{ $errors->has('content') ? 'has-error' : '' }}">
                                                         {{-- <label for="content" class="control-label">Content</label> --}}
@@ -1203,17 +1212,17 @@
                                                             value="">{{ $about['content'] ?? '' }}</textarea>
                                                     </div>
                                                 </div>
-                                                
-                                                
+
+
                                                 <div class="col-md-12 mx-auto">
                                                     <div class="form-group">
                                                         <button type="submit" class="btn btn-primary">Update</button>
                                                         <a href="{{ inject_subdomain('home', $user_shop->slug)}}#about" target="_blank" class="btn btn-outline-primary">Preview</a>
                                                     </div>
-                                                </div>   
-                                            </div> 
+                                                </div>
+                                            </div>
                                         </form>
-                                        
+
                                     </div>
                                     {{-- <div class="col-lg-4">
                                         <div class="sticky">
@@ -1221,7 +1230,7 @@
                                         </div>
                                     </div> --}}
                                 </div>
-                               
+
                             </div>
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == "business_profile") active show @endif"  id="user_shop_story" role="tabpanel" aria-labelledby="pills-story-tab">
                                 <div class="row">
@@ -1279,8 +1288,8 @@
                                                             <label for="last_site" class="form-label">Existing Site</label>
                                                             <input type="text" placeholder="Existing Site" class="form-control" value="{{ $ekyc->last_site  ?? ''}}" readonly>
                                                         </div>
-                                                    
-        
+
+
                                                     <div class="col-md-12 col-12 mt-3">
                                                         <label for="last_site" class="form-label">Applying For Account</label>
                                                         {{-- <input type="text" placeholder="Account Type" class="form-control" value="{{ $ekyc->account_type  ?? ''}}" name="account_type" readonly> --}}
@@ -1293,8 +1302,8 @@
                                                             <option {{ $chk = ($ekyc->account_type == 'reseller ') ?  "selected" : "" ; }} value="reseller">Reseller</option>
                                                         </select>
                                                     </div>
-        
-                                                    
+
+
                                                     @php
                                                         $ekyc->remarks = $ekyc->remarks ?? $ekyc->user_remark ?? "";
                                                     @endphp
@@ -1306,13 +1315,13 @@
                                                        <hr class="m-2">
                                                        @if(AuthRole() == 'Admin')
                                                            @if($user->ekyc_status == 1)
-                                                               <div class="col-md-12 col-12 mt-5"> 
+                                                               <div class="col-md-12 col-12 mt-5">
                                                                    <label>{{ __('Note')}}</label>
                                                                    <textarea class="form-control" name="remark" type="text" >{{ $ekyc->admin_remark ?? '' }}</textarea>
                                                                    <button data-status="0" type="submit" class="btn btn-danger mt-2 btn-lg reject status-changer">Reject</button>
                                                                </div>
                                                            @elseif($user->ekyc_status == 2)
-                                                               <div class="col-md-12 col-12 mt-5"> 
+                                                               <div class="col-md-12 col-12 mt-5">
                                                                    <button data-status="1" type="submit" class="btn btn-success mt-2 btn-lg accept status-changer">Accept</button>
                                                                </div>
                                                            @elseif($user->ekyc_status == 3)
@@ -1322,19 +1331,19 @@
                                                                    <button data-status="1" type="submit" class="btn btn-success accept ml-5 mt-2 btn-lg status-changer">Accept</button>
                                                                </div>
                                                            @endif
-                                                       @endif    
+                                                       @endif
                                                    </div>
                                                @endif
                                             </form>
-                                            
-                                        @else     
+
+                                        @else
                                             <p class="p-5 m-2 text-center">
-                                                This shop is not connected with any user account. 
+                                                This shop is not connected with any user account.
                                             </p>
                                         @endif
-                                        
+
                                         <hr>
-                                       
+
                                         {{-- Payment Section --}}
                                          <div class="row me-2 d-none">
                                             <div class="col-lg-8">
@@ -1348,14 +1357,14 @@
                                                                 <label for="title" class="control-label">Title</label>
                                                                 <input required class="form-control" name="feature_title" type="text" id="title" value="{{ $features['feature_title'] ?? '' }}" placeholder="Enter Title">
                                                             </div>
-                                                        </div>  
+                                                        </div>
                                                         <div class="col-md-12 col-12">
                                                             <div class="form-group {{ $errors->has('description') ? 'has-error' : '' }}">
                                                                 <label for="description" class="control-label">Description</label>
                                                                 <textarea class="form-control" name="description" type="text" id="description"
                                                                     value="">{{ $features['description'] ?? '' }}</textarea>
                                                             </div>
-                                                        </div>  
+                                                        </div>
                                                         <div class="repeater col-md-12 col-12">
                                                             <div data-repeater-list="features">
                                                                 <div data-repeater-item class="row">
@@ -1392,9 +1401,9 @@
                                                                 <button type="submit" class="btn btn-primary">Update</button>
                                                                 <a href="{{ inject_subdomain('about-us', $user_shop->slug)}}#features" class="btn btn-outline-primary" target="_blank">Preview</a>
                                                             </div>
-                                                        </div> 
+                                                        </div>
                                                     </div>
-                                                </form> 
+                                                </form>
                                                  {{-- Payment Section --}}
                                                 <h6>Payment Section</h6>
                                                 <form action="{{ route('panel.user_shops.payments',$user_shop->id) }}" method="post" enctype="multipart/form-data">
@@ -1422,13 +1431,13 @@
                                                                 <div class="form-group">
                                                                     <button type="submit" class="btn btn-primary">Update</button>
                                                                 </div>
-                                                            </div> 
+                                                            </div>
                                                         </div>
-                                                </form> 
+                                                </form>
                                             </div>
                                          </div>
 
-                                          
+
                                     </div>
                                     {{-- <div class="col-lg-4">
                                         <div class="sticky">
@@ -1436,7 +1445,7 @@
                                         </div>
                                     </div> --}}
                                 </div>
-                                   
+
                             </div>
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == "security") active show @endif" id="features" role="tabpanel" aria-labelledby="pills-features-tab">
                                 <div class="row">
@@ -1455,7 +1464,7 @@
                                                         </div>
                                                     </div>
                                                 </div><!--end col-->
-            
+
                                                 <div class="col-lg-12">
                                                     <div class="mb-3">
                                                         <label class="form-label">New password :</label>
@@ -1465,7 +1474,7 @@
                                                         </div>
                                                     </div>
                                                 </div><!--end col-->
-            
+
                                                 <div class="col-lg-12">
                                                     <div class="mb-3">
                                                         <label class="form-label">Re-type New password :</label>
@@ -1475,15 +1484,15 @@
                                                         </div>
                                                     </div>
                                                 </div><!--end col-->
-            
+
                                                 <div class="col-lg-12 mt-2 mb-2">
                                                     <button class="btn btn-primary" type="submit">Save Password</button>
                                                 </div><!--end col-->
                                             </div><!--end row-->
                                         </form>
-                                    @else     
+                                    @else
                                         <p class="p-5 m-2 text-center">
-                                            This shop is not connected with any user account. 
+                                            This shop is not connected with any user account.
                                         </p>
                                     @endif
                                     </div>
@@ -1493,7 +1502,7 @@
                                         </div>
                                     </div> --}}
                                 </div>
-                                   
+
                             </div>
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == 'team') active show @endif" id="user-shop-team" role="tabpanel" aria-labelledby="pills-team-tab">
                                 <div class="row">
@@ -1507,7 +1516,7 @@
                                                         <label for="title" class="control-label">Title</label>
                                                         <input class="form-control" placeholder="Enter Title" name="title" required type="text" id="title" value="{{ $team['title'] ?? '' }}">
                                                     </div>
-                                                </div>  
+                                                </div>
                                                 <div class="col-md-12 col-12">
                                                     <div class="form-group {{ $errors->has('description') ? 'has-error' : '' }}">
                                                         <label for="description" class="control-label">Description</label>
@@ -1520,9 +1529,9 @@
                                                         <button type="submit" class="btn btn-primary">Update</button>
                                                         <a href="{{ inject_subdomain('about-us', $user_shop->slug)}}#team" class="btn btn-outline-primary" target="_blank">Preview</a>
                                                     </div>
-                                                </div> 
-                                            </div>    
-                                        
+                                                </div>
+                                            </div>
+
                                             <div class="row">
                                                 <div class="col-md-12"><hr></div>
                                                 <div class="col-md-12">
@@ -1546,11 +1555,11 @@
                                                                                             <img src="{{ ($item->image) ? asset($item->image) : asset('frontend/assets/img/placeholder.png') }}" alt="" style="height:60px;width:60px;object-fit:contain;" class="rounded mt-2">
                                                                                         @endif
                                                                                     </div>
-                                                                                    
+
                                                                                     <div class="col-6 pl-5 pt-2 text-left">
                                                                                         <h6 class="mb-0">{{\Str::limit($item->name, 10) }}
                                                                                         </h6>
-                                                                                    
+
                                                                                         <span class="mt-2"> {{\Str::limit($item->designation , 10)}}
                                                                                         </span>
                                                                                         <p>{{$item->contact_number}}</p>
@@ -1586,7 +1595,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div> 
+                                            </div>
                                         </form>
                                     </div>
                                      {{-- <div class="col-lg-4">
@@ -1595,11 +1604,11 @@
                                         </div>
                                     </div> --}}
                                 </div>
-                                
-                            </div> 
+
+                            </div>
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == "payment") active show @endif" id="payment" role="tabpanel" aria-labelledby="pills-payment-tab">
-                                 
-                            </div> 
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1615,9 +1624,9 @@
 @include('panel.user_shops.include.add-address')
 @include('panel.user_shops.include.add-numbers')
 @include('panel.user_shops.include.edit-address')
-@else     
+@else
 <p class="p-5 m-2 text-center">
-    This shop is not connected with any user account. 
+    This shop is not connected with any user account.
 </p>
 @endif
 <!-- push external js -->
@@ -1632,7 +1641,7 @@
 <script src="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
 
 <script>
-        $('tags').tagsinput('items'); 
+        $('tags').tagsinput('items');
             var options = {
                     filebrowserImageBrowseUrl: "{{ url('/laravel-filemanager?type=Images') }}",
                     filebrowserImageUploadUrl: "{{ url('/laravel-filemanager/upload?type=Images&_token='.csrf_token()) }}",
@@ -1664,7 +1673,7 @@
             $('#userId').val(user_id);
             $('#addAddressModal').removeAttr('tabindex');
             $('#addAddressModal').modal('show');
-        });   
+        });
 
         $('.editAddress').click(function(){
             var  address = $(this).data('id');
@@ -1683,7 +1692,7 @@
             $('#gstNumber').val(details.gst_number);
             $('#entityName').val(details.entity_name);
             $('#countryEdit').val(details.country).change();
-            
+
             setTimeout(() => {
                 $('#stateEdit').val(details.state).change();
                 setTimeout(() => {
@@ -1700,7 +1709,7 @@
 
 
         function getUserStates(countryId = 101) {
-            
+
             $.ajax({
                 url: "{{ route('world.get-states') }}",
                 method: 'GET',
@@ -1727,7 +1736,7 @@
         }
 
         function getEditStates(countryId = 101) {
-           
+
             $.ajax({
                 url: "{{ route('world.get-states') }}",
                 method: 'GET',
@@ -1754,9 +1763,9 @@
         }
 
         // this functionality work in edit page
-		
-    
-			
+
+
+
             var country = "{{ $shop_address['country'] ?? ''}}";
             var state = "{{ $shop_address['state'] ?? ''}}";
             var city = "{{ $shop_address['city'] ?? ''}}";
@@ -1773,7 +1782,7 @@
                                 $('#city').val(city).trigger('change');
                                 $('#city').trigger('change').select2();
                         });
-                    }   
+                    }
                 },300);
 
                 $('#user_country').on('change', function() {
@@ -1782,7 +1791,7 @@
 
                 $('#user_state').on('change', function() {
                     getUserCities($(this).val());
-                });  
+                });
 
                 $('#countryEdit').on('change', function() {
                     getEditStates($(this).val());
@@ -1796,18 +1805,18 @@
             $(function () {
                 $("#txtName").keypress(function (e) {
                     var keyCode = e.keyCode || e.which;
-        
+
                     $("#lblError").html("");
-        
+
                     //Regex for Valid Characters i.e. Alphabets and Numbers.
                     var regex = /^[A-Za-z0-9]+$/;
-        
+
                     //Validate TextBox value against the Regex.
                     var isValid = regex.test(String.fromCharCode(keyCode));
                     if (!isValid) {
                         $("#lblError").html("Only Alphabets and Numbers allowed.");
                     }
-        
+
                     return isValid;
                 });
             });
@@ -1849,7 +1858,7 @@
                         'bSortable': false,
                         'aTargets': ['nosort']
                     }],
-                  
+
 
                 });
             });
@@ -1861,7 +1870,7 @@
                 document.getElementById('logo_file').src = src
             }
             var features =  $('.repeater').repeater({
-     
+
                 defaultValues: {
                     'text-input': 'foo'
                 },
@@ -1877,17 +1886,17 @@
             });
 
             @if(isset($features['features']))
-                @if($features['features'] != null)  
+                @if($features['features'] != null)
                     features.setList([
                         @foreach($features['features'] as $feature)
-                        {  
+                        {
                             'title': "{{ $feature['title'] }}",
                             'icon': "{{ $feature['icon'] }}",
                         },
                         @endforeach
                     ]);
                 @endif
-            @endif 
+            @endif
             // OTP Check
 
             $('#otpButton').on('click',function(e){
@@ -1965,7 +1974,7 @@
                 e.preventDefault();
                 var phone_number = $('.additionalNumbers').val();
                 var user_id = $(this).data('user_id');
-                $('#updateAdditionalNumber').append(`<input type='hidden' name='additional_phone' value=${phone_number} />`); 
+                $('#updateAdditionalNumber').append(`<input type='hidden' name='additional_phone' value=${phone_number} />`);
                 $('.userId').val(user_id);
                 $('.userAdditionalNoUpdate').val('updateByAdmin');
                 $('#updateAdditionalNumber').submit();
@@ -1973,7 +1982,7 @@
             $('#saveBtn').on('click',function(e){
                 e.preventDefault();
                 var phone_number = $('.additionalNumber').val();
-                $('#updateAdditionalNumber').append(`<input type='number' name='additional_phone' value=${phone_number} />`); 
+                $('#updateAdditionalNumber').append(`<input type='number' name='additional_phone' value=${phone_number} />`);
                 $('#updateAdditionalNumber').submit();
             });
         </script>

@@ -402,7 +402,7 @@
                                                 }
                                             @endphp
 
-                                            
+
 
                                             {{-- ` Shipping Details --}}
                                             <div class="col-12 d-none">
@@ -440,7 +440,7 @@
                                                             <input  class="form-control" name="MBQ_unit" type="number" id="MBQ_unit" alue="{{ $prodextra->MBQ_unit ??  old('MBQ_unit') }}" >
                                                         </div>
                                                     </div>
-                                                    
+
                                                 </div>
                                             </div>
 
@@ -954,7 +954,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
+
                                             </div>
 
                                             {{--`Theme Collection from essentials  --}}
@@ -1101,7 +1101,7 @@
                                             </div>
                                         </div>
 
-                                            
+
                                     </div>
                                 </div>
 
@@ -1365,7 +1365,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 {{-- -- Custom Fields of User 5 ` --}}
                                 @if (in_array('5', $fileds_sections))
                                     <div class="col-12">
@@ -1447,7 +1447,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                        @elseif ($parent->value == 'uom')
+                                        @elseif ( isset($parent->value) && $parent->value == 'uom')
                                             <div class="col-md-6 col-12">
                                                 <div class="form-group">
                                                     <label for="properties_{{$key}}">{{ $item }}</label>
@@ -1467,7 +1467,7 @@
                                             </div>
                                         @else
 
-                                            @if ($parent->value == 'uom')
+                                            @if ( isset($parent->value) && $parent->value == 'uom')
                                                 @continue
                                             @endif
 
