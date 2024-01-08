@@ -44,6 +44,9 @@ class UserAddressController extends Controller
         ]);
 
         try {
+            // magicstring(request()->all());
+            // return;
+
                 $data = new UserAddress();
                 $data->user_id = auth()->id();
                 $data->is_primary = $request->is_primary ?? 0;
@@ -56,46 +59,36 @@ class UserAddressController extends Controller
                     'city' => $request->city,
                     'pincode' => $request->pincode,
                     'gst_number' => $request->gst_number,
-                    'entity_name' => $request->entity_name
+                    'iec_number' => $request->iec_number ?? '',
+                    'entity_name' => $request->entity_name,
+                    'acronym' => $request->acronym ?? ''
                 ];
+
+                $acc_deatils = [];
+                foreach ($request->bank_name as $key => $bank) {
+                    $tmp_acc_deatils= [
+                        'bank_name' => $bank ?? '',
+                        'bank_address' => $request->bank_address[$key] ?? '',
+                        'swift_code' => $request->swift_code[$key] ?? '',
+                        'account_number' => $request->account_number[$key] ?? '',
+                        'account_holder_name' => $request->account_holder_name[$key] ?? '',
+                        'account_type' => $request->account_type[$key] ?? '',
+                        'ifsc_code/neft' => $request->ifsc_code[$key] ?? '',
+                        'default' => $request->default[$key] ?? 0,
+                    ];
+                    array_push($acc_deatils, $tmp_acc_deatils);
+                }
+
+                $data->account_details = json_encode($acc_deatils);
                 $data->details = json_encode($arr);
                 $data->save();
                 return back()->with('success', 'Address added successfully!');
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
-    }       
+    }
 
 
-    // public function storeget(Request $request)
-    // {
-    //     // $this->validate($request, [
-    //     //     'user_id' => 'required',
-    //     //     'type' => 'required',
-    //     // ]);
-
-    //     // try {
-    //     //         $data = new UserAddress();
-    //     //         $data->user_id = auth()->id();
-    //     //         $data->is_primary = $request->is_primary ?? 0;
-    //     //         $data->type = $request->type;
-    //     //         $arr = [
-    //     //             'address_1' => $request->address_1,
-    //     //             'address_2' => $request->address_2,
-    //     //             'country' => $request->country,
-    //     //             'state' => $request->state,
-    //     //             'city' => $request->city,
-    //     //             'pincode' => $request->pincode,
-    //     //             'gst_number' => $request->gst_number,
-    //     //             'entity_name' => $request->entity_name
-    //     //         ];
-    //     //         $data->details = json_encode($arr);
-    //     //         $data->save();
-    //     //         return back()->with('success', 'Address added successfully!');
-    //     // } catch (\Exception $e) {
-    //     //     return back()->with('error', 'Error: ' . $e->getMessage());
-    //     // }
-    // }    
 
     /**
      * Display the specified resource.
@@ -146,13 +139,36 @@ class UserAddressController extends Controller
                 'details'=> $details
             ]);
             // return $request->all();
-                return back()->with('success', 'updated address successfully!');            
+                return back()->with('success', 'updated address successfully!');
             } catch (\Exception $e) {
                 return back()->with('error', 'Error: ' . $e->getMessage());
             }
-        
+    }
+
+
+
+    public function EntityGet(Request $request){
+
+
+        if ($request->work == 'getEntityDetails') {
+            $address = UserAddress::whereId($request->id)->first();
+            $account_details = json_decode($address->account_details);
+
+            return response()->json([
+                'address' => $address,
+                'account_details' => $account_details,
+                'status' => 'success'
+            ]);
+        }
+
+
+        magicstring(request()->all());
+        return;
 
     }
+
+
+
 
     /**
      * Remove the specified resource from storage.
@@ -165,9 +181,9 @@ class UserAddressController extends Controller
         $user_address = UserAddress::find($id);
         if($user_address){
             $user_address->delete();
-             return back()->with('success', 'Address deleted successfully!'); 
+             return back()->with('success', 'Address deleted successfully!');
         }else{
-            return back()->with('error', 'Record not found!'); 
+            return back()->with('error', 'Record not found!');
         }
     }
 }

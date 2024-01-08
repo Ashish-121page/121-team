@@ -40,6 +40,7 @@ use App\Http\Controllers\Panel\ProposalController;
 use App\Http\Controllers\Panel\UserShopItemController;
 use App\Http\Controllers\Panel\ImageController;
 use App\Http\Controllers\settingController;
+use App\Http\Controllers\UserAddressController;
 use App\Models\UserShopItem;
 
 /*
@@ -219,11 +220,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::group(['middleware' => 'can:manage_category', 'prefix' => 'category', 'as' => 'category.'], function () {
 
             Route::get('/view/{type_id}', [CategoryController::class,'index'])->name('index');
-
             Route::get('/check/global', [CategoryController::class,'checkglobal'])->name('check.global');
-
-
-
             Route::get('/create/{type_id}/{level?}/{parent_id?}', [CategoryController::class,'create'])->name('create');
             Route::post('/store', [CategoryController::class,'store'])->name('store');
             Route::get('/edit/{id}', [CategoryController::class,'edit'])->name('edit');
@@ -232,16 +229,10 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
             Route::post('/change', [CategoryController::class,'change'])->name('changeup');
             Route::post('/update/{id}', [CategoryController::class,'update'])->name('update');
             Route::get('/delete/{id}', [CategoryController::class,'destroy'])->name('delete');
-
             Route::any('/select/Global/{user_id}', [CategoryController::class,'selectglobalCategory'])->name('select.global');
-
             Route::post('bulk/delete/{user_id}', [CategoryController::class,'bulkdelete'])->name('bulk.delete');
-
             Route::get('update/Ajax/',[CategoryController::class,'updateAjax'])->name('update.ajax');
-
             Route::post('rename/{user}',[CategoryController::class,'renamecat'])->name('rename');
-
-
         });
 
 
@@ -262,10 +253,10 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
         Route::post('update/custom/fields', [settingController::class,'Updatecustomfields'])->name('update.custom.fields');
         Route::get('remove/custom/fields/{fieldId}', [settingController::class,'removecustomfields'])->name('remove.custom.fields');
-        
-        
+
+
         Route::post('quot/setting', [settingController::class,'updateQuotsetting'])->name('quot.setting');
-        
+
 
 
     });
@@ -536,6 +527,9 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
 
 
+
+
+
     // @ Group Route for Bulk Sheet
     Route::group(['middleware' => 'auth','namespace' => '/bulk', 'prefix' => '/', 'as' => 'bulk.'], function () {
 
@@ -568,7 +562,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::any('/changebg',[ImageController::class,'changebg'])->name('changebg');
         Route::post('/crop/image',[ImageController::class,'cropimage'])->name('crop.image');
 
-        
+
         Route::get('/maya', [ImageController::class, 'showdesigner'])->name('designer');
         Route::post('/generate-image', [ImageController::class, 'generateImage'])->name('generateImage');
         Route::post('/generate-image-from-image', [ImageController::class, 'generateImageFromImage'])->name('generateImageFromImage');;
@@ -583,8 +577,13 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::post('/update/user-bulk', [BulkController::class,'UserBulkUpdate'])->name('user.bulk-update');
 
 
-        //   Need to add condition for access by only admin
-     Route::get('brand/claim/{brand_id}/show', [BrandUserController::class,'claimBrandShow'])->name('brand.claim.show');
+
+    Route::any('Entity', [UserAddressController::class,'EntityGet'])->name('Entity.get');
+
+
+
+    // Need to add condition for access by only admin
+    Route::get('brand/claim/{brand_id}/show', [BrandUserController::class,'claimBrandShow'])->name('brand.claim.show');
 
 
     //Backend Routes END--------------------------------------------------------------------------------------

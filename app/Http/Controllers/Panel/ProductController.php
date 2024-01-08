@@ -404,7 +404,7 @@ class ProductController extends Controller
             $folderPath = "public/files/$user_id";
 
             if (Storage::exists($folderPath)) {
-                $files = Storage::allFiles($folderPath);    
+                $files = Storage::allFiles($folderPath);
                 $page = request()->get('pageassets', 1);
                 $perPage = 30;
                 $offset = ($page - 1) * $perPage;
@@ -1377,16 +1377,16 @@ class ProductController extends Controller
                                         'file_type' => 'Image',
                                         'tag' => 'Product_Image',
                                     ]);
-    
+
                                     array_push($arr_images,$rec->id);
                                 }
-    
+
                                 if(count($arr_images) > 0) {
                                     $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
                                     $usi->save();
                                 }
                             }
-    
+
                         }
 
                         $parentAttribute = ProductAttributeValue::whereId($second)->first();
@@ -2328,7 +2328,7 @@ class ProductController extends Controller
                             }
                         }
 
-                      
+
                         $is_empty = false;
 
                     }
@@ -2817,8 +2817,14 @@ class ProductController extends Controller
 
             $months = ['January' => 'January','February' => 'February','March' => 'March','April' => 'April','May' => 'May','June' => 'June','July' => 'July','August' => 'August','September' => 'September','October' => 'October','November' => 'November','December' => 'December'];
 
+            $mainsku_prices = [];
+            foreach ($available_products as $key => $value) {
+                $product = getProductDataById($value);
+                $prices[$value] = $product->price;
+            }
 
-
+            echo(implode(",",$available_products));
+            
 
             return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months'));
 
@@ -2916,6 +2922,8 @@ class ProductController extends Controller
 
     public function update(Request $request,Product $product)
     {
+
+
 
 
         $any_value = [];

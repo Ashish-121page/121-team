@@ -1011,7 +1011,7 @@ class Microproposals extends Controller
             }
         }
 
-        $url = 'https://gb.giftingbazaar.com/excel/upload';
+        $url = ENV('EXCEL_EXPORT_URL') ?? 'https://gb.giftingbazaar.com/excel/upload';
 
         if ($File_name == null) {
             $data = [

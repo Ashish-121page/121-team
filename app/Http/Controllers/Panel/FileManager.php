@@ -39,6 +39,23 @@ class FileManager extends Controller
         if (Storage::exists($folderPath)) {
             $files = Storage::allFiles($folderPath);
 
+            // Filter out files from a specific folder
+            $files = array_filter($files, function ($file) use ($folderPath) {
+                $folderName = basename($folderPath);
+                $filePath = str_replace('\\', '/', $file);
+                $fileName = basename($filePath);
+                $subfolderName = 'quote_files'; // Specify the subfolder name to exclude
+
+                // Exclude the subfolder from the filtered files
+                if ($fileName !== $folderName && strpos($filePath, $subfolderName) === false) {
+                    return true;
+                }
+
+                return false;
+            });
+
+
+
             // ` Ascending Order
             if ($sortType == 'ASC') {
                 // Sort the files based on the specified order

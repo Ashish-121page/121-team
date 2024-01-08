@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-// use App\Http\Controllers\Controller;
+
+use App\Http\Controllers\UserAddressController;
 use Illuminate\Http\Request;
 use App\User;
 use App\Models\Product;
@@ -12,7 +13,9 @@ use App\Models\AccessCatalogueRequest;
 use App\Models\Quotation;
 use App\Models\QuotationItem;
 use App\Models\UserCurrency;
+use App\Models\BuyerList;
 use App\Models\Country;
+use App\Models\UserAddress;
 use Illuminate\Support\Facades\Http;
 
 class invoiceController extends Controller
@@ -85,64 +88,194 @@ class invoiceController extends Controller
     public function Quotation() {
         $Quotation = Quotation::where('user_id',auth()->id())->get();
 
+        $buyerDetails = $Quotation->pluck('customer_info')->toArray();
         return view('panel.Documents.Quotation',compact('Quotation'));
     }
 
 
-    public function createQuotation() {
+    public function createQuotationform() {
+        $user = auth()->user();
 
-        if (request()->ajax()) {
-            $user_shop = UserShopIdByUserId(auth()->id());
-            $quotation_date = date('Y-m-d H:i:s');
-            $currency_record = UserCurrency::where('user_id',auth()->id())->get();
+        $entities =  UserAddress::where('user_id',$user->id)->get();
+        $userShop = UserShop::whereUserId($user->id)->first();
+        $userset = json_decode($user->settings);
+        $quotation_number = checkQuoteSlug($userset->quotaion_mark,$userset->quotaion_index,$user->id) ?? 'Quotation';
 
-            
-            $user = auth()->user();
-            // $user = User::whereId('174')->first();
-            
-            
-            $userset = json_decode($user->settings);
-            if ($userset != null && $userset->quotaion_mark != null && $userset->quotaion_index != null) {
-                $mark = checkQuoteSlug($userset->quotaion_mark,$userset->quotaion_index,$user->id);
+        $currency = UserCurrency::where('user_id',$user->id)->get();
+        $terms_of_delivery = json_decode(getSetting('terms_of_delivery'));
+        $countries = Country::get();
+
+        return view('panel.Documents.create-quotation',compact('entities','userShop','quotation_number','currency','terms_of_delivery','countries'));
+    }
+
+    function checkslug() {
+        $user = auth()->user();
+        $chk = Quotation::where('user_slug',request()->get('slug'))->where('user_id',$user->id)->get()->count();
+        if ($chk > 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Slug Already Exist',
+                'class' => 'text-danger',
+            ]);
+        }else{
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Slug Available',
+                'class' => 'text-success',
+            ]);
+        }
+
+    }
+
+
+    public function createQuotation(Request $request) {
+
+        try {
+            // -- Sets for DataBase
+            $buyer_detailsdb = [];
+            $shipment_detailsdb = [];
+            $contact_personsdb = [];
+            $payment_detailsdb = [];
+            $bank_detailsdb = [];
+            $user_shop_id = UserShopIdByUserId(auth()->id());
+
+            $quotation = request()->get('quotation');
+            $internal_remarks = request()->get('internal_remarks');
+
+            $entity_array = [
+                'entity_details' => request()->get('entity_details'),
+                'entity_bank' => request()->get('entity_bank'),
+            ];
+
+            $buyer_detailsdb = array_merge(['entity_details_id' => request()->get('entity_details')], request()->get('buyer'));
+
+
+            $shipment_detailsdb = [
+                'terms_of_delivery' => request()->get('quotation')['term_of_delivery'] ?? '',
+                'port_of_loading' => request()->get('quotation')['port_of_loading'] ?? '',
+                'port_of_discharge' => request()->get('quotation')['port_of_discharge'] ?? '',
+                'payment_terms' => request()->get('quotation')['payment_term'] ?? '',
+            ];
+
+            foreach (request()->get('person_name') as $key => $value) {
+                $contact_personsdb[$key] = [
+                    'person_name' => request()->get('person_name')[$key],
+                    'person_email' => request()->get('person_email')[$key],
+                    'person_phone' => request()->get('person_contact')[$key],
+                ];
+            }
+
+
+            // Getting Bank Details
+            $tmp_request = new Request();
+            $tmp_request->merge([
+                'work' => 'getEntityDetails',
+                'id' => request()->get('entity_details')
+            ]);
+            $tmp_request->setMethod('GET');
+            app()->instance('request', $tmp_request);
+            $UserAddress = new UserAddressController();
+
+            $bank_detailsdb = $UserAddress->EntityGet($tmp_request)->getData()->address->account_details ?? [];
+
+
+            $chk_buyer = BuyerList::where('user_id',auth()->id())->where('buyer_details',json_encode($buyer_detailsdb))->get();
+            if ($chk_buyer->count() == 0) {
+                $buyer = new BuyerList();
+                $buyer->user_id = auth()->id();
+                $buyer->user_shop_id = $user_shop_id ?? 0;
+                $buyer->type = 0;
+                $buyer->buyer_details = json_encode($buyer_detailsdb);
+                $buyer->shipment_details = json_encode($shipment_detailsdb);
+                $buyer->contact_persons = json_encode($contact_personsdb);
+                $buyer->payment_details = json_encode($payment_detailsdb);
+                $buyer->bank_details = json_encode($bank_detailsdb);
+                $buyer->save();
             }else{
-                $mark = null;
+                $buyer = $chk_buyer->first();
             }
-            
-        
-            $customer_name = "Quotation";
-
-            $exchange_rate = [];
-            foreach($currency_record as $currency){
-                $exchange_rate[$currency->currency] = $currency->exchange;
-            }
-            
-            $exchange_rate = json_encode($exchange_rate);
 
 
+
+
+
+
+            // {"buyerName":"Ashish","buyerEmail":"","companyName":"","CreatedOn":"1/5/2024, 11:40:58 AM"}
+
+
+            $Buyer_obj = array_merge([
+                'CreatedOn' => date('m/d/Y, h:i:s A'),
+                'Buyer_Id' => $buyer->id,
+                'companyName' => $buyer_detailsdb['entity_name'] ?? '',
+            ], $contact_personsdb[0]);
+
+            // $Buyer_obj = [
+            //     'buyerName' => $buyer_detailsdb['entity_name'] ?? '',
+            //     'buyerEmail' => $buyer_detailsdb['buyer_email'] ?? '',
+            //     'companyName' => $buyer_detailsdb['entity_name'] ?? '',
+            //     'CreatedOn' => date('m/d/Y, h:i:s A'),
+            //     'Buyer_Id' => $buyer->id
+            // ];
+
+
+            // Uploading Final Data
             $record = [
-                'customer_info' => request()->get('buyerObj'),
+                'customer_info' => json_encode($Buyer_obj),
                 'user_id' => auth()->id(),
-                'user_shop_id' => $user_shop,
-                'quotation_date' => $quotation_date,
+                'user_shop_id' => $user_shop_id,
+                'quotation_date' => $quotation['date'],
                 'total_amount' => 0,
-                'additional_notes' => null,
-                'exchange_rate' => $exchange_rate,
-                'slug' => getUniqueProposalSlug($customer_name),
-                'user_slug' => $mark
+                'additional_notes' => $internal_remarks ?? null,
+                'exchange_rate' => $quotation['exchange'],
+                'slug' => getUniqueProposalSlug($buyer_detailsdb['entity_name']),
+                'user_slug' => $quotation['number'] ?? null,
+                'additional_notes' => json_encode($quotation) ?? null,
             ];
 
             $data = Quotation::create($record);
 
-            return response()->json([
-                'status' => 'success',
-                'record_id' => $data->id,
-                'message' => 'Quotation Created Successfully',
-            ]);
-        }else{
-            return response()->json([
-                'status' => 'Error',
-                'message' => 'Ajax Support Only',
-            ]);
+            // ! Uploading Files
+            if ($request->hasFile('files')) {
+                $files = $request->file('files');
+
+                foreach ($files as $key => $file) {
+                    $file_extension = $file->getClientOriginalExtension();
+                    $og_file_name = $file->getClientOriginalName();
+                    $tmp_filename = \Str::random(35).'.'.$file_extension;
+                    $user_id = auth()->id();
+
+                    $file_type = explode('/', $file->getMimeType())[0];
+
+                    $folderPath = "public/files/$user_id/quote_files";
+                    $uploaded_path = $file->storeAs($folderPath, $tmp_filename);
+
+                    $uploaded_path = str_replace('public', 'storage', $uploaded_path);
+
+                    $media = new Media();
+                    $media->file_name = $og_file_name;
+                    $media->path = $uploaded_path;
+                    $media->extension = $file_extension;
+                    $media->file_type = $file_type;
+                    $media->tag = 'quote_files';
+                    $media->type_id = $data->id;
+                    $media->type = 'UserShop';
+                    $media->save();
+                }
+            }
+
+
+            if ($request->has('submitdraft')) {
+                return back()->with('success','Quotation Created Successfully');
+            }else{
+                $typeid =  $data->id;
+                $flow = encrypt('pick_product');
+                $url = ENV('APP_CHANNEL').ENV('APP_URL')."/panel/Quotation/step-3?typeId=$typeid";
+                return redirect()->to($url)->with('success', 'Quotation Created Successfully');
+            }
+
+        } catch (\Throwable $th) {
+            throw $th;
+            return back()->with('error','Error Occurred While Creating Quotation');
         }
     }
 
@@ -222,12 +355,16 @@ class invoiceController extends Controller
 
     public function quotation3()
     {
+
         $user = auth()->user();
         $pagelength = request()->get('pagelength', 24);
         $quotation_id = request()->get('typeId');
 
         $products = Product::query()
             ->where('user_id', $user->id);
+
+        $QuotationRecord = Quotation::whereId($quotation_id)->first();
+
 
         if (request()->has('searchProduct') && request()->get('searchProduct') != '') {
             $query = request()->get('searchProduct');
@@ -251,7 +388,7 @@ class invoiceController extends Controller
             ->pluck('product_id')
             ->toArray();
 
-        return view('panel.Documents.quotation3', compact('products', 'QuotationItem'));
+        return view('panel.Documents.quotation3', compact('products', 'QuotationItem','QuotationRecord'));
     }
 
 
@@ -282,9 +419,15 @@ class invoiceController extends Controller
                 $QuotationItemRecord->Price = $trecords->Price;
                 $QuotationItemRecord->currency = $trecords->Currency ?? 'INR';
                 $QuotationItemRecord->additional_notes = json_encode($trecords);
+
+                $QuotationItemRecord->quantity = $trecords->Quantity;
+                $QuotationItemRecord->unit = $trecords->Unit;
+
                 $QuotationItemRecord->save();
 
-                $TotalPrice += $trecords->Price;
+                $TotalPrice += $trecords->Price ?? 0;
+
+
 
             }
 
@@ -314,7 +457,21 @@ class invoiceController extends Controller
         $user  = auth()->user();
         $QuotationRecord = Quotation::whereId(request()->get('typeId'))->first();
         $QuotationItemRecords = QuotationItem::where('quotation_id',$QuotationRecord->id)->get();
-        return view('panel.Documents.quotationpdf', compact('QuotationRecord','QuotationItemRecords','user'));
+
+        $buyerRecord = json_decode($QuotationRecord->customer_info)->Buyer_Id;
+        $buyer = BuyerList::whereId($buyerRecord)->first();
+        $entity_details_id = json_decode($buyer->buyer_details)->entity_details_id;
+        $entity_details = UserAddress::whereId($entity_details_id)->first();
+
+
+
+        // magicstring(json_decode($entity_details->details)->entity_name);
+        // return;
+
+
+
+
+        return view('panel.Documents.quotationpdf', compact('QuotationRecord','QuotationItemRecords','user','entity_details'));
     }
 
     public function printexcelqt1() {
@@ -346,8 +503,11 @@ class invoiceController extends Controller
         $File_name = request()->get('filename',null);
 
         $Array_headers = array_keys((array) json_decode($tabelcontent)[0]);
-        $Array_headers1= array_keys((array) json_decode($tabelcontent)[1]);
+        // $Array_headers1= array_keys((array) json_decode($tabelcontent)[1]);
         $Array_values = [[]];
+
+
+        // $ArrayKheader = [[]];
 
         foreach (json_decode($tabelcontent) as $key => $value) {
             foreach ($value as $index => $element) {
@@ -355,11 +515,8 @@ class invoiceController extends Controller
             }
         }
 
-        // magicstring($Array_headers  );
 
-        // return;
-
-        $url = 'https://gb.giftingbazaar.com/excel/upload';
+        $url = ENV('EXCEL_EXPORT_URL') ?? 'https://gb.giftingbazaar.com/excel/upload';
 
         if ($File_name == null) {
             $data = [
@@ -391,15 +548,16 @@ class invoiceController extends Controller
             $file_extension = $file->getClientOriginalExtension();
 
             $og_file_name = $file->getClientOriginalName();
-            $tmp_filename = \Str::random(35).'.'.$file_extension;
+            $tmp_filename = \Str::random(15).'.'.$file_extension;
             $user_id = auth()->id();
 
             $file_type = explode('/',$file->getMimeType())[0];
 
-            
-            $folderPath = "app/public/files/$user_id/quote_files";
-            $uploaded_path = $file->move(storage_path($folderPath), $tmp_filename)->getpath();
-            
+
+            $folderPath = "public/files/$user_id/quote_files";
+            $uploaded_path = $file->storeAs($folderPath, $tmp_filename);
+
+            $uploaded_path = str_replace('public','storage',$uploaded_path);
 
             $media = new Media();
             $media->file_name = $og_file_name;
@@ -410,7 +568,7 @@ class invoiceController extends Controller
             $media->type_id = $request->get('typeId');
             $media->type = 'UserShop';
             $media->save();
-        
+
             return back()->with('success','File Uploaded Successfully');
         } catch (\Throwable $th) {
             return back()->with('error','Error Occurred While Uploading File');

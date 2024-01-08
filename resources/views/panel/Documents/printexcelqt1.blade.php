@@ -47,7 +47,7 @@
 
                 <table class="table table-bordered" id="printquotations">
                     <thead>
-                        <tr>
+                        <tr class="myspecial">
                             <th scope="col">
                                 <img src="{{ asset(getShopLogo($usershop->slug)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
                                     alt="company logo"
@@ -66,10 +66,9 @@
 
                             <th colspan="{{ $count - 4 }}"></th>
 
-
                         </tr>
                         {{-- <tr>
-                            <th scope="col" colspan="2"></th>      
+                            <th scope="col" colspan="2"></th>
                             <th scope="col" colspan="4"></th>
                             @foreach ($userAttribute as $item)
                             @if (in_array($item, array_keys((array) $First_additional_notes)))
@@ -77,7 +76,7 @@
                             @endif
                         @endforeach
 
-                                                  
+
                         </tr> --}}
                         <tr>
                             <th scope="col">Model Code</th>
@@ -167,24 +166,8 @@
 
 
     <script>
-        // function getTableData(tabelId) {
-        //     var array = [];
-        //     var headers = [];
-        //     $('#'+tabelId+' th').each(function (index, item) {
-        //         headers[index] = $(item).html().replace(/^\s+|\s+$/gm, '');
-        //     });
 
-        //     $('#'+tabelId+' tr').has('td').each(function () {
-        //         var arrayItem = {};
-        //         $('td', $(this)).each(function (index, item) {
-        //             arrayItem[headers[index]] = $(item).html().replace(/^\s+|\s+$/gm, '');
-        //         });
-        //         array.push(arrayItem);
 
-        //     });
-
-        //     return array;
-        // }
 
         // working perfectly without image and first row
         function getTableData(tableId) {
@@ -205,11 +188,6 @@
             // Loop through the table rows starting from the third row
             $('#' + tableId + ' tr:gt(1)').each(function() {
                 var arrayItem = {};
-
-                // $('td', $(this)).each(function(index, item) {
-                //     arrayItem[headers[index]] = $(item).html().replace(/^\s+|\s+$/gm, '');
-                // });
-
                 $('td', $(this)).each(function(index, item) {
                     // Check if the cell contains an image
                     if ($(item).find('img').length > 0) {
@@ -231,44 +209,6 @@
 
 
 
-        // function getTableData(tableId) {
-        //     var array = [];
-        //     var headers = [];
-
-        //     // Fetch headers from the first row
-        //     $('#' + tableId + ' tr:eq(0) th').each(function(index, item) {
-        //         headers[index] = $(item).html().trim();
-        //     });
-
-        //     // Fetch headers from the second row, if present
-        //     $('#' + tableId + ' tr:eq(1) th').each(function(index, item) {
-        //         headers[index] += ' ' + $(item).html().trim();
-        //     });
-
-        //     // Loop through the table rows starting from the third row
-        //     $('#' + tableId + ' tr:gt(1)').each(function() {
-        //         var arrayItem = {};
-
-        //         $('td', $(this)).each(function(index, item) {
-        //             // Check if the cell contains an image
-        //             if ($(item).find('img').length > 0) {
-        //                 // Extract the src of the image
-        //                 arrayItem[headers[index]] = $(item).find('img').attr('src');
-        //             } else {
-        //                 // Extract the text
-        //                 arrayItem[headers[index]] = $(item).html().trim();
-        //             }
-        //         });
-
-        //         array.push(arrayItem);
-        //     });
-
-        //     return array;
-        // }
-
-
-
-
         // {{-- ` Script for Excel Export --}}
         $(document).on('click', '#printExcel', function() {
             // html_table_to_excel('xlsx');
@@ -280,7 +220,7 @@
                 url: "{{ route('panel.Documents.printexcelqt1') }}",
                 data: {
                     'tabelcontent': JSON.stringify(tabledata),
-                    'filename': filename,
+                    // 'filename': filename.replace(/\s+/g, '_')
                 },
                 success: function(result) {
                     let response = JSON.parse(result);

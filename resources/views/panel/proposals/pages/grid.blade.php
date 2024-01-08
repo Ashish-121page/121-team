@@ -9,7 +9,7 @@
 
           <div class=" mx-1">
               <input type="text" class="form-control" id="search_buyer" name="search" placeholder="Buyer Search">
-          </div>                
+          </div>
                   @foreach ($proposals as $proposal)
                       @php
                           $customer_detail = json_decode($proposal->customer_details);
@@ -19,7 +19,7 @@
                           $user_key = encrypt(auth()->id());
                           $product_count = App\Models\ProposalItem::where('proposal_id',$proposal->id)->get()->count();
                       @endphp
-                      @endforeach 
+                      @endforeach
 
           <div class=" mx-1">
               <select name="" id="status_check" class="form-control" style="padding-right: 40px !important;">
@@ -28,7 +28,7 @@
                   <option value="draft">Draft</option>
               </select>
           </div>
-                
+
       </div>
       <div class="col-6 d-flex justify-content-end align-items-center">
           <a href="?view=listview" class="btn btn-outline-primary mx-1 @if(request()->get('view') == 'listview' ) active @endif"><i class="fas fa-list"></i></a>
@@ -39,8 +39,8 @@
   </div>
 </div>
 <div class="col-md-12 col-lg-12">
-  <div class="card-body1">    
-      <div class=" d-flex gap-5 flex-wrap"> 
+  <div class="card-body1">
+      <div class=" d-flex gap-5 flex-wrap">
         @if ($proposals->count() > 0)
           @foreach ($proposals as $proposal)
               @php
@@ -82,54 +82,53 @@
                           @php
                               $mediarecord = App\Models\Media::where('type_id',$item->product_id)->where('tag','Product_Image')->first();
                           @endphp
-                          @if ($mediarecord != null)   
-                                          
+                          @if ($mediarecord != null)
+
                             <div style="height: 100px; width: 100px;object-fit: contain; ">
                               <img src="{{ asset($mediarecord->path) ?? '' }}" alt="" class="img-fluid " style="border-radius: 10px;height: 80%; width: 100%;  gap:10px; padding:0.15rem">
-                            </div>   
-                                        
-                          @endif                                                                    
+                            </div>
+
+                          @endif
                       @endif
                     @endforeach
-                  </div>                  
-                  <div class="d-flex float-end justify-content-between">  
-                    
+                  </div>
+                  <div class="d-flex float-end justify-content-between">
+
                     <a class="btn btn-transparent w-fit" href="{{ inject_subdomain('proposal/picked/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?type=send" target="_blank" style="text-decoration: none; padding:6px 0px;">
-                      <i class="fas fa-download" style="color:#6666cc"></i> 
-                    </a>                    
+                      <i class="fas fa-download" style="color:#6666cc"></i>
+                    </a>
                       <a class="btn btn-transparent w-fit " href="{{ inject_subdomain('proposal/edit/'.$proposal->id.'/'.$user_key, $slug, false, false)}}?margin={{$proposal->margin ?? 10}}" target="_blank" style="text-decoration: none; padding:6px 0px; ">
-                        <i class="fas fa-edit fa-lg" style="color:#6666cc; margin-right:0px;"></i> 
-                      </a>                      
-                      
-                    @if ($proposal->status == 1)                     
-                      @if ($product_count != 0)                                               
+                        <i class="fas fa-edit fa-lg" style="color:#6666cc; margin-right:0px;"></i>
+                      </a>
+
+                    @if ($proposal->status == 1)
+                      @if ($product_count != 0)
                           <button class="btn-link text-primary copybtn w-fit mx-1"  value="{{inject_subdomain('shop/proposal/'.$proposal->slug, $slug) }}" style="text-decoration: underline; border:none; padding: 0px;">
                               <i class="uil-link-alt"></i> Copy Link
-                          </button>                                                
-                      @endif                                            
+                          </button>
+                      @endif
                           <a class="btn-link text-primary w-fit mx-1" href="{{inject_subdomain('make-copy/'.$proposal->id,$slug) }}" class="" style="text-decoration: underline; margin-top:6px; border:none;">
                               <i class="uil-copy"></i> Duplicate
-                          </a> 
+                          </a>
                     @endif
-                    @if ($proposal->status == 1)                                                                                  
+                    @if ($proposal->status == 1)
                       <button href="{{ route("panel.proposals.destroy",$proposal->id) }}" class="text-danger delete-item mx-1" style="text-decoration: underline;  border:none;background-color:#ffff">
                           <i class="fas fa-trash"></i>
-                      </button>                                                                                   
-                    @endif 
+                      </button>
+                    @endif
 
-                                                                                                          
-                                                  
+
+
                   </div>
-            
+
               </div>
-            
+
           @endforeach
-        @endif      
-      </div>         
+        @endif
+      </div>
   </div>
-</div> 
+</div>
 
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-   
