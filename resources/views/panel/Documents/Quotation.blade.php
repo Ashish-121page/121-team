@@ -118,7 +118,7 @@
                                                         value="{{ $record->id }}">
                                                 </td>
                                                 <td>
-                                                    {{ $record->user_slug ?? $record->slug }}
+                                                    {{ $record->user_slug ?? $record->slug }} ({{ $record['record_count'] ?? 1 }})
                                                 </td>
                                                 <td>
                                                     {{ $jsonData->buyerName ?? $jsonData->person_name ?? '' }}

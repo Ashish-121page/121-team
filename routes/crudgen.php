@@ -387,8 +387,9 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
 
         Route::get('/start', ['uses' => 'invoiceController@Quotation', 'as' => 'Quotation']);
         Route::get('/create', ['uses' => 'invoiceController@createQuotationform', 'as' => 'create.Quotation.form']);
-        
+
         Route::post('/Quotation/create', ['uses' => 'invoiceController@createQuotation', 'as' => 'create.Quotation']);
+        Route::post('/Quotation/update/{quotation}', ['uses' => 'invoiceController@updateQuotation', 'as' => 'update.Quotation']);
         Route::get('/check/slug', ['uses' => 'invoiceController@checkslug', 'as' => 'Quotation.check.slug']);
 
         Route::get('/step-2', ['uses' => 'invoiceController@quotation2', 'as' => 'quotation2']);
@@ -400,10 +401,17 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('/step-4', ['uses' => 'invoiceController@quotation4', 'as' => 'quotation4']);
         Route::post('/save', ['uses' => 'invoiceController@storeQuotation', 'as' => 'save.quotation']);
 
+
+        // Making Quotation From Offer
+        Route::get('/make-quote/{proposal}', ['uses' => 'invoiceController@makequoteOffer', 'as' => 'make.quote.offer']);
+
+
+
+
+
+        // Exporting Quotations PDF and Excel
         Route::get('/quotationpdf', ['uses' => 'invoiceController@quotationpdf', 'as' => 'quotationpdf']);
-
         Route::get('/printexcelqt1', ['uses' => 'invoiceController@printexcelqt1', 'as' => 'printexcelqt1']);
-
         Route::post('/printexcelqt1', ['uses' => 'invoiceController@exportexcel', 'as' => 'printexcelqt1.print']);
 
 

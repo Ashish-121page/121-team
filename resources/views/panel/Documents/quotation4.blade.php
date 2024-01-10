@@ -89,7 +89,8 @@
                             data-bs-toggle="modal" data-bs-target="#AttriModal">
                             Add Fields
                         </a>
-                        <a href="#" class="btn btn-dark mx-1" aria-expanded="false" role="button" id="saveQuote">Save quotation</a>
+                        <a href="#" class="btn btn-dark mx-1" aria-expanded="false" role="button" id="saveQuote">Save
+                            quotation</a>
                         @if ($QuotationRecord->status == 1)
                             <a href="{{ route('panel.Documents.quotationpdf') }}?typeId={{ $QuotationRecord->id }}"
                                 class="btn btn-outline-dark mx-1" aria-expanded="false">
@@ -150,8 +151,8 @@
 
         <div class="row mt-3 justify-content-start">
             <div class="col-lg-5 col-md-5 d-flex align-items-center">
-                <input type="text" class="form-control d-none " placeholder="Add remarks here" id="Quotation-additional_notes"
-                    value="">
+                <input type="text" class="form-control d-none " placeholder="Add remarks here"
+                    id="Quotation-additional_notes" value="">
                 {{-- <button class="btn btn-primary mx-2 ms-2">Edit</button> --}}
             </div>
         </div>
@@ -266,7 +267,6 @@
 
     <script>
 
-
         // function tableToJson(table) {
         //     var data = [];
 
@@ -275,12 +275,17 @@
         //         return str.replace(/\s+/g, ' ').trim();
         //     }
 
-        //     // Function to get text or select value
+        //     // Function to get text, select value, or input value
         //     function getTextOrSelectValue(element) {
         //         // Check if element is a select element
         //         if (element.tagName === "SELECT") {
         //             return element.options[element.selectedIndex].value;
         //         }
+        //         // Check if element is an input element
+        //         if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+        //             return element.value;
+        //         }
+        //         // For content editable or other elements
         //         return element.contentEditable === 'true' ? element.innerText : element.textContent;
         //     }
 
@@ -294,8 +299,10 @@
         //     Array.from(table.querySelectorAll('tbody tr:not(.d-none)')).forEach(function(row) {
         //         var rowData = {};
         //         Array.from(row.querySelectorAll('td:not(.d-none)')).forEach(function(cell, index) {
-        //             var value = cell.querySelector('select') ? getTextOrSelectValue(cell.querySelector(
-        //                 'select')) : cleanString(getTextOrSelectValue(cell));
+        //             // Check for select or input elements within cell, else use cell text
+        //             var value = cell.querySelector('select, input, textarea') ?
+        //                 getTextOrSelectValue(cell.querySelector('select, input, textarea')) :
+        //                 cleanString(getTextOrSelectValue(cell));
         //             if (headers[index]) {
         //                 rowData[headers[index]] = value;
         //             }
@@ -305,7 +312,6 @@
 
         //     return data;
         // }
-
 
         function tableToJson(table) {
     var data = [];
@@ -321,9 +327,12 @@
         if (element.tagName === "SELECT") {
             return element.options[element.selectedIndex].value;
         }
-        // Check if element is an input element
+        // Check if element is an input element or image
         if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
             return element.value;
+        }
+        if (element.tagName === "IMG") {
+            return element.src;
         }
         // For content editable or other elements
         return element.contentEditable === 'true' ? element.innerText : element.textContent;
@@ -331,17 +340,17 @@
 
     // Get headers text, skip headers with class 'd-none'
     var headers = [];
-    table.querySelectorAll('thead th:not(.d-none)').forEach(function(header, index) {
+    table.querySelectorAll('thead th:not(.d-none)').forEach(function (header, index) {
         headers[index] = cleanString(getTextOrSelectValue(header));
     });
 
     // Convert rows to objects, skip rows and cells with class 'd-none'
-    Array.from(table.querySelectorAll('tbody tr:not(.d-none)')).forEach(function(row) {
+    Array.from(table.querySelectorAll('tbody tr:not(.d-none)')).forEach(function (row) {
         var rowData = {};
-        Array.from(row.querySelectorAll('td:not(.d-none)')).forEach(function(cell, index) {
-            // Check for select or input elements within cell, else use cell text
-            var value = cell.querySelector('select, input, textarea') ?
-                getTextOrSelectValue(cell.querySelector('select, input, textarea')) :
+        Array.from(row.querySelectorAll('td:not(.d-none)')).forEach(function (cell, index) {
+            // Check for select, input, textarea, or image elements within cell, else use cell text
+            var value = cell.querySelector('select, input, textarea, img') ?
+                getTextOrSelectValue(cell.querySelector('select, input, textarea, img')) :
                 cleanString(getTextOrSelectValue(cell));
             if (headers[index]) {
                 rowData[headers[index]] = value;
@@ -352,22 +361,6 @@
 
     return data;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         // Convert the table into JSON
@@ -399,7 +392,7 @@
                             stack: 6,
                             position: 'bottom-right'
                         })
-                        $(".pubstatus").html("Sent");
+                        window.location.reload()
                     }
                 },
                 error: function(error) {
@@ -418,8 +411,6 @@
             e.preventDefault();
             $('.currencySelect').html($(this).val());
         });
-
-
     </script>
 
 

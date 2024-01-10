@@ -20,8 +20,37 @@
                             }
                         @endphp
                         {{ ($varients_arr != [] && $varients_arr != null) ? implode(',',$varients_arr) : 'No Varient'  }}
-
                     </div>
+
+                    @if ($QuotationRecord->proposal_id != null )
+                        @php
+                            $proposal_item  = App\Models\ProposalItem::where('proposal_id',$QuotationRecord->proposal_id)->where('product_id',$product->id)->first();
+
+                            if (isset($proposal_item->note)) {
+                                $ashus = json_decode($proposal_item->note);
+                            }else {
+                                // return magicstring(json_decode($proposal_item->note));
+                            }
+                        @endphp
+
+
+
+                        @if (isset($proposal_item->note) && $proposal_item->note != null)
+                            <div style="width: 90%; word-break: break-all">
+                                <b>Offer Notes</b>:
+                                <span>{!! $ashus->remarks_offer !!}</span>
+                            </div>
+                        @endif
+
+                        @if (isset($proposal_item->attachment) &&  $proposal_item->attachment != null)
+                            <div style="width: 90%; word-break: break-all">
+                                <b>Offer Attachment</b>:
+                                <a href="{{ asset(getMediaByIds([$proposal_item->attachment])->path) }}" class="btn-link text-primary">Download</a>
+                            </div>
+                        @endif
+
+                    @endif
+
 
                     <div class="actionbtn" style="position: absolute;top: 20%;right: 2%;">
                         <label class="custom-chk prdct-checked" data-select-all="boards">

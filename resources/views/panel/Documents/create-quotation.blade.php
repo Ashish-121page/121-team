@@ -1,3 +1,24 @@
+@php
+if (isset($quotationRecord->customer_info)) {
+    $CustomerInfo = json_decode($quotationRecord->customer_info) ?? [];
+    $buyerId = $CustomerInfo->Buyer_Id ?? null;
+    $buyerRec = \App\Models\BuyerList::whereId($buyerId)->first() ?? null;
+    if ($buyerRec != null) {
+        // Buyer Records
+        $buyer = json_decode($buyerRec->buyer_details) ?? null;
+        $Entity_Name = $buyer->entity_name ?? '';
+        $entity_details_id = $buyer->entity_details_id ?? '';
+        $ref_id = $buyer->ref_id ?? '';
+        $address1 = $buyer->address1 ?? '';
+        $address2 = $buyer->address2 ?? '';
+        $city = $buyer->city ?? '';
+        $country = $buyer->country ?? '';
+        $pincode = $buyer->pincode ?? '';
+    }
+}
+
+@endphp
+
 @extends('backend.layouts.main')
 @section('title', 'secondview')
 @section('content')
@@ -21,8 +42,17 @@
 
         <!-- upper fields -->
         <div class="row mt-3">
-            <form action="{{ route('panel.Documents.create.Quotation') }}" method="POST" enctype="multipart/form-data">
+            @php
+                $actionURL = route('panel.Documents.create.Quotation');
+                if (isset($quotationRecord)) {
+                    $actionURL = route('panel.Documents.update.Quotation', $quotationRecord->id);
+                }
+            @endphp
 
+            <form action="{{ $actionURL }}" method="POST" enctype="multipart/form-data">
+
+                <input type="hidden" name="proposal_id" value="{{ $offer_data['proposal_id'] ?? null }}">
+                <input type="hidden" name="proposal_products" value="{{ $offer_data['products'] ?? null }}">
                 <div class="col-12">
                     <div class="row">
                         <div class="col-8">
@@ -41,9 +71,13 @@
                         </div>
                         <div class="col-4 d-flex justify-content-end align-items-center">
 
-                            <button type="submit" class="btn btn-outline-secondary mx-2" name="submitdraft">Save as
-                                Draft</button>
-                            <button type="submit" class="btn btn-outline-secondary mx-2">Next</button>
+                            @if (isset($quotationRecord))
+                                {{-- <button type="submit" class="btn btn-outline-secondary mx-2" name="submitdraft">Save as Draft</button> --}}
+                                <button type="submit" class="btn btn-outline-secondary mx-2">Update</button>
+                            @else
+                                <button type="submit" class="btn btn-outline-secondary mx-2" name="submitdraft">Save as Draft</button>
+                                <button type="submit" class="btn btn-outline-secondary mx-2">Next</button>
+                            @endif
 
                             {{-- <button type="button" onclick="proceedTothirdView()" class="btn btn-primary" id="submit1"
                                 data-bs-target="">
@@ -102,7 +136,7 @@
                                                             id="entity_details" name="entity_details[entityname]" required>
                                                             <option>Select Entity</option>
                                                             @forelse ($entities as $entity)
-                                                                <option value="{{ $entity->id }}">
+                                                                <option value="{{ $entity->id }}" @if (($entity_details_id ?? '') == $entity->id) selected @endif>
                                                                     {{ json_decode($entity->details)->entity_name ?? '' }}
                                                                 </option>
                                                             @empty
@@ -114,11 +148,11 @@
 
 
                                                     <div class="form-group mb-3">
-                                                        <label for="entity_bank" class="text-danger"> Select Bank <span
+                                                        <label for="entity_bank"> Select Bank <span
                                                                 class="text-danger">*</span></label>
                                                         <select name="entity_bank" class="form-control select2"
                                                             id="entity_bank" name="entity_details[bankname]" required>
-                                                            <option>No saved entities found</option>
+                                                            {{-- <option>No saved entities found</option> --}}
                                                         </select>
                                                     </div>
 
@@ -141,7 +175,7 @@
                                                         <div class="col-12 mb-3">
                                                             <label for="internal_remarks">Internal Remarks</label>
                                                             <textarea name="internal_remarks" id="internal_remarks" cols="30" name="internal_ref[remarks]"
-                                                                class="form-control"></textarea>
+                                                                class="form-control">{{ $additional_notes->internal_remarks ?? $offer_data['Offer_Notes'] ?? '' }} </textarea>
                                                         </div>
 
                                                     </div>
@@ -195,21 +229,21 @@
                                                 <br>
                                                 <input class="form-control" id="quotation_number"
                                                     name="quotation[number]" type="text" placeholder="Enter"
-                                                    value="{{ $quotation_number }}" required>
+                                                    value="{{ $quotationRecord->user_slug ?? $quotationRecord->slug ?? $quotation_number }}" required>
                                                 <small id="checkslug" class="d-none">Slug Exist</small>
                                             </div>
 
                                             <div class="col-lg-4 col-md-6 col-12 mb-3">
                                                 <label for="buyermail">Quotation Date <span
                                                         class="text-danger">*</span></label>
-                                                <input class="form-control" type="date" value="{{ date('Y-m-d') }}"
+                                                <input class="form-control" type="date" value="{{  $additional_notes->date ?? date('Y-m-d') }}"
                                                     name="quotation[date]" required>
                                             </div>
 
 
                                             <div class="col-lg-4 col-md-6 col-12 mb-3">
                                                 <label for="buyermail">Delivery Date</label>
-                                                <input class="form-control" type="date"
+                                                <input class="form-control" type="date" value="{{ $additional_notes->delivery_date ?? ''  }}"
                                                     name="quotation[delivery_date]">
                                             </div>
 
@@ -217,11 +251,10 @@
                                             <div class="col-lg-6 col-md-6 col-12 mb-3">
                                                 <label for="buyermail">Currency <span class="text-danger">*</span></label>
                                                 <br>
-
                                                 <select class="form-control select2" name="quotation[currency]"
                                                     id="currency" required>
                                                     @forelse ($currency as $curr)
-                                                        <option value="{{ $curr->currency }}"
+                                                        <option value="{{ $curr->currency }}" @if ( ($additional_notes->currency ?? 'INR' == $curr->currency) || (($offer_data['Currency'] ?? 'INR') == $curr->currency) ) selected @endif
                                                             data-rateofexchange="{{ $curr->exchange ?? 1 }}">
                                                             {{ $curr->currency }} </option>
                                                     @empty
@@ -234,8 +267,7 @@
                                             <div class="col-lg-6 col-md-6 col-12 mb-3">
                                                 <label for="buyermail">Exchange Rate</label>
                                                 <br>
-                                                <input class="form-control" type="number" placeholder="Enter"
-                                                    name="quotation[exchange]">
+                                                <input class="form-control" type="number" placeholder="Enter" name="quotation[exchange]" value="{{ $additional_notes->exchange ?? '' }}">
                                             </div>
 
                                             <div class="col-lg-4 col-md-6 col-12 mb-3">
@@ -243,7 +275,7 @@
                                                 <select class="form-control select2" id="term_of_delivery"
                                                     name="quotation[term_of_delivery]">
                                                     @forelse ($terms_of_delivery as $term_of_del)
-                                                        <option value="{{ $term_of_del }}">{{ $term_of_del }}</option>
+                                                        <option value="{{ $term_of_del }}" @if ($additional_notes->term_of_delivery ?? '' == $term_of_del) selected @endif >{{ $term_of_del }}</option>
                                                     @empty
                                                         <option value="FOB">FOB</option>
                                                         <option value="CIF">CIF</option>
@@ -256,19 +288,19 @@
 
                                             <div class="col-lg-4 col-md-6 col-12 mb-3">
                                                 <label for="buyermail">Port of Loading</label>
-                                                <input class="form-control" type="text" placeholder="Enter"
+                                                <input class="form-control" type="text" placeholder="Enter" value="{{ $additional_notes->port_of_loading ?? '' }}"
                                                     name="quotation[port_of_loading]">
                                             </div>
 
                                             <div class="col-lg-4 col-md-6 col-12 mb-3">
                                                 <label for="buyermail">Port of Discharge</label>
-                                                <input class="form-control" type="text" placeholder="Enter"
+                                                <input class="form-control" type="text" placeholder="Enter" value="{{ $additional_notes->port_of_discharge ?? '' }}"
                                                     name="quotation[port_of_discharge]">
                                             </div>
 
                                             <div class="col-lg-12 col-md-6 col-12 mb-3">
                                                 <label for="buyermail">Payment Terms</label>
-                                                <textarea class="form-control" placeholder="Enter" name="quotation[payment_term]"></textarea>
+                                                <textarea class="form-control" placeholder="Enter" name="quotation[payment_term]">{{ $additional_notes->payment_term ?? '' }}</textarea>
                                             </div>
 
                                         </div>
@@ -277,9 +309,9 @@
                                     </div>
                                 </div>
 
+
                                 {{-- Buyer Details --}}
                                 <div class="card col-lg-12 col-md-12" style="height:fit-content;">
-
                                     <div class="card-header mb-3" style="background-color:#f3f3f3">
                                         <h6>Buyer Details</h6>
                                     </div>
@@ -287,19 +319,23 @@
                                     <div class="card-body p-0">
                                         <div class="form-group">
 
+                                            @php
+                                                $is_disabled = '';
+                                                if (isset($buyerRec)) {
+                                                    $is_disabled = 'readonly';
+                                                }
+                                            @endphp
+
                                             <div class="row">
                                                 <div class="col-8" style="display:block; width:100% !important;">
-                                                    <label for="buyername">Entity Name <span
-                                                            class="text-danger">*</span></label>
+                                                    <label for="buyername">Entity Name <span class="text-danger">*</span></label>
                                                     <br>
-                                                    <input class="form-control" type="text" placeholder="Enter"
-                                                        name="buyer[entity_name]" required>
+                                                    <input class="form-control" type="text" placeholder="Enter" name="buyer[entity_name]" value="{{ $Entity_Name ?? $offer_data['name'] ?? '' }}" required {{ $is_disabled }}>
                                                 </div>
                                                 <div class="col-4">
                                                     <label for="buyername">ID</label>
                                                     <br>
-                                                    <input class="form-control" type="text" placeholder="Enter"
-                                                        name="buyer[ref_id]">
+                                                    <input class="form-control" type="text" placeholder="Enter" name="buyer[ref_id]" value="{{ $ref_id ?? $offer_data['alias'] ?? '' }}" {{ $is_disabled }} >
                                                 </div>
                                             </div>
 
@@ -307,50 +343,54 @@
                                                 <div class="col-12" style="display:block; width:100% !important;">
                                                     <label for="adrsl1" style="width:100%">Address Line1</label>
                                                     <br>
-                                                    <input class="form-control" type="text" style="width:100%"
-                                                        name="buyer[address1]" placeholder="Enter">
+                                                    <input class="form-control" type="text" style="width:100%" name="buyer[address1]" placeholder="Enter" value="{{ $address1 ?? '' }}"  {{ $is_disabled }} >
                                                 </div>
                                             </div>
                                             <div class="row mt-3">
                                                 <div class="col-12" style="display:block; width:100% !important;">
                                                     <label for="adrsl2" style="width:100%">Address Line2</label>
                                                     <br>
-                                                    <input class="form-control" type="text" style="width:100%"
-                                                        name="buyer[address2]" placeholder="Enter">
+                                                    <input class="form-control" type="text" style="width:100%" name="buyer[address2]" placeholder="Enter" value="{{ $address2 ?? '' }}"  {{ $is_disabled }} >
                                                 </div>
                                             </div>
                                             <div class="row mt-3">
-
                                                 <div class="col-lg-4 col-md-6 col-12"
                                                     style="display:block; width:100% !important;">
                                                     <label for="buyercity" style="width:100%">City</label>
                                                     <br>
-                                                    <input class="form-control" type="text" style="width:100%"
-                                                        name="buyer[city]" placeholder="Enter">
+                                                    <input class="form-control" type="text" style="width:100%" name="buyer[city]" placeholder="Enter" value="{{ $city ?? '' }}" {{ $is_disabled }} >
                                                 </div>
 
                                                 <div class="col-lg-4 col-md-6 col-12"
                                                     style="display:block; width:100% !important;">
                                                     <label for="country" style="width:100%">Country</label>
                                                     <br>
-                                                    <select class="form-control select2" id="country"
+                                                    <select class="form-control select2" id="country"  {{ $is_disabled }}
                                                         name="buyer[country]" style="width:100%">
                                                         <option value="">Select a country</option>
                                                         @foreach ($countries as $country)
-                                                            <option value="{{ $country->name }}">{{ $country->name }}
+                                                            <option value="{{ $country->name }}" @if($country->name == $country) selected @endif  >{{ $country->name }}
                                                             </option>
                                                         @endforeach
                                                         <!-- Add more countries as needed -->
                                                     </select>
                                                 </div>
-                                                <div class="col-lg-4 col-md-6 col-12"
-                                                    style="display:block; width:100% !important;">
+                                                <div class="col-lg-4 col-md-6 col-12" style="display:block; width:100% !important;">
                                                     <label for="pincode">pincode</label>
                                                     <br>
-                                                    <input class="form-control" name="buyer[pincode]" id="pincode"
-                                                        type="text" placeholder="Enter">
+                                                    <input class="form-control" name="buyer[pincode]" id="pincode" type="text" placeholder="Enter" value="{{ $pincode ?? '' }}"  {{ $is_disabled }} >
                                                 </div>
                                             </div>
+
+                                            @if ($is_disabled != '')
+                                                <div class="row my-2">
+                                                    <div class="col-12">
+                                                        <div class="alert alert-warning" role="alert">
+                                                            To update Buyer details, visit Buyer Section
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
 
                                         </div>
 
@@ -366,33 +406,69 @@
                                     </div>
 
                                     <div class="card-body p-0">
-                                        <div class="row">
-                                            <div class="col-lg-4 col-md-6 col-12 mb-3"
-                                                style="display:block; width:100% !important;">
-                                                <label for="buyername">Person Name</label>
-                                                <br>
-                                                <input class="form-control" type="text" placeholder="Enter"
-                                                    name="person_name[]">
+                                        @php
+                                            // Person Details
+                                            if (isset($buyerRec->contact_persons)) {
+                                                $contact_persons = json_decode($buyerRec->contact_persons) ?? '';
+                                            }else{
+                                                $contact_persons = [];
+                                            }
+                                        @endphp
+                                        @forelse ($contact_persons as $contact_person)
+
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-6 col-12 mb-3"
+                                                    style="display:block; width:100% !important;">
+                                                    <label for="buyername">Person Name</label>
+                                                    <br>
+                                                    <input class="form-control" type="text" placeholder="Enter"
+                                                        name="person_name[]" value="{{ ($contact_person->person_name ?? '') ?? $offer_data['name'] ?? '' }}"  {{ $is_disabled }}  >
+                                                </div>
+
+                                                <div class="col-lg-4 col-md-6 col-12 mb-3">
+                                                    <label for="buyermail">Email</label>
+                                                    <br>
+                                                    <input class="form-control" type="text" placeholder="Enter"
+                                                        name="person_email[]" value="{{ ($contact_person->person_email ?? '') ?? $offer_data['Email'] ?? '' }}"  {{ $is_disabled }}  >
+                                                </div>
+
+                                                <div class="col-lg-4 col-md-6 col-12 mb-3">
+                                                    <label for="buyermail">Contact Number</label>
+                                                    <br>
+                                                    <input class="form-control" type="text" placeholder="Enter"
+                                                        name="person_contact[]" value="{{ ($contact_person->person_phone ?? '') ?? $offer_data['Phone'] ?? '' }}"  {{ $is_disabled }}  >
+                                                </div>
                                             </div>
 
-                                            <div class="col-lg-4 col-md-6 col-12 mb-3">
-                                                <label for="buyermail">Email</label>
-                                                <br>
-                                                <input class="form-control" type="text" placeholder="Enter"
-                                                    name="person_email[]">
-                                            </div>
+                                        @empty
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-6 col-12 mb-3"
+                                                    style="display:block; width:100% !important;">
+                                                    <label for="buyername">Person Name</label>
+                                                    <br>
+                                                    <input class="form-control" type="text" placeholder="Enter"
+                                                        name="person_name[]" value="{{ $offer_data['name'] ?? '' }}" >
+                                                </div>
 
-                                            <div class="col-lg-4 col-md-6 col-12 mb-3">
-                                                <label for="buyermail">Contact Number</label>
-                                                <br>
-                                                <input class="form-control" type="text" placeholder="Enter"
-                                                    name="person_contact[]">
+                                                <div class="col-lg-4 col-md-6 col-12 mb-3">
+                                                    <label for="buyermail">Email</label>
+                                                    <br>
+                                                    <input class="form-control" type="text" placeholder="Enter"
+                                                        name="person_email[]" value="{{ $offer_data['Email'] ?? '' }}" >
+                                                </div>
+
+                                                <div class="col-lg-4 col-md-6 col-12 mb-3">
+                                                    <label for="buyermail">Contact Number</label>
+                                                    <br>
+                                                    <input class="form-control" type="text" placeholder="Enter"
+                                                        name="person_contact[]" value="{{ $offer_data['Phone'] ?? '' }}" >
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endforelse
+
+
                                     </div>
                                 </div>
-
-
 
                             </div>
 
@@ -411,8 +487,6 @@
     </div>
     <!--end of container -->
 
-
-
     <script>
         function proceedTothirdView() {
             // Redirect to the route for second view
@@ -422,7 +496,6 @@
         function goBack() {
             window.history.back()
         }
-
 
         $(document).ready(function() {
 
@@ -449,19 +522,9 @@
                 });
             })
 
-
-
-
-
-
-
-
-
-
             $("#entity_details").change(function(e) {
                 e.preventDefault();
                 let vale = $(this).val();
-
                 $.ajax({
                     type: "get",
                     url: "{{ route('panel.Entity.get') }}",

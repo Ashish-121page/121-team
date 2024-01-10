@@ -14,9 +14,11 @@
                     <form class="my-form" action="{{ route('panel.Documents.quotation.uploadFile') }}" method="POST"
                         enctype="multipart/form-data">
                         <input type="hidden" name="typeId" value="{{ $record->id }}">
+
                         <div class="form-group">
                             <label class="button" for="fileElem">Upload multiple files</label>
-                            <input type="file" id="fileElem" name="uploadFiles">
+                            <br>
+                            <input type="file" id="fileElem" name="uploadFiles[]" multiple>
                         </div>
                         <button class="btn btn-outline-primary" type="submit">submit</button>
                     </form>
