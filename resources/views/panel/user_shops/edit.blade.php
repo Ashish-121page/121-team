@@ -283,9 +283,12 @@
                                                                             <li>
                                                                                 <i class="ik ik-check text-success"></i>
                                                                                 {{$number}}
-                                                                                <a href="{{ route('panel.user.number.delete',[$user->id,$number]) }}" class="confirm-btn">
-                                                                                    <i class="ml-5 ik ik-trash text-danger"></i>
-                                                                                </a>
+                                                                                @if ($number != '')
+                                                                                    <a href="{{ route('panel.user.number.delete',[$user->id,$number]) }}" class="confirm-btn">
+                                                                                        <i class="ml-5 ik ik-trash text-danger"></i>
+                                                                                    </a>
+                                                                                @endif
+
                                                                             </li>
                                                                         {{-- @endif --}}
                                                                     @endforeach
@@ -1040,7 +1043,7 @@
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == 'my-address') show active @endif" id="my-address-area" role="tabpanel" aria-labelledby="pills-setting-tab">
 
                                 <div class="row">
-                                    <div class="col-lg-8">
+                                    <div class="col-lg-12">
                                         {{-- <h6>Site Address</h6>
                                         <form action="{{ route('panel.user_shops.address.update', $user_shop->id) }}" method="post" id="UserShopForm" class="row">
                                             @csrf
@@ -1119,28 +1122,42 @@
                                             @forelse ($addresses as $address)
                                                 @php
                                                     $address_decoded = json_decode($address->details,true) ?? '';
+
+
+                                                    // magicstring($account_decoded);
+                                                    // return;
                                                 @endphp
-                                                <div class="col-lg-6 mb-3 pl-0">
+                                                <div class="col-lg-4 mb-3 pl-0">
                                                     <div class="m-1 p-2 border rounded">
                                                         <div class="mb-2">
-                                                              <div class="d-flex align-items-center justify-content-between">
+                                                              <div class="d-flex align-items-center justify-content-between" style="background-color: #f3f3f3">
                                                                 {{-- <h6 class="m-0 p-0">{{ $address->type == 0 ? "Billing" : "Site" }} Address:</h6> --}}
                                                                 <h6>
                                                                     {{ substr($address_decoded['acronym'] ?? $address_decoded['entity_name'], 0, 12) . (strlen($address_decoded['acronym'] ?? $address_decoded['entity_name']) > 12 ? '..' : '') }}
                                                                 </h6>
-                                                                <div>
-                                                                    <a href="javascript:void(0)" class="text-primary editAddress mb-0" title="Edit Address" data-id="{{ $address }}" data-original-title="Edit" ><i class="ik ik-edit"></i></a>
-                                                                    <a href="{{ route('customer.address.delete',$address->id) }}" class="text-primary delete-item mb-0" title=""data-original-title="delete" ><i class="ik ik-trash"></i></a>
+                                                                <div class="" style="width:20%;">
+                                                                    {{-- <p class="text-muted mb-1"> --}}
+                                                                        @if($address->type == 1)
+                                                                            Site
+                                                                        @else
+                                                                            Entity
+                                                                        @endif
+                                                                    {{-- </p> --}}
+                                                                    <a href="javascript:void(0)"  style="margin-left: 15px;" class="text-primary editAddress mb-0" title="Edit Address" data-id="{{ $address }}" data-original-title="Edit" ><i class="ik ik-edit"></i></a>
+                                                                    {{-- <a href="{{ route('customer.address.delete',$address->id) }}" class="text-primary delete-item mb-0" title=""data-original-title="delete" ><i class="ik ik-trash"></i></a> --}}
                                                                 </div>
                                                               </div>
-                                                    </div>
+                                                        </div>
                                                         <div class="pt-1 border-top">
                                                             <div class="d-flex align-items-center justify-content-between">
                                                                 <div>
+
+
                                                                     <p class="text-muted mb-1">
                                                                         {{ $address_decoded['entity_name'] }} <br>
                                                                         {{ $address_decoded['gst_number'] }} <br>
-                                                                        {{ $address_decoded['iec_number'] }} <br>
+                                                                        {{ $address_decoded['iec_number' ] ?? '' }} <br>
+                                                                        {{ $address_decoded['acronym' ] ?? '' }} <br>
                                                                     </p>
 
                                                                     <p class="text-muted mb-1">{{ $address_decoded['address_1'] }}</p>
@@ -1151,8 +1168,33 @@
                                                                         {{ CityById( $address_decoded['city']) }}
                                                                     </p>
                                                                     <p class="text-muted">{{ $address_decoded['pincode'] ?? '' }}</p>
+
+
                                                                 </div>
+
                                                             </div>
+
+                                                                <div class="col-lg-12">
+                                                                    <div class="col-lg-12">
+                                                                        <div class="d-flex align-items-center justify-content-center" style="background-color:#f3f3f3; padding: 5px;">
+                                                                            <h6 align-items-center>Bank Account</h6>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        @forelse ((array) json_decode($address->account_details) as $acc)
+                                                                            <div class="col-lg-6 mb-1">
+                                                                                <p class="text-muted">
+                                                                                    {{ $acc->bank_name ?? '' }} ...
+                                                                                    {{ substr($acc->account_number, -5) }}
+                                                                                </p>
+                                                                            </div>
+                                                                        @empty
+                                                                            <div class="col-lg-12">
+                                                                                <p class="text-muted mb-1">No bank accounts found.</p>
+                                                                            </div>
+                                                                        @endforelse
+                                                                    </div>
+                                                                </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1174,7 +1216,7 @@
 
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == "about") active show @endif" id="current-month" role="tabpanel" aria-labelledby="pills-timeline-tab">
                                 <div class="row">
-                                    <div class="col-lg-8">
+                                    <div class="col-lg-12">
                                         <form action="{{ route('panel.user_shops.about',$user_shop->id) }}" method="post" enctype="multipart/form-data">
                                         @csrf
                                             <div class="row mt-3">
@@ -1640,33 +1682,33 @@
 <script src="https://cdn.ckeditor.com/4.14.1/full/ckeditor.js"></script>
 <script src="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
 
-<script>
-        $('tags').tagsinput('items');
-            var options = {
-                    filebrowserImageBrowseUrl: "{{ url('/laravel-filemanager?type=Images') }}",
-                    filebrowserImageUploadUrl: "{{ url('/laravel-filemanager/upload?type=Images&_token='.csrf_token()) }}",
-                    filebrowserBrowseUrl: "{{ url('/laravel-filemanager?type=Files') }}",
-                    filebrowserUploadUrl: "{{ url('/laravel-filemanager/upload?type=Files&_token='.csrf_token()) }}"
-                };
-                $(window).on('load', function (){
-                    CKEDITOR.replace('description', options);
-        });
+    <script>
+            $('tags').tagsinput('items');
+                var options = {
+                        filebrowserImageBrowseUrl: "{{ url('/laravel-filemanager?type=Images') }}",
+                        filebrowserImageUploadUrl: "{{ url('/laravel-filemanager/upload?type=Images&_token='.csrf_token()) }}",
+                        filebrowserBrowseUrl: "{{ url('/laravel-filemanager?type=Files') }}",
+                        filebrowserUploadUrl: "{{ url('/laravel-filemanager/upload?type=Files&_token='.csrf_token()) }}"
+                    };
+                    $(window).on('load', function (){
+                        CKEDITOR.replace('description', options);
+            });
 
-        // Single swithces
-        var acr_btn = document.querySelector('.js-acr');
-        var switchery = new Switchery(acr_btn, {
-            color: '#6666CC',
-            jackColor: '#fff'
-        });
-        // about Switche
-        var acr_btn = document.querySelector('.js-about');
-        var switchery = new Switchery(acr_btn, {
-            color: '#6666CC',
-            jackColor: '#fff'
-        });
+            // Single swithces
+            var acr_btn = document.querySelector('.js-acr');
+            var switchery = new Switchery(acr_btn, {
+                color: '#6666CC',
+                jackColor: '#fff'
+            });
+            // about Switche
+            var acr_btn = document.querySelector('.js-about');
+            var switchery = new Switchery(acr_btn, {
+                color: '#6666CC',
+                jackColor: '#fff'
+            });
 
-</script>
-        <script>
+    </script>
+    <script>
 
         $('.addAddress').click(function(){
             user_id = $(this).data('id');
@@ -1677,6 +1719,7 @@
 
         $('.editAddress').click(function(){
             var  address = $(this).data('id');
+
             if(address.type == 0){
                 $('.homeInput').attr("checked", "checked");
             }else{
@@ -1692,6 +1735,65 @@
             $('#gstNumber').val(details.gst_number);
             $('#entityName').val(details.entity_name);
             $('#countryEdit').val(details.country).change();
+            $('#acronym').val(details.acronym);
+            $('#iec_number').val(details.iec_number);
+           
+
+
+            $('#bank-details-container_1').empty();
+            jQuery.parseJSON(address.account_details).forEach(element => {
+                    console.log(element);
+
+                    let acc_tag = `<div class="col-md-6 mt-3">
+                            <label for="bank_name" class="form-label">Bank Name <span class="text-danger">*</span> </label>
+                            <input type="text" class="form-control" name="bank_name[]" value="${element.bank_name}" required>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label for="bank_address" class="form-label">Bank Address <span class="text-danger">*</span> </label>
+                            <input type="text" class="form-control" name="bank_address[]" value="${element.bank_address}" required>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label for="swift_code" class="form-label">Swift Code</label>
+                            <input type="text" class="form-control" name="swift_code[]" value="${element.swift_code}">
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label for="account_number" class="form-label">Account Number <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="account_number[]" value="${element.account_number}" required>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label for="account_holder_name" class="form-label">Account Holder Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="account_holder_name[]" value="${element.account_holder_name}" required>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label for="account_type" class="form-label">Account Type <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="account_type[]" value="${element.account_type}" required>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label for="ifsc_code_neft" class="form-label">IFSC Code/NEFT <span class="text-danger">*</span> </label>
+                            <input type="text" class="form-control" name="ifsc_code_neft[]" value="${element.ifsc_code_neft}" required>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+
+                            <button type="button" class=" btn btn-link mt-3" onclick="appenddata()">Add Bank Details</button>
+                    </div>
+                    <hr class="border border-primary border opacity-75 w-100">`;
+
+
+                $('#bank-details-container_1').append(acc_tag);
+                // console.log(address.account_details);   
+
+
+            });// end of looop
+
+
+
 
             setTimeout(() => {
                 $('#stateEdit').val(details.state).change();
@@ -1706,6 +1808,8 @@
             var status = $(this).data('status');
             $('#status').val(status);
         })
+
+
 
 
         function getUserStates(countryId = 101) {
@@ -1984,7 +2088,8 @@
                 var phone_number = $('.additionalNumber').val();
                 $('#updateAdditionalNumber').append(`<input type='number' name='additional_phone' value=${phone_number} />`);
                 $('#updateAdditionalNumber').submit();
+
             });
-        </script>
+    </script>
     @endpush
 @endsection

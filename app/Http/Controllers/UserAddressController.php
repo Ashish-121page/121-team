@@ -60,12 +60,16 @@ class UserAddressController extends Controller
                     'pincode' => $request->pincode,
                     'gst_number' => $request->gst_number,
                     'iec_number' => $request->iec_number ?? '',
-                    'entity_name' => $request->entity_name,
+                    'entity_name' => $request->entity_name ?? '',
                     'acronym' => $request->acronym ?? ''
-                ];
+                    
+                ];               
 
                 $acc_deatils = [];
                 foreach ($request->bank_name as $key => $bank) {
+                    if ($bank == null) {
+                        continue;
+                    }
                     $tmp_acc_deatils= [
                         'bank_name' => $bank ?? '',
                         'bank_address' => $request->bank_address[$key] ?? '',
@@ -73,11 +77,12 @@ class UserAddressController extends Controller
                         'account_number' => $request->account_number[$key] ?? '',
                         'account_holder_name' => $request->account_holder_name[$key] ?? '',
                         'account_type' => $request->account_type[$key] ?? '',
-                        'ifsc_code/neft' => $request->ifsc_code[$key] ?? '',
+                        'ifsc_code_neft' => $request->ifsc_code_neft[$key] ?? '',
                         'default' => $request->default[$key] ?? 0,
                     ];
                     array_push($acc_deatils, $tmp_acc_deatils);
                 }
+
 
                 $data->account_details = json_encode($acc_deatils);
                 $data->details = json_encode($arr);
@@ -121,8 +126,8 @@ class UserAddressController extends Controller
      */
     public function update(Request $request)
     {
-        $address = UserAddress::whereId($request->id)->first();
         try {
+            $address = UserAddress::whereId($request->id)->first();
             $arr = [
                 'address_1' => $request->address_1,
                 'address_2' => $request->address_2,
@@ -131,15 +136,43 @@ class UserAddressController extends Controller
                 'city' => $request->city,
                 'pincode' => $request->pincode,
                 'gst_number' => $request->gst_number,
-                'entity_name' => $request->entity_name
+                'entity_name' => $request->entity_name,
+                'iec_number' => $request->iec_number ,
+                'acronym' => $request->acronym ?? ''
             ];
+
+
+            $acc_deatils = [];
+            foreach ($request->bank_name as $key => $bank) {
+                if ($bank == null) {
+                    continue;
+                }
+                $tmp_acc_deatils= [
+                    'bank_name' => $bank ?? '',
+                    'bank_address' => $request->bank_address[$key] ?? '',
+                    'swift_code' => $request->swift_code[$key] ?? '',
+                    'account_number' => $request->account_number[$key] ?? '',
+                    'account_holder_name' => $request->account_holder_name[$key] ?? '',
+                    'account_type' => $request->account_type[$key] ?? '',
+                    'ifsc_code_neft' => $request->ifsc_code_neft[$key] ?? '',
+                    'default' => $request->default[$key] ?? 0,
+                ];
+                array_push($acc_deatils, $tmp_acc_deatils);
+            }
+
+
+
             $details = json_encode($arr);
-            $address->update([
-                'type' => $request->type,
-                'details'=> $details
-            ]);
-            // return $request->all();
-                return back()->with('success', 'updated address successfully!');
+            $account_details = json_encode($acc_deatils);
+            
+            $address->account_details = $account_details;
+            $address->type = $request->type;
+            $address->details = $details;
+            $address->save();
+
+            return back()->with('success', 'updated address successfully!');
+
+                
             } catch (\Exception $e) {
                 return back()->with('error', 'Error: ' . $e->getMessage());
             }
@@ -162,8 +195,8 @@ class UserAddressController extends Controller
         }
 
 
-        magicstring(request()->all());
-        return;
+        // magicstring(request()->all());
+        // return;
 
     }
 

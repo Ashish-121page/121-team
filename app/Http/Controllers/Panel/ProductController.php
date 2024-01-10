@@ -31,6 +31,8 @@ use Illuminate\Support\Facades\Storage;
 use phpseclib3\File\ASN1\Maps\AttributeValue;
 use PHPUnit\Framework\MockObject\Stub\ReturnSelf;
 
+use function PHPSTORM_META\map;
+
 class ProductController extends Controller
 {
      public function index(Request $request)
@@ -2816,17 +2818,64 @@ class ProductController extends Controller
             }
 
             $months = ['January' => 'January','February' => 'February','March' => 'March','April' => 'April','May' => 'May','June' => 'June','July' => 'July','August' => 'August','September' => 'September','October' => 'October','November' => 'November','December' => 'December'];
-
+            
             $mainsku_prices = [];
+            $mainsku_mrp = [];
+            $mainsku_selling_price_unit = [];
+            $mainsku_hsn = [];
+            $mainsku_hsnpercent = [];
+            $mainsku_grossweight = [];
             foreach ($available_products as $key => $value) {
                 $product = getProductDataById($value);
-                $prices[$value] = $product->price;
+                $shipping = json_decode($product->shipping);
+                $mainsku_prices[] = $product->min_sell_pr_without_gst ?? '';
+                $mainsku_mrp[] = $product->mrp ?? '';
+                $mainsku_selling_price_unit[] = $product->selling_price_unit ?? '';
+                $mainsku_hsn[] = $product->hsn ?? '';
+                $mainsku_hsnpercent[] = $product->hsn_percent ?? '';
+                $mainsku_grossweight[] = $shipping->gross_weight ?? '';
+
+                
+            }
+            
+            $mainsku_prices_str = implode(",", $mainsku_prices);
+            $mainsku_mrp_str = implode(",", $mainsku_mrp);
+            $mainsku_selling_price_unit_str = implode(",", $mainsku_selling_price_unit);
+            $mainsku_hsn_str = implode(",", $mainsku_hsn);
+            $mainsku_hsnpercent_str = implode(",", $mainsku_hsnpercent);
+            $mainsku_grossweight_str = implode(",", $mainsku_grossweight);
+
+            
+            // magicstring($mainsku_grossweight_str);
+            // return;
+            
+            $mainsku_exclbuyer = [];
+
+            foreach ($available_products as $key => $value) {
+                $tmp_exc = []; 
+                $productextra = getAllPropertiesofProductById($value,auth()->id());
+
+                foreach ($productextra as $key => $prodextrarec) {
+                    $tmp_exc[$key] = $prodextrarec->exclusive_buyer_name ?? '';
+                }
+
+                array_push($mainsku_exclbuyer, implode(",", array_unique($tmp_exc)));
+
+
             }
 
-            echo(implode(",",$available_products));
+            $mainsku_exclbuyer_str = implode(",", $mainsku_exclbuyer);
+
+            // magicstring($mainsku_exclbuyer_str);
+
+            
+            // return;
+
+
+              
             
 
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months'));
+            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months','mainsku_prices_str','mainsku_mrp_str','mainsku_exclbuyer_str','mainsku_hsn_str','mainsku_hsnpercent_str','mainsku_grossweight_str'));
 
         }catch(\Exception $e){
             // return back()->with('error', 'There was an error: ' . $e->getMessage());

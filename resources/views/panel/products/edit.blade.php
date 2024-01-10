@@ -136,36 +136,8 @@
                                 <div class="col-lg-4 d-flex form-group justify-content-end">
                                     {{-- <a href="#" class="btn btn-primary next_btn" >Next</a> --}}
                                 </div>
-                            </div>
-
-                            {{-- Stepper Start --}}
-                            {{-- <div class="md-stepper-horizontal orange mt-5 d-none">
-                                <div class="md-step active done custom_active_add-0" data-step="0">
-                                    <div class="md-step-circle"><span>1</span></div>
-                                    <div class="md-step-title">Essentials</div>
-                                    <div class="md-step-bar-left"></div>
-                                    <div class="md-step-bar-right"></div>
-                                </div>
-                                <div class="md-step editable custom_active_add-1" data-step="1">
-                                    <div class="md-step-circle"><span>2 </span></div>
-                                    <div class="md-step-title">Asset Safe</div>
-                                    <div class="md-step-bar-left"></div>
-                                    <div class="md-step-bar-right"></div>
-                                </div>
-                                <div class="md-step editable custom_active_add-2" data-step="2">
-                                    <div class="md-step-circle"><span>4</span></div>
-                                    <div class="md-step-title">Basic Info</div>
-                                    <div class="md-step-bar-left"></div>
-                                    <div class="md-step-bar-right"></div>
-                                </div>
-                                <div class="md-step editable custom_active_add-4" data-step="3">
-                                    <div class="md-step-circle"><span>6</span></div>
-                                    <div class="md-step-title">Internal - Production</div>
-                                    <div class="md-step-bar-left"></div>
-                                    <div class="md-step-bar-right"></div>
-                                </div>
-
-                            </div> --}}
+                            </div>                                
+                                {{--  Stepper Start  --}}                           
                             <div class="orange mt-5"
                                 style="display: flex;margin: 0 auto;width: 100%;gap : 10px;align-items: center;justify-content: center;">
                                 <div class="md-step  btn active done custom_active_add-0" data-step="0"> Product Info
@@ -503,14 +475,18 @@
                                                                     value="{{ $product->selling_price_unit }}">
                                                             </div>
                                                         </div>
+                                                        
                                                         <div class="col-md-4 col-4">
                                                             <div class="form-group">
-                                                                <label for="min_sell_pr_without_gst"
-                                                                    class="control-label">Customer Price, without GST
-                                                                </label>
-                                                                <input class="form-control" name="min_sell_pr_without_gst"
+                                                                <label for="min_sell_pr_without_gst" class="control-label">Customer Price, without GST</label>                                                               
+                                                                    @if (request()->has('type'))
+                                                                    <input class="form-control" name="min_sell_pr_without_gst" type="text" id="min_sell_pr_without_gst"
+                                                                    value="{{ $mainsku_prices_str }}">
+                                                                    @else
+                                                                    <input class="form-control" name="min_sell_pr_without_gst"
                                                                     type="number" id="min_sell_pr_without_gst"
                                                                     value="{{ $product->min_sell_pr_without_gst ?? '' }}">
+                                                                    @endif
                                                             </div>
                                                         </div>
 
@@ -523,8 +499,7 @@
                                                         <div class="col-md-4 col-4 d-none">
                                                             <div class="form-group ">
                                                                 <label for="vip_group" class="control-label">VIP Customer
-                                                                    Price, without GST </label>
-
+                                                                    Price, without GST </label>                                                               
                                                                 <input class="form-control" name="vip_group"
                                                                     type="number" id="vip_group"
                                                                     value="{{ getPriceByGroupIdProductId($vip_group->id, $product->id, 0) ?? '0' }}">
@@ -540,19 +515,29 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-4 col-4">
-                                                            <div class="form-group ">
+                                                            <div class="form-group ">                                                                
                                                                 <label for="mrp" class="control-label">MRP Incl. tax
                                                                 </label>
+                                                                @if (request()->has('type'))
+                                                                <input class="form-control" name="mrp" type="text"
+                                                                    id="mrp" value="{{ $mainsku_mrp_str }}">
+                                                                @else
                                                                 <input class="form-control" name="mrp" type="number"
                                                                     id="mrp" value="{{ $product->mrp }}">
+                                                                @endif
                                                             </div>
                                                         </div>
 
                                                         <div class="col-md-4 col-4">
                                                             <div class="form-group ">
                                                                 <label for="brand_name" class="control-label">Brand Name</label>
+                                                                {{-- @if (request()->has('type'))
                                                                 <input class="form-control" name="brand_name" type="text"
                                                                     id="brand_name" value="{{ $prodextra->brand_name ?? '' }}">
+                                                                @else --}}
+                                                                <input class="form-control" name="brand_name" type="text"
+                                                                    id="brand_name" value="{{ $prodextra->brand_name ?? '' }}">
+                                                                {{-- @endif                                                                 --}}
                                                             </div>
                                                         </div>
 
@@ -562,8 +547,14 @@
                                                                 class="form-group {{ $errors->has('hsn') ? 'has-error' : '' }}">
                                                                 <label for="hsn" class="control-label">HSN
                                                                     Code</label>
+                                                                    @if (request()->has('type'))
+                                                                    <input class="form-control" name="hsn" type="text"
+                                                                    id="hsn" value="{{ $mainsku_hsn_str }}">
+                                                                @else
                                                                 <input class="form-control" name="hsn" type="text"
                                                                     id="hsn" value="{{ $product->hsn }}">
+                                                                @endif    
+                                                                
                                                             </div>
                                                         </div>
 
@@ -572,9 +563,15 @@
                                                                 class="form-group {{ $errors->has('hsn_percent') ? 'has-error' : '' }}">
                                                                 <label for="hsn_percent" class="control-label">HSN Percent
                                                                 </label>
+                                                                @if (request()->has('type'))
+                                                                <input class="form-control" name="hsn_percent"
+                                                                    type="number" id="hsn_percent"
+                                                                    value="{{ $mainsku_hsnpercent_str }}">
+                                                                @else
                                                                 <input class="form-control" name="hsn_percent"
                                                                     type="number" id="hsn_percent"
                                                                     value="{{ $product->hsn_percent }}">
+                                                                @endif                                                                   
                                                             </div>
                                                         </div>
 
@@ -1220,9 +1217,15 @@
                                                         <div class="col-md-4 col-4 @if ($product->exclusive != 1) @endif" id="productexclusivebuyernamebox">
                                                             <div class="form-group">
                                                                 <label for="exclusive_buyer_name" class="control-label">Exclusive Buyer Name</label>
+                                                                @if (request()->has('type'))
+                                                                <input class="form-control" name="exclusive_buyer_name"
+                                                                    type="text" id="exclusive_buyer_name"
+                                                                    value="{{ $mainsku_exclbuyer_str ?? '' }}">
+                                                                @else
                                                                 <input class="form-control" name="exclusive_buyer_name"
                                                                     type="text" id="exclusive_buyer_name"
                                                                     value="{{ $prodextra->exclusive_buyer_name ?? '' }}">
+                                                                @endif                                                                
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1425,18 +1428,32 @@
                                                 <div class="form-group ">
                                                     <label for="gross_weight"
                                                         class="control-label">Gross Weight</label>
-                                                    <input class="form-control" name="gross_weight"
+
+                                                        @if (request()->has('type'))
+                                                        <input class="form-control" name="gross_weight"
+                                                        type="text" id="gross_weight"
+                                                        value="{{ $mainsku_grossweight_str ?? '' }}">
+                                                        @else
+                                                        <input class="form-control" name="gross_weight"
                                                         type="text" id="gross_weight"
                                                         value="{{ $shipping->gross_weight ?? '' }}">
+                                                        @endif   
+                                                    
                                                 </div>
                                             </div>
 
                                             <div class="col-md-4 col-4">
                                                 <label class="">{{ __('Net Weight') }}</label>
                                                 <div class="form-group">
+                                                    {{-- @if (request()->has('type'))
                                                     <input class="form-control" name="weight"
-                                                        type="nnumber" id="weight"
-                                                        value="{{ $shipping->weight ?? '' }}">
+                                                    type="nnumber" id="weight"
+                                                    value="{{ $shipping->weight ?? '' }}">
+                                                    @else --}}
+                                                    <input class="form-control" name="weight"
+                                                    type="nnumber" id="weight"
+                                                    value="{{ $shipping->weight ?? '' }}">
+                                                    {{-- @endif                                                       --}}
                                                 </div>
                                             </div>
 
@@ -1479,25 +1496,46 @@
                                             <div class="col-md-6 col-12">
                                                 <label class="Length">{{ __('Length') }}</label>
                                                 <div class="form-group">
+                                                    {{-- @if (request()->has('type'))
                                                     <input class="form-control" name="length"
-                                                        type="nnumber" id="length"
-                                                        value="{{ $shipping->length ?? '' }}">
+                                                    type="nnumber" id="length"
+                                                    value="{{ $shipping->length ?? '' }}">
+                                                    @else --}}
+                                                    <input class="form-control" name="length"
+                                                    type="nnumber" id="length"
+                                                    value="{{ $shipping->length ?? '' }}">
+                                                    {{-- @endif   --}}
+                                                    
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <label class="">{{ __('Width') }}</label>
                                                 <div class="form-group">
+                                                    {{-- @if (request()->has('type'))
                                                     <input class="form-control" name="width"
-                                                        type="nnumber" id="width"
-                                                        value="{{ $shipping->width ?? '' }}">
+                                                    type="nnumber" id="width"
+                                                    value="{{ $shipping->width ?? '' }}">
+                                                    @else --}}
+                                                    <input class="form-control" name="width"
+                                                    type="nnumber" id="width"
+                                                    value="{{ $shipping->width ?? '' }}">
+                                                    {{-- @endif   --}}
+                                                    
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <label class="">{{ __('Height') }}</label>
                                                 <div class="form-group">
+                                                    {{-- @if (request()->has('type'))
                                                     <input class="form-control" name="height"
-                                                        type="nnumber" id="height"
-                                                        value="{{ $shipping->height ?? '' }}">
+                                                    type="nnumber" id="height"
+                                                    value="{{ $shipping->height ?? '' }}">
+                                                    @else --}}
+                                                    <input class="form-control" name="height"
+                                                    type="nnumber" id="height"
+                                                    value="{{ $shipping->height ?? '' }}">
+                                                    {{-- @endif   --}}
+                                                    
                                                 </div>
                                             </div>
 
@@ -1553,18 +1591,32 @@
                                                 <label
                                                     class="">{{ __('Standard Carton Pcs') }}</label>
                                                 <div class="form-group">
+                                                    {{-- @if (request()->has('type'))
                                                     <input class="form-control" name="standard_carton"
-                                                        type="text" id="standard_carton"
-                                                        value="{{ $carton_details->standard_carton ?? '' }}">
+                                                    type="text" id="standard_carton"
+                                                    value="{{ $carton_details->standard_carton ?? '' }}">
+                                                    @else --}}
+                                                    <input class="form-control" name="standard_carton"
+                                                    type="text" id="standard_carton"
+                                                    value="{{ $carton_details->standard_carton ?? '' }}">
+                                                    {{-- @endif   --}}
+                                                
                                                 </div>
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <label
                                                     class="">{{ __('Carton Actual Weight') }}</label>
                                                 <div class="form-group">
+                                                    {{-- @if (request()->has('type'))
                                                     <input class="form-control" name="carton_weight"
-                                                        type="number" id="carton_weight"
-                                                        value="{{ $carton_details->carton_weight ?? '' }}">
+                                                    type="number" id="carton_weight"
+                                                    value="{{ $carton_details->carton_weight ?? '' }}">
+                                                    @else --}}
+                                                    <input class="form-control" name="carton_weight"
+                                                    type="number" id="carton_weight"
+                                                    value="{{ $carton_details->carton_weight ?? '' }}">
+                                                    {{-- @endif   --}}
+                                                    
                                                 </div>
                                             </div>
 
@@ -1572,18 +1624,32 @@
                                                 <label
                                                     class="">{{ __('Carton Length') }}</label>
                                                 <div class="form-group">
+                                                    {{-- @if (request()->has('type'))
                                                     <input class="form-control" name="carton_length"
-                                                        type="number" id="carton_length"
-                                                        value="{{ $carton_details->carton_length ?? '' }}">
+                                                    type="number" id="carton_length"
+                                                    value="{{ $carton_details->carton_length ?? '' }}">
+                                                    @else --}}
+                                                    <input class="form-control" name="carton_length"
+                                                    type="number" id="carton_length"
+                                                    value="{{ $carton_details->carton_length ?? '' }}">
+                                                    {{-- @endif   --}}
+                                                    
                                                 </div>
                                             </div>
 
                                             <div class="col-md-6 col-12">
                                                 <label class="">{{ __('Carton Width') }}</label>
                                                 <div class="form-group">
+                                                    {{-- @if (request()->has('type'))
                                                     <input class="form-control" name="carton_width"
-                                                        type="number" id="carton_width"
-                                                        value="{{ $carton_details->carton_width ?? '' }}">
+                                                    type="number" id="carton_width"
+                                                    value="{{ $carton_details->carton_width ?? '' }}">
+                                                    @else --}}
+                                                    <input class="form-control" name="carton_width"
+                                                    type="number" id="carton_width"
+                                                    value="{{ $carton_details->carton_width ?? '' }}">
+                                                    {{-- @endif   --}}
+                                                    
                                                 </div>
                                             </div>
 
@@ -1591,9 +1657,16 @@
                                                 <label
                                                     class="">{{ __('Carton Height') }}</label>
                                                 <div class="form-group">
+                                                    {{-- @if (request()->has('type'))
                                                     <input class="form-control" name="carton_height"
-                                                        type="number" id="carton_height"
-                                                        value="{{ $carton_details->carton_height ?? '' }}">
+                                                    type="number" id="carton_height"
+                                                    value="{{ $carton_details->carton_height ?? '' }}">
+                                                    @else --}}
+                                                    <input class="form-control" name="carton_height"
+                                                    type="number" id="carton_height"
+                                                    value="{{ $carton_details->carton_height ?? '' }}">
+                                                    {{-- @endif   --}}
+                                                    
                                                 </div>
                                             </div>
 
@@ -1819,12 +1892,22 @@
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
                                                                 <label for="properties_{{$key}}">{{ $item }}</label>
-                                                                <select name="properties[]" id="properties_{{$key}}" class="select2">
+                                                                @if (request()->has('type'))
+                                                                <select name="properties[]" id="properties_{{$key}}" class="select2 " multiple >
+                                                                    <option value="">Select One</option>
+                                                                    @foreach ($records as $record)
+                                                                        <option value="{{ $record->id }} "  @if (in_array($record->id, $attribute_value_id)) selected @endif>{{ $record->attribute_value }}</option>
+                                                                    @endforeach
+                                                                </select>
+
+                                                                @else
+                                                                <select name="properties[]" id="properties_{{$key}}" class="select2" >
                                                                     <option value="">Select One</option>
                                                                     @foreach ($records as $record)
                                                                         <option value="{{ $record->id }}"  @if (in_array($record->id, $attribute_value_id)) selected @endif>{{ $record->attribute_value }}</option>
                                                                     @endforeach
                                                                 </select>
+                                                                @endif
                                                             </div>
                                                         </div>
                                                     @elseif ($parent->value == 'uom')
@@ -1846,7 +1929,15 @@
                                                                     <input type="number" min="0" class="form-control" name="any_value-{{$item}}[W]" id="properties_{{$key}}" placeholder="Width" value="{{ $value[1] ?? '' }}">
 
                                                                     <input type="number" min="0" class="form-control" name="any_value-{{$item}}[H]" id="properties_{{$key}}" placeholder="Height" value="{{ $value[2] ?? '' }}">
-
+                                                                    @if (request()->has('type'))
+                                                                    <select name="any_value-{{$item}}[U]" id="any_value-{{$item}}" class="form-control select2" multiple>
+                                                                        <option value="">Select Unit</option>
+                                                                        <option value="mm" @if (($value[3] ?? '') == 'mm') selected @endif>MM</option>
+                                                                        <option value="cm" @if (($value[3] ?? '') == 'cm') selected @endif>CM</option>
+                                                                        <option value="inches" @if (($value[3] ?? '') == 'inches') selected @endif>Inches</option>
+                                                                        <option value="feet" @if (($value[3] ?? '') == 'feet') selected @endif>Feet</option>
+                                                                    </select>
+                                                                    @else
                                                                     <select name="any_value-{{$item}}[U]" id="any_value-{{$item}}" class="form-control select2">
                                                                         <option value="">Select Unit</option>
                                                                         <option value="mm" @if (($value[3] ?? '') == 'mm') selected @endif>MM</option>
@@ -1854,6 +1945,8 @@
                                                                         <option value="inches" @if (($value[3] ?? '') == 'inches') selected @endif>Inches</option>
                                                                         <option value="feet" @if (($value[3] ?? '') == 'feet') selected @endif>Feet</option>
                                                                     </select>
+                                                                    @endif
+
                                                                 </div>
 
                                                             </div>

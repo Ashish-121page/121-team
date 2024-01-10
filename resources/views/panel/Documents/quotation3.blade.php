@@ -109,6 +109,10 @@
                 <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit"><i
                         class="uil uil-search"></i></button>
             </div>
+
+            <a href="?typeId={{ request()->get('typeId') }}&show_all=true&page={{request()->get('page',1)}}" class="btn btn-outline-danger mb-3 mx-1 @if(request()->get('show_all',false) == true) active   @endif" >Show All</a>
+
+
         </div>
 
         <div class="container-fluid" id="loadproduct">

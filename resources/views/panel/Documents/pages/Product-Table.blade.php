@@ -66,28 +66,36 @@
                 <td>
                     <select name="coo" id="coo" class="form-control select2">
                         @foreach ($countries as $country)
-                            <option value="{{ $country->name }}" @if ($country->name == 'India') selected @endif>
-                                {{ $country->name }}</option>
+                        @php
+                            $tmp = json_decode($QuotationItem->additional_notes);
+                        @endphp
+                        <option value="{{ $country->name }}" @if ($country->name == ($tmp->COO ?? 'India')) selected @endif>
+                            {{ $country->name }}</option>
                         @endforeach
                     </select>
                 </td>
                 <td class="currencySelect">
-                    {{ $QuotationItem->currency ?? 'INR' }}
+                    @if (isset($QuotationRecord->additional_notes) && $QuotationRecord->additional_notes != null)
+                        {{ json_decode($QuotationRecord->additional_notes)->currency ?? 'INR' }}
+                    @else
+                        INR
+                    @endif
+
                 </td>
                 <td  class="priceEdit">
                     <input type="number" value="{{ $QuotationItem->Price ?? '0' }}" class="form-control pricenum" id="pricenum_{{ $index }}">
                 </td>
 
                 <td class="qunatitynum">
-                    <input type="number" id="qunatitynum_{{ $index }}" class="form-control qunatitynum" value="1" pattern="^\d+$" step='1'>
+                    <input type="number" id="qunatitynum_{{ $index }}" class="form-control qunatitynum" value="{{ $QuotationItem->quantity ?? 1 }}" pattern="^\d+$" step='1'>
                 </td>
 
                 <td>
                     {{-- {{ $QuotationItem->unit ?? 'per-piece' }} --}}
                     <select name="unit" id="unit" class="form-control" style="width: min-content !important">
-                        <option value="per-piece">per-piece</option>
-                        <option value="per-set">per-set</option>
-                        <option value="per-box">per-box</option>
+                        <option value="per-piece" @if ($QuotationItem->unit == 'per-piece') selected @endif >per-piece</option>
+                        <option value="per-set" @if ($QuotationItem->unit == 'per-set') selected @endif>per-set</option>
+                        <option value="per-box" @if ($QuotationItem->unit == 'per-box') selected @endif>per-box</option>
                     </select>
                 </td>
 
@@ -154,7 +162,8 @@
         });
 
 
-
+        // Update Total
+        $(".pricenum").trigger('input');
 
     });
 </script>

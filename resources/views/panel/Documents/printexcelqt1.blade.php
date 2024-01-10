@@ -1,24 +1,22 @@
 @extends('backend.layouts.main')
 @section('title', 'quotationexcel')
 @section('content')
-
     <!-- push external head elements to head -->
     @push('head')
         <style>
+            th{
+                vertical-align: middle !important;
+                text-align: center !important;
+            }
             a active {
-
                 color: white !important;
-                /* background-color: #6666a3; */
                 border-radius: 5%;
                 position: relative;
                 opacity: 86%
             }
-
             a active span {
                 font-size: 16px;
             }
-
-
             a active::before {
                 content: '';
                 background-color: #8484f8;
@@ -33,7 +31,7 @@
 
     <div class="container-fluid">
         <div class="container py-2" style="max-width: 1350px;">
-            <div class="row">
+            <div class="row my-3">
                 <div class="col-12">
                     <button type="button" id="printExcel" class="btn btn-outline-primary">Print Excel</button>
                 </div>
@@ -48,102 +46,61 @@
                 <table class="table table-bordered" id="printquotations">
                     <thead>
                         <tr class="myspecial">
-                            <th scope="col">
+                            <th scope="col" colspan="2">
                                 <img src="{{ asset(getShopLogo($usershop->slug)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
                                     alt="company logo"
                                     style="border-radius: 10px;height: 250px;width: 300px;align-items: center; padding:2px;">
                             </th>
-                            <th scope="col">{{ '' }}</th>
-                            <th scope="col" colspan="7">{{ $Userinfo->buyerName ?? '' }}</th>
-                            <th scope="col">{{ $Userinfo->companyName ?? '' }}</th>
-                            @foreach ($userAttribute as $item)
-                                @if (in_array($item, array_keys((array) $First_additional_notes)))
-                                    @php
-                                        $count++;
-                                    @endphp
-                                @endif
-                            @endforeach
-
-                            <th colspan="{{ $count - 4 }}"></th>
-
+                            <th scope="col" colspan="5"{{ '' }}</th>
+                            <th scope="col" colspan="1">{{ $Userinfo->companyName ?? '' }}</th>
+                            <th scope="col">{{ $Userinfo->person_name ?? '' }}</th>
                         </tr>
-                        {{-- <tr>
-                            <th scope="col" colspan="2"></th>
-                            <th scope="col" colspan="4"></th>
-                            @foreach ($userAttribute as $item)
-                            @if (in_array($item, array_keys((array) $First_additional_notes)))
-                                <th></th>
-                            @endif
-                        @endforeach
 
-
-                        </tr> --}}
                         <tr>
-                            <th scope="col">Model Code</th>
-                            <th scope="col">image</th>
-                            <th scope="col">COO</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Selling Price</th>
-                            <th scope="col"> Incoterms</th>
-
-                            @foreach ($userAttribute as $item)
-                                @if (in_array($item, array_keys((array) $First_additional_notes)))
+                            @foreach ($quotationitems as $quotationitem)
+                                @foreach (json_decode($quotationitem->additional_notes) as $columns => $value)
+                                    @if (in_array($columns, $no_required_cols))
+                                        @continue
+                                    @endif
                                     <th>
-                                        {{ $item }}
+                                        {{ $columns }}
                                     </th>
-                                @endif
+                                @endforeach
+                                @break
                             @endforeach
-
-
-
-
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($quotationitems as $quotationitem)
                             @php
-                                $product = App\Models\Product::where('id', $quotationitem->product_id)->first();
-                                $shipping = json_decode($product->shipping) ?? [];
-
-                                $additional_notes = json_decode($quotationitem->additional_notes) ?? [];
-                                $extraproduct = App\Models\ProductExtraInfo::where('product_id', $quotationitem->product_id)->first();
-                                $productInfos = App\Models\Product::where('id', $quotationitem->product_id)->first();
-                                // $extrainfo = $extraproduct->where
+                                $col = 0;
                             @endphp
                             <tr>
-                                <td>{{ $productInfos->model_code ?? '' }}</td>
-
-                                <td>
-                                    {{-- <div style="height: 80px;width: 80px; object-fit: contain;justify-content-end;"> --}}
-                                    <img src="{{ asset(getShopProductImage($quotationitem->product_id)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
-                                        alt="Image" class="img-fluid "
-                                        style="border-radius: 10px;height: 100%;width: 100%;align-items: center; padding:2px;">
-                                    {{-- {{ asset(getShopProductImage($quotationitem->product_id)->path ?? asset('frontend/assets/img/placeholder.png')) }} --}}
-                                    {{-- </div> --}}
-                                </td>
-                                <td>{{ json_decode($quotationitem->additional_notes)->COO ?? '' }}</td>
-                                <td>{{ $quotationitem->product_name }}</td>
-                                <td>{{ $quotationitem->selling_price }}</td>
-                                <td></td>
-
-                                @foreach ($userAttribute as $item)
-                                    @if (in_array($item, array_keys((array) $First_additional_notes)))
+                                @if ($quotationitem->additional_notes != null)
+                                    @foreach (json_decode($quotationitem->additional_notes) as $columns => $value)
+                                        @if (in_array($columns, $no_required_cols))
+                                            @continue
+                                        @endif
+                                        @if ($columns == 'image')
+                                            <td>
+                                                <img src="{{ asset(getShopProductImage($quotationitem->product_id)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
+                                                    alt="" style="height: 85px; width: 85px;object-fit: contain">
+                                            </td>
+                                            @continue
+                                        @endif
                                         <td>
-                                            {{ $additional_notes->$item ?? '' }}
+                                            {{ $value }}
                                         </td>
-                                    @endif
-                                @endforeach
 
-
-
-
-
-
-                                {{-- <td>{{ $shipping->length ?? '' }}</td>
-                                <td>{{ $shipping->width ?? '' }}</td>
-                                <td>{{ $shipping->height ?? '' }}</td>
-                                <td> {{ $additional_notes->Unit ?? '' }}</td> --}}
-
+                                        @php
+                                            $col++;
+                                        @endphp
+                                    @endforeach
+                                @else
+                                    @for ($i = 0; $i < $col; $i++)
+                                        <td></td>
+                                    @endfor
+                                @endif
                             </tr>
                         @endforeach
 

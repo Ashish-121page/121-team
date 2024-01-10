@@ -151,12 +151,14 @@
                                     <div class="text-center">
                                         <p class="card-text h-4">You have not added quotation for this buyer</p>
                                         <p class="card-text text-muted">Add your own quotation or create new</p>
-                                        <button type="button" class="btn btn-outline-primary mx-2 " data-toggle="modal"
-                                            data-target="#uploadModal">
+                                        <button type="button" class="btn btn-outline-primary mx-2 " data-toggle="modal" data-target="#uploadModal">
                                             Upload quotation
                                         </button>
-                                        <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $record->id }}"
-                                            id="nnnbk" class="btn btn-primary mx-2">Go Next</a>
+
+                                        <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $record->id }}" id="nnnbk" class="btn btn-primary mx-2">Go Next</a>
+
+                                        <a href="{{ route('panel.Documents.create.Quotation.form') }}?typeId={{ $record->id }}&action=edit" class="btn btn-outline-dark mx-2">Edit Quote</a>
+
                                     </div>
                                 </div>
                             </div>
