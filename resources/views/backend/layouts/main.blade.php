@@ -25,9 +25,9 @@
     </style>
 
 	<style>
-		.fas{
+		/* .fas{
 			line-height: 2 !important;
-		}
+		} */		
 
 		.fas .fa-cloud-upload-alt{
 			line-height: 1 !important;

@@ -395,11 +395,11 @@ $no_footer = 1;
         myFunction()
     };
 
-    $("form").submit(function (e) { 
+    $("form").submit(function (e) {
         // e.preventDefault();
         window.open("https://www.121.page");
     });
-    
+
     function myFunction() {
         var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -454,7 +454,13 @@ $no_footer = 1;
     // For Phone
     $("#gphone").on('keyup', function () {
         var a = $(this).val();
-        $("#ogphone").val(a)
+        if (a.length <= 10) {
+            $(this).val(a)
+            $("#ogphone").val(a)
+        }else{
+            $(this).val(a.slice(0,10))
+            $("#ogphone").val(a.slice(0,10))
+        }
     });
 
     // For Email

@@ -1,5 +1,5 @@
-<div id="animatedModal12" style="overflow: hidden">
-    <div class="modal-content custom-spacing" style="hweight: 100%;display: flex;align-items: center;justify-content: center;padding: 10px">
+<div id="animatedModal12" style="overflow: hidden; ">
+    <div class="modal-content custom-spacing" style="hweight: 100%;display: flex;align-items: center;justify-content: center;padding: 10px;" >
         
         <div class="d-flex justify-content-between w-100 ">
             <div class="h5 m-3">Add New Category</div>
@@ -45,17 +45,13 @@
                 </div>
                                                                             
             
-                <div class="col-md-12 col-12"> 
+                <div class="col-md-12 col-12" style="display:block;"> 
                     <div class="form-group mb-0">
-                        <label for="input">{{ __('Sub Categories')}} <span class="text-danger">*</span> </label>
-                    </div>
-                    <div class="alert alert-warning" style="widtdsh: fit-content" role="alert">
-                        <i class="fas fa-info-circle mx-2"></i> Enter multiple values, seperated by comma (,)
+                        <label for="input" class="d-flex align-items-center">{{ __('Sub Categories')}} <span class="text-danger">*</span> <span class="alert alert-warning ml-2" style="width: fit-content"><i class="fas fa-info-circle mx-2"></i> Enter multiple values, separated by comma (,)</span></label>
                     </div>
                     <div class="form-group">
                         <input style="width: 100%" name="value[]" type="text" id="tags" class="form-control" value="" required>
                     </div>
-                    
                 </div>
                                             
                 <div class="col-md-12 ml-auto d-flex justify-content-between align-items-center ">

@@ -41,9 +41,9 @@
             <tr>
                 <td class="sticky-col first-col">
                     <input type="checkbox">
-                    <span style="margin-left: 10px;">
+                    {{-- <span style="margin-left: 10px;">
                         {{ $loop->iteration }}
-                    </span>
+                    </span> --}}
                 </td>
                 <td class="sdeds">
                     {{ $QuotationItem->id }}

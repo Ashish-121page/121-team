@@ -144,8 +144,6 @@ class UserController extends Controller
             return back()->with('error', 'There is already a user associated with this phone number');
         }
 
-
-
         $chk_cat = User::where('NBD_Cat_ID',$request->nbdcatid)->get()->count();
         if ($chk_cat != 0) {
             return back()->with('error', 'Cat Id Already Exist With Another User.');
@@ -204,8 +202,9 @@ class UserController extends Controller
             $managegroup = $request->managegroup;
             $offers = $request->offers;
             $documentaion = $request->documentaion;
+            $maya = $request->maya;
 
-            $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers,"documentaion" => $documentaion ];
+            $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers,"documentaion" => $documentaion , 'maya' => $maya ];
 
             $user->country = $request->country;
             $user->state = $request->state;
@@ -398,9 +397,10 @@ class UserController extends Controller
         $managegroup = $request->managegroup;
         $offers = $request->offers;
         $documentaion = $request->documentaion;
+        $maya = $request->maya;
 
 
-        $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers,"documentaion" => $documentaion ];
+        $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers,"documentaion" => $documentaion, 'maya' => $maya ];
 
 
 
@@ -816,6 +816,7 @@ class UserController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
+            'old_password' => 'required',
             'password' => 'required | confirmed ',
             'password' => ' required | min:4',
         ]);

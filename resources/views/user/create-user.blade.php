@@ -296,8 +296,25 @@
                                                               </div>`
                                                             </td>
                                                           </tr>
-
                                                         <tr>
+
+
+                                                            <tr>
+                                                                <th scope="row" class="sno"></th>
+                                                                <td>Maya</td>
+                                                                <td>
+                                                                  <div class="form-check">
+                                                                    <input class="form-check-input" type="radio" value="yes" id="mayayes" name="maya">
+                                                                  </div>
+                                                                </td>
+                                                                <td>
+                                                                  <div class="form-check">
+                                                                    <input class="form-check-input" type="radio" value="no" id="mayano" name="maya">
+                                                                  </div>
+                                                                </td>
+                                                              </tr>
+
+
                                                           <td colspan="2">
                                                               <button class="btn btn-info btn-sm" type="button" onclick="checkall()">Select All</button>
                                                               <button class="btn btn-danger btn-sm" type="button" onclick="decheckall()">Unslect All</button>

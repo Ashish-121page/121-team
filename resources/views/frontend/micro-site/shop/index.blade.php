@@ -34,9 +34,14 @@
     ==================================================*/
 
     #selector {
+    margin: 5px 5px;
+    width: 100% fit-content;
+    padding: 0px 10px;
+    }
+    /* #selector {
     margin: 5px 10%;
     width: 100%;
-    }
+    } */
     
     @media(max-width: 760px){
         #selector {
@@ -254,9 +259,9 @@
                                     </ul>
                                 @endif  
                                     <h6 class="widget-title mt-2">Price</h6>
-                                    <div class="mx-2 d-flex">
-                                        <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" ₹ Min">
-                                        <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder="₹ Max">
+                                    <div class="d-flex">
+                                        <input  style="width: 70px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" ₹ Min">
+                                        <input style="width: 70px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder="₹ Max">
                                         <button class="price_go_btn ms-2" type="submit">GO</button>
                                     </div>
 

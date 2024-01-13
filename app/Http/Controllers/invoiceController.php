@@ -450,9 +450,11 @@ class invoiceController extends Controller
 
 
             $varients = getAllPropertiesofProductById($product->id)->pluck('attribute_value_id','attribute_id');
-            $varients_arr = [];
-            foreach ($varients as $varient_parent => $varient) {
-                array_push($varients_arr,getAttruibuteValueById($varient)->attribute_value);
+            if ($varients != null && $varients != []) {
+                $varients_arr = [];
+                foreach ($varients as $varient_parent => $varient) {
+                    array_push($varients_arr,getAttruibuteValueById($varient)->attribute_value ?? null);
+                }
             }
 
             $currency = $request->get('currency','INR');
@@ -495,7 +497,7 @@ class invoiceController extends Controller
                 'status' => 'error',
                 'message' => 'Raise Support Ticket ',
             ]);
-            //throw $th;
+            throw $th;
         }
 
     }
@@ -528,22 +530,22 @@ class invoiceController extends Controller
             return view('panel.Documents.pages.products', compact('products', 'QuotationItem'));
         }
 
-        if (request()->has('show_all') && request()->get('show_all') == 'true') {
+
+        if (request()->has('show_all') && request()->get('show_all') == 'true' || $QuotationRecord->proposal_id == '') {
             $products = $products->paginate($pagelength);
             $QuotationItem = QuotationItem::where('quotation_id', $quotation_id)
                 ->whereIn('product_id', $products->pluck('id'))
                 ->pluck('product_id')
                 ->toArray();
+            $showAll = true;
         }else{
             $QuotationItem = QuotationItem::where('quotation_id', $quotation_id)
             ->pluck('product_id')
             ->toArray();
             $products = $products->whereIn('id',$QuotationItem)->paginate($pagelength);
+            $showAll = false;
         }
-
-
-
-        return view('panel.Documents.quotation3', compact('products', 'QuotationItem','QuotationRecord'));
+        return view('panel.Documents.quotation3', compact('products', 'QuotationItem','QuotationRecord','showAll'));
     }
 
     public function quotation4() {
@@ -616,11 +618,6 @@ class invoiceController extends Controller
         $buyer = BuyerList::whereId($buyerRecord)->first();
 
         $entity_details = $buyer->buyer_details;
-
-
-
-
-
 
 
         return view('panel.Documents.printexcelqt1',compact('user','usershop','quotation','quotationitems','no_required_cols','entity_details'));

@@ -16,7 +16,7 @@
             <div style="font-size: 16px;" class="alert alert-danger d-flex justify-content-between" role="alert">
               <span class="m-0 p-0" style="line-height: 40px;">
                 {{ $kyc_data->admin_remark ?? '' }}
-              </span> 
+              </span>
             </div>
           @endif
         @endif
@@ -24,14 +24,14 @@
             @csrf
             {{-- @dump($kyc_data) --}}
               <div class="row">
-                <div class="col-md-6 col-12"> 
+                <div class="col-md-6 col-12">
                     <div class="form-group">
                         <label for="document_type">Document Type<span class="text-danger">*</span></label>
                         <select class="form-control" name="document_type" required >
                             <option value="" readonly>Select Type</option>
 
                             <option @if(isset($kyc_data) && $kyc_data->document_type == "IEC Certificate") selected @endif value="IEC Certificate" readonly>IEC Certificate</option>
-                            
+
                             <option @if(isset($kyc_data) && $kyc_data->document_type == "GST Certificate") selected @endif value="GST Certificate" readonly>GST Certificate</option>
 
                             <option @if(isset($kyc_data) && $kyc_data->document_type == "Brand Trademark certificate") selected @endif value="Brand Trademark certificate" readonly>Brand Trademark certificate</option>
@@ -40,25 +40,25 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-6 col-12"> 
+                <div class="col-md-6 col-12">
                     <div class="form-group">
                         <label for="document_number">Document Number<span class="text-danger">*</span></label>
                          <input class="form-control" name="document_number" @if(isset($kyc_data) && $kyc_data->document_number != null) value="{{$kyc_data->document_number }}" @endif required type="text">
                     </div>
                 </div>
-                <div class="col-md-6 col-12"> 
+                <div class="col-md-6 col-12">
                     <div class="form-group">
                       <label class="mt-2" for="document_front_attachment">Side 1<span class="text-danger">*</span></label>
                       <input class="form-control" name="document_front_attachment" required type="file" accept="image/*">
                     </div>
                 </div>
-                <div class="col-md-6 col-12"> 
+                <div class="col-md-6 col-12">
                     <div class="form-group">
                       <label class="mt-2" for="document_back_attachment">Side 2</label>
                       <input class="form-control" name="document_back_attachment" type="file" accept="image/*">
                     </div>
                 </div>
-                <div class="col-md-12 col-12 mt-3"> 
+                <div class="col-md-12 col-12 mt-3">
                   <div class="form-group">
                     <label class="mt-2" for="acc_type">Based on your nature of business, you are:</label>
                     <select name="acc_type" id="acc_type" class="form-control">
@@ -72,18 +72,18 @@
                   </div>
                 </div>
 
-                <div class="col-md-12 col-12 mt-3"> 
+                <div class="col-md-12 col-12 mt-3">
                   <div class="form-group">
                     <label class="mt-2 d-none" for="document_back_attachment">Your Existing Site</label>
                     <input class="form-control mb-2" name="last_site" type="text" placeholder="Your alternate website , if any">
-                    <small title="Share existing website, for expedited KYC verification"><i class="uil-info-circle"></i></small>
-                  
+                    {{-- <small title="Share existing website, for expedited KYC verification"><i class="uil-info-circle"></i></small> --}}
+
                   </div>
                 </div>
-                
 
 
-                <div class="col-md-12 col-12 mt-3"> 
+
+                <div class="col-md-12 col-12 mt-3">
                   <div class="form-group">
                     <label class="mt-2" for="remarks">Remark:</label>
                     <input class="form-control mb-2" name="remarks" id="remarks" type="text" placeholder="">

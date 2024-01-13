@@ -73,7 +73,7 @@ if (isset($quotationRecord->customer_info)) {
 
                             @if (isset($quotationRecord))
                                 {{-- <button type="submit" class="btn btn-outline-secondary mx-2" name="submitdraft">Save as Draft</button> --}}
-                                <button type="submit" class="btn btn-outline-secondary mx-2">Update</button>
+                                <button type="submit" class="btn btn-outline-secondary mx-2">Next</button>
                             @else
                                 <button type="submit" class="btn btn-outline-secondary mx-2" name="submitdraft">Save as Draft</button>
                                 <button type="submit" class="btn btn-outline-secondary mx-2">Next</button>
@@ -186,9 +186,13 @@ if (isset($quotationRecord->customer_info)) {
 
 
                                             <div class="card col-lg-12 col-md-12" style="height:15rem;">
-                                                <div class="card-header " style="background-color:#f3f3f3">
-                                                    <h6>Consignee Details</h6>
-                                                    <!-- <a href="#" class="btn btn-link">Edit</a> -->
+                                                <div class="card-header d-flex align-items-center justify-content-between " style="background-color:#f3f3f3">
+                                                    <span class="d-flex ">
+                                                        <h6>Consignee &nbsp;</h6> <span>(optional)</span>
+                                                    </span>
+                                                    <a href="#" class="btn-link" data-toggle="modal" data-target="#exampleModal">
+                                                        Add New
+                                                    </a>
                                                 </div>
                                                 <div class="card-body">
 
@@ -484,6 +488,7 @@ if (isset($quotationRecord->customer_info)) {
         </div>
 
         @include('panel.Documents.modals.exporterDetails')
+        @include('panel.Documents.modals.add-consign')
     </div>
     <!--end of container -->
 

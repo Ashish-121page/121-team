@@ -76,7 +76,7 @@
                     @endphp
 
                     <tr>
-                        <td style="width: 350px">
+                        <td style="width: 250px;height: 250px;">
                             <img src="{{ asset(getShopProductImage($QuotationItemRecord->product_id)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
                                 alt="Accent Coffee Table" class="img-fluid rounded"
                                 style="height: 100%;width: 100%; object-fit: contain" />

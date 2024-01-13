@@ -15,7 +15,7 @@
                 <div class="col-lg-3 form-group d-flex justify-content-center">
                     {{-- <a href="#" class="btn btn-primary next_btn">Next</a> --}}
                 </div>
-                <div class="col-lg-6 d-flex justify-content-end">
+                <div class="col-lg-6 d-flex justify-content-center">
                     <label class="create_btn d-none">Save & Add more
                         <input type="submit" value="1" name="btn1" class="btn btn-primary btn-sm ">
                     </label>
@@ -314,12 +314,21 @@
 
                                             <div class="col-md-4 col-4 mt-2">
                                                 <label class="">{{ __('Selling Price Unit')}}</label>
-                                                    <input class="form-control" name="selling_price_unit" type="text" id="selling_price_unit" value="{{ $product->selling_price_unit ?? old('selling_price_unit') }}" >
+                                                    {{-- <input class="form-control" name="selling_price_unit" type="text" id="selling_price_unit" value="{{ $product->selling_price_unit ?? old('selling_price_unit') }}" > --}}
+
+                                                    <select name="selling_price_unit" id="selling_price_unit" class="select2 form-control">
+                                                        @foreach ($quantity_uom as $item)
+                                                            <option value="per-{{$item}}"
+                                                             @if ($product->selling_price_unit ?? old('selling_price_unit') == 'per-'.$item)
+                                                             selected @endif
+                                                             >per-{{ $item }}</option>
+                                                        @endforeach
+                                                    </select>
                                             </div>
 
                                             <div class="col-md-4 col-6 mt-2">
                                                 <div class="form-group {{ $errors->has('customer_price_without_gst') ? 'has-error' : ''}}">
-                                                    <label for="customer_price_without_gst" class="control-label">Customer Price Without GST</label>
+                                                    <label for="customer_price_without_gst" class="control-label">Customer Price w/o GST</label>
                                                     <input class="form-control" name="customer_price_without_gst" type="number" id="customer_price_without_gst" value="{{ $product->min_sell_pr_without_gst ??  old('customer_price_without_gst') }}" >
                                                 </div>
                                             </div>
@@ -345,7 +354,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-4 col-6">
+                                            <div class="col-md-4 col-6 mt-2">
                                                 <div class="form-group">
                                                     <label for="">Brand Name</label>
                                                     <input type="text" name="brand_name" class="form-control" id="brand_name" value="{{  $prodextra->brand_name ?? old('brand_name') }}">
@@ -377,7 +386,7 @@
                                             </div>
                                             <div class="col-md-12 col-12 mt-2">
                                                 <div class="form-group {{ $errors->has('description') ? 'has-error' : ''}}">
-                                                    <label for="description" class="control-label">Product Description</label>
+                                                    <label for="description" class="control-label h6">Product Description</label>
                                                     <textarea name="description" class="form-control" id="description" cols="30" rows="10">{{ $product->description ?? old('description') }}</textarea>
                                                 </div>
                                             </div>
@@ -459,6 +468,7 @@
                                                                                 <label
                                                                                     for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
                                                                                 {!! $user_custom_field['tag'] !!}
+
                                                                             </div>
                                                                         </div>
                                                                     @endif
@@ -958,9 +968,9 @@
                                             </div>
 
                                             {{--`Theme Collection from essentials  --}}
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h3>Theme Collection</h3>
+                                            <div class="col-12">
+                                                <hr class="text-primary">
+                                                <div class="h6">Theme Collection</div>
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="row">
@@ -1137,8 +1147,10 @@
                                             {{-- gms/kgs --}}
                                             <div class="form-group">
                                                 <select name="unit" id="unit" class="form-control select2">
-                                                    <option value="gms">gms</option>
-                                                    <option value="kgs">kgs</option>
+                                                    @foreach ($weight_uom as $item)
+                                                        <option value="{{$item}}">{{ $item }}</option>
+                                                    @endforeach
+
                                                 </select>
                                                 {{-- <input class="form-control" name="unit" type="nnumber" id="unit" value="{{$shipping->unit ?? ''}}" > --}}
                                             </div>
@@ -1184,11 +1196,11 @@
                                             {{-- mm/cms/inches/feet --}}
                                             {{-- @dd($shipping) --}}
                                             <div class="form-group">
+
                                                 <select name="length_unit" id="length_unit" class="form-control select2">
-                                                    <option value="mm">mm</option>
-                                                    <option value="cms">cms</option>
-                                                    <option value="inches">inches</option>
-                                                    <option value="feet">feet</option>
+                                                    @foreach ($length_uom as $item)
+                                                        <option value="{{$item}}">{{ $item }}</option>
+                                                    @endforeach
                                                 </select>
                                                 {{-- <input class="form-control" name="length_unit" type="nnumber" id="length_unit" value="{{$shipping->length_unit ?? ''}}" > --}}
                                             </div>
@@ -1249,25 +1261,25 @@
                                                 {{-- <input class="form-control" name="Carton_Dimensions_unit" type="nnumber" id="Carton_Dimensions_unit" value="{{$carton_details->Carton_Dimensions_unit ?? ''}}" > --}}
 
                                                 <select name="Carton_Dimensions_unit" class="select2" id="Carton_Dimensions_unit">
-                                                    <option value="mm" @if ($carton_details->carton_height ?? 'mm') selected @endif>mm</option>
-                                                    <option value="cms" @if ($carton_details->carton_height ?? 'cms') selected @endif>cms</option>
-                                                    <option value="inches" @if ($carton_details->carton_height ?? 'inches') selected @endif>inches</option>
-                                                    <option value="feet" @if ($carton_details->carton_height ?? 'feet') selected @endif>feet</option>
+                                                    @foreach ($length_uom as $item)
+                                                        <option value="{{$item}}"  @if ($carton_details->carton_height ?? 'mm' == $item) selected @endif>{{ $item }}</option>
+                                                    @endforeach
                                                 </select>
 
                                                 </div>
                                             </div>
 
 
-                                            <div class="col-md-6 col-12">
+                                            <div class="col-md-6 col-12 d-none">
                                                 <label class="">{{ __('UOM')}}</label>
                                                 {{-- DropDown --}}
                                                 {{-- pcs/ sets --}}
                                                 <div class="form-group">
                                                     {{-- <input class="form-control" name="carton_unit" type="nnumber" id="carton_unit" value="{{$carton_details->carton_unit ?? ''}}" > --}}
                                                     <select name="carton_unit" id="carton_unit" class="form-control select2">
-                                                        <option value="pcs">pcs</option>
-                                                        <option value="sets">sets</option>
+                                                        @foreach ($quantity_uom as $item)
+                                                        <option value="{{$item}}">{{ $item }}</option>
+                                                    @endforeach
                                                     </select>
                                                 </div>
                                             </div>
@@ -1404,6 +1416,12 @@
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <label for="">Select Variations</label>
+                                                <div class="alert alert-warning" role="alert">
+                                                   <i class="ik ik-info mr-1"></i> Select from dropdown on basis of which different sku are to be created.
+                                                   e.g. if this item has Red,Blue,Green colour - Choose Variation : Colour.  <br>
+                                                   <i class="ik ik-info mr-1"></i>  At 1 time, maximum 3 variation basis should be selected.
+                                                </div>
+
                                                 <select name="properties_varient[]" id="properties_varient" class="form-control select2" multiple>
                                                     @foreach ($user_custom_col_list as $item)
                                                         <option value="{{ $item }}" @if (in_array($item,$varient_basis ?? []) ?? false) selected @endif>{{ $item }}</option>
@@ -1453,13 +1471,13 @@
                                                     <label for="properties_{{$key}}">{{ $item }}</label>
                                                     <div class="d-flex">
                                                         <input type="number" min="0" class="form-control" name="any_value-{{$item}}[L]" id="properties_{{$key}}" placeholder="Length">
-                                                        <input type="number" min="0" class="form-control" name="any_value-{{$item}}[W]" id="properties_{{$key}}" placeholder="Width">
-                                                        <input type="number" min="0" class="form-control" name="any_value-{{$item}}[H]" id="properties_{{$key}}" placeholder="Height">
+                                                        {{-- <input type="number" min="0" class="form-control" name="any_value-{{$item}}[W]" id="properties_{{$key}}" placeholder="Width">
+                                                        <input type="number" min="0" class="form-control" name="any_value-{{$item}}[H]" id="properties_{{$key}}" placeholder="Height"> --}}
                                                         <select name="any_value-{{$item}}[U]" id="any_value-{{$item}}" class="form-control select2">
-                                                            <option value="mm">MM</option>
-                                                            <option value="cm">CM</option>
-                                                            <option value="inches">Inches</option>
-                                                            <option value="feet">Feet</option>
+                                                            <option value="" selected>Select </option>
+                                                            @foreach ($length_uom as $item)
+                                                                <option value="{{$item}}">{{ $item }}</option>
+                                                            @endforeach
                                                         </select>
 
                                                     </div>
@@ -1493,6 +1511,26 @@
                 </div>
             {{-- column-8 end --}}
             </div>
+
+            <div class="col-md-6 col-12 d-none">
+                <label class="all_units">{{ __('All Dimension Units') }}</label>
+                <select id="all_units" class="select2">
+                    <option value="">Select </option>
+                    @foreach ($length_uom as $item)
+                        <option value="{{$item}}">{{ $item }}</option>
+                    @endforeach
+                    @foreach ($quantity_uom as $item)
+                        <option value="{{$item}}">{{ $item }}</option>
+                    @endforeach
+                    @foreach ($weight_uom as $item)
+                        <option value="{{$item}}">{{ $item }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+
+
+
             {{-- end of main row --}}
         </form>
     </div>
@@ -1619,12 +1657,40 @@
 
     });
 
-
     $(document).change(function (e) {
         $('a.page-link').attr("href","#");
     });
 
 </script>
+
+
+<script>
+    $(document).ready(function () {
+        let custcols = {!! $user_custom_fields_types !!};
+        let length_unit = $("#length_unit").html()
+        let weight_unit = $("#all_units").html()
+
+        $.each(custcols, function (indexInArray, valueOfElement) {
+            console.log(indexInArray);
+            console.log(valueOfElement);
+
+
+            if (valueOfElement == 'uom') {
+                // $('[name="elementName"]');
+                $(`[name="${indexInArray}[unit]"]`).empty();
+                $(`[name="${indexInArray}[unit]"]`).append(weight_unit);
+            }
+
+            if (valueOfElement == 'diamension') {
+                $(`[name="${indexInArray}[unit]"]`).empty();
+                $(`[name="${indexInArray}[unit]"]`).append(length_unit);
+            }
+
+        });
+
+    });
+</script>
+
 
 
 @if (request()->session()->has('closemodal'))

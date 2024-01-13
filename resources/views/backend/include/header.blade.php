@@ -30,6 +30,7 @@
 @php
     $permi = json_decode(auth()->user()->account_permission);
     $permi->bulkupload = $permi->bulkupload ?? 'no';
+    $permi->maya = $permi->maya ?? 'no';
     $permi->manage_categories = $permi->manage_categories ?? 'no';
     $permi->mysupplier = $permi->mysupplier ?? 'no';
     $permi->manangebrands = $permi->manangebrands ?? 'no';
@@ -73,12 +74,14 @@
                             </li>
 
 
-                            <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.image.designer'] ,'active' ) }}">
-                                <a href="{{ route('panel.image.designer') }}" class="a-item px-lg-3" style="color:#ccd3e4;  " >
-                                    <span>{{ 'Maya' }}</span>
-                                    {{-- AI GENERATE IMAGE --}}
-                                </a>
-                            </div>
+                            @if ($permi->maya == 'yes')
+                                <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.image.designer'] ,'active' ) }}">
+                                    <a href="{{ route('panel.image.designer') }}" class="a-item px-lg-3" style="color:#ccd3e4;  " >
+                                        {{-- AI GENERATE IMAGE --}}
+                                        <span>{{ 'Maya' }}</span>
+                                    </a>
+                                </div>
+                            @endif
 
 
                             <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.user_shop_items.create'] ,'active' ) }}">

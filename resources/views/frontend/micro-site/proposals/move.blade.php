@@ -335,6 +335,7 @@
     $customer_mob_no = $customer_details->customer_mob_no ?? '';
     $customer_email = $customer_details->customer_email ?? '';
     $customer_alias = $customer_details->offer_alias ?? '';
+    $person_name = $customer_details->person_name ?? '';
     $sample_charge = json_decode($proposal->customer_details)->sample_charge ?? '';
     $user_shop_record = App\Models\UserShop::whereId($proposal->user_shop_id)->first();
 
@@ -382,7 +383,7 @@
                                                 @if (auth()->id() != 155)
                                                     <div class="mx-2 d-flex justify-content-center align-item-center gap-2 flex-wrap">
                                                         <div class="d-flex gap-3">
-                                                            <label for="magrintochnage" class="form-label">Margin: <span id="range_bar"> {{ $proposal->margin ?? 0 }} </span>%</label>
+                                                            <label for="magrintochnage" class="form-label my-2 mx-2">Margin: <br><span id="range_bar"> {{ $proposal->margin ?? 0 }} </span>%</label>
                                                             <input type="range" min="0" max="100" step="10" name="margin" class="form-range hdfhj" style="width: 150px" value="{{ $proposal->margin ?? 0 }}" id="magrintochnage">
                                                         </div>
                                                         <div class="mx-2">
@@ -473,7 +474,7 @@
                                                                                     $price =  getPriceByGroupIdProductId($group_id,$product->id,$price);
                                                                                 }
 
-                                                                                $record = App\Models\UserCurrency::where('currency',$product->base_currency)->where('user_id',$product->user_id)->first();
+                                                                                $record = App\Models\UserCurrency::where('currency',$product->base_currency ?? 'INR')->where('user_id',$product->user_id ?? 0)->first();
                                                                                 $exhangerate = Session::get('Currency_exchange') ?? 1;
                                                                                 $HomeCurrency = $record->exchange ?? 1;
                                                                                 $currency_symbol = Session::get('currency_name') ?? 'INR';
@@ -664,11 +665,11 @@
 
                                                         <div class="col-md-12 col-12">
                                                             <div class="row">
-                                                            <div class="col-5">
+                                                            <div class="col-6">
                                                                 <div class="form-group {{ $errors->has('customer_name') ? 'has-error' : '' }}">
                                                                     <label for="customer_name" class="control-label">
                                                                         @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == null  )
-                                                                            Buyer Name
+                                                                            Buyer Entity
                                                                         @else
                                                                             Offer By
                                                                         @endif
@@ -692,12 +693,22 @@
 
 
                                                             {{-- original alias, phone and email --}}
-                                                            <div class="col-5">
+                                                            <div class="col-6">
                                                                 <div class="form-group {{ $errors->has('customer_alias') ? 'has-error' : '' }}">
                                                                     <label for="customer_alias" class="control-label">Alias (optional)</label>
                                                                     <input class="form-control" name="customer_alias" type="text" id="customer_alias" value="{{ $customer_alias }}">
                                                                 </div>
                                                             </div>
+
+                                                            {{-- Person Name --}}
+                                                            <div class="col-12">
+                                                                <div class="form-group {{ $errors->has('person_name') ? 'has-error' : '' }}">
+                                                                    <label for="person_name" class="control-label">Person Name</label>
+                                                                    <input class="form-control" name="person_name" type="text" id="person_name" value="{{ $person_name }}" placeholder="Enter Person Name">
+                                                                </div>
+                                                            </div>
+
+
                                                         </div>
                                                         </div>
 

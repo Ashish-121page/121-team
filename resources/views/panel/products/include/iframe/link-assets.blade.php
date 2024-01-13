@@ -14,11 +14,13 @@
             @else
                 <img src="https://placehold.co/50x50?text={{ $filetype }}" alt="No Image Available." style="height:100%;width: 100%;"  class="rounded">
             @endif
-            <span>{{ $filename }}</span>
+            <span>{{ substr($filename, 0, 5) }}</span>
                 
                 {{-- <img src="//picsum.photos/250" alt="Asset Preview" style="object-fit:contain;" class="img-fluid"> --}}
-            <button type="button" class="btn btn-outline-primary btn-sm addingitem my-2" id="addingitem"
-                data-mediaid="{{ $file }}" data-file_name="{{ basename($filename) }}">Link</button>
+            {{-- <button type="button" class="btn btn-outline-primary btn-sm addingitem my-2" id="addingitem"
+                data-mediaid="{{ $file }}" data-file_name="{{ basename($filename) }}">Link</button> --}}
+                <a href="#" class="link-btn btn-outline-primary btn-sm addingitem my-2" id="addingitem"
+                data-mediaid="{{ $file }}" data-file_name="{{ basename($filename) }}">Link</a>
           </div>
         </div>
     </div>

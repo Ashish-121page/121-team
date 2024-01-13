@@ -19,9 +19,9 @@
                             <input class="form-control" name="price" min="0" type="number" id="price" placeholder="Enter price">
 
 
-                            <label for="remarks_offer">Customsation</label>
+                            <label for="remarks_offer">Customisation</label>
                             <div class="form-floating">
-                                <textarea class="form-control" placeholder="Customsation requested by buyer" id="remarks_offer" name="remarks_offer"></textarea>
+                                <textarea class="form-control" placeholder="Customisation requested by buyer" id="remarks_offer" name="remarks_offer"></textarea>
                             </div>
 
                             <label for="attachment">Attachment</label>

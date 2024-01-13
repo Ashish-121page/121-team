@@ -17,10 +17,10 @@
                         <input type="text" id="custname" class="form-control" name="custname" placeholder="">
                     </div>
 
-                    <div class="form-group mb-3 d-flex align-items-center gap-2">
+                    {{-- <div class="form-group mb-3 d-flex align-items-center gap-2">
                         <label for="custreq" class="mb-0 mx-2">Is Required </label>
                         <input type="checkbox" id="custreq" class="form-check" name="custreq" value="1">
-                    </div>
+                    </div> --}}
 
 
                     <div class="form-group mb-3">
@@ -34,10 +34,25 @@
                         </select>
                     </div>
 
+
                     <div class="form-group mb-3">
-                        <label for="custtags">Enter Value</label>
+                        <label for="dattype">Data Type</label>
+                        <input type="text" id="dattype" class="form-control w-100" readonly disabled style="text-transform: capitalize">
+                    </div>
+
+                    <div class="form-group mb-3"  id="modalitevaluie">
+                        <label for="custtags">
+                            Enter Value
+
+                            <div class="alert alert-warning" role="alert">
+                                <i class="ik ik-info mr-1" title="Deleting values will prevent new entries. Will not have an impact on existing data"></i>
+                                Deleting values will prevent new entries. Will not have an impact on existing data
+                            </div>
+                        </label>
                         <input type="text" id="custtags" class="form-control w-100" name="custtags" value="" placeholder="Enter New Values">
                     </div>
+
+
 
             </div>
             <div class="modal-footer">

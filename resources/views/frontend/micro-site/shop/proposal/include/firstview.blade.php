@@ -18,7 +18,7 @@
                         <label for="enquir-{{ $product->id }}" class="checkmark bi" style="position: absolute;top: -1%;right: 1%;cursor: pointer;"></label>
                     </div>
 
-                    <div class="card shop-list border-10 position-relative">
+                    <div class="d-flex flex-column h-100 card shop-list border-10 position-relative">
                         <div class="shop-image position-relative overflow-hidden rounded text-center">
                             <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank">
                                 @if( getShopProductImage($product->id,'single') != null)

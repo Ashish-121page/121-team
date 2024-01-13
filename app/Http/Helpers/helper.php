@@ -1966,7 +1966,7 @@ if (!function_exists('checkLockedEnquiry')) {
 
 
 
-if (!function_exists('checkQuoteSlug')) {   
+if (!function_exists('checkQuoteSlug')) {
     function checkQuoteSlug($mark, $num, $userid)
     {
         $slug = $mark . "/" . $num;
@@ -2162,6 +2162,9 @@ if (!function_exists('debugtext')) {
         }
     }
 }
+
+
+
 
 // ! Function to Search Array Inside ARRAY
 if (!function_exists('searchArray')) {

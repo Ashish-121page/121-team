@@ -1,14 +1,14 @@
 <div class="col-md-12 col-12">
-    <table class="table ">
+    <table class="table table-responsive">
         <thead class="bg-primary">
             <tr>
-                <th scope="col" class="text-light" style="">
+                <th scope="col" class="text-light" style="position: sticky; left: 0px; background-color: #6666CC;">
                     <input type="checkbox" id="checkall">
                 </th>
-                <th   scope="col" class="text-light">
+                <th scope="col" class="text-light" style="position: sticky; left: 40px; background-color: #6666CC;">
                     Thumbnail
                 </th>
-                <th colspan="2" scope="col" class="text-light">
+                <th colspan="" scope="col" class="text-light" style="position: sticky; left: 130px; width: 50%; background-color: #6666CC;">
                     <div style="display: flex; flex-direction: column;">
                         <span style="margin-bottom: 5px;">Asset Name</span>
                         <div>
@@ -58,11 +58,11 @@
                     {{-- <th scope="row">
                         <input type="checkbox" name="checkthis" id="checkthis" class="form-check checkme" value="{{ encrypt($file) }}">
                     </th> --}}
-                    <th scope="row" style="display: flex; align-items: center;">
+                    <th scope="row" style="display: flex; align-items: center; position: sticky; left: 0px; background-color:white;">
                         <input type="checkbox" name="checkthis" id="checkthis" class="form-check checkme mt-4" value="{{ encrypt($file) }}">
                     </th>
                     
-                    <td class="preview-img">
+                    <td class="preview-img" style="position: sticky; left: 40px; background-color:white;">
                         @php
                             $filetype = explode("/",Storage::mimeType($file))[0];
                         @endphp
@@ -73,7 +73,7 @@
                         @endif
                         
                     </td>
-                    <td colspan="2">
+                    <td colspan="" style="position: sticky; left: 130px; background-color:white;">
                         <span class="filename" data-oldname="{{ basename($file) }}">
                             {{ basename($file) }}
                         </span>
@@ -122,7 +122,7 @@
             
                 <tr>
                     <td colspan="6" class="text-center">
-                        No Files are Exist
+                        No Files Exist
                     </td>
                 </tr>
                 

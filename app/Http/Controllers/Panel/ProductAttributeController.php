@@ -9,6 +9,7 @@ use App\Models\ProductAttribute;
 use App\Models\ProductExtraInfo;
 use App\Models\ProductAttributeValue;
 use App\User;
+use Illuminate\Http\Response;
 
 class ProductAttributeController extends Controller
 {
@@ -83,6 +84,110 @@ class ProductAttributeController extends Controller
      * @param    \Illuminate\Http\Request  $request
      * @return  \Illuminate\Http\Response
      */
+    // public function store(Request $request)
+    // {
+    //     // if ($request->has('request_from')) {
+    //     // //     // $response = new Response();
+    //     //     return response()->json([
+    //     //         'status' => 'success',
+    //     //         'msg' => 'Product Property Created Successfully!'
+    //     //     ]);
+    //     // }
+
+    //     // return magicstring($request->all());
+
+    //     $this->validate($request, [
+    //                     'name'     => 'required',
+    //                     'type'     => 'sometimes',
+    //                     'value'     => 'sometimes',
+    //                 ]);
+    //     try{
+    //         $UserRole = AuthRole();
+    //         if ($UserRole != 'Admin') {
+    //             // `  Start Creating Custom Attribute....
+    //             $user = User::find(auth()->id());
+    //             $custom_arr_old = json_decode($user->custom_attriute_columns);
+    //             $custom_arr_new = [str_replace(' ','_',$request->name)];
+
+    //             // + creating Array for Adding in User Record
+    //             if ($custom_arr_old != null) {
+    //                 $upload_arr = array_merge((array) $custom_arr_old,$custom_arr_new);
+    //             }else{
+    //                 $upload_arr = $custom_arr_new;
+    //             }
+
+    //             $user->custom_attriute_columns = json_encode($upload_arr);
+    //             $user->save();
+    //             $type = 1; // User Define Attribute
+    //         }else{
+    //             $type = 0; // Admin Define Attribute
+    //         }
+
+
+    //         if (request()->has('type') && request()->get('type') == 'any_value') {
+    //             $value = 'any_value';
+    //         }elseif (request()->has('type') && request()->get('type') == 'uom') {
+    //             $value = 'uom';
+    //         }
+    //         else{
+    //             $value = null;
+    //         }
+
+    //         $chkCount = ProductAttribute::where('name',$request->name)->where('user_id',null)->orwhere('user_id',$request->user_id)->get();
+    //         if (count($chkCount) == 0) {
+    //             // ! Uploading Attributes
+    //             $AttributValue = ProductAttribute::create([
+    //                 'name' => str_replace(' ','_',$request->get('name')),
+    //                 'type' => $type,
+    //                 'value' => $value ?? NULL,
+    //                 'user_id' => $request->get('user_id') ?? null,
+    //                 'user_shop_id' => $request->get('user_shop_id') ?? null,
+    //             ]);
+
+    //             if ($value != 'any_value') {
+    //                 // - Checking Values
+    //                 foreach (explode(",",$request->value[0]) as $key => $items) {
+    //                     ProductAttributeValue::create([
+    //                         'parent_id' => $AttributValue->id,
+    //                         'user_id' => $request->get('user_id') ?? null,
+    //                         'attribute_value' => $items,
+    //                     ]);
+    //                 }
+    //             }
+
+    //         }else{
+    //             return back()->with('error',"$request->name Property already exists in your Account.");
+    //         }
+
+
+    //         if ($request->has('request_from')) {
+    //             return response()->json([
+    //                 'status' => 'success',
+    //                 'msg' => 'Product Property Created Successfully!'
+    //             ]);
+    //         }
+
+
+    //         return redirect()->route('panel.product_attributes.index')->with('success','Product Attribute Created Successfully!');
+    //     }catch(\Exception $e){
+
+    //         if ($request->has('request_from')) {
+    //             // $response = new Response();
+    //             return response()->json([
+    //                 'status' => 'success',
+    //                 'msg' => 'Product Property Created Successfully!'
+    //             ]);
+    //         }
+
+
+    //         // return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
+
+
+    //         throw $e;
+    //     }
+    // }
+
+
     public function store(Request $request)
     {
         // if ($request->has('request_from')) {
@@ -179,6 +284,7 @@ class ProductAttributeController extends Controller
             // throw $e;
         }
     }
+
 
     /**
      * Display the specified resource.

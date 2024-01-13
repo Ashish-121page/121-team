@@ -283,10 +283,74 @@ class ProductController extends Controller
             $materials = $attributes->where('name','Material')->first();
             $prodextra = ProductExtraInfo::whereId(request()->get('id'))->first();
 
-            $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value) ?? [];
-            $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
+            // $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value) ?? [];
 
-            $num = end($delfault_cols) +1;
+            $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
+            $custom_attributes = (array) json_decode($user->custom_attriute_columns) ?? ['Colours','Size','Material'];
+            $custom_fields = (array) json_decode($user->custom_fields) ?? [];
+            $Export_columns = [];
+
+
+            $fileName = "Exported -".$user->name.' - '.date('d-m-Y').'.xlsx';
+
+            // Getting sections custom Inputs Columns
+            $custom_col1 = [];
+            $custom_col4 = [];
+            $custom_col5 = [];
+
+            $custom_col_values = [];
+
+
+            // return;
+
+            foreach ($custom_fields as $index => $custom_field) {
+                if ($custom_field->ref_section == 1) {
+                    array_push($custom_col1,$custom_field->text);
+                }
+
+                if ($custom_field->ref_section == 4) {
+                    array_push($custom_col4,$custom_field->text);
+                }
+
+                if ($custom_field->ref_section == 5) {
+                    array_push($custom_col5,$custom_field->text);
+                }
+
+                if ($custom_field->value != '' && $custom_field->value != null) {
+                    $tmp_val = [];
+                    $tmp_val[$custom_field->text] = $custom_field->value;
+                    if ($tmp_val != '' && $tmp_val != null) {
+                        array_push($custom_col_values,$tmp_val);
+                    }
+
+                }
+            }
+
+            $default_attribute['custom_input_1'] = $custom_col1;
+            $default_attribute['custom_input_4'] = $custom_col4;
+            $default_attribute['custom_input_5'] = $custom_col5;
+
+
+            foreach ($default_attribute as $key => $valueArr) {
+                foreach ($valueArr as $key => $value) {
+                    array_push($Export_columns,$value);
+                }
+            }
+
+
+            // Merging All attributes
+            $delfault_cols = array_merge($Export_columns,$custom_attributes);
+
+            // magicstring($delfault_cols);
+            // return;
+
+
+
+            $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
+            // if (is_array($delfault_cols) && !empty($delfault_cols)) {
+            //     $num = end($delfault_cols) + 1;
+            // } else
+            $num = end($delfault_cols);
 
             $new_custom_attribute = [];
             foreach ($user_custom_col_list as $key => $value) {
@@ -295,6 +359,13 @@ class ProductController extends Controller
             }
 
             $col_list = (object) array_merge((array)$delfault_cols,$new_custom_attribute);
+
+
+            // magicstring($num);
+            // magicstring($delfault_cols);
+
+
+            // return;
 
             $ExistingTemplates = Usertemplates::where('user_id',$user->id)->get();
             $available_groups = ProductExtraInfo::where('user_id',$user->id)->groupBy('Cust_tag_group')->pluck('Cust_tag_group');
@@ -418,8 +489,24 @@ class ProductController extends Controller
                 $files = [];
             }
 
+            $user_custom_fields_types = [];
+            foreach ($user_custom_fields as $key => $value) {
+                $user_custom_fields_types += [$value['id'] => $value['type']];
+            }
 
-            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups','user_custom_col_list','product','productExtra','varient_basis','attribute_value_id','medias','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','fileds_sections','user_custom_fields','paginator'));
+
+
+            $user_custom_fields_types = json_encode($user_custom_fields_types);
+
+
+            $length_uom = json_decode(getSetting('dimension_uom'));
+            $quantity_uom = json_decode(getSetting('item_uom'));
+            $weight_uom = json_decode(getSetting('weight_uom'));
+            // // magicstring(json_encode($user_custom_fields_types));
+            // return;
+
+
+            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups','user_custom_col_list','product','productExtra','varient_basis','attribute_value_id','medias','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','fileds_sections','user_custom_fields','paginator','user_custom_fields_types','length_uom','quantity_uom','weight_uom','delfault_cols'));
 
         }catch(\Exception $e){
             // return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -427,9 +514,10 @@ class ProductController extends Controller
         }
     }
 
-    public function downloadtemplate(Usertemplates $template) {
+    public function downloadtemplate(Request $request,Usertemplates $template) {
 
         try {
+
 
             $records = json_decode($template->columns_values);
             $templatename = $template->template_name;
@@ -438,10 +526,9 @@ class ProductController extends Controller
 
             $filename = "$templatename -$user->name -".$mytime->toDateTimeString();
 
+            $request->merge(['name' => $filename,'finaldata' => $records]);
             // ` Calling Function from Another Controller
             app('App\Http\Controllers\NewBulkController')->exportExcel($records,$filename);
-
-
             return back()->with('success',"Download Started");
         } catch (\Throwable $th) {
             // throw $th;
@@ -454,19 +541,62 @@ class ProductController extends Controller
 
     public function edittemplate(Usertemplates $template) {
         $user = auth()->user();
-        $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
-        $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
-        $num = end($delfault_cols) +1;
-        $new_custom_attribute = [];
-        foreach ($user_custom_col_list as $key => $value) {
-            $new_custom_attribute += [$value => $num];
-            $num++;
+
+        $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
+        $custom_attributes = (array) json_decode($user->custom_attriute_columns) ?? ['Colours','Size','Material'];
+        $custom_fields = (array) json_decode($user->custom_fields) ?? [];
+        $Export_columns = [];
+
+
+        $fileName = "Exported -".$user->name.' - '.date('d-m-Y').'.xlsx';
+
+        // Getting sections custom Inputs Columns
+        $custom_col1 = [];
+        $custom_col4 = [];
+        $custom_col5 = [];
+
+        $custom_col_values = [];
+
+
+        // return;
+
+        foreach ($custom_fields as $index => $custom_field) {
+            if ($custom_field->ref_section == 1) {
+                array_push($custom_col1,$custom_field->text);
+            }
+
+            if ($custom_field->ref_section == 4) {
+                array_push($custom_col4,$custom_field->text);
+            }
+
+            if ($custom_field->ref_section == 5) {
+                array_push($custom_col5,$custom_field->text);
+            }
+
+            if ($custom_field->value != '' && $custom_field->value != null) {
+                $tmp_val = [];
+                $tmp_val[$custom_field->text] = $custom_field->value;
+                if ($tmp_val != '' && $tmp_val != null) {
+                    array_push($custom_col_values,$tmp_val);
+                }
+
+            }
         }
 
-        $col_list = (object) array_merge((array)$delfault_cols,$new_custom_attribute);
+        $default_attribute['custom_input_1'] = $custom_col1;
+        $default_attribute['custom_input_4'] = $custom_col4;
+        $default_attribute['custom_input_5'] = $custom_col5;
 
 
+        foreach ($default_attribute as $key => $valueArr) {
+            foreach ($valueArr as $key => $value) {
+                array_push($Export_columns,$value);
+            }
+        }
 
+
+        // Merging All attributes
+        $col_list = array_merge($Export_columns,$custom_attributes);
 
         return view('panel.products.edit-template',compact('col_list','template'));
     }
@@ -978,8 +1108,7 @@ class ProductController extends Controller
         $any_value = [];
         $substring = "any_value";
 
-        // magicstring(request()->all());
-        // return;
+
 
         foreach ($request->all() as $key => $value) {
             if (strpos($key, $substring) !== false) {
@@ -1007,7 +1136,9 @@ class ProductController extends Controller
                     $attribute_id = $chkCountAttr[0]->id;
                     $received_value = $request->$key;
 
-                    if ($received_value != null && $received_value != "" && $received_value != []) {
+
+
+                    if ($received_value != null && $received_value != "" && $received_value != [] && $received_value != "x"  && $received_value != "xx"  && $received_value != "xx" && $received_value != "X"  && $received_value != "X"  && $received_value != "X" ) {
                         $chkatt = ProductAttributeValue::where('parent_id',$attribute_id)->where('attribute_value',$received_value)->first();
 
                         if ($chkatt == null) {
@@ -1031,8 +1162,6 @@ class ProductController extends Controller
             }
         }
 
-
-        // return;
 
         // foreach ($any_value as $ashu) {
         //     $attribute_name = explode("-",$key)[1];
@@ -1102,18 +1231,28 @@ class ProductController extends Controller
                 'standard_carton' => $request->standard_carton,
                 'carton_weight' => $request->carton_weight,
                 'carton_unit' => $request->carton_unit,
-                ];
+                'carton_length' => $request->carton_length,
+                'carton_width' => $request->carton_width,
+                'carton_height' => $request->carton_height,
+                'Carton_Dimensions_unit' => $request->Carton_Dimensions_unit,
+            ];
 
-                $shipping =[
-                    'height' => $request->height,
-                    'weight' => $request->weight,
-                    'width' => $request->width,
-                    'length' => $request->length,
-                    'unit' => $request->unit,
-                    'length_unit' => $request->length_unit,
-                ];
+            $shipping =[
+                'height' => $request->height,
+                'gross_weight' => $request->gross_weight,
+                'weight' => $request->weight,
+                'width' => $request->width,
+                'length' => $request->length,
+                'unit' => $request->unit,
+                'length_unit' => $request->length_unit,
+            ];
             $request['carton_details'] = json_encode($carton_details);
             $request['shipping'] = json_encode($shipping);
+
+
+            // magicstring(request()->all());
+
+            // return;
 
 
             $custom_attriute_columns = json_decode($user->custom_attriute_columns);
@@ -2127,7 +2266,7 @@ class ProductController extends Controller
 
                         $product = $product_obj;
 
-                        $custom_fields = json_decode($user->custom_fields);
+                        $custom_fields = (array) json_decode($user->custom_fields);
                         if ($custom_fields != null && count($custom_fields) > 0) {
                             foreach ($custom_fields as $key => $customfield) {
 
@@ -2549,7 +2688,7 @@ class ProductController extends Controller
 
             // magicstring($folderPath);
             // return;
-            $msg =  "Product Created with Varient $count";
+            $msg =  "Product Created with Variant $count";
             // return back()->with('success',$msg);
 
 
@@ -2818,64 +2957,121 @@ class ProductController extends Controller
             }
 
             $months = ['January' => 'January','February' => 'February','March' => 'March','April' => 'April','May' => 'May','June' => 'June','July' => 'July','August' => 'August','September' => 'September','October' => 'October','November' => 'November','December' => 'December'];
-            
+
             $mainsku_prices = [];
             $mainsku_mrp = [];
             $mainsku_selling_price_unit = [];
             $mainsku_hsn = [];
             $mainsku_hsnpercent = [];
             $mainsku_grossweight = [];
+            $mainsku_netweight = [];
+            $mainsku_length = [];
+            $mainsku_width = [];
+            $mainsku_height = [];
+            $mainsku_standard_carton = [];
+            $mainsku_carton_weight = [];
+            $mainsku_carton_length = [];
+            $mainsku_carton_width = [];
+            $mainsku_carton_height = [];
             foreach ($available_products as $key => $value) {
-                $product = getProductDataById($value);
-                $shipping = json_decode($product->shipping);
-                $mainsku_prices[] = $product->min_sell_pr_without_gst ?? '';
-                $mainsku_mrp[] = $product->mrp ?? '';
-                $mainsku_selling_price_unit[] = $product->selling_price_unit ?? '';
-                $mainsku_hsn[] = $product->hsn ?? '';
-                $mainsku_hsnpercent[] = $product->hsn_percent ?? '';
+                $product_tmp = getProductDataById($value);
+                $shipping = json_decode($product_tmp->shipping);
+                $carton_details = json_decode($product_tmp->carton_details);
+                $mainsku_prices[] = $product_tmp->min_sell_pr_without_gst ?? '';
+                $mainsku_mrp[] = $product_tmp->mrp ?? '';
+                $mainsku_selling_price_unit[] = $product_tmp->selling_price_unit ?? '';
+                $mainsku_hsn[] = $product_tmp->hsn ?? '';
+                $mainsku_hsnpercent[] = $product_tmp->hsn_percent ?? '';
                 $mainsku_grossweight[] = $shipping->gross_weight ?? '';
+                $mainsku_netweight[] = $shipping->net_weight ?? '';
+                $mainsku_length[] = $shipping->length ?? '';
+                $mainsku_width[] = $shipping->width ?? '';
+                $mainsku_height[] = $shipping->height ?? '';
+                $mainsku_standard_carton[] = $carton_details->standard_carton ?? '';
+                $mainsku_carton_weight[] = $carton_details->carton_weight ?? '';
+                $mainsku_carton_length[] = $carton_details->carton_length ?? '';
+                $mainsku_carton_width[] = $carton_details->carton_width ?? '';
+                $mainsku_carton_height[] = $carton_details->carton_height ?? '';
 
-                
+
             }
-            
+
             $mainsku_prices_str = implode(",", $mainsku_prices);
             $mainsku_mrp_str = implode(",", $mainsku_mrp);
             $mainsku_selling_price_unit_str = implode(",", $mainsku_selling_price_unit);
             $mainsku_hsn_str = implode(",", $mainsku_hsn);
             $mainsku_hsnpercent_str = implode(",", $mainsku_hsnpercent);
             $mainsku_grossweight_str = implode(",", $mainsku_grossweight);
+            $mainsku_netweight_str = implode(",", $mainsku_netweight);
+            $mainsku_length_str = implode(",", $mainsku_length);
+            $mainsku_width_str = implode(",", $mainsku_width);
+            $mainsku_height_str = implode(",", $mainsku_height);
+            $mainsku_standard_carton_str = implode(",", $mainsku_standard_carton);
+            $mainsku_carton_weight_str = implode(",", $mainsku_carton_weight);
+            $mainsku_carton_length_str = implode(",", $mainsku_carton_length);
+            $mainsku_carton_width_str = implode(",", $mainsku_carton_width);
+            $mainsku_carton_height_str = implode(",", $mainsku_carton_height);
 
-            
+
             // magicstring($mainsku_grossweight_str);
             // return;
-            
+
             $mainsku_exclbuyer = [];
+            $mainsku_sourcedfrom = [];
+            $mainsku_vendor_price = [];
+            $mainsku_product_cost_unit = [];
+            $mainsku_vendor_currency = [];
+            $mainsku_remarks = [];
 
             foreach ($available_products as $key => $value) {
-                $tmp_exc = []; 
+                $tmp_exc = [];
                 $productextra = getAllPropertiesofProductById($value,auth()->id());
 
                 foreach ($productextra as $key => $prodextrarec) {
                     $tmp_exc[$key] = $prodextrarec->exclusive_buyer_name ?? '';
+                    $tmp_sourcefrm[$key] = $prodextrarec->vendor_sourced_from ?? '';
+                    $tmp_vendor_price[$key] = $prodextrarec->vendor_price ?? '';
+                    $tmp_product_cost_unit[$key] = $prodextrarec->product_cost_unit ?? '';
+                    $tmp_vendor_currency[$key] = $prodextrarec->vendor_currency ?? '';
+                    $tmp_remarks[$key] = $prodextrarec->remarks ?? '';
+
                 }
 
                 array_push($mainsku_exclbuyer, implode(",", array_unique($tmp_exc)));
+                array_push($mainsku_sourcedfrom, implode(",", array_unique($tmp_sourcefrm)));
+                array_push($mainsku_vendor_price, implode(",", array_unique($tmp_vendor_price)));
+                array_push($mainsku_product_cost_unit, implode(",", array_unique($tmp_product_cost_unit)));
+                array_push($mainsku_vendor_currency, implode(",", array_unique($tmp_vendor_currency)));
+                array_push($mainsku_remarks, implode(",", array_unique($tmp_remarks)));
 
 
             }
 
             $mainsku_exclbuyer_str = implode(",", $mainsku_exclbuyer);
+            $mainsku_sourcedfrom_str = implode(",", $mainsku_sourcedfrom);
+            $mainsku_vendor_price_str = implode(",", $mainsku_vendor_price);
+            $mainsku_product_cost_unit_str = implode(",", $mainsku_product_cost_unit);
+            $mainsku_vendor_currency_str = implode(",", $mainsku_vendor_currency);
+            $mainsku_remarks_str = implode(",", $mainsku_remarks);
 
-            // magicstring($mainsku_exclbuyer_str);
-
-            
+            // magicstring($mainsku_remarks_str);
             // return;
 
+            $user_custom_fields_types = [];
+            foreach ($user_custom_fields as $key => $value) {
+                $user_custom_fields_types += [$value['id'] => $value['type']];
+            }
 
-              
-            
 
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months','mainsku_prices_str','mainsku_mrp_str','mainsku_exclbuyer_str','mainsku_hsn_str','mainsku_hsnpercent_str','mainsku_grossweight_str'));
+
+            $user_custom_fields_types = json_encode($user_custom_fields_types);
+
+            $length_uom = json_decode(getSetting('dimension_uom'));
+            $quantity_uom = json_decode(getSetting('item_uom'));
+            $weight_uom = json_decode(getSetting('weight_uom'));
+
+
+            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months','mainsku_prices_str','mainsku_mrp_str','mainsku_exclbuyer_str','mainsku_hsn_str','mainsku_hsnpercent_str','mainsku_grossweight_str','mainsku_netweight_str','mainsku_length_str','mainsku_selling_price_unit_str','mainsku_width_str','mainsku_height_str','mainsku_standard_carton_str','mainsku_carton_weight_str','mainsku_carton_length_str','mainsku_carton_width_str','mainsku_carton_height_str','mainsku_sourcedfrom_str','mainsku_vendor_price_str','mainsku_product_cost_unit_str','mainsku_vendor_currency_str','mainsku_remarks_str','length_uom','quantity_uom','weight_uom','user_custom_fields_types'));
 
         }catch(\Exception $e){
             // return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -2966,22 +3162,22 @@ class ProductController extends Controller
         $product->color = $request->color;
         $product->size = $request->size;
         $product->save();
-        return back()->with('success','Varient Updated Successfully!');
+        return back()->with('success','Variant Updated Successfully!');
     }
 
     public function update(Request $request,Product $product)
     {
 
 
+        // magicstring($request->all());
+        // return;
+        
 
 
         $any_value = [];
         $newProp = [];
         $substring = "any_value";
-
-        // magicstring(request()->all());
-        // return;
-
+        
         foreach ($request->all() as $key => $value) {
             if (strpos($key, $substring) !== false) {
                 array_push($any_value,$key);

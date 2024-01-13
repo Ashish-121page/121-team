@@ -192,7 +192,19 @@
             }
 
 
+
+
+
+
     </style>
+        {{-- @if()
+            <style>
+                #hztab{
+                    padding: 0px 50px;
+                }
+            </style>
+        @endif --}}
+
 
     @endpush
     <div class="container-fluid">
@@ -235,10 +247,10 @@
                                 class="btn btn-outline-primary mx-1 @if (request()->has('products') OR request()->has('productsgrid')) active @endif">
                                 Products
                             </a>
-                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&properties=true"
+                            {{-- <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&properties=true"
                                 class="btn btn-outline-primary mx-1 @if (request()->has('properties')) active @endif">
                                 Properties
-                            </a>
+                            </a> --}}
                             <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&assetsafe=true"
                                 class="btn btn-outline-primary mx-1 @if (request()->has('assetsafe')) active @endif">
                                 Assets Safe
@@ -413,10 +425,10 @@
                 animatedIn: 'lightSpeedIn',
                 animatedOut: 'lightSpeedOut',
                 color: 'FFFFFF',
-                height: '60%',
+                height: 'max-content',
                 width: 'max-content',
-                top: '24%',
-                left: '40%',
+                top: '28%',
+                left: '20%',
             });
 
 
@@ -498,6 +510,9 @@
                         method: "get",
                         success: function(res){
                             $("#input-checkpinimg_"+id).attr('src', "{{ asset('frontend/assets/svg/bookmark_added.svg')}}");
+                            $(".input-check").change(function (e) {
+                                myfunc();
+                            });
                         }
                     });
 
@@ -508,6 +523,9 @@
                         method: "get",
                         success: function(res){
                             $("#input-checkpinimg_"+id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg')}}");
+                            $(".input-check").change(function (e) {
+                                myfunc();
+                            });
                         }
                     });
                 }
@@ -552,9 +570,34 @@
                     },
                     success: function (response) {
                         $("#maincontentbxProductLIst").html(response)
+                            function getValues(){
+                                let selected = []
+                                let record = document.querySelectorAll(".input-check:checked");
+                                record.forEach(element => {
+                                    selected.push(element.dataset.record);
+                                });
+                                $(".selectedbtn").html(selected.length+' selected')
+                                return selected;
+                            }
+                            // product-action
+                            function myfunc() {
+                                if ($(".input-check:checked").length > 0) {
+                                    // any one is checked
+                                    $("#quickaction").removeClass('d-none');
+                                    getValues()
+                                } else {
+                                    $("#quickaction").addClass('d-none');
+                                }
+                            }
+                        $(".input-check").change(function (e) {
+                            myfunc();
+                        });
                     },
                     error:  function (response) {
                         $("#maincontentbxProductLIst").html(response)
+                        $(".input-check").change(function (e) {
+                            myfunc();
+                        });
                     }
                 });
 
@@ -908,8 +951,6 @@
                         $(this).prop('checked',false);
                         myfunc()
                     }
-
-
                 });
                 $(".input-check").change(function (e) {
                     myfunc();
@@ -966,7 +1007,7 @@
                 height: "max-content",
                 transform: "translate(3%, -47%)",
                 top: "35%",
-                left: "35%",
+                left: "25%",
                 overflow: 'none',
 
             });

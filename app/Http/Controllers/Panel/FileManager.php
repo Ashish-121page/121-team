@@ -408,6 +408,10 @@ class FileManager extends Controller
             $user_id = decrypt($user_id);
             $countProduct = 0;
 
+
+            magicstring(request()->all());
+            // return;
+
             foreach ($request->product_id as $key => $product_id) {
 
                 $prouduct_id = decrypt($product_id);
@@ -416,23 +420,36 @@ class FileManager extends Controller
 
                 $exist_image = $usi->images;
                 $count = 0;
-                foreach (json_decode($request->images) as $key => $value) {
-                    // array_push($filePaths,decrypt($value));
-                    // $file = decrypt($value);
 
-                    $file = $value;
+
+                // magicstring(explode(",",$request->images));
+
+
+                // return;
+                foreach (explode(",",$request->images) as $key => $value) {
+                    // array_push($filePaths,decrypt($value));
+                    $file = decrypt($value);
+
+                    // echo $file.newline();
+                    $file = str_replace('public','storage',$file);
+
+                    // echo "<img src='".asset($file)."' width='100px' height='100px'>";
+
+                    // continue;
                     $media = new Media();
                     $media->tag = "Product_Image";
                     $media->file_type = "Image";
                     $media->type = "Product";
                     $media->type_id = $prouduct_id;
                     $media->file_name = basename($file);
-                    $media->path = "storage/files/".auth()->id()."/".basename($file);
+                    $media->path = $file;
                     $media->extension = explode('.',basename($file))[1] ?? '';
                     $media->save();
                     $arr_images[] = $media->id;
                     $count++;
                 }
+
+                // return;
 
                 // // Add images to UserShopItem
                 if(count($arr_images) > 0) {
@@ -449,9 +466,12 @@ class FileManager extends Controller
                 $countProduct++;
             }
 
+
+
+
             return back()->with('success',"$count assets linked with $countProduct products !!");
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
             return back()->with('error',"There was an error while linking assets");
         }
     }
