@@ -22,7 +22,7 @@
             .card {
                 border-radius: 15px;
                 /* background-color: rgba(212, 212, 212, 0.4) !important;
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
+                                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
                 height: 100%;
             }
 
@@ -69,7 +69,7 @@
             .dropdown-menu {
                 padding: 10px;
                 /* background-color: #202942;
-                        color: #caccd4; */
+                                color: #caccd4; */
                 border-radius: 15px;
             }
 
@@ -118,6 +118,14 @@
                 width: 100px;
                 border-radius: 10px;
             }
+            .generated-image-prev {
+                margin-bottom: 10px;
+                border: 2px solid transparent;
+                transition: border-color 0.3s ease-in-out;
+                height: 500px;
+                width: 500px;
+                border-radius: 10px;
+            }
 
             .generated-image:hover {
                 border-color: #fff;
@@ -142,13 +150,11 @@
                 <div class="card">
                     <div class="card-header">
                         <ul class="nav nav-pills nav-fill">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="fromTextTab" href="#" style="border-radius: 15px">From
-                                    Text</a>
+                            <li class="nav-item" id="fromTextTabhead">
+                                <a class="nav-link active" id="fromTextTab" href="#" style="border-radius: 15px">New PD</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="fromImageTab" href="#" style="border-radius: 15px">From
-                                    Image</a>
+                            <li class="nav-item" id="fromImageTabhead">
+                                <a class="nav-link" id="fromImageTab" href="#" style="border-radius: 15px">Modifications</a>
                             </li>
                         </ul>
                     </div>
@@ -321,24 +327,24 @@
                                 <br>
                                 <div class="cent">
                                     <button type="button" class="btn btn-primary" style="border-radius:15px"
-                                        id="generateImage">Generate Image</button>
+                                        id="generateImage">Generate Image 1</button>
                                 </div>
                             </form>
                         </div>
                         <div id="fromImageForm" style="display: none;">
                             <form method="POST" action="{{ route('panel.image.generateImageFromImage') }}"
-                                enctype="multipart/form-data">
+                                enctype="multipart/form-data" id="imageform12">
                                 @csrf
                                 <div class="form-group">
-                                    <label>Upload Image:</label>
-                                    <input type="file" class="form-control" name="image" />
+                                    {{-- <input type="file" class="form-control" name="image" /> --}}
+                                    <input type="text" class="form-control d-none" name="image" id="newimagelink" placeholder="Upload image URL"/>
                                     <label>How to tweak the image:</label>
                                     {{-- <input type="text" class="form-control" name="text" /> --}}
-                                    <textarea name="text" id="text" cols="30" rows="10" class="form-control"></textarea>
+                                    <textarea name="text" id="textold" cols="30" rows="10" class="form-control"></textarea>
                                     <br>
                                 </div>
                                 <div class="cent">
-                                    <button type="submit" class="btn btn-primary" style="border-radius: 15px">Generate Image</button>
+                                    <button type="button" class="btn btn-outline-primary" id="generateImagebyImage" style="border-radius: 15px">Regenerate Image</button>
                                 </div>
 
                             </form>
@@ -389,7 +395,7 @@
 
                                 @if (isset($imagePaths) && count($imagePaths) > 0)
                                     @foreach ($imagePaths as $path)
-                                        <img src="{{ asset($path) }}" alt="Generated Image" class="genimage">
+                                        <img src="{{ asset($path) }}" alt="Generated Image" class="genimage generated-image-prev">
                                     @endforeach
                                 @else
                                     <p>
@@ -397,8 +403,6 @@
                                     </p>
 
                                 @endif
-
-
                             </div>
 
                         </div>
@@ -416,9 +420,9 @@
                     </div>
                     <div class="card-body">
                         <div class="image-container">
-                            @if (session('imagePathsAll'))
-                                @foreach (session('imagePathsAll') as $imagePath)
-                                    <img src="{{ $imagePath }}" alt="Generated Image" class="generated-image">
+                            @if ($existing_image)
+                                @foreach ($existing_image as $imagePath)
+                                    <img src="{{ asset($imagePath->maya_path ?? '') }}" alt="Generated Image" class="generated-image">
                                 @endforeach
                             @else
                                 <p>No images generated yet.</p>
@@ -435,10 +439,10 @@
 
     @push('script')
         <script>
+
             document.addEventListener('DOMContentLoaded', function() {
                 const colorButtons = document.querySelectorAll('.color-btn');
                 const selectedColorInput = document.getElementById('selected_color');
-
 
                 colorButtons.forEach(button => {
                     button.addEventListener('click', function(e) {
@@ -467,8 +471,8 @@
                         }
                     });
                 }
+
             });
-            console.log('Color picker script is running!');
         </script>
 
         <script>
@@ -506,10 +510,14 @@
 
                             const imageContainer = document.getElementById('imageContainer');
                             imageContainer.innerHTML =
-                                `<img src="${imagePath}" alt="Generated Image" class="genimage">`;
+                                `<img src="${imagePath}" alt="Generated Image" id="created_image" class="genimage generated-image-prev">`;
 
                             const textPrompt = document.getElementById('textPrompt');
                             textPrompt.innerText = data.textPrompt;
+                            $("#twikinput").removeClass("d-none");
+                            $("#loadingIndicator").addClass("d-none");
+                            $("#fromTextTabhead").addClass("d-none");
+                            $("#fromImageTab").click();
                         })
                         .catch(error => {
                             console.error('Error generating image:', error);
@@ -518,16 +526,19 @@
                             hideLoadingIndicator();
                         });
                 }
+
             });
+
+
         </script>
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const generateImagebyImageButton = document.getElementById('generateImagebyImage');
                 generateImagebyImageButton.addEventListener('click', function(e) {
-                    // e.preventDefault();
+                    e.preventDefault();
                     showLoadingIndicator();
-                    // generateImageFromImage(e);
+                    generateImageFromImage(e);
                 });
 
                 function showLoadingIndicator(e) {
@@ -540,36 +551,42 @@
                     loadingIndicator.style.display = 'none';
                 }
 
-                // function generateImageFromImage(e) {
-                //     // event.preventDefault();
-                //     const formData = new FormData(document.getElementById('ImageForm'));
-                //     fetch("{{ route('panel.image.generateImageFromImage') }}", {
-                //             method: 'POST',
-                //             body: formData,
-                //             headers: {
-                //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                //                     'content') // Add CSRF token here
-                //             }
+                function generateImageFromImage(e) {
+                    // event.preventDefault(); // Commented out, as it seems unnecessary
+                    $("#newimagelink").val($("#created_image").attr('src'));
+                    $("#textold").text($("#text").val());
 
-                //         })
-                //         .then(response => response.json())
-                //         .then(data => {
-                //             const imagePath = data.imagePath;
+                    const formData = new FormData(document.getElementById('imageform12'));
 
-                //             const imageContainer = document.getElementById('imageContainer');
-                //             imageContainer.innerHTML =
-                //                 `<img src="${imagePath}" alt="Generated Image" class="generated-image">`;
 
-                //             const textPrompt = document.getElementById('textPrompt');
-                //             textPrompt.innerText = data.textPrompt;
-                //         })
-                //         .catch(error => {
-                //             console.error('Error generating image:', error);
-                //         })
-                //         .finally(() => {
-                //             hideLoadingIndicator();
-                //         });
-                // }
+                    fetch("{{ route('panel.image.generateImageFromImage') }}", {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                    'content')
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const imagePath = data.imagePaths;
+                            console.log(data.imagePaths);
+                            console.log(data.imagePaths);
+
+                            const imageContainer = document.getElementById('imageContainer');
+                            imageContainer.innerHTML = `<img src="${imagePath}" alt="Generated Image" id="created_image" class="generated-image-prev">`;
+
+                            $("#loadingIndicator").addClass("d-none");
+                            $("#fromTextTabhead").addClass("d-none");
+                            $("#fromImageTab").click();
+
+                        })
+                        .catch(error => {
+                            console.error('Error generating image:', error);
+                        });
+
+
+                }
             });
         </script>
 

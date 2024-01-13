@@ -47,6 +47,16 @@
                 display: flex;
                 width: 40%;
             }
+            table{
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            td{
+                border: none !important;
+                border-left: 1px solid #dee2e6 !important;
+            }
+
         </style>
     @endpush
 

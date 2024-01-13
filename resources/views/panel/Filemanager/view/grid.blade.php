@@ -2,7 +2,7 @@
 
     <div class="row">
         @forelse ($paginator as $file)
-            <div class="col-md-3 col-6">
+            <div class="col-md-3 col-6" style="">
                 <div class="card">
                     <div class="card-body d-flex align-items-center  justify-content-center flex-column text-center">
                         <div class="bx d-flex" style="position: absolute;bottom: 20px;right: 20px">
@@ -27,8 +27,12 @@
                         </div>
                         <div class="mt-2">
                             <div class="h6">
-                                <span class="filename" data-oldname="{{ basename($file) }}">
-                                    {{ basename($file) }}
+                                <span class="filename" data-oldname="{{ basename($file) }}" style="word-break: break-all;">
+                                    @if (strlen(basename($file)) > 20)
+                                        {{ substr(basename($file), 0, 4) }}<br>{{ substr(basename($file), 4, 11) }}...{{ substr(basename($file), -4) }}
+                                    @else
+                                        {{ basename($file) }}
+                                    @endif
                                 </span>
                             </div>
                             <small>

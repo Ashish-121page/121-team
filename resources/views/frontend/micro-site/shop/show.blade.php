@@ -493,12 +493,12 @@
                                                                     </tr>
                                                                     <tr>
                                                                         <th>Gross Weight</th>
-                                                                        <td>{{ ($shipping_details['weight'] ?? '') . ' ' . ($shipping_details['unit'] ?? '') ?? '--' }}
+                                                                        <td>{{ ($shipping_details['gross_weight'] ?? '') . ' ' . ($shipping_details['unit'] ?? '') ?? '--' }}
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
                                                                         <th>Net Weight</th>
-                                                                        <td>{{ ($shipping_details['gross_weight'] ?? '') . ' ' . ($shipping_details['unit'] ?? '') ?? '--' }}
+                                                                        <td>{{ ($shipping_details['weight'] ?? '') . ' ' . ($shipping_details['unit'] ?? '') ?? '--' }}
                                                                         </td>
                                                                     </tr>
 
@@ -525,18 +525,18 @@
                                                                         </tr>
                                                                         <tr>
                                                                             <th>Carton Length</th>
-                                                                            <td>{{ ($carton_details['Carton_length'] ?? '') . ' ' . ($carton_details['Carton_Dimensions_unit'] ?? '') ?? '--' }}
+                                                                            <td>{{ ($carton_details['carton_length'] ?? '') . ' ' . ($carton_details['Carton_Dimensions_unit'] ?? '') ?? '--' }}
                                                                             </td>
                                                                         </tr>
 
                                                                         <tr>
                                                                             <th>Carton width</th>
-                                                                            <td>{{ ($carton_details['Carton_width'] ?? '') . ' ' . ($carton_details['Carton_Dimensions_unit'] ?? '') ?? '--' }}
+                                                                            <td>{{ ($carton_details['carton_width'] ?? '') . ' ' . ($carton_details['Carton_Dimensions_unit'] ?? '') ?? '--' }}
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
                                                                             <th>Carton Height</th>
-                                                                            <td>{{ ($carton_details['Carton_height'] ?? '') . ' ' . ($carton_details['Carton_Dimensions_unit'] ?? '') ?? '--' }}
+                                                                            <td>{{ ($carton_details['carton_height'] ?? '') . ' ' . ($carton_details['Carton_Dimensions_unit'] ?? '') ?? '--' }}
                                                                             </td>
                                                                         </tr>
 

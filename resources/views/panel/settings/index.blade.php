@@ -11,8 +11,12 @@
     @push('head')
 
     <style>
+        .page-item.active{
+            background-color: transparent;
+        }
 
-.bootstrap-tagsinput .tag{
+
+        .bootstrap-tagsinput .tag{
             text-transform: none !important;
         }
         .bootstrap-tagsinput{
@@ -36,9 +40,6 @@
         .active{
             background-color: #6666cc;
             color: white;
-        }
-        .active svg path{
-            fill: white;
         }
 
         .cust_input input {
@@ -385,6 +386,9 @@
 
                 $('#custtags').tagsinput('items');
 
+                var hideitif = ['text','interger','dimension','uom'];
+
+
                 $(".editCust").click(function (e) {
                     e.preventDefault();
                     let values = $(this).data('values');
@@ -399,6 +403,14 @@
                     $("#custname").val(custname);
                     $("#custid").val(custid);
                     $("#custreq").val(custreq)
+                    $("#dattype").val(data_type)
+
+                    if (hideitif.includes(data_type)) {
+                        $("#modalitevaluie").addClass('d-none');
+                    }else{
+                        $("#modalitevaluie").removeClass('d-none');
+                    }
+
 
 
                     $("#EditCustField").modal('show')
@@ -450,7 +462,6 @@
 
             $("#attr_section").change(function (e) {
                 e.preventDefault();
-                console.log($(this).val());
                 let ref = $(this).val();
 
                 if (ref === '3') {

@@ -32,7 +32,7 @@
 
         // Grouping Columns
 
-        $default_property = ['Model_Code', 'SKU Type', 'Product name', 'Category', 'Sub_Category', 'Customer_Price_without_GST', 'HSN Tax', 'HSN_Percnt', 'Variation attributes'];
+        $default_property = ['Model_Code', 'SKU Type', 'Product_name', 'Category', 'Sub_Category', 'Customer_Price_without_GST', 'HSN_Code', 'HSN_Percnt', 'Variation attributes'];
 
     @endphp
     <!-- push external head elements to head -->
@@ -159,6 +159,28 @@
                 border-bottom: 1px solid #6666cc;
             }
 
+            @media (max-width: 820px) {
+            #hztab3 #hztab3 #hztab3 {
+                    height: 198px;
+                    width: 225px;
+                }
+            }
+
+            #animatedModal{
+                font-size: 1.25rem !important;
+            }
+
+            /* font-size: 1.25rem; */
+
+            /* @media (max-width: 1180px) {
+                .card{
+                    height: 198px;
+                    width: 200px;
+                }
+            } */
+
+
+
         </style>
     @endpush
 
@@ -185,13 +207,13 @@
         </div>
 
         <div class="row">
-            <div class="col-10 mx-auto">
+            <div class="col-lg-10 col-md-12 mx-auto">
                 {{-- Card start --}}
                 <div class="row">
                     <div class="col-md-4 product_boxes">
-                        <div class="card getSingleProduct" style="cursor: pointer;">
+                        <div class="card getSingleProduct" id="hztab1" style="cursor: pointer;">
                             <div class="card-header">
-                                <i class="fas fa-plus btn text-primary h5" style="font-size: 1.2rem;"></i>
+                                <i class="fas fa-plus btn text-primary h5" style="font-size: 1.2rem; line-height: 1 !important;"></i>
                                 <h5>Single Product</h5>
                             </div>
                             <div class="card-body wrap_equal_height">
@@ -203,9 +225,9 @@
                     </div>
 
                     <div class="col-md-4 product_boxes">
-                        <div class="card getcustomProduct" style="cursor: pointer;">
+                        <div class="card getcustomProduct" id="hztab2" style="cursor: pointer;">
                             <div class="card-header">
-                                <i class="fas fa-upload btn text-primary h5" style="font-size: 1.2rem;"></i>
+                                <i class="fas fa-upload btn text-primary h5" style="font-size: 1.2rem; line-height: 1 !important;"></i>
                                 <h5>Custom Bulk </h5>
                             </div>
                             <div class="card-body wrap_equal_height">
@@ -220,10 +242,10 @@
 
 
                     <div class="col-md-4 product_boxes">
-                        <div class="card updateproducts" style="cursor: pointer;">
+                        <div class="card updateproducts" id="hztab3" style="cursor: pointer;">
                             <div class="card-header">
-                                <svg width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
-                                    class="mx-3">
+                                <svg width="24" height="28" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+                                    class="mx-3 my-1">
                                     <path fill="#6666cc" fill-rule="evenodd"
                                         d="M3 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3.25a.75.75 0 0 0 0-1.5H3a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v5.25a.75.75 0 0 0 1.5 0V4.364l2.19 1.14a.25.25 0 0 1 .107.338l-1.072 2.062a.75.75 0 0 0 1.33.692l1.073-2.062a1.75 1.75 0 0 0-.745-2.36l-2.912-1.516A2 2 0 0 0 9 1H3Zm10 12a2 2 0 1 1-4 0a2 2 0 0 1 4 0Z"
                                         clip-rule="evenodd" />
@@ -345,7 +367,7 @@
                                 <div class="row">
                                     <div class="col-2 d-flex align-items-center justify-content-center">
                                         <i class="fas fa-cloud-upload-alt text-light bg-primary p-3 rounded-circle"
-                                            style="font-size:2vh"></i>
+                                            style="font-size:2vh; margin-bottom:38px !important;"></i>
                                     </div>
                                     <div class="col-10 d-flex flex-column justify-content-center">
                                         <form action="{{ route('panel.bulk.custom.product-upload', auth()->id()) }}"
@@ -358,7 +380,7 @@
                                                 <input type="file" name="uploadcustomfield" id="uploadcustomfield"
                                                     class="form-control my-3">
                                             </div>
-                                            <div class="action" style="margin: 20px 0">
+                                            <div class="action justify-content-center text-center" style="margin: 20px 0">
                                                 <button class="btn btn-outline-primary" type="submit">
                                                     Upload
                                                 </button>
@@ -476,7 +498,7 @@
                                         </tr>
                                     @empty
                                         <tr class="">
-                                            <td scope="row" colspan="4">Nothing to Show Here..</td>
+                                            {{-- <td scope="row" colspan="4">Nothing to Show Here..</td> --}}
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -493,13 +515,13 @@
                 {{-- upload Bulk Record --}}
 
                 <div class="row update_products d-none">
-                    <div class="col-md-6 col-12 mx-auto my-3">
+                    <div class="col-md-8 col-lg-6 col-12 mx-auto my-3">
                         <div class="row p-2 card" style="height: 100%">
                             <div class="col-12">
                                 <div class="row">
                                     <div class="col-2 d-flex align-items-center justify-content-center">
                                         <i class="fas fa-cloud-upload-alt text-light bg-primary p-3 rounded-circle"
-                                            style="font-size:2vh"></i>
+                                            style="font-size:2vh; margin-bottom: 85px"></i>
                                     </div>
                                     <div class="col-10 d-flex flex-column justify-content-center">
                                         <form action="{{ route('panel.bulk.product.bulk-update') }}" method="post"
@@ -704,6 +726,7 @@
                 top: '150px',
                 height: '80%',
                 width: '80%'
+
 
             });
 

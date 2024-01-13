@@ -36,7 +36,7 @@
                         <div class="col-md-12">
                             <div class="d-flex justify-content-between my-3">
                                 <h6>Team Members</h6>
-                                <a href="#" id="addmember" class="mb-2 btn btn-icon btn-sm btn-outline-primary" title="Add New Team Member"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                <a href="#" id="addmember" class="mb-2 btn btn-icon btn-sm btn-outline-primary" title="Add New Team Member"><i class="fa fa-plus" aria-hidden="true" style="line-height: 2 !important;"></i></a>
                             </div>
                                 @php
                                     $items = App\Models\Team::whereUserShopId($user_shop->id)->paginate(4);

@@ -494,9 +494,9 @@
                         </h5>
 
                             <h6 class="widget-title mt-2">Price</h6>
-                                <div class="mx-2 d-flex">
-                                    <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" Min  ">
-                                    <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder=" Max ">
+                                <div class=" d-flex">
+                                    <input  style="width: 70px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" Min  ">
+                                    <input style="width: 70px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder=" Max ">
                                     <button class="price_go_btn ms-2" type="submit">GO</button>
                                 </div>
 
@@ -718,7 +718,7 @@
                         </div>
                     </form>
                 </div>
-            {{-- <div class="col-md-3 col-lg-4"> --}}
+                {{-- <div class="col-md-3 col-lg-4"> --}}
                 <div class="row justify-content-between">
                     <div class="col-md-6 col-lg-6">
                         <button type="submit" class="btn btn-sm mt-2 d-block btn-primary w-100" id="filterBtn" form="searchform">Filter</button>
@@ -733,7 +733,7 @@
                 @else
                     <a class="btn mt-2 d-block btn-primary w-100" href="{{route('pages.shop-index')}}" id="resetButton">Reset</a>
                 @endif --}}
-            {{-- </div> --}}
+                {{-- </div> --}}
 
 
             </div><!--end col-->
@@ -743,11 +743,8 @@
             <div class="col-lg-9 col-md-8 col-12 pt-2 mt-sm-0 pt-sm-0">
 
                     <div class="row align-items-center">
-
-                        @if (count($currency_record) != 0)
-                            {{-- <div class="col-md-4 col-6 mt-sm-0 pt-2 pt-sm-0 mb-3"> --}}
-                            <div class="col-md-6 col-6 mt-sm-0 pt-2 pt-sm-0 mb-3">
-
+                        <div class="col-md-4 col-6 mt-sm-0 pt-2 pt-sm-0">
+                            @if (count($currency_record) != 0)
                                 <div class="container" id="selector">
                                     <select class="form-control select_box" id="changeCurrency" name="Currency">
                                         <option aria-readonly="true" disabled>Change Currency</option>
@@ -756,12 +753,10 @@
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
+                        </div>
 
-                        {{-- <div class="col-12 col-md-4"> --}}
-                        <div class="col-6 col-md-6">
-
+                        <div class="col-12 col-md-4">
                             <div class="container" id="selector">
                                 <select class="form-control input-lg select_box" id="productSort" name="sort">
                                     <option @if(request()->get('sort') == 2) selected @endif value="2">Price: low to high</option>
@@ -772,14 +767,12 @@
                             </div>
                         </div>
 
-
-                        <div class="col-6 col-md-4 d-flex justify-content-end ">
+                        <div class="col-12 col-md-4 d-flex justify-content-end">
                             <div class="m-2 d-flex gap-2">
                                 <button id="gridview" class="btn btn-outline-primary"><i class="fas fa-th-large"></i></button>
                                 <button id="card" class="btn btn-outline-primary active"> <i class="fas fa-list"></i></button>
                             </div>
                         </div>
-
                     </div>
 
 

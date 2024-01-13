@@ -23,14 +23,14 @@
                                         <div class="form-check">
                                             <input id="homeEdit" name="type" value="0" type="radio" class="form-check-input homeInput"
                                         required="">
-                                    <label class="form-check-label" for="homeEdit" style="margin-top: 3px;">Billing</label>
+                                    <label class="form-check-label" for="homeEdit" style="margin-top: 3px;">Entity</label>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="form-check">
                                             <input id="officeEdit" name="type" value="1" type="radio" class="form-check-input officeInput"
                                         required="">
-                                    <label class="form-check-label" for="officeEdit" style="margin-top: 3px;">Delivery</label>
+                                    <label class="form-check-label" for="officeEdit" style="margin-top: 3px;">Site</label>
                                         </div>
                                     </div>
                                 </div>
@@ -126,7 +126,7 @@
                             <div class="col-md-12 ">
                                 <div class="row" style="background-color:#f3f3f3; padding: 4px;">
                                     <div class="col-12">
-                                        <h6 class="">Bank Account</h6>
+                                        <h6 class="">Bank Accounts</h6>
                                     </div>
                                 </div>
                             </div>

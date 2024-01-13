@@ -1,4 +1,4 @@
-@extends('backend.layouts.main') 
+@extends('backend.layouts.main')
 @section('title', 'Product')
 @section('content')
 @php
@@ -14,11 +14,11 @@
         ['name'=>'Edit / Template', 'url'=> "javascript:void(0);", 'class' => '']
     ];
 
-    $user = auth()->user();  
+    $user = auth()->user();
     $acc_permissions = json_decode($user->account_permission);
     $acc_permissions->bulkupload = $acc_permissions->bulkupload ??  "no"; // If Not Exist in Databse Then It Will be No By Default.
 
-    
+
     // Setting Up Permissions for Team USer
     $teamDetails = App\Models\Team::where('contact_number',session()->get('phone'))->first();
 
@@ -37,8 +37,9 @@
 
 
     // Grouping Columns
+    $default_property = ['Model_Code', 'SKU Type', 'Product_name', 'Category', 'Sub_Category', 'Customer_Price_without_GST', 'HSN_Code', 'HSN_Percnt', 'Variation attributes'];
 
-    $default_property  = ['Model_Code','SKU Type','Product name','Category','Sub_Category','Customer_Price_without_GST','HSNTax','HSN_Percnt', 'Variation attributes' ];
+    // $default_property  = ['Model_Code','SKU Type','Product_name','Category','Sub_Category','Customer_Price_without_GST','HSNTax','HSN_Percnt', 'Variation attributes' ];
 
 @endphp
 <!-- push external head elements to head -->
@@ -139,7 +140,7 @@
             -webkit-box-shadow: unset !important;
             box-shadow: unset !important;
         }
-        
+
     </style>
 @endpush
 
@@ -197,12 +198,12 @@
                                 <div class="form-group w-100" style="margin-bottom:0rem">
                                     <input type="checkbox" id="check_all" class=" m-2" @if (count((array) $col_list) == count(json_decode($template->columns_values)))checked @endif>
                                     <label for="check_all"  style="font-size: 14px; font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">Select All</label>
-                                </div> 
+                                </div>
 
                                 <div class="table-responsive" style="max-height:40vh; overflow:hidden;overflow-y:auto;">
                                     <table class="table">
                                         <tbody>
-                                            @forelse ($col_list as $item => $key)
+                                            @forelse ($col_list as $key => $item)
                                                 @if (!in_array($item,$default_property))
                                                     <tr class="">
                                                         <td scope="row" style="padding:0px! important">
@@ -224,7 +225,7 @@
                                                     </td>
                                                 </tr>
                                             @endforelse
-                                            
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -243,7 +244,7 @@
                         </h2>
                         <div id="collapsesystemattri" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                        
+
                                 <div class="table-responsive" style="max-height:80%; overflow:hidden;overflow-y:auto;">
                                     <table class="table">
                                         <tbody>
@@ -267,7 +268,7 @@
                                                     </td>
                                                 </tr>
                                             @endforelse
-                                            
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -277,7 +278,7 @@
                     </div> --}}
 
                     <div class="actionbtn mt-2 d-flex justify-content-between align-items-center my-2">
-                        
+
                         <a class="btn btn-outline-primary px-5 close-button" href="{{ route('panel.products.create') }}?action=nonbranded&bulk_product">Cancel</a>
 
                         <button class="btn btn-primary px-5">Save and Download</button>
@@ -295,11 +296,11 @@
                         </h2>
                         <div id="collapsesystemattri" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                        
+
                                 <div class="table-responsive" style="max-height:80%; overflow:hidden;overflow-y:auto;">
                                     <table class="table">
                                         <tbody>
-                                            @forelse ($col_list as $item => $key)
+                                            @forelse ($col_list as $key => $item)
                                                 @if (in_array($item,$default_property))
                                                     <tr class="">
                                                         <td scope="row" style="padding:0px! important">
@@ -319,7 +320,7 @@
                                                     </td>
                                                 </tr>
                                             @endforelse
-                                            
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -341,13 +342,13 @@
                             {{-- Append Element Are shown Here --}}
                         </div>
                     </div>
-                    
-                </div>  
-            </div>      
-        </div>    
+
+                </div>
+            </div>
+        </div>
     </form>
 
-    
+
 
 
 
@@ -368,57 +369,57 @@
                 $(".my_attribute").click();
             });
 
-            $(".my_attribute").click(function (e) { 
+            $(".my_attribute").click(function (e) {
 
                 let tag = `<div class="form-group" id="parent_${$(this).data('index')}"style="margin-bottom:0rem;">
                     <input type="checkbox" value="${$(this).val()}" id="${$(this).attr('id')}" class="selected_prop m-2" checked data-parent="parent_${$(this).data('index')}">
                     <label for="${$(this).attr('id')}" class="form-label" style="font-size: 12.8px;font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">${$(this).val()}</label>
-                    <span class="close-icon" style=" width:20%;" data-parent="parent_${$(this).data('index')}">&times;</span>   
+                    <span class="close-icon" style=" width:20%;" data-parent="parent_${$(this).data('index')}">&times;</span>
                 </div>`;
 
                 if ($(this).is(":checked")) {
-                    $(`label[for="${$(this).attr('id')}"]`).css({"background-color": "#6666cc", "color": "#fff"});       
+                    $(`label[for="${$(this).attr('id')}"]`).css({"background-color": "#6666cc", "color": "#fff"});
                     $(".selected_tag").append(tag);
-                    
+
                 }else{
                     $(`#parent_${$(this).data('index')}`).remove();
                     $(`label[for="${$(this).attr('id')}"]`).css({"background-color": "#fff", "color": "#000000"});
                 }
-                
+
             });
-            
+
 
 
 
             $(".my_attribute").each(function(i,elem){
-                
+
                 if (elem.checked == true) {
                     let value = elem.value;
                     let index = elem.dataset.index;
                     let eleid = elem.id;
-                    
+
                     let tag = `<div class="form-group" id="parent_${index}" style="margin-bottom: 0rem;">
                             <input type="checkbox" value="${value}" id="${eleid}" class="selected_prop m-2" checked data-parent="parent_${index}">
                             <label for="${eleid}" class="form-label" style="font-size: 12.8px;font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">${value}</label>
                             <span class="close-icon" style=" width:20%;" data-parent="parent_${$(this).data('index')}">&times;</span>
                         </div>`;
-                    
+
                     if ($(this).is(":checked")) {
                         let labelId = $(this).attr("for");
                         $(`label[for="${eleid}"]`).css({
                             "background-color": "#6666cc",
                             "color": "#fff"
                     });
-                        
+
                         $(".selected_tag").append(tag);
-                        
+
                     }else{
                         $(`#parent_${$(this).data('index')}`).remove();
                         $(`label[for="${eleid}"]`).css({
                             "background-color": "#fff",
                             "color": "#000000"
                     });
-                        
+
                     }
                 }
                 myfunc();
@@ -436,7 +437,7 @@
 
         });
     </script>
-    
+
 
     @endpush
 @endsection

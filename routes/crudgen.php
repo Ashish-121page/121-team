@@ -489,7 +489,9 @@ Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefi
     Route::get('/delete', ['uses' => 'FileManager@destroyfile', 'as' => 'delete']);
     Route::post('/upload', ['uses' => 'FileManager@store', 'as' => 'upload']);
     Route::post('/downloadZip', ['uses' => 'FileManager@downloadZip', 'as' => 'downloadZip']);
+
     Route::post('/linkproduct/{user_id}', ['uses' => 'FileManager@linkproduct', 'as' => 'link.product']);
+
     Route::post('/delimeter/Link', ['uses' => 'FileManager@productsaperator', 'as' => 'link.saperator']);
 
 });

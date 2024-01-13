@@ -120,7 +120,7 @@
                             </div>
 
                             <div class="col-12">
-                                <div id="bank-details-container" class="row">
+                                <div id="bank-details-container_new" class="row">
                                     <div class="col-md-6 mt-3">
                                         <label for="bank_name" class="form-label">Bank Name <span class="text-danger">*</span> </label>
                                         <input type="text" class="form-control" name="bank_name[]" value="{{ old('bank_name') }}" required>
@@ -161,14 +161,15 @@
                                         {{-- <label for="default" class="form-label">Default</label>
                                         <br>
                                         <input type="checkbox" class="" id="default" name="default[]" value="1"> --}}
-                                        <button type="button" class=" btn btn-link mt-3" onclick="appenddata()">Add Bank Details</button>
+                                        <button type="button" class="btn btn-link mt-3" onclick="appenddatanew()">Add Bank Details</button>
                                     </div>
                                 </div>
 
-                                <div id="bank-details-container2" class="row">
+                                <div id="bank-details-container2_new" class="row">
 
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -182,8 +183,8 @@
 
 
 <script>
-    function appenddata() {
-        var bankDetails = $('#bank-details-container').html();
-        $('#bank-details-container2').append(bankDetails);
+    function appenddatanew() {
+        var bankDetails1 = $('#bank-details-container_new').html();
+        $('#bank-details-container2_new').append(bankDetails1);
     }
 </script>

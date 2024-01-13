@@ -19,27 +19,22 @@
         @endphp
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-lg-2 sidebar mt-3">
+            <div class="col-12 sidebar mt-3">
                 <!-- Sidebar content -->
-                <h6 style="font-weight:900">
-                    </h2>
 
-                    <div class="sidebar-section mt-5">
-                        <h6>All Documents</h6>
+                <a href="{{ route('panel.invoice.index') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}"
+                    class="btn btn-outline-primary  {{ activeClassIfRoutes(['panel.invoice.index'], 'active') }}">All
+                    Documents</a>
 
-                    </div>
+                <a class="btn btn-outline-primary {{ activeClassIfRoutes(['panel.Documents.Quotation'], 'active') }}"
+                    href="{{ route('panel.Documents.Quotation', 'active') }}">Quotations</a>
 
-                    {{-- @if ($acc_permissions->quoatations == 'yes') --}}
-                    <div class="sidebar-section h6">
-                        <a class="" href="{{ route('panel.Documents.Quotation', 'active') }}">Quotations</a>
-                    </div>
-                    {{-- @endif --}}
-                    <div class="sidebar-section h6">
-                        <a href="{{ route('panel.Documents.index') }}">Invoice</a>
+                <a href="{{ route('panel.Documents.secondview') }}"
+                    class="btn btn-outline-primary {{ activeClassIfRoutes(['panel.Documents.secondview'], 'active') }}">Invoice</a>
 
-                    </div>
             </div>
-            <div class="col-lg-10 mt-3">
+
+            <div class="col-lg-12 mt-3">
                 <!-- Main content goes here -->
                 <div class="mt-5">
                     <div class="row">
@@ -62,20 +57,21 @@
                                 Create new quotation
                             </button> --}}
 
-                            <a href="{{ route('panel.Documents.create.Quotation.form') }}" class="btn btn-outline-primary mx-1">
+                            <a href="{{ route('panel.Documents.create.Quotation.form') }}"
+                                class="btn btn-outline-primary mx-1">
                                 Create new quotation
                             </a>
                         </div>
-                        </div>
                     </div>
+                </div>
 
-                    <!-- Other elements (filter, select, buttons) -->
-                    <div class="row mt-3 justify-content-between ">
-                        {{-- <div class="col-2">
+                <!-- Other elements (filter, select, buttons) -->
+                <div class="row mt-3 justify-content-between ">
+                    {{-- <div class="col-2">
                           <input type="text" class="form-control" id="search_buyer" name="search" placeholder="Buyer Search">
                         </div> --}}
-                        <!-- Filter options -->
-                        {{-- <div class="col-2" style="margin-left:10rem">
+                    <!-- Filter options -->
+                    {{-- <div class="col-2" style="margin-left:10rem">
                           <select name="" id="status_check" class="form-control" style="padding-right: 40px !important;">
                             <option value="status">All</option>
                             <option value="sent">Sent</option>
@@ -83,79 +79,80 @@
                           </select>
                         </div> --}}
 
-                        <!-- Loop through proposals -->
-                        <div class="col-6">
-                            <!-- Your PHP loop logic for proposals -->
-                        </div>
+                    <!-- Loop through proposals -->
+                    <div class="col-6">
+                        <!-- Your PHP loop logic for proposals -->
                     </div>
-                    <div class="row mt-5">
-                        <div class="col-12">
-                            <div class="table-responsive mt-3">
-                                <table id="table" class="table">
-                                    <thead class="h6 text-muted">
-                                        <tr>
-                                            <td class="no-export action_btn">
-                                                <input type="checkbox" id="checkallinp">
-                                            </td>
-                                            <td class="col-2">Enquiry ID</td>
-                                            <td class="col-2">Buyer Name</td>
-                                            <td class="col-2">Buyer Email </td>
-                                            <td class="col-2">Buyer Company </td>
-                                            <td class="col-2">Created On</td>
-                                            <td class="col-4"></td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-                                        @forelse ($Quotation as $record)
-                                            @php
-                                                $jsonData = json_decode($record->customer_info) ?? '';
-
-                                            @endphp
-                                            <tr>
-                                                <td>
-                                                    <input type="checkbox" class="checkinp" name="checkinp[]"
-                                                        value="{{ $record->id }}">
-                                                </td>
-                                                <td>
-                                                    {{ $record->user_slug ?? $record->slug }} ({{ $record['record_count'] ?? 1 }})
-                                                </td>
-                                                <td>
-                                                    {{ $jsonData->buyerName ?? $jsonData->person_name ?? '' }}
-                                                </td>
-                                                <td>
-                                                    {{ $jsonData->buyerEmail ?? $jsonData->person_email ?? '-' }}
-                                                </td>
-                                                <td>
-                                                    {{ $jsonData->companyName ?? '-' }}
-                                                </td>
-                                                <td>
-                                                    {{ $record->quotation_date }}
-                                                </td>
-                                                <td>
-                                                    <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}"
-                                                        class="btn btn-outline-primary">
-                                                        Edit
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                        @endforelse
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="table-responsive mt-3">
+                            <table id="table" class="table">
+                                <thead class="h6 text-muted">
+                                    <tr>
+                                        {{-- <td class="no-export action_btn">
+                                            <input type="checkbox" id="checkallinp">
+                                        </td> --}}
+                                        <td class="col-2">Enquiry ID</td>
+                                        <td class="col-2">Buyer Name</td>
+                                        <td class="col-2">Buyer Email </td>
+                                        <td class="col-2">Buyer Company </td>
+                                        <td class="col-2">Created On</td>
+                                        <td class="col-4"></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @forelse ($Quotation as $record)
+                                        @php
+                                            $jsonData = json_decode($record->customer_info) ?? '';
+
+                                        @endphp
+                                        <tr>
+                                            {{-- <td>
+                                                <input type="checkbox" class="checkinp" name="checkinp[]"
+                                                    value="{{ $record->id }}">
+                                            </td> --}}
+                                            <td>
+                                                {{ $record->user_slug ?? $record->slug }}
+                                                <span class="text-danger">({{ $record['record_count'] ?? 1 }})</span>
+                                            </td>
+                                            <td>
+                                                {{ $jsonData->buyerName ?? ($jsonData->person_name ?? '') }}
+                                            </td>
+                                            <td>
+                                                {{ $jsonData->buyerEmail ?? ($jsonData->person_email ?? '-') }}
+                                            </td>
+                                            <td>
+                                                {{ $jsonData->companyName ?? '-' }}
+                                            </td>
+                                            <td>
+                                                {{ $record->quotation_date }}
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}"
+                                                    class="btn btn-outline-primary">
+                                                    Edit
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                    @endforelse
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-
-
-
-
-
         </div>
+
+
+
+
+
+    </div>
     </div>
 
     <input type="hidden" id="viehdu" value="{{ $Quotation->pluck('customer_info') }}"'>
@@ -289,7 +286,5 @@
             });
 
         });
-
-
     </script>
 @endsection

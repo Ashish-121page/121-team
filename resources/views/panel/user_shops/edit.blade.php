@@ -1127,8 +1127,8 @@
                                                     // magicstring($account_decoded);
                                                     // return;
                                                 @endphp
-                                                <div class="col-lg-4 mb-3 pl-0">
-                                                    <div class="m-1 p-2 border rounded">
+                                                <div class="col-lg-4 col-md-4 mb-3 pl-0 custom-height">
+                                                    <div class="m-1 p-2 border rounded" style="max-height: 439px;">
                                                         <div class="mb-2">
                                                               <div class="d-flex align-items-center justify-content-between" style="background-color: #f3f3f3">
                                                                 {{-- <h6 class="m-0 p-0">{{ $address->type == 0 ? "Billing" : "Site" }} Address:</h6> --}}
@@ -1149,7 +1149,7 @@
                                                               </div>
                                                         </div>
                                                         <div class="pt-1 border-top">
-                                                            <div class="d-flex align-items-center justify-content-between">
+                                                            <div class="d-flex align-items-center justify-content-between" style="max-height: 200px; height:200px;">
                                                                 <div>
 
 
@@ -1171,30 +1171,31 @@
 
 
                                                                 </div>
-
                                                             </div>
 
-                                                                <div class="col-lg-12">
-                                                                    <div class="col-lg-12">
-                                                                        <div class="d-flex align-items-center justify-content-center" style="background-color:#f3f3f3; padding: 5px;">
-                                                                            <h6 align-items-center>Bank Account</h6>
-                                                                        </div>
+                                                            <div class="col-lg-12" style="max-height: 200px; height:200px;">
+                                                                <div class="col-lg-12 col-md-12" style="padding: 0;">
+                                                                    <div class="d-flex align-items-center justify-content-center" style="background-color:#f3f3f3; padding: 5px;">
+                                                                        Bank Accounts
                                                                     </div>
-                                                                    <div class="row">
-                                                                        @forelse ((array) json_decode($address->account_details) as $acc)
-                                                                            <div class="col-lg-6 mb-1">
+                                                                </div>
+                                                                <div class="row">
+                                                                    @forelse ((array) json_decode($address->account_details) as $acc)
+                                                                        @if($loop->index < 6)
+                                                                            <div class="col-lg-6 mb-1" >
                                                                                 <p class="text-muted">
                                                                                     {{ $acc->bank_name ?? '' }} ...
                                                                                     {{ substr($acc->account_number, -5) }}
                                                                                 </p>
                                                                             </div>
-                                                                        @empty
-                                                                            <div class="col-lg-12">
-                                                                                <p class="text-muted mb-1">No bank accounts found.</p>
-                                                                            </div>
-                                                                        @endforelse
-                                                                    </div>
+                                                                        @endif
+                                                                    @empty
+                                                                        <div class="col-lg-12 justify-content-between">
+                                                                            <p class="text-muted mb-1">No bank accounts found.</p>
+                                                                        </div>
+                                                                    @endforelse
                                                                 </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1502,7 +1503,7 @@
                                                         <label class="form-label">Old Password :</label>
                                                         <div class="form-icon position-relative">
                                                             <i data-feather="key" class="fea icon-sm icons"></i>
-                                                            <input required type="password" class="form-control ps-5" placeholder="Old password">
+                                                            <input required type="password" class="form-control ps-5" name="old_password" placeholder="Old password">
                                                         </div>
                                                     </div>
                                                 </div><!--end col-->
@@ -1664,8 +1665,8 @@
 </form>
 @if($user)
 @include('panel.user_shops.include.add-address')
-@include('panel.user_shops.include.add-numbers')
 @include('panel.user_shops.include.edit-address')
+@include('panel.user_shops.include.add-numbers')
 @else
 <p class="p-5 m-2 text-center">
     This shop is not connected with any user account.
@@ -1737,7 +1738,7 @@
             $('#countryEdit').val(details.country).change();
             $('#acronym').val(details.acronym);
             $('#iec_number').val(details.iec_number);
-           
+
 
 
             $('#bank-details-container_1').empty();
@@ -1787,7 +1788,7 @@
 
 
                 $('#bank-details-container_1').append(acc_tag);
-                // console.log(address.account_details);   
+                // console.log(address.account_details);
 
 
             });// end of looop

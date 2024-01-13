@@ -566,6 +566,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::get('/maya', [ImageController::class, 'showdesigner'])->name('designer');
         Route::post('/generate-image', [ImageController::class, 'generateImage'])->name('generateImage');
         Route::post('/generate-image-from-image', [ImageController::class, 'generateImageFromImage'])->name('generateImageFromImage');;
+        Route::post('/edit-image', [ImageController::class, 'editImage'])->name('maya.edit');
 
 
     });

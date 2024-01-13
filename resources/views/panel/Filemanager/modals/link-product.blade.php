@@ -9,18 +9,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                
+
                 <form method="POST" action="{{ route('panel.filemanager.link.product',encrypt(auth()->id()) ) }}" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="images" id="imagelinkModel">
 
                     <label for="productid">Select Product</label>
-                    
-                    <select name="product_id[]" id="productidModal" class="form-control select2" multiple>
-                        @foreach ($Products as $Product)
-                            <option value="{{ encrypt($Product->id) }}">Model: {{ $Product->model_code." - ".$Product->title }} - Main </option>
-                        @endforeach
 
+                    <select name="product_id[]" id="productidModal" class="form-control select2" multiple>  
                         @foreach ($Products_attribute as $Product)
                             @php
                                 $pdata = App\Models\Product::where('id',$Product->product_id)->first();

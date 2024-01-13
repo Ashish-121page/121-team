@@ -61,8 +61,12 @@ class settingController extends Controller
             }
             $sub_category = Category::where('level',3)->get();
 
+
         }
 
+
+        // magicstring($product_attributes);
+        // return;
 
         $custom_fields = json_decode($user->custom_fields,true) ?? [];
 
@@ -206,6 +210,8 @@ class settingController extends Controller
 
     function EditTemplate(ExportTemplates $template){
 
+
+
         return view('panel.settings.admin.edit-template',compact('template'));
     }
 
@@ -260,15 +266,19 @@ class settingController extends Controller
                 $user_id = auth()->id();
                 $request->merge(['user_id' => $user_id, 'user_shop_id' => UserShopRecordByUserId($user_id)->id,'name' => $request->attr_name,'type' => $type,'request_from' => 'custom_fields','value' => $Tmp_values]);
 
-                $destinationController = new ProductAttributeController();
+                // $destinationController = new ProductAttributeController();
 
-                $responseRecevied = $destinationController->store($request);
+                // $responseRecevied = $destinationController->store($request);
+                $responseRecevied = app('App\Http\Controllers\Panel\ProductAttributeController')->store($request);
+
+
+
 
                 if ($responseRecevied->getData()->status == 'success') {
                     return back()->with('success',$responseRecevied->getData()->msg);
                 }
 
-                // magicstring($responseRecevied);
+                // magicstring($responseRecevied->getData());
                 // return;
 
             }else{
@@ -583,7 +593,7 @@ class settingController extends Controller
 
     public function updateQuotsetting() {
         // magicstring(request()->all());
-        
+
         try {
             $user = User::whereId(request()->get('user_id'))->first();
             $record = [
@@ -592,7 +602,7 @@ class settingController extends Controller
             ];
             $record = json_encode($record);
             $user->settings = $record;
-            $user->save();            
+            $user->save();
             return back()->with('success','Quotation Setting Updated');
         } catch (\Throwable $th) {
             throw $th;

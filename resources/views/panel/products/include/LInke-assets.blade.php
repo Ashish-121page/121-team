@@ -1,12 +1,11 @@
 <!-- Modal -->
 <div class="modal fade" id="linkAssetsModal" tabindex="-1" aria-labelledby="linkAssetsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="linkAssetsModalLabel">Link Assets</h5>
             </div>
             <div class="modal-body">
-
                 <form>
                     <div class="mb-3">
                         <input type="text" name="searchbyname" id="searchbyname" placeholder="Search by File Name" class="form-control">
@@ -22,14 +21,7 @@
                             </div>
                         </div>
                     </div>
-
-
-
-
                 </form>
-
-
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>

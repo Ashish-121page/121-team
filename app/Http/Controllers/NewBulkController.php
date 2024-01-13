@@ -2340,6 +2340,7 @@ class NewBulkController extends Controller
             // Second Worksheet for Dropdown Values
             $dropdownSheet = $spreadsheet->createSheet();
             $dropdownSheet->setTitle($SecondSheetName);
+            $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
 
             foreach ($custom_attributes as $key => $custom_attribute) {
                 $optionsArray = [];
@@ -2351,7 +2352,13 @@ class NewBulkController extends Controller
                     $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
                 }
 
+                if ($attribute_rec == null) {
+                    continue;
+                }
+
                 $attribute_values = ProductAttributeValue::where('parent_id',$attribute_rec->id)->pluck('attribute_value')->toArray();
+
+
 
                 $optionsArray = array_chunk($attribute_values,1);
                 $excelColumn = $this->numToExcelColumn($index);
@@ -2567,6 +2574,8 @@ class NewBulkController extends Controller
             // Second Worksheet for Dropdown Values
             $dropdownSheet = $spreadSheet->createSheet();
             $dropdownSheet->setTitle($SecondSheetName);
+
+            $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
 
             foreach ($custom_attributes as $key => $custom_attribute) {
                 $optionsArray = [];
@@ -3450,13 +3459,11 @@ class NewBulkController extends Controller
                 'template_name' => $templatename,
             ]);
 
-
             $this->exportExcel($request->finaldata,$filename);
-
 
             return back()->with('success',"File Download Success Fully..");
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return back()->with('error',"There Was an Error Try Again later !!");
         }
     }
@@ -5733,10 +5740,10 @@ class NewBulkController extends Controller
                                         $lenarr = explode('X',$customfieldID);
                                     }
                                     $request[$customfieldID] = [
-                                        'length' => $lenarr[0],
-                                        'width' => $lenarr[1],
-                                        'height' => $lenarr[2],
-                                        'unit' => $lenarr[3],
+                                        'length' => $lenarr[0] ?? '',
+                                        'width' => $lenarr[1] ?? '',
+                                        'height' => $lenarr[2] ?? '',
+                                        'unit' => $lenarr[3] ??'',
                                     ];
                                     // $request[$customfieldID]
 
@@ -6043,19 +6050,106 @@ class NewBulkController extends Controller
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
         try {
-            $spreadSheet = new Spreadsheet();
-            $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
-            $spreadSheet->getActiveSheet()->fromArray($record,null,'A3');
-            $Excel_writer = new Xlsx($spreadSheet);
+
+                // magicstring(request()->all());
+                // return;
+
+            $spreadsheet = new Spreadsheet();
+
+            $FirstSheetName = "Entry Sheet";
+            $SecondSheetName = "Data Validation Sheet";
+
+            $actualWorkSheet = $spreadsheet->getActiveSheet();
+            $actualWorkSheet->getDefaultColumnDimension()->setWidth(20);
+            $actualWorkSheet->setTitle($FirstSheetName);
+            $actualWorkSheet->fromArray($record,null,'A3');
+            $user_id = auth()->user();
+            $merged_array = request()->finaldata;
+
+
+            $custom_attributes = (array) json_decode($user_id->custom_attriute_columns) ?? ['Colours','Size','Material'];
+
+            $dropdownSheet = $spreadsheet->createSheet();
+            $dropdownSheet->setTitle($SecondSheetName);
+            $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
+
+
+            foreach ($custom_attributes as $key => $custom_attribute) {
+                $optionsArray = [];
+                $index = $key + 1;
+                $dropdownSheet->setCellValue([$index,'1'],$custom_attribute);
+
+                $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user_id->id)->first();
+                if ($attribute_rec == null) {
+                    $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
+                }
+
+                $attribute_values = ProductAttributeValue::where('parent_id',$attribute_rec->id)->pluck('attribute_value')->toArray();
+
+                $optionsArray = array_chunk($attribute_values,1);
+                $excelColumn = $this->numToExcelColumn($index);
+                $startCell = $excelColumn . '2';
+
+                $dropdownSheet->fromArray(
+                    $optionsArray,
+                    null,
+                    $startCell
+                );
+
+
+                $ActualSheetColIndex = array_search($custom_attribute, $merged_array);
+                $ActualSheetColIndex = $this->numToExcelColumn($ActualSheetColIndex + 1);
+
+                $validation = new \PhpOffice\PhpSpreadsheet\Cell\DataValidation();
+                $validation->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST);
+                $validation->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP);
+                $validation->setAllowBlank(false);
+                $validation->setShowInputMessage(true);
+                $validation->setShowErrorMessage(true);
+                $validation->setShowDropDown(true);
+                $validation->setErrorTitle('Pick from list or Create');
+                $validation->setError('Please pick value from dropdown-list OR In excel, replace cell to enter new value . Before upload on 121, update new value in Custom fields.');
+                $validation->setPromptTitle('Pick from list or Create');
+                $validation->setPrompt('Please pick value from dropdown-list OR In excel, replace cell to enter new value . Before upload on 121, update new value in Custom fields.');
+
+                // Corrected the formula string
+                $validation->setFormula1("'$SecondSheetName'!$" . $excelColumn . "\$2:\$" . $excelColumn . "\$" . (count($attribute_values) + 1 ));
+
+
+                // Skip Validation for Any value and UOM in Custom Properties
+                if ($attribute_rec->value == 'any_value' || $attribute_rec->value == 'uom') {
+                    continue;
+                }
+                if ($ActualSheetColIndex != 'A') {
+                    // Apply the validation to each cell in the range A1:A100
+                    for ($i = 1; $i <= 97; $i++) {
+                        $cellCoordinate = $ActualSheetColIndex . strval($i + 3);
+                        $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                    }
+                }
+
+
+            }
+
+            $Excel_writer = new Xls($spreadsheet);
+            $mytime = Carbon::now();
+            $name = request()->name ?? null;
+
+            if ($name == null) {
+                $fileName = "$user_id->name Exported Data-".$mytime->toDateTimeString();
+            }else{
+                $fileName = $name;
+            }
 
             header('Content-Type: application/vnd.ms-excel');
-            header("Content-Disposition: attachment;filename=$filename.xlsx");
+            header("Content-Disposition: attachment;filename=$fileName.xls");
             header('Cache-Control: max-age=0');
             ob_end_clean();
-
             $Excel_writer->save('php://output');
             exit();
+
         } catch (Exception $e) {
+            throw $e;
             return;
         }
 

@@ -191,6 +191,7 @@
                                             $permi->manangebrands = $permi->manangebrands ?? 'no';
                                             $permi->offers = $permi->offers ?? 'no';
                                             $permi->documentaion = $permi->documentaion ?? 'no';
+                                            $permi->maya = $permi->maya ?? 'no';
                                         @endphp
 
 
@@ -359,6 +360,21 @@
                                                         <td>
                                                           <div class="form-check">
                                                             <input class="form-check-input" type="radio" value="no" id="documentationno" name="documentaion" {{ $permi->documentaion == 'no' ? 'checked' : '' }}>
+                                                          </div>
+                                                        </td>
+                                                      </tr>
+
+                                                      <tr>
+                                                        <th scope="row" class="sno"></th>
+                                                        <td>Maya</td>
+                                                        <td>
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" type="radio" value="yes" id="mayayes" name="maya" {{ $permi->maya == 'yes' ? 'checked' : '' }}>
+                                                          </div>
+                                                        </td>
+                                                        <td>
+                                                          <div class="form-check">
+                                                            <input class="form-check-input" type="radio" value="no" id="mayano" name="maya" {{ $permi->maya == 'no' ? 'checked' : '' }}>
                                                           </div>
                                                         </td>
                                                       </tr>

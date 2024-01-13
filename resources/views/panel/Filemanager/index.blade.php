@@ -67,6 +67,7 @@
                     padding:1.25rem;
                     max-height: 75vh;
                     overflow-y: auto;
+                    overflow-x: hidden;
             }
             .btn-orange{
                 background-color: #fdede7;
@@ -136,7 +137,7 @@
                         </div> --}}
 
                         <div class="d-flex gap-2 align-content-center">
-                            <select id="file_type" class="form-control mx-2 text-capitalize ">
+                            <select id="file_type" class="form-control mx-2 text-capitalize " style="padding-right:25px !important;">
                                 <option value="all" @if (request()->get('file_type') == 'all') selected @endif>All</option>
                                 @forelse ($filetypes as $item)
                                     <option value="{{ $item }}" @if (request()->get('file_type') == $item) selected @endif>{{ $item }}</option>
@@ -147,10 +148,10 @@
 
                             <div class="d-flex align-content-center">
                                 <a href="{{ route('panel.filemanager.new.view') }}?view=grid&page={{ request()->get('page') ?? 1}}" class="btn btn-icon btn-outline-primary mx-1 @if (request()->get('view','default') == 'grid') active @endif">
-                                    <i class="fas fa-th-large"></i>
+                                    <i class="fas fa-th-large" style="line-height: 2 !important;"></i>
                                 </a>
                                 <a href="{{ route('panel.filemanager.new.view') }}?view=default&page={{ request()->get('page') ?? 1 }}" class="btn btn-icon btn-outline-primary mx-1 @if (request()->get('view','default') == 'default') active @endif">
-                                    <i class="fas fa-list"></i>
+                                    <i class="fas fa-list" style="line-height: 2 !important;"></i>
                                 </a>
 
                                 <button type="button" class="btn btn-outline-primary mx-1 openupload" data-bs-toggle="modal"
@@ -168,12 +169,12 @@
                                     <span id="selected_count">0</span> Selected
                                 </button>
                         <button type="button" class="btn btn-outline-primary linkproduct">
-                            <i class="fas fa-link"></i>
+                            <i class="fas fa-link" style="line-height: 1 !important;"></i>
                             Link to Products
                         </button>
 
                         <button type="button" class="btn btn-outline-primary deletebtn mx-1">
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-trash" style="line-height: 1 !important;"></i>
                             Delete
                         </button>
                     </div>
@@ -191,8 +192,8 @@
                         @include('panel.Filemanager.view.table')
                     @endif
 
-                    <div class="col-12">
-                        {{-- ` Pagination --}}
+                    <div class="col-md-12 col-12" style="height: 80px; overflow: auto;">
+                        {{-- Pagination --}}
                         <nav aria-label="Page navigation example">
                             <ul class="pagination">
 
@@ -203,25 +204,25 @@
                                     $view = request()->get('view','default');
                                 @endphp
 
-                            <li class="page-item">
-                                <a class="page-link" href="{{ request()->url() }}?view={{$view}}&page={{$previousPage}}" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-
-                            @for ($i = 1; $i <= $paginator->lastpage(); $i++)
-                                <li class="page-item @if ($i == $currentPage) active @endif ">
-                                    <a class="page-link" href="{{ request()->url() }}?view={{$view}}&page={{$i}}">
-                                        {{ $i }}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ request()->url() }}?view={{$view}}&page={{$previousPage}}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 </li>
-                            @endfor
 
-                            <li class="page-item">
-                                <a class="page-link" href="{{ request()->url() }}?view={{$view}}&page={{$lastPage}}" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
+                                @for ($i = 1; $i <= $paginator->lastpage(); $i++)
+                                    <li class="page-item @if ($i == $currentPage) active @endif ">
+                                        <a class="page-link" href="{{ request()->url() }}?view={{$view}}&page={{$i}}">
+                                            {{ $i }}
+                                        </a>
+                                    </li>
+                                @endfor
+
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ request()->url() }}?view={{$view}}&page={{$lastPage}}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
                             </ul>
                         </nav>
                     </div>

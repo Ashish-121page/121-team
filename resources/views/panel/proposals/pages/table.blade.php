@@ -111,7 +111,7 @@
                                 </td>
 
                                 <td style=" align-items: center;">
-                                    <div class=" py-1">{{ getFormattedDateTime($proposal->updated_at) }}</div>
+                                    <div class=" py-1">{{ getFormattedDateTime($proposal->created_at) }}</div>
                                 </td>
                                 <td>
                                     <div class=" py-1">{{ $product_count }} Product(s)</div>
@@ -132,15 +132,15 @@
                                             <a class="btn btn-transparent w-fit"
                                                 href="{{ inject_subdomain('proposal/picked/' . $proposal->id . '/' . $user_key, $slug, false, false) }}?type=send"
                                                 target="_blank"
-                                                style="text-decoration: none;  color:primary; padding:6px 5px!important;">
-                                                <i class="far fa-save text-primary" style="font-size: 17px" title="Update Offer Details"></i>
+                                                style="text-decoration: none;  color:primary; padding:6px 5px!important;margin-bottom: 3px;">
+                                                <i class="far fa-save text-primary" style="font-size: 18px; margin-bottom: 3px;" title="Download"></i>
                                             </a>
 
                                             <a class="btn-link text-primary"
                                                 href="{{ inject_subdomain('proposal/edit/' . $proposal->id . '/' . $user_key, $slug, false, false) }}?margin={{ $proposal->margin ?? 10 }}"
                                                 target="_blank"
                                                 style="text-decoration: none; padding:6px 5px!important;">
-                                                <i class="far fa-edit" title="Edit Offer"></i>
+                                                <i class="far fa-edit" title="Edit"></i>
                                             </a>
 
                                             @if ($proposal->status == 1)
@@ -148,14 +148,14 @@
                                                     <button class="btn-link text-primary copybtn"
                                                         value="{{ inject_subdomain('shop/proposal/' . $proposal->slug, $slug) }}"
                                                         style="text-decoration: underline; border:none; margin-bottom:22px; padding:4px">
-                                                        <i class="fas fa-link" title="Copy Offer Link"></i>
+                                                        <i class="fas fa-link" title="Copy Link"></i>
                                                     </button>
                                                 @endif
                                             @endif
                                             <a class="btn-link text-primary "
                                                 href="{{ inject_subdomain('make-copy/' . $proposal->id, $slug) }}"
                                                 class="" style="text-decoration: underline; padding: 4px;">
-                                                <i class="far fa-copy" title="Dublicate Offer"></i>
+                                                <i class="far fa-copy" title="Duplicate"></i>
                                             </a>
 
                                             @if ($proposal->status == 1)

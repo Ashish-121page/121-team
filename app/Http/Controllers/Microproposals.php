@@ -116,6 +116,7 @@ class Microproposals extends Controller
             $proposal->relate_to =  $request->get('shop') ?? UserShopIdByUserId(auth()->id());
             $proposal->type =  $request->get('offer_type') ?? 0;
             $proposal->linked_proposal = $request->get('linked_offer') ?? null;
+            $proposal->created_at = now() ?? null;
             $proposal->save();
 
 
@@ -612,6 +613,7 @@ class Microproposals extends Controller
                     'customer_email'=> $request->customer_email ?? json_decode($proposal->customer_details)->customer_email ?? "",
                     'sample_charge' => $request->sample_charge ?? json_decode($proposal->customer_details)->sample_charge ?? 0,
                     'customer_alias' => $request->customer_alias ?? json_decode($proposal->customer_details)->customer_alias ?? "",
+                    'person_name' => $request->person_name ?? json_decode($proposal->customer_details)->person_name ?? "",
                 ];
 
                 $request['customer_details'] = json_encode($arr);

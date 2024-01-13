@@ -1,5 +1,5 @@
-<div class="card-body1 mt-5" style="padding:30px  0px ! important;">
-   <div class=" col-md-12 col-lg-12  d-flex gap-5 flex-wrap" style="padding: 0px ;">
+<div class="card-body1 mt-5" style="padding:30px  0px ! important;" id="hztab">
+   <div class=" col-md-12 col-lg-12 col-sm-12  d-flex gap-5 flex-wrap"  style="padding: 0px ;">
 
         @if($acc_permissions->managegroup == "yes")
             @if ($Team_categorygroup)
@@ -132,7 +132,7 @@
 
     <form id="export_category_product" action="{{ route('panel.bulk.product.bulk-export',auth()->id()) }}">
 
-        <div class="form-control">
+        <div class="form-control ">
             <input type="hidden" name="choose_cat_ids" id="choose_cat_ids" value="">
         </div>
 

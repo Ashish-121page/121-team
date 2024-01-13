@@ -58,7 +58,7 @@
                                 </div>
                                 <button type="submit" class="btn btn-icon btn-sm mr-2 btn-outline-warning" title="Filter"><i class="fa fa-filter" aria-hidden="true"></i></button>
                                 <a href="javascript:void(0);" id="reset" data-url="{{ route('panel.teams.index') }}" class="btn btn-icon btn-sm btn-outline-danger mr-2" title="Reset"><i class="fa fa-redo" aria-hidden="true"></i></a>
-                                <a href="{{ route('panel.teams.create') }}" class="btn btn-icon btn-sm btn-outline-primary" title="Add New Team"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                <a href="{{ route('panel.teams.create') }}" class="btn btn-icon btn-sm btn-outline-primary" title="Add New Team"><i class="fa fa-plus" aria-hidden="true" style="line-height: 2 !important;"></i></a>
                             </div>
                         </div>
                         <div id="ajax-container">
