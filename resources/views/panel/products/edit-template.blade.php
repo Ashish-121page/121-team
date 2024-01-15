@@ -1,4 +1,4 @@
-@extends('backend.layouts.main') 
+@extends('backend.layouts.main')
 @section('title', 'Product')
 @section('content')
 @php
@@ -14,11 +14,11 @@
         ['name'=>'Edit / Template', 'url'=> "javascript:void(0);", 'class' => '']
     ];
 
-    $user = auth()->user();  
+    $user = auth()->user();
     $acc_permissions = json_decode($user->account_permission);
     $acc_permissions->bulkupload = $acc_permissions->bulkupload ??  "no"; // If Not Exist in Databse Then It Will be No By Default.
 
-    
+
     // Setting Up Permissions for Team USer
     $teamDetails = App\Models\Team::where('contact_number',session()->get('phone'))->first();
 
@@ -37,8 +37,9 @@
 
 
     // Grouping Columns
+    $default_property = ['Model_Code', 'SKU Type', 'Product_name', 'Category', 'Sub_Category', 'Customer_Price_without_GST', 'HSN_Code', 'HSN_Percnt', 'Variation attributes'];
 
-    $default_property  = ['Model_Code','SKU Type','Product name','Category','Sub_Category','Customer_Price_without_GST','HSNTax','HSN_Percnt'];
+    // $default_property  = ['Model_Code','SKU Type','Product_name','Category','Sub_Category','Customer_Price_without_GST','HSNTax','HSN_Percnt', 'Variation attributes' ];
 
 @endphp
 <!-- push external head elements to head -->
@@ -139,7 +140,7 @@
             -webkit-box-shadow: unset !important;
             box-shadow: unset !important;
         }
-        
+
     </style>
 @endpush
 
@@ -169,15 +170,20 @@
         <div class="row m-2">
             <div class="col-12" style="display: flex;align-items: center;justify-content: center;gap: 10px;margin: 40px 0;">
                 {{-- 1st Column --}}
-                <div class="col-md-6 col-12 my-3" style="overflow: auto; max-height: 80vh">
+                <div class="col-md-6 col-12 " style="overflow: auto; max-height: 80vh">
 
                     <h5>Select Properties You Wish to Edit</h5>
-                    <p>These Values will be Updated on All selected Products</p>
+                    <div class="">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Template Name" required name="template_name" id="template_name" value="{{ $template->template_name }}">
+                        </div>
+                    </div>
+                    {{-- <p>These Values will be Updated on All selected Products</p> --}}
 
-                    <div class="form-group w-100">
+                    {{-- <div class="form-group w-100">
                         <input type="checkbox" id="check_all" class=" m-2" @if (count((array) $col_list) == count(json_decode($template->columns_values)))checked @endif>
                         <label for="check_all"  style="font-size: large;user-select: none;">Select All</label>
-                    </div>  
+                    </div>   --}}
 
                     {{-- All Attributes Except System --}}
                     <div class="accordion-item">
@@ -189,17 +195,23 @@
                         </h2>
                         <div id="collapseallattribute" class="accordion-collapse show" data-bs-parent="#accordionExample">
                             <div class="accordion-body" style="max-height:80%; overflow:hidden;overflow-y:auto;">
+                                <div class="form-group w-100" style="margin-bottom:0rem">
+                                    <input type="checkbox" id="check_all" class=" m-2" @if (count((array) $col_list) == count(json_decode($template->columns_values)))checked @endif>
+                                    <label for="check_all"  style="font-size: 14px; font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">Select All</label>
+                                </div>
 
                                 <div class="table-responsive" style="max-height:40vh; overflow:hidden;overflow-y:auto;">
                                     <table class="table">
                                         <tbody>
-                                            @forelse ($col_list as $item => $key)
+                                            @forelse ($col_list as $key => $item)
                                                 @if (!in_array($item,$default_property))
                                                     <tr class="">
-                                                        <td scope="row">
-                                                            <div class="form-group">
-                                                                <input type="checkbox" value="{{$item}}" id="attri_{{$item}}" class="my_attribute mx-1" name="myfields[]" data-index="{{ $key }}" @if (in_array($item,json_decode($template->columns_values))) checked @endif>
-                                                                <label for="attri_{{$item}}" class="form-label" style="font-size: large;user-select: none;">{{$item}}</label>
+                                                        <td scope="row" style="padding:0px! important">
+                                                            <div class="form-group h-100" style="cursor: pointer; margin-bottom:0rem!important; ">
+                                                                {{-- <input type="checkbox" value="{{$item}}" style="10%" id="attri_{{$item}}" class="my_attribute mx-1" name="myfields[]" data-index="{{ $key }}" @if (in_array($item,json_decode($template->columns_values))) checked @endif> --}}
+                                                                <input type="checkbox" value="{{$item}}" id="attri_{{$item}}" class="my_attribute d-none mx-1" name="myfields[]" data-index="{{ $key }}" @if (in_array($item,json_decode($template->columns_values))) checked @endif>
+                                                                <label for="attri_{{$item}}" class="form-label w-100" style="font-size: 12.8px;font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">{{$item}}</label>
+                                                                {{-- <label for="attri_{{$item}}" class="form-label" style="font-size: 12.8px;user-select: none; width:90%">{{$item}}</label> --}}
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -208,12 +220,12 @@
                                                 <tr class="">
                                                     <td scope="row">
                                                         <div class="form-group">
-                                                            <label for="attri_1" class="form-label" style="font-size: large;user-select: none;">System Under Upgrade Try Again Later.</label>
+                                                            <label for="attri_1" class="form-label w-100 h-100" style="font-size: large;user-select: none;">System Under Upgrade Try Again Later.</label>
                                                         </div>
                                                     </td>
                                                 </tr>
                                             @endforelse
-                                            
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -223,7 +235,7 @@
                     </div>
 
                     {{-- System Attribute Accordation --}}
-                    <div class="accordion-item">
+                    {{-- <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsesystemattri"
                                 aria-expanded="false" aria-controls="collapsesystemattri">
@@ -232,7 +244,7 @@
                         </h2>
                         <div id="collapsesystemattri" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                        
+
                                 <div class="table-responsive" style="max-height:80%; overflow:hidden;overflow-y:auto;">
                                     <table class="table">
                                         <tbody>
@@ -256,7 +268,59 @@
                                                     </td>
                                                 </tr>
                                             @endforelse
-                                            
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> --}}
+
+                    <div class="actionbtn mt-2 d-flex justify-content-between align-items-center my-2">
+
+                        <a class="btn btn-outline-primary px-5 close-button" href="{{ route('panel.products.create') }}?action=nonbranded&bulk_product">Cancel</a>
+
+                        <button class="btn btn-primary px-5">Save and Download</button>
+                    </div>
+                </div>
+
+                {{-- 2nd column --}}
+                <div class="col-md-6 col-12 h-100 invisible" style="overflow: auto; max-height: 80vh" id="tableselected">
+                    <div class="accordion-item" style="margin-top: 5rem">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsesystemattri"
+                                aria-expanded="false" aria-controls="collapsesystemattri">
+                                System Properties ( {{count((array) $default_property)}} )
+                            </button>
+                        </h2>
+                        <div id="collapsesystemattri" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+
+                                <div class="table-responsive" style="max-height:80%; overflow:hidden;overflow-y:auto;">
+                                    <table class="table">
+                                        <tbody>
+                                            @forelse ($col_list as $key => $item)
+                                                @if (in_array($item,$default_property))
+                                                    <tr class="">
+                                                        <td scope="row" style="padding:0px! important">
+                                                            <div class="form-group h-100" style="margin-bottom: 0rem!important;">
+                                                                <label for="attri_{{$item}}" class="form-label" style="font-size: 12.8px; font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">{{$item}}</label>
+                                                                <input type="checkbox" value="{{$item}}" id="attri_{{$item}}" class="sys_attribute m-2 invisible" checked name="systemfiels[]">
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            @empty
+                                                <tr class="">
+                                                    <td scope="row">
+                                                        <div class="form-group">
+                                                            <label for="attri_1" class="form-label" style="font-size: large;user-select: none;">System Under Upgrade Try Again Later.</label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -265,34 +329,26 @@
 
                     </div>
 
-                    <div class="actionbtn border mt-2 d-flex justify-content-between align-items-center my-2">
-                        <button class="btn btn-outline-primary px-5 close-animatedModal">Cancel</button>
-                        <button class="btn btn-primary px-5">Save and Download</button>
-                    </div>
-                </div>
-
-                {{-- 2nd column --}}
-                <div class="col-md-6 col-12 h-100" style="overflow: auto; max-height: 80vh">
-                    <div class="my-3">
+                    {{-- <div class="my-3">
                         <div class="form-group">
                             <input type="text" class="form-control" placeholder="Template Name" required name="template_name" id="template_name" value="{{ $template->template_name }}">
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="d-flex flex-column gap-3 align-items-start justify-content-start">
-                        <div class="heading">
+                        <div class="heading w-100" style="background-color: #f6f8fb; color:#879099;">
                             <h5>Selected Tags</h5>
                         </div>
-                        <div class="selected_tag">
+                        <div class="selected_tag" style="width:100%">
                             {{-- Append Element Are shown Here --}}
                         </div>
                     </div>
-                    
-                </div>  
-            </div>      
-        </div>    
+
+                </div>
+            </div>
+        </div>
     </form>
 
-    
+
 
 
 
@@ -313,48 +369,75 @@
                 $(".my_attribute").click();
             });
 
-            $(".my_attribute").click(function (e) { 
+            $(".my_attribute").click(function (e) {
 
-                let tag = `<div class="form-group" id="parent_${$(this).data('index')}">
+                let tag = `<div class="form-group" id="parent_${$(this).data('index')}"style="margin-bottom:0rem;">
                     <input type="checkbox" value="${$(this).val()}" id="${$(this).attr('id')}" class="selected_prop m-2" checked data-parent="parent_${$(this).data('index')}">
-                    <label for="${$(this).attr('id')}" class="form-label" style="font-size: large;user-select: none;">${$(this).val()}</label>
+                    <label for="${$(this).attr('id')}" class="form-label" style="font-size: 12.8px;font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">${$(this).val()}</label>
+                    <span class="close-icon" style=" width:20%;" data-parent="parent_${$(this).data('index')}">&times;</span>
                 </div>`;
 
                 if ($(this).is(":checked")) {
+                    $(`label[for="${$(this).attr('id')}"]`).css({"background-color": "#6666cc", "color": "#fff"});
                     $(".selected_tag").append(tag);
+
                 }else{
                     $(`#parent_${$(this).data('index')}`).remove();
+                    $(`label[for="${$(this).attr('id')}"]`).css({"background-color": "#fff", "color": "#000000"});
                 }
+
             });
 
 
 
+
             $(".my_attribute").each(function(i,elem){
-                
+
                 if (elem.checked == true) {
                     let value = elem.value;
                     let index = elem.dataset.index;
                     let eleid = elem.id;
-                    
-                    let tag = `<div class="form-group" id="parent_${index}">
+
+                    let tag = `<div class="form-group" id="parent_${index}" style="margin-bottom: 0rem;">
                             <input type="checkbox" value="${value}" id="${eleid}" class="selected_prop m-2" checked data-parent="parent_${index}">
-                            <label for="${eleid}" class="form-label" style="font-size: large;user-select: none;">${value}</label>
+                            <label for="${eleid}" class="form-label" style="font-size: 12.8px;font-family:Nunito Sans, sans-serif;font-weight:700; user-select: none;">${value}</label>
+                            <span class="close-icon" style=" width:20%;" data-parent="parent_${$(this).data('index')}">&times;</span>
                         </div>`;
-                    
+
                     if ($(this).is(":checked")) {
+                        let labelId = $(this).attr("for");
+                        $(`label[for="${eleid}"]`).css({
+                            "background-color": "#6666cc",
+                            "color": "#fff"
+                    });
+
                         $(".selected_tag").append(tag);
+
                     }else{
                         $(`#parent_${$(this).data('index')}`).remove();
+                        $(`label[for="${eleid}"]`).css({
+                            "background-color": "#fff",
+                            "color": "#000000"
+                    });
+
                     }
                 }
-
+                myfunc();
 
             })
+            function myfunc() {
+                if ($(".my_attribute:checked").length > 0) {
+                    // any one is checked
+                    $("#tableselected").removeClass('invisible');
+                } else {
+                    $("#tableselected").addClass('invisible');
+                }
+            }
 
 
         });
     </script>
-    
+
 
     @endpush
 @endsection

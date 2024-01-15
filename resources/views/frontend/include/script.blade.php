@@ -92,6 +92,4 @@
                     });
                 });
             
-                $(".countrycode").select2();    
-                               
         </script>

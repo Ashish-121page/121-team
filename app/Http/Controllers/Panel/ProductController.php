@@ -18,34 +18,41 @@ use App\Models\Inventory;
 use App\Models\ProductAttribute;
 use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
+use App\Models\ProposalItem;
 use App\Models\Setting;
 use App\Models\UserShopItem;
 use App\Models\Usertemplates;
+use App\Models\CustomFields;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use phpseclib3\File\ASN1\Maps\AttributeValue;
+use PHPUnit\Framework\MockObject\Stub\ReturnSelf;
+
+use function PHPSTORM_META\map;
 
 class ProductController extends Controller
 {
      public function index(Request $request)
      {
-        
+
         if($request->has('action') && $request->get('action') == 'nonbranded'){
-          
+
             $brand_activation = false;
         }else{
-           
+
             $brand_activation = true;
         }
-          
+
         $brand = Brand::whereId(request()->get('id'))->first();
         if(!$brand && $brand_activation == true){
             return back()->with('error', 'No brand assign to your account!');
         }
 
         $prodextra = ProductExtraInfo::whereId(request()->get('id'))->first();
-        
+
 
          $length = 10;
          if(request()->get('length')){
@@ -69,7 +76,7 @@ class ProductController extends Controller
             if($request->get('desc')){
                 $products->orderBy($request->get('desc'),'desc');
             }
-            
+
             if($brand_activation == true){
                 if($request->get('id')){
                     $products->whereBrandId($request->get('id'))->get();
@@ -81,9 +88,9 @@ class ProductController extends Controller
             }
 
             if ($request->ajax()) {
-                return view('panel.products.load', ['products' => $products, 'brand_activation' => $brand_activation])->render();  
+                return view('panel.products.load', ['products' => $products, 'brand_activation' => $brand_activation])->render();
             }
- 
+
             return view('panel.products.index', compact('products','brand','brand_activation','prodextra'));
      }
 
@@ -107,7 +114,7 @@ class ProductController extends Controller
              $length = $request->get('length');
          }
          $products = Product::query();
-         
+
             if($request->get('search')){
                 $products->where('id','like','%'.$request->search.'%')
                 ->orWhere('title','like','%'.$request->search.'%')
@@ -115,7 +122,7 @@ class ProductController extends Controller
                 ->orWhere('qty','like','%'.$request->search.'%')
                 ;
             }
-            
+
             if($request->get('from') && $request->get('to')) {
                 $products->whereBetween('created_at', [\Carbon\carbon::parse($request->from)->format('Y-m-d'),\Carbon\Carbon::parse($request->to)->format('Y-m-d')]);
             }
@@ -126,7 +133,7 @@ class ProductController extends Controller
             if($request->get('desc')){
                 $products->orderBy($request->get('desc'),'desc');
             }
-            
+
             if($brand_activation == true){
                 if($request->get('id')){
                     $products->whereBrandId($request->get('id'))->get();
@@ -138,9 +145,9 @@ class ProductController extends Controller
             }
 
             if ($request->ajax()) {
-                return view('panel.inventory.load', ['products' => $products, 'brand_activation' => $brand_activation])->render();  
+                return view('panel.inventory.load', ['products' => $products, 'brand_activation' => $brand_activation])->render();
             }
- 
+
             return view('panel.inventory.index', compact('products','brand','brand_activation','prodextra'));
      }
 
@@ -151,8 +158,8 @@ class ProductController extends Controller
         return view('panel.inventory.edit',compact('product'));
     }
 
-     
-     
+
+
      public function inventoryStore(Request $request)
      {
         $product_ids = $request->product_ids;
@@ -178,11 +185,11 @@ class ProductController extends Controller
          if(request()->get('length')){
              $length = $request->get('length');
          }
-         
+
          $my_product_ids = Product::whereUserId(auth()->id())->pluck('id');
-         
+
          $products = Product::query();
-         
+
          if($request->get('search')){
              $products
              ->whereNotIn('id',$my_product_ids)
@@ -190,7 +197,7 @@ class ProductController extends Controller
             }else{
                 $products->whereNotIn('id',$my_product_ids);
             }
-            
+
             if($request->get('from') && $request->get('to')) {
                 $products->whereBetween('created_at', [\Carbon\carbon::parse($request->from)->format('Y-m-d'),\Carbon\Carbon::parse($request->to)->format('Y-m-d')]);
             }
@@ -218,21 +225,21 @@ class ProductController extends Controller
             // echo "<pre>";
             // print_r($products->get());
             // echo "</pre>";
-            
+
             $products = $products->latest()->paginate($length);
 
             if ($request->ajax()) {
-                return view('panel.products.searchload', ['products' => $products, 'brand_activation' => $brand_activation])->render();  
+                return view('panel.products.searchload', ['products' => $products, 'brand_activation' => $brand_activation])->render();
             }
- 
+
             return view('panel.products.search', compact('products','brand_activation'));
      }
 
-    
+
         public function print(Request $request){
             $products = collect($request->records['data']);
-                return view('panel.products.print', ['products' => $products])->render();  
-           
+                return view('panel.products.print', ['products' => $products])->render();
+
         }
 
     /**
@@ -269,16 +276,82 @@ class ProductController extends Controller
                 if(!$brand && $brand_activation == true){
                     return back()->with('error', 'No brand assign to your account!');
                 }
-                
+
             $attributes = ProductAttribute::get();
             $colors = $attributes->where('name','Color')->first();
             $sizes = $attributes->where('name','Size')->first();
             $materials = $attributes->where('name','Material')->first();
             $prodextra = ProductExtraInfo::whereId(request()->get('id'))->first();
 
-            $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
+            // $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value) ?? [];
+
+            $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
+            $custom_attributes = (array) json_decode($user->custom_attriute_columns) ?? ['Colours','Size','Material'];
+            $custom_fields = (array) json_decode($user->custom_fields) ?? [];
+            $Export_columns = [];
+
+
+            $fileName = "Exported -".$user->name.' - '.date('d-m-Y').'.xlsx';
+
+            // Getting sections custom Inputs Columns
+            $custom_col1 = [];
+            $custom_col4 = [];
+            $custom_col5 = [];
+
+            $custom_col_values = [];
+
+
+            // return;
+
+            foreach ($custom_fields as $index => $custom_field) {
+                if ($custom_field->ref_section == 1) {
+                    array_push($custom_col1,$custom_field->text);
+                }
+
+                if ($custom_field->ref_section == 4) {
+                    array_push($custom_col4,$custom_field->text);
+                }
+
+                if ($custom_field->ref_section == 5) {
+                    array_push($custom_col5,$custom_field->text);
+                }
+
+                if ($custom_field->value != '' && $custom_field->value != null) {
+                    $tmp_val = [];
+                    $tmp_val[$custom_field->text] = $custom_field->value;
+                    if ($tmp_val != '' && $tmp_val != null) {
+                        array_push($custom_col_values,$tmp_val);
+                    }
+
+                }
+            }
+
+            $default_attribute['custom_input_1'] = $custom_col1;
+            $default_attribute['custom_input_4'] = $custom_col4;
+            $default_attribute['custom_input_5'] = $custom_col5;
+
+
+            foreach ($default_attribute as $key => $valueArr) {
+                foreach ($valueArr as $key => $value) {
+                    array_push($Export_columns,$value);
+                }
+            }
+
+
+            // Merging All attributes
+            $delfault_cols = array_merge($Export_columns,$custom_attributes);
+
+            // magicstring($delfault_cols);
+            // return;
+
+
+
             $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
-            $num = end($delfault_cols) +1;
+            // if (is_array($delfault_cols) && !empty($delfault_cols)) {
+            //     $num = end($delfault_cols) + 1;
+            // } else
+            $num = end($delfault_cols);
+
             $new_custom_attribute = [];
             foreach ($user_custom_col_list as $key => $value) {
                 $new_custom_attribute += [$value => $num];
@@ -287,23 +360,164 @@ class ProductController extends Controller
 
             $col_list = (object) array_merge((array)$delfault_cols,$new_custom_attribute);
 
+
+            // magicstring($num);
+            // magicstring($delfault_cols);
+
+
+            // return;
+
             $ExistingTemplates = Usertemplates::where('user_id',$user->id)->get();
             $available_groups = ProductExtraInfo::where('user_id',$user->id)->groupBy('Cust_tag_group')->pluck('Cust_tag_group');
-            $available_model_code = Product::where('user_id',$user->id)->groupBy('model_code')->pluck('model_code');                     
+            $available_model_code = Product::where('user_id',$user->id)->groupBy('model_code')->pluck('model_code');
 
 
-        
+            if ($request->has('viewid') && $request->has('encid')) {
+                $product = Product::whereId(decrypt($request->get('viewid')))->first();
+                $productExtra = ProductExtraInfo::whereId(decrypt($request->get('encid')))->first();
+                $arraysd = ProductExtraInfo::where('group_id',$product->sku)->pluck('attribute_id','attribute_value_id')->toArray();
 
-            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups','user_custom_col_list'));
+                $varient_basis = countRepetitions($arraysd);
+                arsort($varient_basis);
+                $varient_basis_tmp = [];
+                foreach ($varient_basis as $key => $value) {
+                    if ($value > 1) {
 
-        }catch(\Exception $e){            
-            return back()->with('error', 'There was an error: ' . $e->getMessage());
+                        $up = strtolower(getAttruibuteById($key)->name);
+                        $up = ucwords($up);
+                        array_push($varient_basis_tmp, $up);
+                    }
+                }
+
+                $varient_basis = $varient_basis_tmp;
+
+                // $attribute_value_id = ProductExtraInfo::where('product_id',$product->id)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
+                $attribute_value_id = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
+
+
+                $medias = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->where('extension','!=','gif')->get();
+                $medias_gif = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->where('extension','gif')->get();
+                $media_Video = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Video')->get();
+                $mediaAssets = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Asset')->get();
+
+                $mediaSize_attachment = 0;
+                foreach ($mediaAssets as $key => $media) {
+                    $path = str_replace("storage","public",$media->path);
+                    if (Storage::exists($path)) {
+                        $size_Of_File = Storage::size($path);
+                        $mediaSize_attachment += $size_Of_File;
+                    }
+                }
+
+                $mediaSize_video = 0;
+                foreach ($media_Video as $key => $media) {
+                    $path = str_replace("storage","public",$media->path);
+                    if (Storage::exists($path)) {
+                        $size_Of_File = Storage::size($path);
+                        $mediaSize_video += $size_Of_File;
+                    }
+                }
+
+                $mediaSize_gif = 0;
+                foreach ($medias_gif as $key => $media) {
+                    $path = str_replace("storage","public",$media->path);
+                    if (Storage::exists($path)) {
+                        $size_Of_File = Storage::size($path);
+                        $mediaSize_gif += $size_Of_File;
+                    }
+                }
+
+                $mediaSize_Image = 0;
+                foreach ($medias as $key => $media) {
+                    $path = str_replace("storage","public",$media->path);
+                    if (Storage::exists($path)) {
+                        $size_Of_File = Storage::size($path);
+                        $mediaSize_Image += $size_Of_File;
+                    }
+                }
+
+
+                $folder = "storage/files/".auth()->id();
+                $medias = Media::where('path',"LIKE","%".$folder."%")->groupBy('path')->orderBy('created_at',"DESC")->paginate(10);
+
+
+                $user_custom_fields = json_decode($user->custom_fields,true) ?? [];
+                $fileds_sections = array_column($user_custom_fields, 'ref_section');
+                $fileds_sections_names = [];
+                $fileds_sections_ids = array_column($user_custom_fields, 'id');
+
+                foreach ($fileds_sections_ids as $key => $value) {
+                    array_push($fileds_sections_names, getCustomFieldValueById($value,$product->id)->value ?? '');
+                }
+
+
+            }else{
+                $product = null;
+                $productExtra = null;
+                $arraysd = [];
+                $varient_basis = [];
+                $attribute_value_id = [];
+                $folder = "storage/files/".auth()->id();
+                $medias = Media::where('path',"LIKE","%".$folder."%")->groupBy('path')->orderBy('created_at',"DESC")->paginate(10);
+                $media_Video = [];
+                $mediaAssets = [];
+                $medias_gif = [];
+                $mediaSize_Image = [];
+                $mediaSize_attachment = [];
+                $mediaSize_gif = [];
+                $mediaSize_video = [];
+                $user_custom_fields = json_decode($user->custom_fields,true) ?? [];
+                $fileds_sections = array_column($user_custom_fields, 'ref_section');
+                $fileds_sections_names = [];
+                $fileds_sections_ids = array_column($user_custom_fields, 'id');
+            }
+
+
+            $user_id = auth()->id();
+            $folderPath = "public/files/$user_id";
+
+            if (Storage::exists($folderPath)) {
+                $files = Storage::allFiles($folderPath);
+                $page = request()->get('pageassets', 1);
+                $perPage = 30;
+                $offset = ($page - 1) * $perPage;
+                $slicedFiles = array_slice($files, $offset, $perPage);
+                $paginator = new LengthAwarePaginator($slicedFiles, count($files), $perPage, $page);
+
+            }else{
+                $paginator = [];
+                $files = [];
+            }
+
+            $user_custom_fields_types = [];
+            foreach ($user_custom_fields as $key => $value) {
+                $user_custom_fields_types += [$value['id'] => $value['type']];
+            }
+
+
+
+            $user_custom_fields_types = json_encode($user_custom_fields_types);
+
+
+            $length_uom = json_decode(getSetting('dimension_uom'));
+            $quantity_uom = json_decode(getSetting('item_uom'));
+            $weight_uom = json_decode(getSetting('weight_uom'));
+            // // magicstring(json_encode($user_custom_fields_types));
+            // return;
+
+
+            return view('panel.products.create',compact('category','brand','colors','sizes','brand_activation','materials','prodextra','col_list','ExistingTemplates','available_model_code','available_groups','user_custom_col_list','product','productExtra','varient_basis','attribute_value_id','medias','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','fileds_sections','user_custom_fields','paginator','user_custom_fields_types','length_uom','quantity_uom','weight_uom','delfault_cols'));
+
+        }catch(\Exception $e){
+            // return back()->with('error', 'There was an error: ' . $e->getMessage());
+            throw $e;
         }
     }
 
-    public function downloadtemplate(Usertemplates $template) {
+    public function downloadtemplate(Request $request,Usertemplates $template) {
 
         try {
+
 
             $records = json_decode($template->columns_values);
             $templatename = $template->template_name;
@@ -312,62 +526,104 @@ class ProductController extends Controller
 
             $filename = "$templatename -$user->name -".$mytime->toDateTimeString();
 
+            $request->merge(['name' => $filename,'finaldata' => $records]);
             // ` Calling Function from Another Controller
             app('App\Http\Controllers\NewBulkController')->exportExcel($records,$filename);
-            
-            
             return back()->with('success',"Download Started");
         } catch (\Throwable $th) {
             // throw $th;
             return back()->with('error', 'There was an error: ' . $th->getMessage());
         }
-        
 
-        
+
+
     }
-    
+
     public function edittemplate(Usertemplates $template) {
         $user = auth()->user();
-        $delfault_cols = json_decode(Setting::where('key','bulk_sheet_upload')->first()->value);
-        $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
-        $num = end($delfault_cols) +1;
-        $new_custom_attribute = [];
-        foreach ($user_custom_col_list as $key => $value) {
-            $new_custom_attribute += [$value => $num];
-            $num++;
+
+        $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
+        $custom_attributes = (array) json_decode($user->custom_attriute_columns) ?? ['Colours','Size','Material'];
+        $custom_fields = (array) json_decode($user->custom_fields) ?? [];
+        $Export_columns = [];
+
+
+        $fileName = "Exported -".$user->name.' - '.date('d-m-Y').'.xlsx';
+
+        // Getting sections custom Inputs Columns
+        $custom_col1 = [];
+        $custom_col4 = [];
+        $custom_col5 = [];
+
+        $custom_col_values = [];
+
+
+        // return;
+
+        foreach ($custom_fields as $index => $custom_field) {
+            if ($custom_field->ref_section == 1) {
+                array_push($custom_col1,$custom_field->text);
+            }
+
+            if ($custom_field->ref_section == 4) {
+                array_push($custom_col4,$custom_field->text);
+            }
+
+            if ($custom_field->ref_section == 5) {
+                array_push($custom_col5,$custom_field->text);
+            }
+
+            if ($custom_field->value != '' && $custom_field->value != null) {
+                $tmp_val = [];
+                $tmp_val[$custom_field->text] = $custom_field->value;
+                if ($tmp_val != '' && $tmp_val != null) {
+                    array_push($custom_col_values,$tmp_val);
+                }
+
+            }
         }
 
-        $col_list = (object) array_merge((array)$delfault_cols,$new_custom_attribute);  
+        $default_attribute['custom_input_1'] = $custom_col1;
+        $default_attribute['custom_input_4'] = $custom_col4;
+        $default_attribute['custom_input_5'] = $custom_col5;
 
 
+        foreach ($default_attribute as $key => $valueArr) {
+            foreach ($valueArr as $key => $value) {
+                array_push($Export_columns,$value);
+            }
+        }
 
+
+        // Merging All attributes
+        $col_list = array_merge($Export_columns,$custom_attributes);
 
         return view('panel.products.edit-template',compact('col_list','template'));
     }
     public function updatetemplate(Request $request,Usertemplates $template) {
-        
+
         try {
-            
+
             $request['finalarray'] = array_merge($request->get('systemfiels'),$request->get('myfields') ?? []);
-            
+
             $template->template_name = $request->template_name;
             $template->columns_values = json_encode($request->finalarray);
             $template->save();
-            
-            
-            
+
+
+
             return back()->with('success',"Temlate Updated Successfully !!");
         } catch (\Throwable $th) {
             // throw $th;
             return back()->with('error',"There was an error try again later.");
         }
-        
+
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     /**
      * Store a newly created resource in storage.
      *
@@ -381,7 +637,7 @@ class ProductController extends Controller
     //     if(AuthRole() == "User"){
     //         if(!haveActivePackageByUserId(auth()->id())){
     //             return back()->with('error','You do not have any active package!');
-    //         } 
+    //         }
 
     //         $user_shop = UserShop::whereUserId(request()->get('user_id'))->first();
     //           if(!$user_shop){
@@ -406,7 +662,7 @@ class ProductController extends Controller
     //                     'stock_qty'     => 'sometimes',
     //                 ]);
 
-            
+
     //      try{
 
     //         if(AuthRole() == "User"){
@@ -431,10 +687,10 @@ class ProductController extends Controller
     //                 return back()->with('error','Total products upload including variants:'.$total_add_products.' You can add only '.$pros.' products!');
     //             }
     //         }
-              
+
     //                 $request['is_publish'] = 1;
-              
-                
+
+
     //             if(AuthRole() == "User"){
     //                 if(!$request->sku){
     //                     $sku = 'SKU'.generateRandomStringNative(4);
@@ -444,7 +700,7 @@ class ProductController extends Controller
     //                 }
     //             }
     //            $arr_images = [];
-               
+
     //            $files = $request->file('img');
 
     //            $carton_details = [
@@ -452,7 +708,7 @@ class ProductController extends Controller
     //             'carton_weight' => $request->carton_weight,
     //             'carton_unit' => $request->carton_unit,
     //             ];
-                 
+
     //             $shipping =[
     //                 'height' => $request->height,
     //                 'weight' => $request->weight,
@@ -466,15 +722,15 @@ class ProductController extends Controller
 
     //              // To Fullfillment of Client MRP Need
     //              $request['price'] =  $request->mrp;
-    //              $request['material'] = $request->material;     
+    //              $request['material'] = $request->material;
 
     //            if($request->has('colors') && $request->has('sizes')){
     //                foreach ($request->colors as $color) {
     //                  if($request->has('sizes')){
     //                     foreach ($request->sizes as $size) {
-                            
+
     //                         $unique_slug  = getUniqueProductSlug($request->title);
-                            
+
     //                         $request['color'] = $color;
     //                         $request['size'] = $size;
     //                         $request['slug'] = $unique_slug;
@@ -520,7 +776,7 @@ class ProductController extends Controller
     //                                     }
     //                                   }
     //                             }
-                                
+
     //                         // }catch(Exception $e){
 
     //                         // }
@@ -550,7 +806,7 @@ class ProductController extends Controller
     //                                 'inventory' => $request->manage_inventory ?? 0,
     //                             ]);
 
-    //                             if (isset($request->manage_inventory) && $request->manage_inventory == 1) {   
+    //                             if (isset($request->manage_inventory) && $request->manage_inventory == 1) {
     //                                 Inventory::create([
     //                                     'user_shop_item_id' => $usi->id,
     //                                     'user_id' => $request->user_id,
@@ -566,11 +822,11 @@ class ProductController extends Controller
     //                             }
 
     //                         }
-                            
-    //                     }  
+
+    //                     }
     //                  }
-    //                }     
-                   
+    //                }
+
     //            }elseif($request->has('colors')){
     //                 foreach ($request->colors as $color) {
     //                     $unique_slug  = getUniqueProductSlug($request->title);
@@ -645,7 +901,7 @@ class ProductController extends Controller
 
     //                         ]);
 
-    //                         if (isset($request->manage_inventory) && $request->manage_inventory == 1) {   
+    //                         if (isset($request->manage_inventory) && $request->manage_inventory == 1) {
     //                             Inventory::create([
     //                                 'user_shop_item_id' => $usi->id,
     //                                 'user_id' => $request->user_id,
@@ -659,9 +915,9 @@ class ProductController extends Controller
     //                             ]);
 
     //                         }
-                                    
+
     //                     }
-    //                 }  
+    //                 }
     //            }elseif($request->has('sizes')){
     //                 foreach ($request->sizes as $size) {
     //                     $unique_slug  = getUniqueProductSlug($request->title);
@@ -734,7 +990,7 @@ class ProductController extends Controller
     //                             'material' => $request->material,
     //                         ]);
 
-    //                         if (isset($request->manage_inventory) && $request->manage_inventory == 1) {   
+    //                         if (isset($request->manage_inventory) && $request->manage_inventory == 1) {
     //                             Inventory::create([
     //                                 'user_shop_item_id' => $usi->id,
     //                                 'user_id' => $request->user_id,
@@ -747,10 +1003,10 @@ class ProductController extends Controller
     //                                 'parent_id' => null,
     //                             ]);
     //                         }
-                                    
 
-    //                     }     
-    //                 } 
+
+    //                     }
+    //                 }
     //            }else{
 
     //                 $unique_slug  = getUniqueProductSlug($request->title);
@@ -804,7 +1060,7 @@ class ProductController extends Controller
     //                         'artwork_url' => $request->artwork_url,
     //                         'material' => $request->material,
     //                     ]);
-    //                     if (isset($request->manage_inventory) && $request->manage_inventory == 1) {   
+    //                     if (isset($request->manage_inventory) && $request->manage_inventory == 1) {
     //                         Inventory::create([
     //                             'user_shop_item_id' => $usi->id,
     //                             'user_id' => $request->user_id,
@@ -818,7 +1074,7 @@ class ProductController extends Controller
     //                         ]);
 
     //                     }
-                                
+
     //                 }
 
     //            }
@@ -837,7 +1093,7 @@ class ProductController extends Controller
     //                     return redirect(route('panel.products.index',['action'=>'branded','id'=>$request->brand_id]))->with('success','Product created. Visit Shop > Price group to update.');
     //                 }
     //            }
-    //     }catch(Exception $e){            
+    //     }catch(Exception $e){
     //         return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
     //     }
     // }
@@ -845,11 +1101,83 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        // return back()->withInput($request->all());   
+        // return back()->withInput($request->all());
         // $request['properties_varient'] = ['Material','Colour','Size'];
-        
+
+
+        $any_value = [];
+        $substring = "any_value";
+
+
+
+        foreach ($request->all() as $key => $value) {
+            if (strpos($key, $substring) !== false) {
+                array_push($any_value,$key);
+
+                if (is_array($request->$key)) {
+                    $request[$key] = implode("x",$request->$key);
+                }
+
+
+
+                // checking Value Exist or Not
+                $attribute_name = explode("-",$key)[1];
+
+                $chkCountAttr = ProductAttribute::where('name',$attribute_name)->where('user_id',auth()->id())->get();
+
+
+                if ($chkCountAttr->count() == 0) {
+                    $attribute_name = str_replace("_"," ",$attribute_name);
+                    $chkCountAttr = ProductAttribute::where('name',$attribute_name)->where('user_id',auth()->id())->get();
+                }
+
+
+                if ($chkCountAttr->count() != 0) {
+                    $attribute_id = $chkCountAttr[0]->id;
+                    $received_value = $request->$key;
+
+
+
+                    if ($received_value != null && $received_value != "" && $received_value != [] && $received_value != "x"  && $received_value != "xx"  && $received_value != "xx" && $received_value != "X"  && $received_value != "X"  && $received_value != "X" ) {
+                        $chkatt = ProductAttributeValue::where('parent_id',$attribute_id)->where('attribute_value',$received_value)->first();
+
+                        if ($chkatt == null) {
+                            $tmparrvar = ProductAttributeValue::create([
+                                'parent_id' => $attribute_id,
+                                'user_id' => auth()->id() ?? null,
+                                'attribute_value' => $received_value,
+                            ]);
+
+                            $request[$attribute_name] = array($tmparrvar->id);
+
+                        }else{
+                            // magicstring($chkatt);
+                            $request[$attribute_name] = array($chkatt->id);
+
+                        }
+                    }
+                }else{
+                    echo "Else Part Will Work";
+                }
+            }
+        }
+
+
+        // foreach ($any_value as $ashu) {
+        //     $attribute_name = explode("-",$key)[1];
+        //     $request[$attribute_name] = array($request->get($ashu));
+        // }
+
+        $user = auth()->user();
+        $custom_attriute_columns = json_decode($user->custom_attriute_columns);
+
+        // magicstring($custom_attriute_columns);
+
+
         // magicstring($request->all());
-        
+        // return;
+
+
         try {
             $allowed_array = ['yes',"Yes","YES",'1'];
             $count = 0;
@@ -860,8 +1188,11 @@ class ProductController extends Controller
             $loop1 = [];
             $loop2 = [];
             $loop3 = [];
+            $product_id = '';
 
-            
+            $user_id = auth()->user()->id;
+            $folderPath = "public/files/$user_id";
+
             if ($request->properties_varient != null && $request->properties_varient != []) {
                 $variation_count = count($request->properties_varient);
             }else{
@@ -900,24 +1231,32 @@ class ProductController extends Controller
                 'standard_carton' => $request->standard_carton,
                 'carton_weight' => $request->carton_weight,
                 'carton_unit' => $request->carton_unit,
-                ];
-                 
-                $shipping =[
-                    'height' => $request->height,
-                    'weight' => $request->weight,
-                    'width' => $request->width,
-                    'length' => $request->length,
-                    'unit' => $request->unit,
-                    'length_unit' => $request->length_unit,
-                ];
+                'carton_length' => $request->carton_length,
+                'carton_width' => $request->carton_width,
+                'carton_height' => $request->carton_height,
+                'Carton_Dimensions_unit' => $request->Carton_Dimensions_unit,
+            ];
+
+            $shipping =[
+                'height' => $request->height,
+                'gross_weight' => $request->gross_weight,
+                'weight' => $request->weight,
+                'width' => $request->width,
+                'length' => $request->length,
+                'unit' => $request->unit,
+                'length_unit' => $request->length_unit,
+            ];
             $request['carton_details'] = json_encode($carton_details);
             $request['shipping'] = json_encode($shipping);
 
 
+            // magicstring(request()->all());
+
+            // return;
+
+
             $custom_attriute_columns = json_decode($user->custom_attriute_columns);
 
-            magicstring($request->all());
-            // return;
             if($loop1 != [] && $loop2 != [] && $loop3 != []) {
                 $Productids_array = [];
                 foreach ($loop1 as $key1 => $first) {
@@ -963,7 +1302,7 @@ class ProductController extends Controller
                                 // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
                                 'is_publish' => 1,
                                 'price' => $request->customer_price_without_gst ?? 0,
-                                'min_sell_pr_without_gst' => $request->customer_price_without_gst ?? 0, 
+                                'min_sell_pr_without_gst' => $request->customer_price_without_gst ?? 0,
                                 'hsn' => $request->hsn ?? null,
                                 'hsn_percent' => $request->hsn_percent ?? null,
                                 'mrp' => $request->mrp ?? 0,
@@ -978,12 +1317,53 @@ class ProductController extends Controller
 
                             $product_obj = Product::create($product_obj);
 
+
+                            $product = $product_obj;
+
+                            $custom_fields = json_decode($user->custom_fields);
+                            if ($custom_fields != null && count($custom_fields) > 0) {
+                                foreach ($custom_fields as $key => $customfield) {
+
+                                    $ogname = $customfield->id;
+                                    $customfield = str_replace("[]",'',$customfield->id);
+                                    if (is_array($request->get($customfield)) || is_html($request->get($customfield))) {
+
+                                        echo "' $ogname ' It is an Array or HTML.".newline();
+                                        $updatevalue = base64_encode(json_encode($request->get($customfield)));
+
+                                    }else{
+                                        // $customfield = str_replace("[]",'',$customfield);
+                                        $updatevalue = $request->get($customfield);
+                                    }
+
+                                    $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                    if ($custom_field == null) {
+                                        echo "Create New Records".newline(2);
+                                        CustomFields::create([
+                                            'relatation_name' => $ogname,
+                                            'product_id' => $product_obj->id,
+                                            'value' => $updatevalue ?? '',
+                                            'user_id' => auth()->id(),
+                                        ]);
+                                    }else{
+                                        echo "Record Are Exist Update It".newline(2);
+
+                                        $custom_field->update([
+                                            'value' => $updatevalue ?? '',
+                                        ]);
+                                    }
+                                }
+                            }
+
+
+
+                            $product_id = $product_obj->id;
                             $parentAttribute = ProductAttributeValue::whereId($third)->first();
-                            
+
                             $product_extra_info_obj_user = [
                                 'product_id' => $product_obj->id,
                                 'user_id' => $user->id,
-                                'user_shop_id' => $user_shop->id, 
+                                'user_shop_id' => $user_shop->id,
                                 'allow_resellers' => 'no',
                                 'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
                                 'collection_name' =>$request->collection_name ?? '',
@@ -1012,22 +1392,22 @@ class ProductController extends Controller
                                 'remarks' =>  $request->remarks ?? '' ,
                                 'brand_name' => $request->brand_name ?? '',
                             ];
-    
+
                             ProductExtraInfo::create($product_extra_info_obj_user);
 
 
                             // ` Craeting Variation of Non Defined Attribute
                             foreach ($custom_attriute_columns as $key => $custom_attriute) {
-                                $valueasd = '';                    
+                                $valueasd = '';
                                 $custom_attriute = str_replace(" ","_",$custom_attriute);
                                 if ($request->has($custom_attriute)) {
                                     $valueasd = $request->get($custom_attriute);
                                     $parentAttribute = ProductAttributeValue::whereId($valueasd[0])->first();
-            
+
                                     $product_extra_info_obj_user = [
                                         'product_id' => $product_obj->id,
                                         'user_id' => $user->id,
-                                        'user_shop_id' => $user_shop->id, 
+                                        'user_shop_id' => $user_shop->id,
                                         'allow_resellers' => 'no',
                                         'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
                                         'collection_name' =>$request->collection_name ?? '',
@@ -1059,7 +1439,7 @@ class ProductController extends Controller
                                     ProductExtraInfo::create($product_extra_info_obj_user);
                                 }
                             }
-            
+
                             $usi = UserShopItem::create([
                                 'user_id'=> $user->id,
                                 'category_id'=> $request->category_id,
@@ -1070,7 +1450,7 @@ class ProductController extends Controller
                                 'is_published'=> 1,
                                 'price'=> $price,
                             ]);
-                    
+
                             if($reseller_group){
                                 // create Reseller Group record
                                 $g_p =  GroupProduct::create([
@@ -1079,7 +1459,7 @@ class ProductController extends Controller
                                     'price'=> $request->reseller_price ?? 0,
                                 ]);
                             }
-                        
+
                             if($vip_group){
                                 // create Vip Group record
                                 GroupProduct::create([
@@ -1089,15 +1469,73 @@ class ProductController extends Controller
                                 ]);
                             }
 
+                            if ($request->hasFile('img')) {
+                                $arr_images = [];
+                                // * Start Creating Media...
+
+                                foreach ($request->img as $key => $image) {
+                                    if($image != null){
+                                        // Uploading File
+                                        $filename = $image->getClientOriginalName();
+
+                                        $path = $image->storeAs($folderPath, $filename);
+
+                                        // Creating FIle link
+                                        $media = new Media();
+                                        $media->tag = "Product_Image";
+                                        $media->file_type = "Image";
+                                        $media->type = "Product";
+                                        $media->type_id = $product_obj->id;
+                                        $media->file_name = $image->getClientOriginalName();
+                                        $media->path = str_replace("public",'storage',$path);
+                                        $media->extension = explode('.',$image->getClientOriginalName())[1] ?? '';
+                                        $media->save();
+                                        $arr_images[] = $media->id;
+                                    }
+                                }
+
+                                // Add images to UserShopItem
+                                if(count($arr_images) > 0) {
+                                    $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                    $usi->save();
+                                }
+                            }
+
+
+                            if($request->avl_assets != null){
+                                $arr_images = [];
+                                foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
+                                    $filetype = explode('/',Storage::mimeType($value));
+                                    $filename =basename($value);
+                                    $path = "storage/files/$user->id/$filename";
+                                    $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                                    $rec = Media::create([
+                                        'type' => 'Product',
+                                        'type_id' => $product_obj->id,
+                                        'file_name' => $filename,
+                                        'path' => $path,
+                                        'extension' => $extension,
+                                        'file_type' => 'Image',
+                                        'tag' => 'Product_Image',
+                                    ]);
+
+                                    array_push($arr_images,$rec->id);
+                                }
+
+                                if(count($arr_images) > 0) {
+                                    $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                    $usi->save();
+                                }
+                            }
 
                         }
 
                         $parentAttribute = ProductAttributeValue::whereId($second)->first();
-                            
+
                         $product_extra_info_obj_user = [
                             'product_id' => $product_obj->id,
                             'user_id' => $user->id,
-                            'user_shop_id' => $user_shop->id, 
+                            'user_shop_id' => $user_shop->id,
                             'allow_resellers' => 'no',
                             'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
                             'collection_name' =>$request->collection_name ?? '',
@@ -1131,11 +1569,11 @@ class ProductController extends Controller
 
                     }
                     $parentAttribute = ProductAttributeValue::whereId($first)->first();
-                            
+
                     $product_extra_info_obj_user = [
                         'product_id' => $product_obj->id,
                         'user_id' => $user->id,
-                        'user_shop_id' => $user_shop->id, 
+                        'user_shop_id' => $user_shop->id,
                         'allow_resellers' => 'no',
                         'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
                         'collection_name' =>$request->collection_name ?? '',
@@ -1215,7 +1653,7 @@ class ProductController extends Controller
                             // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
                             'is_publish' => 1,
                             'price' => $request->customer_price_without_gst ?? 0,
-                            'min_sell_pr_without_gst' => $request->customer_price_without_gst ?? 0, 
+                            'min_sell_pr_without_gst' => $request->customer_price_without_gst ?? 0,
                             'hsn' => $request->hsn ?? null,
                             'hsn_percent' => $request->hsn_percent ?? null,
                             'mrp' => $request->mrp ?? 0,
@@ -1229,13 +1667,53 @@ class ProductController extends Controller
                         ];
 
                         $product_obj = Product::create($product_obj);
+                        $product_id = $product_obj->id;
+
+                        $product = $product_obj;
+
+                        $custom_fields = json_decode($user->custom_fields);
+                        if ($custom_fields != null && count($custom_fields) > 0) {
+                            foreach ($custom_fields as $key => $customfield) {
+
+                                $ogname = $customfield->id;
+                                $customfield = str_replace("[]",'',$customfield->id);
+                                if (is_array($request->get($customfield)) || is_html($request->get($customfield))) {
+
+                                    echo "' $ogname ' It is an Array or HTML.".newline();
+                                    $updatevalue = base64_encode(json_encode($request->get($customfield)));
+
+                                }else{
+                                    // $customfield = str_replace("[]",'',$customfield);
+                                    $updatevalue = $request->get($customfield);
+                                }
+
+                                $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                if ($custom_field == null) {
+                                    echo "Create New Records".newline(2);
+                                    CustomFields::create([
+                                        'relatation_name' => $ogname,
+                                        'product_id' => $product_obj->id,
+                                        'value' => $updatevalue ?? '',
+                                        'user_id' => auth()->id(),
+                                    ]);
+                                }else{
+                                    echo "Record Are Exist Update It".newline(2);
+
+                                    $custom_field->update([
+                                        'value' => $updatevalue ?? '',
+                                    ]);
+                                }
+                            }
+                        }
+
+
 
                         $parentAttribute = ProductAttributeValue::whereId($third)->first();
-                        
+
                         $product_extra_info_obj_user = [
                             'product_id' => $product_obj->id,
                             'user_id' => $user->id,
-                            'user_shop_id' => $user_shop->id, 
+                            'user_shop_id' => $user_shop->id,
                             'allow_resellers' => 'no',
                             'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
                             'collection_name' =>$request->collection_name ?? '',
@@ -1270,16 +1748,16 @@ class ProductController extends Controller
 
                         // ` Craeting Variation of Non Defined Attribute
                         foreach ($custom_attriute_columns as $key => $custom_attriute) {
-                            $valueasd = '';                    
+                            $valueasd = '';
                             $custom_attriute = str_replace(" ","_",$custom_attriute);
                             if ($request->has($custom_attriute)) {
                                 $valueasd = $request->get($custom_attriute);
                                 $parentAttribute = ProductAttributeValue::whereId($valueasd[0])->first();
-        
+
                                 $product_extra_info_obj_user = [
                                     'product_id' => $product_obj->id,
                                     'user_id' => $user->id,
-                                    'user_shop_id' => $user_shop->id, 
+                                    'user_shop_id' => $user_shop->id,
                                     'allow_resellers' => 'no',
                                     'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
                                     'collection_name' =>$request->collection_name ?? '',
@@ -1311,7 +1789,7 @@ class ProductController extends Controller
                                 ProductExtraInfo::create($product_extra_info_obj_user);
                             }
                         }
-        
+
                         $usi = UserShopItem::create([
                             'user_id'=> $user->id,
                             'category_id'=> $request->category_id,
@@ -1322,7 +1800,7 @@ class ProductController extends Controller
                             'is_published'=> 1,
                             'price'=> $price,
                         ]);
-                
+
                         if($reseller_group){
                             // create Reseller Group record
                             $g_p =  GroupProduct::create([
@@ -1331,7 +1809,7 @@ class ProductController extends Controller
                                 'price'=> $request->reseller_price ?? 0,
                             ]);
                         }
-                    
+
                         if($vip_group){
                             // create Vip Group record
                             GroupProduct::create([
@@ -1342,14 +1820,73 @@ class ProductController extends Controller
                         }
 
 
+
+                        if ($request->hasFile('img')) {
+                            $arr_images = [];
+                            // * Start Creating Media...
+                            foreach ($request->img as $key => $image) {
+                                if($image != null){
+                                    // Uploading File
+                                    $filename = $image->getClientOriginalName();
+                                    $path = $image->storeAs($folderPath, $filename);
+
+                                    // Creating FIle link
+                                    $media = new Media();
+                                    $media->tag = "Product_Image";
+                                    $media->file_type = "Image";
+                                    $media->type = "Product";
+                                    $media->type_id = $product_obj->id;
+                                    $media->file_name = $image->getClientOriginalName();
+                                    $media->path = str_replace("public",'storage',$path);
+                                    $media->extension = explode('.',$image->getClientOriginalName())[1] ?? '';
+                                    $media->save();
+                                    $arr_images[] = $media->id;
+                                }
+                            }
+
+                            // Add images to UserShopItem
+                            if(count($arr_images) > 0) {
+                                $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                $usi->save();
+                            }
+
+                        }
+
+                        if($request->avl_assets != null){
+                            $arr_images = [];
+                            foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
+                                $filetype = explode('/',Storage::mimeType($value));
+                                $filename =basename($value);
+                                $path = "storage/files/$user->id/$filename";
+                                $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                                $rec = Media::create([
+                                    'type' => 'Product',
+                                    'type_id' => $product_obj->id,
+                                    'file_name' => $filename,
+                                    'path' => $path,
+                                    'extension' => $extension,
+                                    'file_type' => 'Image',
+                                    'tag' => 'Product_Image',
+                                ]);
+
+                                array_push($arr_images,$rec->id);
+                            }
+
+                            if(count($arr_images) > 0) {
+                                $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                $usi->save();
+                            }
+                        }
+
+
                     }
 
                     $parentAttribute = ProductAttributeValue::whereId($second)->first();
-                        
+
                     $product_extra_info_obj_user = [
                         'product_id' => $product_obj->id,
                         'user_id' => $user->id,
-                        'user_shop_id' => $user_shop->id, 
+                        'user_shop_id' => $user_shop->id,
                         'allow_resellers' => 'no',
                         'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
                         'collection_name' =>$request->collection_name ?? '',
@@ -1426,7 +1963,7 @@ class ProductController extends Controller
                         // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
                         'is_publish' => 1,
                         'price' => $request->customer_price_without_gst ?? 0,
-                        'min_sell_pr_without_gst' => $request->customer_price_without_gst ?? 0, 
+                        'min_sell_pr_without_gst' => $request->customer_price_without_gst ?? 0,
                         'hsn' => $request->hsn ?? null,
                         'hsn_percent' => $request->hsn_percent ?? null,
                         'mrp' => $request->mrp ?? 0,
@@ -1441,12 +1978,51 @@ class ProductController extends Controller
 
                     $product_obj = Product::create($product_obj);
 
+                    $product_id = $product_obj->id;
+
+                    $product = $product_obj;
+
+                    $custom_fields = json_decode($user->custom_fields);
+                    if ($custom_fields != null && count($custom_fields) > 0) {
+                        foreach ($custom_fields as $key => $customfield) {
+
+                            $ogname = $customfield->id;
+                            $customfield = str_replace("[]",'',$customfield->id);
+                            if (is_array($request->get($customfield)) || is_html($request->get($customfield))) {
+
+                                echo "' $ogname ' It is an Array or HTML.".newline();
+                                $updatevalue = base64_encode(json_encode($request->get($customfield)));
+
+                            }else{
+                                // $customfield = str_replace("[]",'',$customfield);
+                                $updatevalue = $request->get($customfield);
+                            }
+
+                            $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                            if ($custom_field == null) {
+                                echo "Create New Records".newline(2);
+                                CustomFields::create([
+                                    'relatation_name' => $ogname,
+                                    'product_id' => $product_obj->id,
+                                    'value' => $updatevalue ?? '',
+                                    'user_id' => auth()->id(),
+                                ]);
+                            }else{
+                                echo "Record Are Exist Update It".newline(2);
+
+                                $custom_field->update([
+                                    'value' => $updatevalue ?? '',
+                                ]);
+                            }
+                        }
+                    }
+
                     $parentAttribute = ProductAttributeValue::whereId($third)->first();
-                    
+
                     $product_extra_info_obj_user = [
                         'product_id' => $product_obj->id,
                         'user_id' => $user->id,
-                        'user_shop_id' => $user_shop->id, 
+                        'user_shop_id' => $user_shop->id,
                         'allow_resellers' => 'no',
                         'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
                         'collection_name' =>$request->collection_name ?? '',
@@ -1481,16 +2057,24 @@ class ProductController extends Controller
 
                     // ` Craeting Variation of Non Defined Attribute
                     foreach ($custom_attriute_columns as $key => $custom_attriute) {
-                        $valueasd = '';                    
+                        $valueasd = '';
                         $custom_attriute = str_replace(" ","_",$custom_attriute);
                         if ($request->has($custom_attriute)) {
                             $valueasd = $request->get($custom_attriute);
                             $parentAttribute = ProductAttributeValue::whereId($valueasd[0])->first();
-    
+
+                            // echo $valueasd[0].newline(2);
+
+                            // // echo "parentAttribute".newline(2);
+                            // // magicstring($parentAttribute);
+
+                            // continue;
+
+
                             $product_extra_info_obj_user = [
                                 'product_id' => $product_obj->id,
                                 'user_id' => $user->id,
-                                'user_shop_id' => $user_shop->id, 
+                                'user_shop_id' => $user_shop->id,
                                 'allow_resellers' => 'no',
                                 'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
                                 'collection_name' =>$request->collection_name ?? '',
@@ -1512,8 +2096,6 @@ class ProductController extends Controller
                                 'sourcing_month' => $request->sourcing_month ?? '',
                                 'attribute_value_id' => $parentAttribute->id,
                                 'attribute_id' => $parentAttribute->parent_id,
-                                // 'attribute_value_id' => $product_att_val->attribute_value,
-                                // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
                                 'group_id' => $sku_code,
                                 'Cust_tag_group' => $request->sourcing_month ?? '',
                                 'remarks' =>  $request->remarks ?? '' ,
@@ -1522,7 +2104,9 @@ class ProductController extends Controller
                             ProductExtraInfo::create($product_extra_info_obj_user);
                         }
                     }
-    
+
+                    // return;
+
                     $usi = UserShopItem::create([
                         'user_id'=> $user->id,
                         'category_id'=> $request->category_id,
@@ -1533,7 +2117,7 @@ class ProductController extends Controller
                         'is_published'=> 1,
                         'price'=> $price,
                     ]);
-            
+
                     if($reseller_group){
                         // create Reseller Group record
                         $g_p =  GroupProduct::create([
@@ -1542,7 +2126,7 @@ class ProductController extends Controller
                             'price'=> $request->reseller_price ?? 0,
                         ]);
                     }
-                
+
                     if($vip_group){
                         // create Vip Group record
                         GroupProduct::create([
@@ -1553,9 +2137,70 @@ class ProductController extends Controller
                     }
 
 
-                }
-            }else{
 
+                    if ($request->hasFile('img')) {
+                        $arr_images = [];
+                        // * Start Creating Media...
+                        foreach ($request->img as $key => $image) {
+                            if($image != null){
+                                // Uploading File
+                                $filename = $image->getClientOriginalName();
+
+                                $path = $image->storeAs($folderPath, $filename);
+
+                                // Creating FIle link
+                                $media = new Media();
+                                $media->tag = "Product_Image";
+                                $media->file_type = "Image";
+                                $media->type = "Product";
+                                $media->type_id = $product_obj->id;
+                                $media->file_name = $image->getClientOriginalName();
+                                $media->path = str_replace("public",'storage',$path);
+                                $media->extension = explode('.',$image->getClientOriginalName())[1] ?? '';
+                                $media->save();
+                                $arr_images[] = $media->id;
+                            }
+                        }
+
+                        // Add images to UserShopItem
+                        if(count($arr_images) > 0) {
+                            $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                            $usi->save();
+                        }
+
+                    }
+
+
+                    if($request->avl_assets != null){
+                        $arr_images = [];
+                        foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
+                            $filetype = explode('/',Storage::mimeType($value));
+                            $filename =basename($value);
+                            $path = "storage/files/$user->id/$filename";
+                            $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                            $rec = Media::create([
+                                'type' => 'Product',
+                                'type_id' => $product_obj->id,
+                                'file_name' => $filename,
+                                'path' => $path,
+                                'extension' => $extension,
+                                'file_type' => 'Image',
+                                'tag' => 'Product_Image',
+                            ]);
+
+                            array_push($arr_images,$rec->id);
+                        }
+
+                        if(count($arr_images) > 0) {
+                            $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                            $usi->save();
+                        }
+                    }
+
+                }
+            }
+            else{
+                $is_empty = true;
                 $reseller_group = Group::whereUserId($user->id)->where('name',"Reseller")->first();
                 if(!$reseller_group){
                     $reseller_group = Group::create([
@@ -1574,11 +2219,12 @@ class ProductController extends Controller
                     ]);
                 }
 
-
                 // ` Craeting Variation of Non Defined Attribute
                 foreach ($custom_attriute_columns as $key => $custom_attriute) {
-                    $valueasd = '';                    
+                    $valueasd = '';
                     $custom_attriute = str_replace(" ","_",$custom_attriute);
+
+
                     if ($request->has($custom_attriute)) {
                         $valueasd = $request->get($custom_attriute);
                         $parentAttribute = ProductAttributeValue::whereId($valueasd[0])->first();
@@ -1600,10 +2246,9 @@ class ProductController extends Controller
                             'manage_inventory' => (in_array($request->sample_available,$allowed_array) ? '1' : '0') ?? '0',
                             'stock_qty' => 0,
                             'status' => 0,
-                            // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
                             'is_publish' => 1,
                             'price' => $request->customer_price_without_gst ?? 0,
-                            'min_sell_pr_without_gst' => $request->customer_price_without_gst ?? 0, 
+                            'min_sell_pr_without_gst' => $request->customer_price_without_gst ?? 0,
                             'hsn' => $request->hsn ?? null,
                             'hsn_percent' => $request->hsn_percent ?? null,
                             'mrp' => $request->mrp ?? 0,
@@ -1613,160 +2258,482 @@ class ProductController extends Controller
                             'exclusive' => 0,
                             'base_currency' => $request->base_currency ?? 'INR',
                             'SellingPriceUnitIndex' => $request->selling_price_unit ?? null,
-                            // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
                         ];
-        
-                        $product_obj = Product::create($product_obj);
-        
-                        
 
-                        $product_extra_info_obj_user = [
-                            'product_id' => $product_obj->id,
-                            'user_id' => $user->id,
-                            'user_shop_id' => $user_shop->id, 
-                            'allow_resellers' => 'no',
-                            'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
-                            'collection_name' =>$request->collection_name ?? '',
-                            'season_month' => $request->season_month ?? '',
-                            'season_year' => $request->season_year ?? '',
-                            'sample_available' => 0,
-                            'sample_year' => $request->sample_year ?? '',
-                            'sample_month' => $request->sample_month ?? '',
-                            'sampling_time' => $request->sampling_time ?? '',
-                            'CBM' => $request->CBM ?? '',
-                            'production_time' => $request->production_time ?? '',
-                            'MBQ' => $request->MBQ ?? '',
-                            'MBQ_unit' => $request->MBQ_unit ?? '',
-                            'vendor_sourced_from' => $request->vendor_sourced_from ?? '',
-                            'vendor_price' => $request->vendor_price ?? '',
-                            'product_cost_unit' => $request->product_cost_unit ?? '',
-                            'vendor_currency' => $request->vendor_currency ?? '',
-                            'sourcing_year' => $request->sourcing_year ?? '',
-                            'sourcing_month' => $request->sourcing_month ?? '',
-                            'attribute_value_id' => $parentAttribute->id,
-                            'attribute_id' => $parentAttribute->parent_id,
-                            // 'attribute_value_id' => $product_att_val->attribute_value,
-                            // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
-                            'group_id' => $sku_code,
-                            'Cust_tag_group' => $request->sourcing_month ?? '',
-                            'remarks' =>  $request->remarks ?? '' ,
-                            'brand_name' => $request->brand_name ?? '',
-                        ];
-                        ProductExtraInfo::create($product_extra_info_obj_user);
+                        $product_obj = Product::create($product_obj);
+
+                        $product_id = $product_obj->id;
+
+                        $product = $product_obj;
+
+                        $custom_fields = (array) json_decode($user->custom_fields);
+                        if ($custom_fields != null && count($custom_fields) > 0) {
+                            foreach ($custom_fields as $key => $customfield) {
+
+                                $ogname = $customfield->id;
+                                $customfield = str_replace("[]",'',$customfield->id);
+                                if (is_array($request->get($customfield)) || is_html($request->get($customfield))) {
+
+                                    echo "' $ogname ' It is an Array or HTML.".newline();
+                                    $updatevalue = base64_encode(json_encode($request->get($customfield)));
+
+                                }else{
+                                    // $customfield = str_replace("[]",'',$customfield);
+                                    $updatevalue = $request->get($customfield);
+                                }
+
+                                $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                if ($custom_field == null) {
+                                    echo "Create New Records".newline(2);
+                                    CustomFields::create([
+                                        'relatation_name' => $ogname,
+                                        'product_id' => $product_obj->id,
+                                        'value' => $updatevalue ?? '',
+                                        'user_id' => auth()->id(),
+                                    ]);
+                                }else{
+                                    echo "Record Are Exist Update It".newline(2);
+
+                                    $custom_field->update([
+                                        'value' => $updatevalue ?? '',
+                                    ]);
+                                }
+                            }
+                        }
+
+
+                        // $product_extra_info_obj_user = [
+                        //     'product_id' => $product_obj->id,
+                        //     'user_id' => $user->id,
+                        //     'user_shop_id' => $user_shop->id,
+                        //     'allow_resellers' => 'no',
+                        //     'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
+                        //     'collection_name' =>$request->collection_name ?? '',
+                        //     'season_month' => $request->season_month ?? '',
+                        //     'season_year' => $request->season_year ?? '',
+                        //     'sample_available' => 0,
+                        //     'sample_year' => $request->sample_year ?? '',
+                        //     'sample_month' => $request->sample_month ?? '',
+                        //     'sampling_time' => $request->sampling_time ?? '',
+                        //     'CBM' => $request->CBM ?? '',
+                        //     'production_time' => $request->production_time ?? '',
+                        //     'MBQ' => $request->MBQ ?? '',
+                        //     'MBQ_unit' => $request->MBQ_unit ?? '',
+                        //     'vendor_sourced_from' => $request->vendor_sourced_from ?? '',
+                        //     'vendor_price' => $request->vendor_price ?? '',
+                        //     'product_cost_unit' => $request->product_cost_unit ?? '',
+                        //     'vendor_currency' => $request->vendor_currency ?? '',
+                        //     'sourcing_year' => $request->sourcing_year ?? '',
+                        //     'sourcing_month' => $request->sourcing_month ?? '',
+                        //     'attribute_value_id' => $parentAttribute->id,
+                        //     'attribute_id' => $parentAttribute->parent_id,
+                        //     'group_id' => $sku_code,
+                        //     'Cust_tag_group' => $request->sourcing_month ?? '',
+                        //     'remarks' =>  $request->remarks ?? '' ,
+                        //     'brand_name' => $request->brand_name ?? '',
+                        // ];
+                        // ProductExtraInfo::create($product_extra_info_obj_user);
+
+                    // ` Craeting Variation of Non Defined Attribute
+                    foreach ($custom_attriute_columns as $key => $custom_attriute) {
+                        $valueasd = '';
+                        $custom_attriute = str_replace(" ","_",$custom_attriute);
+                        if ($request->has($custom_attriute)) {
+                            $valueasd = $request->get($custom_attriute);
+                            $parentAttribute = ProductAttributeValue::whereId($valueasd[0])->first();
+
+                            $product_extra_info_obj_user = [
+                                'product_id' => $product_obj->id,
+                                'user_id' => $user->id,
+                                'user_shop_id' => $user_shop->id,
+                                'allow_resellers' => 'no',
+                                'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
+                                'collection_name' =>$request->collection_name ?? '',
+                                'season_month' => $request->season_month ?? '',
+                                'season_year' => $request->season_year ?? '',
+                                'sample_available' => 0,
+                                'sample_year' => $request->sample_year ?? '',
+                                'sample_month' => $request->sample_month ?? '',
+                                'sampling_time' => $request->sampling_time ?? '',
+                                'CBM' => $request->CBM ?? '',
+                                'production_time' => $request->production_time ?? '',
+                                'MBQ' => $request->MBQ ?? '',
+                                'MBQ_unit' => $request->MBQ_unit ?? '',
+                                'vendor_sourced_from' => $request->vendor_sourced_from ?? '',
+                                'vendor_price' => $request->vendor_price ?? '',
+                                'product_cost_unit' => $request->product_cost_unit ?? '',
+                                'vendor_currency' => $request->vendor_currency ?? '',
+                                'sourcing_year' => $request->sourcing_year ?? '',
+                                'sourcing_month' => $request->sourcing_month ?? '',
+                                'attribute_value_id' => $parentAttribute->id,
+                                'attribute_id' => $parentAttribute->parent_id,
+                                'group_id' => $sku_code,
+                                'Cust_tag_group' => $request->sourcing_month ?? '',
+                                'remarks' =>  $request->remarks ?? '' ,
+                                'brand_name' => $request->brand_name ?? '',
+                            ];
+                            ProductExtraInfo::create($product_extra_info_obj_user);
+                        }
+                    }
+
+
+                        $usi = UserShopItem::create([
+                            'user_id'=> $user->id,
+                            'category_id'=> $request->category_id,
+                            'sub_category_id'=> $request->category_id,
+                            'product_id'=> $product_obj->id,
+                            'user_shop_id'=> $user_shop->id,
+                            'parent_shop_id'=> 0,
+                            'is_published'=> 1,
+                            'price'=> $price,
+                            'images' => count($arr_images) > 0 ? implode(',',$arr_images) : null,
+                        ]);
+                        $count++;
+
+                        if($reseller_group){
+                            // create Reseller Group record
+                            $g_p =  GroupProduct::create([
+                                'group_id'=>$reseller_group->id,
+                                'product_id'=>$product_obj->id,
+                                'price'=> $request->reseller_price ?? 0,
+                            ]);
+                        }
+
+                        if($vip_group){
+                            // create Vip Group record
+                            GroupProduct::create([
+                                'group_id'=>$vip_group->id,
+                                'product_id'=>$product_obj->id,
+                                'price'=> $request->vip_price ?? 0,
+                            ]);
+                        }
+
+
+                        if ($request->hasFile('img')) {
+                            $arr_images = [];
+                            // * Start Creating Media...
+
+                            foreach ($request->img as $key => $image) {
+                                if($image != null){
+                                    // Uploading File
+                                    $filename = $image->getClientOriginalName();
+                                    $path = $image->storeAs($folderPath, $filename);
+
+                                    // Creating FIle link
+                                    $media = new Media();
+                                    $media->tag = "Product_Image";
+                                    $media->file_type = "Image";
+                                    $media->type = "Product";
+                                    $media->type_id = $product_obj->id;
+                                    $media->file_name = $filename;
+                                    $media->path = str_replace("public",'storage',$path);
+                                    $media->extension = explode('.',$filename)[1] ?? '';
+                                    $media->save();
+                                    $arr_images[] = $media->id;
+                                }
+                            }
+
+
+                            // Add images to UserShopItem
+                            if(count($arr_images) > 0) {
+                                $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                $usi->save();
+                            }
+
+                        }
+
+
+                        if($request->avl_assets != null){
+                            $arr_images = [];
+                            foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
+                                $filetype = explode('/',Storage::mimeType($value));
+                                $filename =basename($value);
+                                $path = "storage/files/$user->id/$filename";
+                                $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                                $rec = Media::create([
+                                    'type' => 'Product',
+                                    'type_id' => $product_obj->id,
+                                    'file_name' => $filename,
+                                    'path' => $path,
+                                    'extension' => $extension,
+                                    'file_type' => 'Image',
+                                    'tag' => 'Product_Image',
+                                ]);
+
+                                array_push($arr_images,$rec->id);
+                            }
+
+                            if(count($arr_images) > 0) {
+                                $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                                $usi->save();
+                            }
+                        }
+
+
+                        $is_empty = false;
+
                     }
                 }
 
 
-                if($file_lock == 0){
-                    if(request()->has('img') && count($request->file('img')) > 0){
-                        foreach($files as $tempimg){
-                            $img = $this->uploadFile($tempimg, "products")->getFilePath();
-                            $filename = generateRandomStringNative(6).$tempimg->getClientOriginalName();
-                            $extension = pathinfo($filename, PATHINFO_EXTENSION);
-                            if($filename != null){
-                              $media =  Media::create([
-                                    'type' => 'Product',
-                                    'type_id' => $product->id,
-                                    'file_name' => $filename,
-                                    'path' => $img,
-                                    'extension' => $extension,
-                                    'file_type' => "Image",
-                                    'tag' => "Product_Image",
+                if ($is_empty) {
+                    $unique_slug  = getUniqueProductSlug($request->title);
+                    $product_obj =  [
+                        'title' => $request->title,
+                        'model_code' => $request->model_code,
+                        'category_id' => $request->category_id,
+                        'sub_category' => $request->sub_category,
+                        'brand_id' => 0,
+                        'user_id' => auth()->id(),
+                        'sku' => $sku_code,
+                        'slug' => $unique_slug,
+                        'description' => $request->description,
+                        'carton_details' =>  $request->carton_details,
+                        'shipping' =>  $request->shipping,
+                        'manage_inventory' => (in_array($request->sample_available,$allowed_array) ? '1' : '0') ?? '0',
+                        'stock_qty' => 0,
+                        'status' => 0,
+                        // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
+                        'is_publish' => 1,
+                        'price' => $request->customer_price_without_gst ?? 0,
+                        'min_sell_pr_without_gst' => $request->customer_price_without_gst ?? 0,
+                        'hsn' => $request->hsn ?? null,
+                        'hsn_percent' => $request->hsn_percent ?? null,
+                        'mrp' => $request->mrp ?? 0,
+                        'video_url' => $request->video_url ?? null,
+                        'search_keywords' => $request->search_keywords ?? null,
+                        'artwork_url' => $request->artwork_url ?? null,
+                        'exclusive' => 0,
+                        'base_currency' => $request->base_currency ?? 'INR',
+                        'SellingPriceUnitIndex' => $request->selling_price_unit ?? null,
+                        // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
+                    ];
+
+                    $product_obj = Product::create($product_obj);
+
+                    $product_id = $product_obj->id;
+                    $product = $product_obj;
+
+                    $custom_fields = json_decode($user->custom_fields);
+                    if ($custom_fields != null && count( (array) $custom_fields) > 0) {
+                        foreach ($custom_fields as $key => $customfield) {
+
+                            $ogname = $customfield->id;
+                            $customfield = str_replace("[]",'',$customfield->id);
+                            if (is_array($request->get($customfield)) || is_html($request->get($customfield))) {
+
+                                echo "' $ogname ' It is an Array or HTML.".newline();
+                                $updatevalue = base64_encode(json_encode($request->get($customfield)));
+
+                            }else{
+                                // $customfield = str_replace("[]",'',$customfield);
+                                $updatevalue = $request->get($customfield);
+                            }
+
+                            $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                            if ($custom_field == null) {
+                                echo "Create New Records".newline(2);
+                                CustomFields::create([
+                                    'relatation_name' => $ogname,
+                                    'product_id' => $product_obj->id,
+                                    'value' => $updatevalue ?? '',
+                                    'user_id' => auth()->id(),
                                 ]);
-                                $file_lock_data[] =  ['m_id'=>$media->id];
-                                $arr_images[] = $media->id;
+                            }else{
+                                echo "Record Are Exist Update It".newline(2);
+
+                                $custom_field->update([
+                                    'value' => $updatevalue ?? '',
+                                ]);
                             }
                         }
                     }
-                    $file_lock = 1;
-                }else{
-                    if(count($file_lock_data) > 0){
-                        foreach ($file_lock_data as $key => $file_lock_data_item) {
-                            $media_old =  Media::whereId($file_lock_data_item)->first();
-                            $media =  Media::create([
-                                  'type' => 'Product',
-                                  'type_id' => $product->id,
-                                  'file_name' => $media_old->file_name,
-                                  'path' => $media_old->path,
-                                  'extension' => $media_old->extension,
-                                  'file_type' => "Image",
-                                  'tag' => "Product_Image",
-                              ]);
-                              $arr_images[] = $media->id;
+
+                    $product_extra_info_obj_user = [
+                        'product_id' => $product_obj->id,
+                        'user_id' => $user->id,
+                        'user_shop_id' => $user_shop->id,
+                        'allow_resellers' => 'no',
+                        'exclusive_buyer_name' => $request->exclusive_buyer_name ?? '',
+                        'collection_name' =>$request->collection_name ?? '',
+                        'season_month' => $request->season_month ?? '',
+                        'season_year' => $request->season_year ?? '',
+                        'sample_available' => 0,
+                        'sample_year' => $request->sample_year ?? '',
+                        'sample_month' => $request->sample_month ?? '',
+                        'sampling_time' => $request->sampling_time ?? '',
+                        'CBM' => $request->CBM ?? '',
+                        'production_time' => $request->production_time ?? '',
+                        'MBQ' => $request->MBQ ?? '',
+                        'MBQ_unit' => $request->MBQ_unit ?? '',
+                        'vendor_sourced_from' => $request->vendor_sourced_from ?? '',
+                        'vendor_price' => $request->vendor_price ?? '',
+                        'product_cost_unit' => $request->product_cost_unit ?? '',
+                        'vendor_currency' => $request->vendor_currency ?? '',
+                        'sourcing_year' => $request->sourcing_year ?? '',
+                        'sourcing_month' => $request->sourcing_month ?? '',
+                        'attribute_value_id' => 1086,
+                        'attribute_id' => 169,
+                        // 'attribute_value_id' => $product_att_val->attribute_value,
+                        // 'attribute_id' => getAttruibuteById($product_att_val->parent_id)->name,
+                        'group_id' => $sku_code,
+                        'Cust_tag_group' => $request->sourcing_month ?? '',
+                        'remarks' =>  $request->remarks ?? '' ,
+                        'brand_name' => $request->brand_name ?? '',
+                    ];
+                    ProductExtraInfo::create($product_extra_info_obj_user);
+
+                    $usi = UserShopItem::create([
+                        'user_id'=> $user->id,
+                        'category_id'=> $request->category_id,
+                        'sub_category_id'=> $request->category_id,
+                        'product_id'=> $product_obj->id,
+                        'user_shop_id'=> $user_shop->id,
+                        'parent_shop_id'=> 0,
+                        'is_published'=> 1,
+                        'price'=> $price,
+                        'images' => count($arr_images) > 0 ? implode(',',$arr_images) : null,
+                    ]);
+                    $count++;
+
+                    if($reseller_group){
+                        // create Reseller Group record
+                        $g_p =  GroupProduct::create([
+                            'group_id'=>$reseller_group->id,
+                            'product_id'=>$product_obj->id,
+                            'price'=> $request->reseller_price ?? 0,
+                        ]);
+                    }
+
+                    if($vip_group){
+                        // create Vip Group record
+                        GroupProduct::create([
+                            'group_id'=>$vip_group->id,
+                            'product_id'=>$product_obj->id,
+                            'price'=> $request->vip_price ?? 0,
+                        ]);
+                    }
+
+
+                    if ($request->hasFile('img')) {
+                        $arr_images = [];
+                        // * Start Creating Media...
+                        foreach ($request->img as $key => $image) {
+                            if($image != null){
+                                // Uploading File
+                                $filename = $image->getClientOriginalName();
+
+                                $path = $image->storeAs($folderPath, $filename);
+
+                                // Creating FIle link
+                                $media = new Media();
+                                $media->tag = "Product_Image";
+                                $media->file_type = "Image";
+                                $media->type = "Product";
+                                $media->type_id = $product_obj->id;
+                                $media->file_name = $image->getClientOriginalName();
+                                $media->path = str_replace("public",'storage',$path);
+                                $media->extension = explode('.',$image->getClientOriginalName())[1] ?? '';
+                                $media->save();
+                                $arr_images[] = $media->id;
+                            }
                         }
-                      }
-                }
-                
 
 
-                $usi = UserShopItem::create([
-                    'user_id'=> $user->id,
-                    'category_id'=> $request->category_id,
-                    'sub_category_id'=> $request->category_id,
-                    'product_id'=> $product_obj->id,
-                    'user_shop_id'=> $user_shop->id,
-                    'parent_shop_id'=> 0,
-                    'is_published'=> 1,
-                    'price'=> $price,
-                    'images' => count($arr_images) > 0 ? implode(',',$arr_images) : null,
-                ]);
-        
-                if($reseller_group){
-                    // create Reseller Group record
-                    $g_p =  GroupProduct::create([
-                        'group_id'=>$reseller_group->id,
-                        'product_id'=>$product_obj->id,
-                        'price'=> $request->reseller_price ?? 0,
-                    ]);
+
+                        // Add images to UserShopItem
+                        if(count($arr_images) > 0) {
+                            $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                            $usi->save();
+                        }
+
+                    }
+
+
+                    if($request->avl_assets != null){
+                        $arr_images = [];
+                        foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
+                            $filetype = explode('/',Storage::mimeType($value));
+                            $filename =basename($value);
+                            $path = "storage/files/$user->id/$filename";
+                            $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                            $rec = Media::create([
+                                'type' => 'Product',
+                                'type_id' => $product_obj->id,
+                                'file_name' => $filename,
+                                'path' => $path,
+                                'extension' => $extension,
+                                'file_type' => 'Image',
+                                'tag' => 'Product_Image',
+                            ]);
+
+                            array_push($arr_images,$rec->id);
+                        }
+
+                        if(count($arr_images) > 0) {
+                            $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                            $usi->save();
+                        }
+                    }
+
+
+                    $count++;
                 }
-            
-                if($vip_group){
-                    // create Vip Group record
-                    GroupProduct::create([
-                        'group_id'=>$vip_group->id,
-                        'product_id'=>$product_obj->id,
-                        'price'=> $request->vip_price ?? 0,
-                    ]);
-                }
-                
+
+
             }
 
 
 
 
-            $msg =  "Product Crated with Varient $count";
-            return back()->with('success',$msg);
+            // magicstring($folderPath);
+            // return;
+            $msg =  "Product Created with Variant $count";
+            // return back()->with('success',$msg);
+
+
+            // magicstring($loop1);
+            // magicstring($loop2);
+            // magicstring($loop3);
+            // echo $msg;
+
+            if ($request->has('in_modal') && $request->in_modal == 1) {
+                return back()->with('success', $msg)->with('closemodal', "true");
+            }
+
+            return redirect(route('panel.check.display'))->with('success', $msg)->with('closemodal', "true");
             magicstring($request->all());
-             
+
+            return;
 
         } catch (\Throwable $e) {
-            // throw $e;
-            return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
+            throw $e;
+            // return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
 
-        
-        
-        
+
+
+
     }
 
 
     public function clone(Request $request,$id)
     {
-        
+
         if(AuthRole() == "User"){
              // chk user have active package or not!
             if(!haveActivePackageByUserId(auth()->id())){
                 return back()->with('error','You do not have any active package!');
-            } 
+            }
             $package = getUserActivePackage(auth()->id());
             $limits = json_decode($package->limit,true);
             $my_pro_counts = Product::where('user_id',auth()->id())->get()->count();
             if($limits['product_uploads'] <= $my_pro_counts){
                 return back()->with('error','Your Upload Products Limit exceed!');
             }
-            
+
         }
-       
+
         try{
             $user_shop_record = UserShop::where('user_id',auth()->id())->firstorFail();
             $value = Product::find($id);
@@ -1774,7 +2741,7 @@ class ProductController extends Controller
             // variant
             $variants = Product::whereSku($value->sku)->get();
             foreach ($variants as $key => $product) {
-                
+
                 $newProduct = $product->replicate();
                 $newProduct->created_at = \Carbon\Carbon::now();
                 $newProduct->user_id = auth()->id();
@@ -1806,9 +2773,9 @@ class ProductController extends Controller
                 // return $newMedia;
             }
 
-            
+
             return redirect()->route('panel.products.edit',$newProduct->id)->with('success','Product Replicate  Successfully!');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -1822,7 +2789,7 @@ class ProductController extends Controller
         $product = Product::whereId($request->id)->firstorFail();
         $quantity = $request->quantity;
         $user_shop_record = UserShop::where('user_id',auth()->id())->firstorFail();
-        
+
         return view('panel.products.include.qr-code-index',compact('product','quantity','user_shop_record'));
     }
 
@@ -1836,28 +2803,33 @@ class ProductController extends Controller
     {
         try{
             return view('panel.products.show',compact('product'));
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
     public function updateProductSku(Request $request)
     {
         try{
+
+
+            // magicstring($request->all());
+            // return;
             if($request->all_products == 1){
-                    $scoped_items = UserShopItem::whereUserId(auth()->id())->get();
-                    // $product_ids = Product::whereIn('id', $scoped_items->pluck('product_id'))->groupBy('sku')->pluck('id');
-                    $product_ids = Product::whereIn('id', $scoped_items->pluck('product_id'))->pluck('id');
- 
-                }else{
-                    $product_ids = $request->product_ids;
-                }
-                
-                if(count($product_ids) == 0){
-                    return back()->with('error','No Products added in your account!');
-                }
-                
-                return view('panel.products.qr',compact('product_ids'));
-        }catch(Exception $e){            
+                $scoped_items = UserShopItem::whereUserId(auth()->id())->get();
+                // $product_ids = Product::whereIn('id', $scoped_items->pluck('product_id'))->groupBy('sku')->pluck('id');
+                $product_ids = Product::whereIn('id', $scoped_items->pluck('product_id'))->pluck('id');
+            }else{
+                // $product_ids = $request->product_ids;
+                $product_ids = explode(",",$request->product_ids);
+            }
+
+            if(count($product_ids) == 0){
+                return back()->with('error','No Products added in your account!');
+            }
+
+            return view('panel.products.qr',compact('product_ids'));
+
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -1865,7 +2837,7 @@ class ProductController extends Controller
     {
         try{
             return view('panel.products.show',compact('product'));
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -1877,8 +2849,9 @@ class ProductController extends Controller
      * @return  \Illuminate\Http\Response
      */
     public function edit(Product $product)
-    {   
+    {
         try{
+
             $product = Product::whereId($product->id)->first();
             $product_record = UserShopItem::where('product_id',$product->id)->first();
             $attributes = ProductAttribute::get();
@@ -1887,22 +2860,50 @@ class ProductController extends Controller
             $shipping = json_decode($product->shipping);
             $carton_details = json_decode($product->carton_details);
             $variations = Product::whereSku($product->sku)->get();
-            $medias = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->get();
-            // $prodextra = ProductExtraInfo::whereId(request()->get('id'))->first();
 
+            $medias = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->where('extension','!=','gif')->get();
+            $medias_gif = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->where('extension','gif')->get();
+            $media_Video = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Video')->get();
+            $mediaAssets = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Asset')->get();
+
+            $mediaSize_attachment = 0;
+            foreach ($mediaAssets as $key => $media) {
+                $path = str_replace("storage","public",$media->path);
+                if (Storage::exists($path)) {
+                    $size_Of_File = Storage::size($path);
+                    $mediaSize_attachment += $size_Of_File;
+                }
+            }
+
+            $mediaSize_video = 0;
+            foreach ($media_Video as $key => $media) {
+                $path = str_replace("storage","public",$media->path);
+                if (Storage::exists($path)) {
+                    $size_Of_File = Storage::size($path);
+                    $mediaSize_video += $size_Of_File;
+                }
+            }
+
+            $mediaSize_gif = 0;
+            foreach ($medias_gif as $key => $media) {
+                $path = str_replace("storage","public",$media->path);
+                if (Storage::exists($path)) {
+                    $size_Of_File = Storage::size($path);
+                    $mediaSize_gif += $size_Of_File;
+                }
+            }
+
+            $mediaSize_Image = 0;
+            foreach ($medias as $key => $media) {
+                $path = str_replace("storage","public",$media->path);
+                if (Storage::exists($path)) {
+                    $size_Of_File = Storage::size($path);
+                    $mediaSize_Image += $size_Of_File;
+                }
+            }
 
             $prodextra = ProductExtraInfo::where('product_id',$product->id)->groupBy('attribute_value_id')->first();
-            
-            // if(AuthRole() == "User"){
-            //     $category = getProductCategoryByUserIndrustry(auth()->user()->industry_id);
-            // }else{
-                $category = getProductCategory();
-            // }
-
-            // magicstring(json_decode($colors->value,true));
-            
-            // return;
-
+            $category = getProductCategory();
 
             $custom_attribute = ProductAttribute::where('user_id',null)->orwhere('user_id',$product->user_id)->get();
 
@@ -1910,14 +2911,175 @@ class ProductController extends Controller
 
             $groupIds_all = ProductExtraInfo::where('group_id',$product->sku)->groupBy('Cust_tag_group')->orderBy('id','ASC')->pluck('Cust_tag_group','product_id');
 
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all'));
+            $user = User::whereId($product->user_id)->first();
+            $user_custom_col_list = json_decode($user->custom_attriute_columns) ?? [];
 
-        }catch(Exception $e){            
-            return back()->with('error', 'There was an error: ' . $e->getMessage());
+            $productVarients = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_id')->pluck('attribute_id');
+            if (request()->has('type') && decrypt(request()->get('type')) == 'editmainksku') {
+                $attribute_value_id = ProductExtraInfo::where('group_id',$product->sku)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
+            }else{
+                $attribute_value_id = ProductExtraInfo::where('product_id',$product->id)->groupBy('attribute_value_id')->pluck('attribute_value_id')->toArray();
+            }
+
+
+            $arraysd = ProductExtraInfo::where('group_id',$product->sku)->pluck('attribute_id','attribute_value_id')->toArray();
+            $varient_basis = countRepetitions($arraysd);
+            arsort($varient_basis);
+
+            $user_shop_item = UserShopItem::where('product_id',$product->id)->where('user_id',auth()->id())->first();
+            $available_products = ProductExtraInfo::where('group_id',$product->sku)->groupBy('product_id')->pluck('product_id')->toArray();
+
+            $product_variant_combo = [];
+            $keysToKeep = [];
+            foreach ($varient_basis as $key => $lRepeated) {
+                if ($lRepeated > 1) {
+                    array_push($keysToKeep, $key);
+                }
+            }
+            foreach ($available_products as $key => $products) {
+                $tmp = ProductExtraInfo::where('product_id',$products)->pluck('attribute_value_id','attribute_id')->toArray();
+
+                $keysArray = array_flip($keysToKeep);
+                $filteredArray = array_intersect_key($tmp, $keysArray);
+                // $filteredArray = array_reverse($filteredArray);
+                array_push($product_variant_combo, $filteredArray);
+
+            }
+
+            $user_custom_fields = json_decode($user->custom_fields,true) ?? [];
+
+            $fileds_sections = array_column($user_custom_fields, 'ref_section');
+            $fileds_sections_names = [];
+            $fileds_sections_ids = array_column($user_custom_fields, 'id');
+
+            foreach ($fileds_sections_ids as $key => $value) {
+                array_push($fileds_sections_names, getCustomFieldValueById($value,$product->id)->value ?? '');
+            }
+
+            $months = ['January' => 'January','February' => 'February','March' => 'March','April' => 'April','May' => 'May','June' => 'June','July' => 'July','August' => 'August','September' => 'September','October' => 'October','November' => 'November','December' => 'December'];
+
+            $mainsku_prices = [];
+            $mainsku_mrp = [];
+            $mainsku_selling_price_unit = [];
+            $mainsku_hsn = [];
+            $mainsku_hsnpercent = [];
+            $mainsku_grossweight = [];
+            $mainsku_netweight = [];
+            $mainsku_length = [];
+            $mainsku_width = [];
+            $mainsku_height = [];
+            $mainsku_standard_carton = [];
+            $mainsku_carton_weight = [];
+            $mainsku_carton_length = [];
+            $mainsku_carton_width = [];
+            $mainsku_carton_height = [];
+            foreach ($available_products as $key => $value) {
+                $product_tmp = getProductDataById($value);
+                $shipping2 = json_decode($product_tmp->shipping2);
+                $carton_details = json_decode($product_tmp->carton_details);
+                $mainsku_prices[] = $product_tmp->min_sell_pr_without_gst ?? '';
+                $mainsku_mrp[] = $product_tmp->mrp ?? '';
+                $mainsku_selling_price_unit[] = $product_tmp->selling_price_unit ?? '';
+                $mainsku_hsn[] = $product_tmp->hsn ?? '';
+                $mainsku_hsnpercent[] = $product_tmp->hsn_percent ?? '';
+                $mainsku_grossweight[] = $shipping2->gross_weight ?? '';
+                $mainsku_netweight[] = $shipping2->net_weight ?? '';
+                $mainsku_length[] = $shipping2->length ?? '';
+                $mainsku_width[] = $shipping2->width ?? '';
+                $mainsku_height[] = $shipping2->height ?? '';
+                $mainsku_standard_carton[] = $carton_details->standard_carton ?? '';
+                $mainsku_carton_weight[] = $carton_details->carton_weight ?? '';
+                $mainsku_carton_length[] = $carton_details->carton_length ?? '';
+                $mainsku_carton_width[] = $carton_details->carton_width ?? '';
+                $mainsku_carton_height[] = $carton_details->carton_height ?? '';
+
+
+            }
+
+            $mainsku_prices_str = implode(",", $mainsku_prices);
+            $mainsku_mrp_str = implode(",", $mainsku_mrp);
+            $mainsku_selling_price_unit_str = implode(",", $mainsku_selling_price_unit);
+            $mainsku_hsn_str = implode(",", $mainsku_hsn);
+            $mainsku_hsnpercent_str = implode(",", $mainsku_hsnpercent);
+            $mainsku_grossweight_str = implode(",", $mainsku_grossweight);
+            $mainsku_netweight_str = implode(",", $mainsku_netweight);
+            $mainsku_length_str = implode(",", $mainsku_length);
+            $mainsku_width_str = implode(",", $mainsku_width);
+            $mainsku_height_str = implode(",", $mainsku_height);
+            $mainsku_standard_carton_str = implode(",", $mainsku_standard_carton);
+            $mainsku_carton_weight_str = implode(",", $mainsku_carton_weight);
+            $mainsku_carton_length_str = implode(",", $mainsku_carton_length);
+            $mainsku_carton_width_str = implode(",", $mainsku_carton_width);
+            $mainsku_carton_height_str = implode(",", $mainsku_carton_height);
+
+
+            // magicstring($mainsku_grossweight_str);
+            // return;
+
+            $mainsku_exclbuyer = [];
+            $mainsku_sourcedfrom = [];
+            $mainsku_vendor_price = [];
+            $mainsku_product_cost_unit = [];
+            $mainsku_vendor_currency = [];
+            $mainsku_remarks = [];
+
+            foreach ($available_products as $key => $value) {
+                $tmp_exc = [];
+                $productextra = getAllPropertiesofProductById($value,auth()->id());
+
+                foreach ($productextra as $key => $prodextrarec) {
+                    $tmp_exc[$key] = $prodextrarec->exclusive_buyer_name ?? '';
+                    $tmp_sourcefrm[$key] = $prodextrarec->vendor_sourced_from ?? '';
+                    $tmp_vendor_price[$key] = $prodextrarec->vendor_price ?? '';
+                    $tmp_product_cost_unit[$key] = $prodextrarec->product_cost_unit ?? '';
+                    $tmp_vendor_currency[$key] = $prodextrarec->vendor_currency ?? '';
+                    $tmp_remarks[$key] = $prodextrarec->remarks ?? '';
+
+                }
+
+                array_push($mainsku_exclbuyer, implode(",", array_unique($tmp_exc)));
+                array_push($mainsku_sourcedfrom, implode(",", array_unique($tmp_sourcefrm)));
+                array_push($mainsku_vendor_price, implode(",", array_unique($tmp_vendor_price)));
+                array_push($mainsku_product_cost_unit, implode(",", array_unique($tmp_product_cost_unit)));
+                array_push($mainsku_vendor_currency, implode(",", array_unique($tmp_vendor_currency)));
+                array_push($mainsku_remarks, implode(",", array_unique($tmp_remarks)));
+
+
+            }
+
+            $mainsku_exclbuyer_str = implode(",", $mainsku_exclbuyer);
+            $mainsku_sourcedfrom_str = implode(",", $mainsku_sourcedfrom);
+            $mainsku_vendor_price_str = implode(",", $mainsku_vendor_price);
+            $mainsku_product_cost_unit_str = implode(",", $mainsku_product_cost_unit);
+            $mainsku_vendor_currency_str = implode(",", $mainsku_vendor_currency);
+            $mainsku_remarks_str = implode(",", $mainsku_remarks);
+
+            // magicstring($mainsku_remarks_str);
+            // return;
+
+            $user_custom_fields_types = [];
+            foreach ($user_custom_fields as $key => $value) {
+                $user_custom_fields_types += [$value['id'] => $value['type']];
+            }
+
+
+
+            $user_custom_fields_types = json_encode($user_custom_fields_types);
+
+            $length_uom = json_decode(getSetting('dimension_uom'));
+            $quantity_uom = json_decode(getSetting('item_uom'));
+            $weight_uom = json_decode(getSetting('weight_uom'));
+
+
+            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months','mainsku_prices_str','mainsku_mrp_str','mainsku_exclbuyer_str','mainsku_hsn_str','mainsku_hsnpercent_str','mainsku_grossweight_str','mainsku_netweight_str','mainsku_length_str','mainsku_selling_price_unit_str','mainsku_width_str','mainsku_height_str','mainsku_standard_carton_str','mainsku_carton_weight_str','mainsku_carton_length_str','mainsku_carton_width_str','mainsku_carton_height_str','mainsku_sourcedfrom_str','mainsku_vendor_price_str','mainsku_product_cost_unit_str','mainsku_vendor_currency_str','mainsku_remarks_str','length_uom','quantity_uom','weight_uom','user_custom_fields_types'));
+
+        }catch(\Exception $e){
+            // return back()->with('error', 'There was an error: ' . $e->getMessage());
+            throw $e;
         }
     }
     public function editVarient(Request $request)
-    {   
+    {
         try{
             // return $request->all();
             $user_shop_record = UserShop::where('user_id',auth()->id())->firstorFail();
@@ -1965,14 +3127,14 @@ class ProductController extends Controller
                     'parent_shop_id' => 0,
                 ]);
             }
-            
+
              return redirect(route('panel.products.edit',$new_product->id))->with('success','Variant Added Successfully!');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
     public function updateSKU(Request $request,$id)
-    { 
+    {
         try{
             $products = Product::where('sku',$request->old_sku)->get();
             if ($products) {
@@ -1983,28 +3145,113 @@ class ProductController extends Controller
                 }
             }
              return back()->with('success','SKU Updated Successfully!');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
-    
 
-   
+
+
     public function updateVarient(Request $request,Product $product){
         $varient_products = Product::where('id','!=',$product->id)->where('sku', '=', $product->sku)->get();
         foreach ($varient_products as $v_p){
             if($v_p->color == $request->color && $v_p->size == $request->size){
                 return back()->with('error','This variant already exists')->withInput();
             }
-        } 
+        }
         $product->color = $request->color;
         $product->size = $request->size;
         $product->save();
-        return back()->with('success','Varient Updated Successfully!');
+        return back()->with('success','Variant Updated Successfully!');
     }
 
     public function update(Request $request,Product $product)
     {
+
+
+        // magicstring($request->all());
+        // return;
+
+
+
+        $any_value = [];
+        $newProp = [];
+        $substring = "any_value";
+
+        foreach ($request->all() as $key => $value) {
+            if (strpos($key, $substring) !== false) {
+                array_push($any_value,$key);
+
+                if (is_array($request->$key)) {
+
+                    $tmp = implode("x",$request->$key);
+                    if ($tmp != 'xxx') {
+                        $request[$key] = $tmp;
+                    }else{
+                        $request[$key] = '';
+                    }
+                }
+
+                // checking Value Exist or Not
+                $attribute_name = explode("-",$key)[1];
+
+                $chkCountAttr = ProductAttribute::where('name',$attribute_name)->where('user_id',auth()->id())->get();
+
+
+                if ($chkCountAttr->count() == 0) {
+                    $attribute_name = str_replace("_"," ",$attribute_name);
+                    $chkCountAttr = ProductAttribute::where('name',$attribute_name)->where('user_id',auth()->id())->get();
+                }
+
+
+                if ($chkCountAttr->count() != 0) {
+                    $attribute_id = $chkCountAttr[0]->id;
+                    $received_value = $request->$key;
+
+                    if ($received_value != null && $received_value != "" && $received_value != []) {
+                        $chkatt = ProductAttributeValue::where('parent_id',$attribute_id)->where('attribute_value',$received_value)->first();
+
+                        if ($chkatt == null) {
+                            $tmparrvar = ProductAttributeValue::create([
+                                'parent_id' => $attribute_id,
+                                'user_id' => auth()->id() ?? null,
+                                'attribute_value' => $received_value,
+                            ]);
+
+                            $request[$attribute_name] = array($tmparrvar->id);
+
+                            array_push($newProp,$tmparrvar->id);
+
+                        }else{
+                            // magicstring($chkatt);
+                            $request[$attribute_name] = array($chkatt->id);
+                            array_push($newProp,$chkatt->id);
+
+
+                        }
+                    }
+                }else{
+                    echo "Else Part Will Work";
+                }
+            }
+        }
+
+        // magicstring($newProp);
+        $request['properties'] = array_merge($request->properties,$newProp);
+
+        // magicstring($request->all());
+
+        // return;
+
+        $custom_attriute_columns = json_decode(auth()->user()->custom_fields,true) ?? [];
+
+        if ($custom_attriute_columns != null && count($custom_attriute_columns) > 0) {
+            $custom_attriute_columns = array_column($custom_attriute_columns, 'id');
+        }else{
+            $custom_attriute_columns = [];
+        }
+
+        $count = 0;
         $this->validate($request, [
             'brand_id'     => 'required',
             'user_id'     => 'required',
@@ -2015,271 +3262,626 @@ class ProductController extends Controller
             'manage_inventory'     => 'sometimes',
             'status'     => 'required',
             'stock_qty'     => 'sometimes',
-        ]); 
-           
-
+        ]);
         $allow_array = ['Yes','YES','yes','Hn','true',true,1,'on'];
+        try{
 
-        try{            
-            if(!$request->has('is_publish')){
-                $request['is_publish'] = 0;
-            }
-
-
-            if(in_array($request->has('is_publish'),$allow_array)){
-                $request['is_publish'] = 1;
-            }else{
-                $request['is_publish'] = 0;
-            }
-
-            
-
-
-
-            $usi = UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->first();
-            $chk_inventroy = Inventory::where('product_id',$product->id)->where('user_id',auth()->id())->get();
-
-            if ($request->has('manage_inventory') && $request->get('manage_inventory') == 1) {
-                if (count($chk_inventroy) == 0) {
-                    // magicstring($request->all());
-                    Inventory::create([
-                        'user_shop_item_id' => $usi->id,
-                        'product_id' => $product->id,
-                        'user_id' => auth()->id(),
-                        'stock' => 0,
-                        'product_sku' => $product->sku,
-                        'parent_id' => 0,
-                        'prent_stock' => 0,
-                    ]);
+            if (!$request->has('type_main')) {
+                if(!$request->has('is_publish')){
+                    $request['is_publish'] = 0;
+                }
+                if(in_array($request->has('is_publish'),$allow_array)){
+                    $request['is_publish'] = 1;
                 }else{
-                    getinventoryByproductId($product->id)->update(['status'=>1]);
+                    $request['is_publish'] = 0;
                 }
-            }else{
-                if (count($chk_inventroy) != 0) {
-                    getinventoryByproductId($product->id)->update(['status'=>0]);
-                }
-            }
-            
+
+                $usi = UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->first();
+                $chk_inventroy = Inventory::where('product_id',$product->id)->where('user_id',auth()->id())->get();
+                if ($request->has('manage_inventory') && $request->get('manage_inventory') == 1) {
+                    if (count($chk_inventroy) == 0) {
+                        // magicstring($request->all());
+                        Inventory::create([
+                            'user_shop_item_id' => $usi->id,
+                            'product_id' => $product->id,
+                            'user_id' => auth()->id(),
+                            'stock' => 0,
+                            'product_sku' => $product->sku,
+                            'parent_id' => 0,
+                            'prent_stock' => 0,
+                        ]);
+                    }else{
+                        getinventoryByproductId($product->id)->update(['status'=>1]);
+                    }
 
 
-            if($product){
-                // To Fullfillment of Client MRP Need
-                $request['price'] =  $request->mrp;
-                if($request->hasFile("img")){
-                        foreach($request->file('img') as $tempimg){
-                            $img = $this->uploadFile($tempimg, "products")->getFilePath();
-                            $filename = $tempimg->getClientOriginalName();
-                            $extension = pathinfo($filename, PATHINFO_EXTENSION);
-                            if($filename != null){
-                                Media::create([
-                                    'type' => 'Product',
-                                    'type_id' => $product->id,
-                                    'file_name' => $filename,
-                                    'path' => $img,
-                                    'extension' => $extension,
-                                    'file_type' => "Image",
-                                    'tag' => "Product_Image",
+                }else{
+                    if (count($chk_inventroy) != 0) {
+                        getinventoryByproductId($product->id)->update(['status'=>0]);
+                    }
+                }
+
+                $user_id  = auth()->user()->id;
+                $folderPath = "public/files/$user_id";
+                if($product){
+                    // To Fullfillment of Client MRP Need
+                    $request['price'] =  $request->mrp;
+                    if($request->hasFile("img")){
+                            foreach($request->file('img') as $tempimg){
+
+                                $filename = $tempimg->getClientOriginalName();
+
+                                $path = $tempimg->storeAs($folderPath, $filename);
+                                $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                                $fileType = ucfirst(explode("/",Storage::mimeType($path))[0] );
+                                $fileSize = Storage::size($path);
+                                $tag = '';
+                                if ($fileType == 'Image') {
+                                    $tag = 'Product_Image';
+                                }
+                                elseif ($fileType == 'Video') {
+                                    $tag = 'Product_Video';
+                                }else{
+                                    $tag ='Product_Asset';
+                                }
+
+                                if($filename != null){
+                                    Media::create([
+                                        'type' => 'Product',
+                                        'type_id' => $product->id,
+                                        'file_name' => $filename,
+                                        'path' => str_replace("public",'storage',$path),
+                                        'extension' => $extension,
+                                        'file_type' => $fileType ?? "Image",
+                                        'tag' => $tag ?? "Product_Image",
+                                    ]);
+                                }
+                            }
+                        }
+
+
+                    $shipping = [
+                        'height' => $request->height,
+                        'weight' => $request->weight,
+                        'width' => $request->width,
+                        'length' => $request->length,
+                        'unit' => $request->unit,
+                        'length_unit' => $request->length_unit,
+                        'gross_weight' => $request->gross_weight,
+                    ];
+                    $carton_details = [
+                        'standard_carton' => $request->standard_carton,
+                        'carton_weight' => $request->carton_weight,
+                        'carton_unit' => $request->carton_unit,
+                    ];
+
+                    $carton_details = [
+                        'standard_carton' => $request->standard_carton,
+                        'carton_weight' => $request->carton_weight,
+                        'carton_unit' => $request->carton_unit,
+                        'carton_length' => $request->carton_length,
+                        'carton_width' => $request->carton_width,
+                        'carton_height' => $request->carton_height,
+                        'Carton_Dimensions_unit' => $request->Carton_Dimensions_unit,
+                    ];
+
+
+
+                    $request['shipping'] = json_encode($shipping);
+                    $request['carton_details'] = json_encode($carton_details);
+
+
+                    $chk = $product->update($request->all());
+
+                    ProductExtraInfo::where('product_id',$product->id)->update([
+                        'allow_resellers' => (in_array($request->allow_resellers,$allow_array) ? 'yes' : 'no') ?? 'no',
+                        'exclusive_buyer_name' => $request->get('exclusive_buyer_name') ?? '',
+                        'collection_name' => $request->get('collection_name') ?? '',
+                        'season_month' => $request->get('season_month') ?? '',
+                        'season_year' => $request->get('season_year') ?? '',
+                        'sample_available' => $request->get('sample_available') ?? '',
+                        'sample_year' => $request->get('sample_year') ?? '',
+                        'sample_month' => $request->get('sample_month') ?? '',
+                        'sampling_time' => $request->get('sampling_time') ?? '',
+                        'CBM'=> $request->get('CBM') ?? '',
+                        'production_time'=> $request->get('production_time') ?? '',
+                        'MBQ' => $request->get('MBQ') ?? '',
+                        'MBQ_unit' => $request->get('MBQ_unit') ?? '',
+                        'remarks' => $request->get('remarks') ?? '',
+                        'vendor_sourced_from' => $request->get('vendor_sourced_from') ?? '',
+                        'vendor_price' => $request->get('vendor_price') ?? '',
+                        'product_cost_unit' => $request->get('product_cost_unit') ?? '',
+                        'vendor_currency' => $request->get('vendor_currency') ?? '',
+                        'sourcing_year' => $request->get('sourcing_year') ?? '',
+                        'sourcing_month' => $request->get('sourcing_month') ?? '',
+                        'production_type' => $request->get('production_type') ?? '',
+                        'group_id' => $product->sku,
+                        'Cust_tag_group'=> $request->get('Cust_tag_group') ?? '',
+                        'brand_name' => $request->get('brand_name') ?? '',
+                    ]);
+
+
+
+                    // @ This Part Will Create New Product Extra Info Records
+                    $to_clone = ProductExtraInfo::where('product_id',$product->id)->orderBy('created_at', 'desc')->first();
+                    $groupId = $product->sku;
+                    // return;
+
+                    if ($request->properties != null && $request->properties != '') {
+                        foreach ($request->properties as $key => $value) {
+                            // return;
+                            // checking Product Attribute Exist Or Not in Records
+                            $attribute_record = getAttruibuteValueById($value);
+                            if ($attribute_record != null) {
+                                $chkwds = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$attribute_record->parent_id)->where('user_id',$request->user_id)->get();
+                                // magicstring($chkwds);
+                                // return;
+
+                                if ($chkwds->count() != 0) {
+                                    $newproduct = $chkwds[0];
+                                    $newproduct->attribute_value_id = $attribute_record->id;
+                                    $newproduct->attribute_id = $attribute_record->parent_id;
+                                    $newproduct->save();
+                                }else{
+                                    // Getting Records of Attribute
+                                    $attribute_record = getAttruibuteValueById($value);
+                                    // $clonedProduct = $product->replicate();
+                                    // $clonedProduct->created_at = Carbon::now();
+                                    // $clonedProduct->save();
+
+                                    $newproduct = $to_clone->replicate();
+                                    $newproduct->product_id = $product->id;
+                                    $newproduct->attribute_value_id = $attribute_record->id;
+                                    $newproduct->attribute_id = $attribute_record->parent_id;
+                                    $newproduct->group_id = $product->sku;
+                                    $newproduct->created_at = Carbon::now();
+                                    $newproduct->save();
+                                }
+                            }
+
+                            // ` Create new Product Extra Info Record
+                            // if ($chkwds->count() == 0) {
+                            //     echo getAttruibuteValueById($value)->attribute_value;
+                            //     echo " Property Does Not Exist".newline();
+                            //     // Getting Records of Attribute
+                            //     $attribute_record = getAttruibuteValueById($value);
+                            //     // $clonedProduct = $product->replicate();
+                            //     // $clonedProduct->created_at = Carbon::now();
+                            //     // $clonedProduct->save();
+
+                            //     $newproduct = $to_clone->replicate();
+                            //     $newproduct->product_id = $product->id;
+                            //     $newproduct->attribute_value_id = $attribute_record->id;
+                            //     $newproduct->attribute_id = $attribute_record->parent_id;
+                            //     $newproduct->group_id = $product->sku;
+                            //     $newproduct->created_at = Carbon::now();
+                            //     $newproduct->save();
+                            // }
+                        }
+                    }
+
+                    $vip_group = getPriceGroupByGroupName(auth()->id(),"VIP");
+                    $reseller_group = getPriceGroupByGroupName(auth()->id(),"Reseller");
+
+                    // Update VIP Price Group
+                    GroupProduct::whereGroupId($vip_group->id)->whereProductId($product->id)->update([
+                        'price' => $request->vip_group
+                    ]);
+
+                    // Update Reseller Price Group
+                    GroupProduct::whereGroupId($reseller_group->id)->whereProductId($product->id)->update([
+                        'price' => $request->reseller_group
+                    ]);
+
+                    if($request->is_publish == 0){
+                        UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>0,'price' => $request->min_sell_pr_without_gst]);
+                    }else{
+                        UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>1,'price' => $request->min_sell_pr_without_gst]);
+                    }
+
+                    // magicstring($request->all());
+                    // return;
+                    // Creating Record of Updating of Custom Fields
+                    if ($custom_attriute_columns != null && count($custom_attriute_columns) > 0) {
+                        foreach ($custom_attriute_columns as $key => $customfield) {
+
+                            $ogname = $customfield;
+                            $customfield = str_replace("[]",'',$customfield);
+
+                            if (is_array($request->get($customfield)) || is_html($request->get($customfield))) {
+
+                                echo "' $ogname ' It is an Array or HTML.".newline();
+                                $updatevalue = base64_encode(json_encode($request->get($customfield)));
+
+                            }else{
+                                // $customfield = str_replace("[]",'',$customfield);
+                                $updatevalue = $request->get($customfield);
+                            }
+
+                            $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                            if ($custom_field == null) {
+                                CustomFields::create([
+                                    'relatation_name' => $ogname,
+                                    'product_id' => $product->id,
+                                    'value' => $updatevalue ?? '',
+                                    'user_id' => auth()->id(),
+                                ]);
+                            }else{
+                                $custom_field->update([
+                                    'value' => $updatevalue ?? '',
                                 ]);
                             }
                         }
                     }
-                $shipping = [
-                    'height' => $request->height,
-                    'weight' => $request->weight,
-                    'width' => $request->width,
-                    'length' => $request->length,
-                    'unit' => $request->unit,                  
-                    'length_unit' => $request->length_unit,
-                    'gross_weight' => $request->gross_weight,
-                ];
-                $carton_details = [
-                    'standard_carton' => $request->standard_carton,
-                    'carton_weight' => $request->carton_weight,
-                    'carton_unit' => $request->carton_unit,
-                ];
 
-                $carton_details = [
-                    'standard_carton' => $request->standard_carton,
-                    'carton_weight' => $request->carton_weight,
-                    'carton_unit' => $request->carton_unit,
-                    'carton_length' => $request->carton_length,
-                    'carton_width' => $request->carton_width,
-                    'carton_height' => $request->carton_height,
-                    'Carton_Dimensions_unit' => $request->Carton_Dimensions_unit,
-                ];
-                
+                    $othershops = UserShopItem::where('user_id','!=',$product->user_id)->where('product_id',$product->id)->get();
+                    // Mail Sent to all sellers who has this product
+                    foreach($othershops as $other){
 
-                $request['shipping'] = json_encode($shipping);  
-                $request['carton_details'] = json_encode($carton_details);  
-                
+                        // Unpublish all sellers who has this product
+                        $other->is_published = 0;
+                        $other->save();
 
-                $chk = $product->update($request->all());
-                
-                
+                        $user_record =  getUserRecordByUserId($other->user_id);
+                        // $product_record =  getProductRecordById($other->product_id);
+                        $mailcontent_data = MailSmsTemplate::where('code','=',"product-unpublished")->first();
+                        if($mailcontent_data){
+                            $arr=[
+                                    '{name}'=>$user_record->name,
+                                    '{product_name}'=>$product->title,
+                                ];
 
-                ProductExtraInfo::where('product_id',$product->id)->update([
-                    'allow_resellers' => (in_array($request->allow_resellers,$allow_array) ? 'yes' : 'no') ?? 'no',
-                    'exclusive_buyer_name' => $request->get('exclusive_buyer_name') ?? '',
-                    'collection_name' => $request->get('collection_name') ?? '',
-                    'season_month' => $request->get('season_month') ?? '',
-                    'season_year' => $request->get('season_year') ?? '',
-                    'sample_available' => $request->get('sample_available') ?? '',
-                    'sample_year' => $request->get('sample_year') ?? '',
-                    'sample_month' => $request->get('sample_month') ?? '',
-                    'sampling_time' => $request->get('sampling_time') ?? '',
-                    'CBM'=> $request->get('CBM') ?? '',
-                    'production_time'=> $request->get('production_time') ?? '',
-                    'MBQ' => $request->get('MBQ') ?? '',
-                    'MBQ_unit' => $request->get('MBQ_unit') ?? '',
-                    'remarks' => $request->get('remarks') ?? '',
-                    'vendor_sourced_from' => $request->get('vendor_sourced_from') ?? '',
-                    'vendor_price' => $request->get('vendor_price') ?? '',
-                    'product_cost_unit' => $request->get('product_cost_unit') ?? '',
-                    'vendor_currency' => $request->get('vendor_currency') ?? '',
-                    'sourcing_year' => $request->get('sourcing_year') ?? '',
-                    'sourcing_month' => $request->get('sourcing_month') ?? '',
-                    'production_type' => $request->get('production_type') ?? '',
-                    'group_id' => $request->get('group_id') ?? '',
-                    'Cust_tag_group'=> $request->get('Cust_tag_group') ?? '',
-                    'brand_name' => $request->get('brand_name') ?? '',
-                ]);
+                            TemplateMail($user_record->name,$mailcontent_data,$user_record->email,$mailcontent_data->type, $arr, $mailcontent_data, $chk_data = null ,$mail_footer = null, $action_button = null);
+                        }
+                        $onsite_notification['user_id'] =  $other->user_id;
+                        $onsite_notification['title'] = NameById($product->user_id)." has made changes to their product
+                        $product->title (Model-#$product->model_code) , resulting in auto unpublished from your account. To continue selling, review changes and publish." ;
+                        $onsite_notification['link'] = route('panel.user_shop_items.create')."?type=direct&type_id=".$product->user_id;
+                        pushOnSiteNotification($onsite_notification);
+                    }
+
+                    //   $product = UserShopItem::where('product_id',$product->id)->first();
+                    // $product->update([
+                    //     'price' => $request->price
+                    // ]);
+
+                    return back()->with('success','Product Updated!');
+                }
+            }else{
+                echo "This is a main product";
+                if(!$request->has('is_publish')){
+                    $request['is_publish'] = 0;
+                }
+                if(in_array($request->has('is_publish'),$allow_array)){
+                    $request['is_publish'] = 1;
+                }else{
+                    $request['is_publish'] = 0;
+                }
 
 
-                $custom_attribute = ProductAttribute::where('user_id',null)->orwhere('user_id',$product->user_id)->get();
+                $products = Product::where('sku',$product->sku)->get();
 
-                // foreach ($custom_attribute as $key => $value) {
-                //     $count = $key+1;
-                //     echo "You are Working on $value->name Attribute".newline();
+                foreach ($products as $key => $product) {
+                    if ($request->get('sub_category') == null || $request->get('sub_category') == '') {
+                        $request['sub_category'] = $product->sub_category;
+                    }
+                    if ($request->get('category_id') == null || $request->get('category_id') == '') {
+                        $request['category_id'] = $product->category_id;
+                    }
 
-                //     $result = $request->get("custom_attri_$count");
-
-                //     if ($request->get("custom_attri_$count") != null) {
-                        
-                //         echo "The value of custom_attri_$count".newline();
-                //         magicstring($result);
-                        
-                //         $received_values = explode(",",$result);
-
-                //         magicstring($received_values);
-
-                //         foreach ($received_values as $receiveKey => $receive_value) {                            
-                //             $productattriid = ProductAttributeValue::where('parent_id',$value->id)->where('attribute_value',$receive_value)->first();
-
-                //             $chk = ProductExtraInfo::where('attribute_id',$value->id)->where('attribute_value_id',$productattriid->id)->where('group_id',$product->sku)->first();
-
-                //             if ($chk == null) {
-                //                 echo "$receive_value is not Exist in Record".newline();
-
-                //                 $newitem = [
-                //                     'allow_resellers' =>(in_array($request->allow_resellers,$allow_array) ? 'yes' : 'no') ?? 'no',
-                //                     'exclusive_buyer_name' => $request->get('exclusive_buyer_name') ?? '',
-                //                     'collection_name' => $request->get('collection_name') ?? '',
-                //                     'season_month' => $request->get('season_month') ?? '',
-                //                     'season_year' => $request->get('season_year') ?? '',
-                //                     'sample_available' => $request->get('sample_available') ?? '',
-                //                     'sample_year' => $request->get('sample_year') ?? '',
-                //                     'sample_month' => $request->get('sample_month') ?? '',
-                //                     'sampling_time' => $request->get('sampling_time') ?? '',
-                //                     'CBM'=> $request->get('CBM') ?? '',
-                //                     'production_time'=> $request->get('production_time') ?? '',
-                //                     'MBQ' => $request->get('MBQ') ?? '',
-                //                     'MBQ_unit' => $request->get('MBQ_unit') ?? '',
-                //                     'remarks' => $request->get('remarks') ?? '',
-                //                     'vendor_sourced_from' => $request->get('vendor_sourced_from') ?? '',
-                //                     'vendor_price' => $request->get('vendor_price') ?? '',
-                //                     'product_cost_unit' => $request->get('product_cost_unit') ?? '',
-                //                     'vendor_currency' => $request->get('vendor_currency') ?? '',
-                //                     'sourcing_year' => $request->get('sourcing_year') ?? '',
-                //                     'sourcing_month' => $request->get('sourcing_month') ?? '',
-                //                     'production_type' => $request->get('production_type') ?? '',
-                //                     'group_id' => $request->get('group_id') ?? '',
-                //                     'Cust_tag_group'=> $request->get('Cust_tag_group') ?? '',
-                //                     'brand_name' => $request->get('brand_name') ?? '',
-                //                     'attribute_id' => $value->id,
-                //                     'attribute_value_id' => $productattriid->id
-                //                 ];
-
-                //                 magicstring($newitem);
+                    $usi = UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->first();
+                    $chk_inventroy = Inventory::where('product_id',$product->id)->where('user_id',auth()->id())->get();
+                    if ($request->has('manage_inventory') && $request->get('manage_inventory') == 1) {
+                        if (count($chk_inventroy) == 0) {
+                            // magicstring($request->all());
+                            Inventory::create([
+                                'user_shop_item_id' => $usi->id,
+                                'product_id' => $product->id,
+                                'user_id' => auth()->id(),
+                                'stock' => 0,
+                                'product_sku' => $product->sku,
+                                'parent_id' => 0,
+                                'prent_stock' => 0,
+                            ]);
+                        }else{
+                            getinventoryByproductId($product->id)->update(['status'=>1]);
+                        }
 
 
+                    }else{
+                        if (count($chk_inventroy) != 0) {
+                            getinventoryByproductId($product->id)->update(['status'=>0]);
+                        }
+                    }
+
+
+                    $user_id  = auth()->user()->id;
+                    $folderPath = "public/files/$user_id";
+                    if($product){
+                        // To Fullfillment of Client MRP Need
+                            $request['price'] =  $request->mrp;
+                            if($request->hasFile("img")){
+                                foreach($request->file('img') as $tempimg){
+
+                                    $filename = $tempimg->getClientOriginalName();
+
+                                    $path = $tempimg->storeAs($folderPath, $filename);
+                                    $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                                    $fileType = ucfirst(explode("/",Storage::mimeType($path))[0] );
+                                    $fileSize = Storage::size($path);
+                                    $tag = '';
+                                    if ($fileType == 'Image') {
+                                        $tag = 'Product_Image';
+                                    }
+                                    elseif ($fileType == 'Video') {
+                                        $tag = 'Product_Video';
+                                    }else{
+                                        $tag ='Product_Asset';
+                                    }
+
+                                    if($filename != null){
+                                        Media::create([
+                                            'type' => 'Product',
+                                            'type_id' => $product->id,
+                                            'file_name' => $filename,
+                                            'path' => str_replace("public",'storage',$path),
+                                            'extension' => $extension,
+                                            'file_type' => $fileType ?? "Image",
+                                            'tag' => $tag ?? "Product_Image",
+                                        ]);
+                                    }
+                                }
+                            }
+
+
+                        $shipping = [
+                            'height' => $request->height,
+                            'weight' => $request->weight,
+                            'width' => $request->width,
+                            'length' => $request->length,
+                            'unit' => $request->unit,
+                            'length_unit' => $request->length_unit,
+                            'gross_weight' => $request->gross_weight,
+                        ];
+                        $carton_details = [
+                            'standard_carton' => $request->standard_carton,
+                            'carton_weight' => $request->carton_weight,
+                            'carton_unit' => $request->carton_unit,
+                        ];
+
+                        $carton_details = [
+                            'standard_carton' => $request->standard_carton,
+                            'carton_weight' => $request->carton_weight,
+                            'carton_unit' => $request->carton_unit,
+                            'carton_length' => $request->carton_length,
+                            'carton_width' => $request->carton_width,
+                            'carton_height' => $request->carton_height,
+                            'Carton_Dimensions_unit' => $request->Carton_Dimensions_unit,
+                        ];
+
+
+                        $request['shipping'] = json_encode($shipping);
+                        $request['carton_details'] = json_encode($carton_details);
+
+
+                        $chk = $product->update($request->all());
+
+                        ProductExtraInfo::where('product_id',$product->id)->update([
+                            'allow_resellers' => (in_array($request->allow_resellers,$allow_array) ? 'yes' : 'no') ?? 'no',
+                            'exclusive_buyer_name' => $request->get('exclusive_buyer_name') ?? '',
+                            'collection_name' => $request->get('collection_name') ?? '',
+                            'season_month' => $request->get('season_month') ?? '',
+                            'season_year' => $request->get('season_year') ?? '',
+                            'sample_available' => $request->get('sample_available') ?? '',
+                            'sample_year' => $request->get('sample_year') ?? '',
+                            'sample_month' => $request->get('sample_month') ?? '',
+                            'sampling_time' => $request->get('sampling_time') ?? '',
+                            'CBM'=> $request->get('CBM') ?? '',
+                            'production_time'=> $request->get('production_time') ?? '',
+                            'MBQ' => $request->get('MBQ') ?? '',
+                            'MBQ_unit' => $request->get('MBQ_unit') ?? '',
+                            'remarks' => $request->get('remarks') ?? '',
+                            'vendor_sourced_from' => $request->get('vendor_sourced_from') ?? '',
+                            'vendor_price' => $request->get('vendor_price') ?? '',
+                            'product_cost_unit' => $request->get('product_cost_unit') ?? '',
+                            'vendor_currency' => $request->get('vendor_currency') ?? '',
+                            'sourcing_year' => $request->get('sourcing_year') ?? '',
+                            'sourcing_month' => $request->get('sourcing_month') ?? '',
+                            'production_type' => $request->get('production_type') ?? '',
+                            'group_id' => $product->sku,
+                            'Cust_tag_group'=> $request->get('Cust_tag_group') ?? '',
+                            'brand_name' => $request->get('brand_name') ?? '',
+                        ]);
+
+
+
+                        // @ This Part Will Create New Product Extra Info Records
+                        $to_clone = ProductExtraInfo::where('product_id',$product->id)->orderBy('created_at', 'desc')->first();
+                        $groupId = $product->sku;
+                        $newProperty = [];
+
+
+                    // !=============================================================================================================================
+
+                        $vip_group = getPriceGroupByGroupName(auth()->id(),"VIP");
+                        $reseller_group = getPriceGroupByGroupName(auth()->id(),"Reseller");
+
+                        // Update VIP Price Group
+                        GroupProduct::whereGroupId($vip_group->id)->whereProductId($product->id)->update([
+                            'price' => $request->vip_group
+                        ]);
+
+                        // Update Reseller Price Group
+                        GroupProduct::whereGroupId($reseller_group->id)->whereProductId($product->id)->update([
+                            'price' => $request->reseller_group
+                        ]);
+
+                        if($request->is_publish == 0){
+                            UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>0,'price' => $request->min_sell_pr_without_gst]);
+                        }else{
+                            UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>1,'price' => $request->min_sell_pr_without_gst]);
+                        }
+
+                        // magicstring($request->all());
+                        // return;
+                        // Creating Record of Updating of Custom Fields
+                        if ($custom_attriute_columns != null && count($custom_attriute_columns) > 0) {
+                            foreach ($custom_attriute_columns as $key => $customfield) {
+
+                                $updatevalue = base64_encode(json_encode($request->get($customfield)));
+                                $custom_field = CustomFields::where('relatation_name',$customfield)->where('product_id',$product->id)->first();
+
+                                if ($custom_field == null) {
+                                    CustomFields::create([
+                                        'relatation_name' => $customfield,
+                                        'product_id' => $product->id,
+                                        'value' => $updatevalue ?? '',
+                                        'user_id' => auth()->id(),
+                                    ]);
+                                }else{
+                                    $custom_field->update([
+                                        'value' => $updatevalue ?? '',
+                                    ]);
+                                }
+                            }
+                        }
+
+                        $othershops = UserShopItem::where('user_id','!=',$product->user_id)->where('product_id',$product->id)->get();
+                        // Mail Sent to all sellers who has this product
+                        foreach($othershops as $other){
+
+                            // Unpublish all sellers who has this product
+                            $other->is_published = 0;
+                            $other->save();
+
+                            $user_record =  getUserRecordByUserId($other->user_id);
+                            // $product_record =  getProductRecordById($other->product_id);
+                            $mailcontent_data = MailSmsTemplate::where('code','=',"product-unpublished")->first();
+                            if($mailcontent_data){
+                                $arr=[
+                                        '{name}'=>$user_record->name,
+                                        '{product_name}'=>$product->title,
+                                    ];
+
+                                TemplateMail($user_record->name,$mailcontent_data,$user_record->email,$mailcontent_data->type, $arr, $mailcontent_data, $chk_data = null ,$mail_footer = null, $action_button = null);
+                            }
+                            $onsite_notification['user_id'] =  $other->user_id;
+                            $onsite_notification['title'] = NameById($product->user_id)." has made changes to their product
+                            $product->title (Model-#$product->model_code) , resulting in auto unpublished from your account. To continue selling, review changes and publish." ;
+                            $onsite_notification['link'] = route('panel.user_shop_items.create')."?type=direct&type_id=".$product->user_id;
+                            pushOnSiteNotification($onsite_notification);
+                        }
+
+                        $product = UserShopItem::where('product_id',$product->id)->first();
+                        $product->update([
+                            'price' => $request->price
+                        ]);
+
+                    }
+
+                    $count++;
+
+                } // End of Products for Each Loop...
+
+
+
+
+                // echo newline(2);
+                // // --=======================================================================================================
+
+                //     foreach ($request->get('properties') as $key => $value) {
+                //         $prodpertyparent = getAttruibuteValueById($value)->parent_id;
+                //         $chk33 = ProductExtraInfo::where('group_id',$products[0]->sku)->where('attribute_id',$prodpertyparent)->get();
+
+                //         // @ checking New Property Exist or Not in Records
+                //         if ($chk33->count() == 0) {
+                //             // True Not Exist in Records...
+                //             echo "Property Does Not Exist".newline();
+
+
+                //                 // Getting Records of Attribute
+                //                 $attribute_record = getAttruibuteValueById($value);
+
+                //                 // @ Creating Product Record for New Property
+                //                 $clonedProduct = $products[0]->replicate();
+                //                 $clonedProduct->created_at = Carbon::now();
+                //                 // $clonedProduct->save();
+
+                //                 // @ Creating User Shop Item Record for New Property
+                //                 $clonedUserShopItemRecord = UserShopItem::where('product_id',$products[0]->id)->orderBy('images','DESC')->first();
+                //                 $clonedUserShopItem = $clonedUserShopItemRecord->replicate();
+                //                 $clonedUserShopItem->created_at = Carbon::now();
+                //                 $clonedUserShopItem->updated_at = Carbon::now();
+                //                 $clonedUserShopItem->product_id = $clonedProduct->id ?? 0;
+                //                 $clonedUserShopItem->images = $clonedUserShopItemRecord->images;
+                //                 // $clonedUserShopItem->save();
+                //                 // magicstring($clonedUserShopItem);
+
+
+                //                 // @ Creating Product Extra Info Record for New Property
+                //                 $checkProductProperty = ProductExtraInfo::where('group_id',$products[0]->sku)->groupBy('attribute_id')->get();
+
+                //                 foreach ($checkProductProperty as $key => $checkprop) {
+                //                     magicstring($checkprop);
+                //                 }
+
+
+
+
+                //                 // @ extra info of product
+                //                 // $newproduct = $to_clone->replicate();
+                //                 // $newproduct->product_id = $product->id;
+                //                 // $newproduct->attribute_value_id = $attribute_record->id;
+                //                 // $newproduct->attribute_id = $attribute_record->parent_id;
+                //                 // $newproduct->group_id = $product->sku;
+                //                 // $newproduct->created_at = Carbon::now();
+                //                 // $newproduct->save();
+
+
+
+
+                //         }else{
+                //             continue;
+                //             echo "Property Exist".newline();
+                //             // checking Property Exist in Each Product
+
+                //             foreach ($products as $key => $product) {
+                //                 $checkProductProperty = ProductExtraInfo::where('product_id',$product->id)->where('attribute_value_id',$value)->orwhere('attribute_id',$prodpertyparent)->get();
+
+                //                 if ($checkProductProperty->count() == 0) {
+                //                     echo "$value New Property Came in Existence..".newline();
+                //                 }else{
+                //                     // echo "Property Exist in Product".newline();
+                //                 }
                 //             }
+
+
+
+
                 //         }
 
-
                 //     }
-                // }
+
+                // // --=======================================================================================================
+                //     return;
 
 
-
-                $vip_group = getPriceGroupByGroupName(auth()->id(),"VIP");
-                $reseller_group = getPriceGroupByGroupName(auth()->id(),"Reseller");
-
-                // Update VIP Price Group
-                GroupProduct::whereGroupId($vip_group->id)->whereProductId($product->id)->update([
-                    'price' => $request->vip_group
-                ]);
-
-                // Update Reseller Price Group
-                GroupProduct::whereGroupId($reseller_group->id)->whereProductId($product->id)->update([
-                    'price' => $request->reseller_group
-                ]);
-
-
-
-                                
-                if($request->is_publish == 0){
-                    UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>0]);
-                }else{
-                    UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>1]);
-                }
-
-                $othershops = UserShopItem::where('user_id','!=',$product->user_id)->where('product_id',$product->id)->get();              
-                
-                
-                // Mail Sent to all sellers who has this product
-                foreach($othershops as $other){
-                    
-                    // Unpublish all sellers who has this product
-                    $other->is_published = 0;
-                    $other->save();
-
-                    $user_record =  getUserRecordByUserId($other->user_id);
-                    // $product_record =  getProductRecordById($other->product_id);
-                    $mailcontent_data = MailSmsTemplate::where('code','=',"product-unpublished")->first();
-                    if($mailcontent_data){
-                        $arr=[
-                                '{name}'=>$user_record->name,
-                                '{product_name}'=>$product->title,
-                            ];
-                        
-                        TemplateMail($user_record->name,$mailcontent_data,$user_record->email,$mailcontent_data->type, $arr, $mailcontent_data, $chk_data = null ,$mail_footer = null, $action_button = null);
-                    }
-                    $onsite_notification['user_id'] =  $other->user_id;
-                    $onsite_notification['title'] = NameById($product->user_id)." has made changes to their product
-                    $product->title (Model-#$product->model_code) , resulting in auto unpublished from your account. To continue selling, review changes and publish." ;
-                    $onsite_notification['link'] = route('panel.user_shop_items.create')."?type=direct&type_id=".$product->user_id;
-                    pushOnSiteNotification($onsite_notification);
-                }
-                   
-                //   $product = UserShopItem::where('product_id',$product->id)->first();
-                // $product->update([
-                //     'price' => $request->price
-                // ]);
-
-                return back()->with('success','Product Updated!');
+                return back()->with('success',"$count Product Updated!");
             }
+
+
             return back()->with('error','Product not found')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
 
     /**
      * Remove the specified resource from storage.
-     *
      * @param    int  $id
      * @return  \Illuminate\Http\Response
-     */
+    **/
+
     public function destroy(Product $product)
     {
         try{
@@ -2288,9 +3890,9 @@ class ProductController extends Controller
                 ->where('parent_shop_id','!=',0)->where('deleted_at','!=',null)
                 ->first();
 
-                // Deleting Product extra info 
+                // Deleting Product extra info
                 ! ProductExtraInfo::where('group_id',$product->sku)->delete();
-                
+
                 if(!$childItems){
                     $data = $product->varient_products();
                     foreach ($data as $key => $value) {
@@ -2316,19 +3918,129 @@ class ProductController extends Controller
         $image->delete();
         return back()->with('success','Image Deleted Successfully!');
     }
-}
 
-if (!function_exists('yearDropdown'))
-{
-    function yearDropdown($startYear, $endYear, $id = 'year')
-    {
-        echo "<select id='$id' name='$id'>";
 
-        for ($i = $startYear; $i <= $endYear; $i++) {
-            echo "<option value='$i'>$i</option>";
+    public function deleteSKu(Request $request,$productid) {
+
+        try {
+            // ` Delete Product
+            // ` Delete ProductExtraInfo
+            // ` Delete PorposalItem
+            // ` Delete UsershopItem
+            // ` Delete Inventory
+
+            $product = Product::whereId(decrypt($productid))->first();
+            $productextra = ProductExtraInfo::where('product_id',decrypt($productid))->get();
+            $count = 0;
+
+            // ! Deleting Product Extra Info
+            foreach ($productextra as $key => $value) {
+                $value->delete();
+                $count++;
+            }
+
+            // ! Deleting Proposal Items
+            $proposalItems = ProposalItem::where('product_id',$product->id)->get();
+            foreach ($proposalItems as $key => $proposalItem) {
+                $proposalItem->delete();
+            }
+
+            // ! Deleting User Shop Items
+            $user_shop_items = UserShopItem::where('product_id',$product->id)->where('user_id',auth()->id())->get();
+            foreach ($user_shop_items as $key => $user_shop_item) {
+                $user_shop_item->delete();
+            }
+
+            // ! Deleting Inventory
+            $inventory = Inventory::where('product_id',$product->id)->where('user_id',auth()->id())->get();
+            foreach ($inventory as $key => $item) {
+                $item->delete();
+            }
+
+            // ! Deleting Products
+            $product->delete();
+
+            return back()->with("success","$count Property of the Product Deleted Successfully!!");
+
+        } catch (\Throwable $th) {
+            // throw $th;
+            return back()->with('error',"Oops There was and Error.");
+        }
+    }
+
+
+    public function unlinkasset($pId,$assets_path) {
+
+        try {
+            $product_id = decrypt($pId);
+            $path = decrypt($assets_path);
+            $count = 0;
+
+            $chk = Media::where('type_id',$product_id)->where('path',$path)->get();
+
+            foreach ($chk as $key => $value) {
+                $value->delete();
+                $count++;
+            }
+
+            return back()->with('success',"Asset Unlinked Succesfully.");
+
+        } catch (\Throwable $th) {
+            // throw $th;
+            return back()->with('error',"Try again Later.");
+
         }
 
-        echo "</select>";
+
     }
+
+
+
+    public function deletevariant($productid)
+    {
+        try {
+            // -- This function is only call when the product is a Main/Group product
+            $attributeValue_id = base64_decode(request()->get('chk_id'));
+            $product = Product::whereId(decrypt($productid))->first();
+            $count = 0;
+
+            // ` Not checking UserId or Shop because it is a main product checking with received Product Id to Save Query Time
+            $productExtraRecords = ProductExtraInfo::where('group_id',$product->sku)->where('attribute_value_id',$attributeValue_id)->get();
+            foreach ($productExtraRecords as $i => $productExtraRecord) {
+                if ($productExtraRecord->attribute_value_id == $attributeValue_id) {
+                    $productExtraRecord->delete();
+                    $count++;
+                }
+            }
+
+            return back()->with('success',"$count Variant Deleted Succesfully.");
+        } catch (\Throwable $th) {
+            throw $th;
+            return back()->with('error',"Try again Later.");
+        }
+    }
+
+
+    public function searchassets() {
+
+        if (request()->ajax()) {
+
+            $page = request()->get('page', 1); // Default to page 1 if not set
+            $folder = "storage/files/".auth()->id();
+
+            $medias = Media::where('path', 'LIKE', "%" . request()->get('search') . "%")
+                            ->where('path',"LIKE","%".$folder."%")
+                            ->groupBy('path')
+                            ->orderBy('created_at',"DESC")
+                            ->paginate(10, ['*'], 'page', $page);
+
+            return view('panel.products.include.iframe.link-assets',compact('medias'));
+        }
+
+    }
+
+
+
+
 }
 

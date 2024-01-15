@@ -17,6 +17,8 @@ use App\Models\Enquiry;
 use App\Models\UserEnquiry;
 use App\Models\MailSmsTemplate;
 use App\Models\ProductAttribute;
+use App\Models\CustomFields;
+use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
 use App\Models\Proposal;
 use App\Models\ProposalItem;
@@ -48,7 +50,7 @@ class MicroSiteController extends Controller
          if(!$user_shop){
             return back()->with('error', 'No micro site assign to your account!');
          }
-         
+
         if(auth()->check()){
             $shop_owner_data = User::whereId($user_shop->user_id)->first();
             if(!$shop_owner_data){
@@ -105,6 +107,8 @@ class MicroSiteController extends Controller
             ->telegram()
             ->whatsapp()
             ->reddit();
+
+
         return view('frontend.micro-site.index',compact('slug','banner','products','user_shop','about','testimonial','social','random_products','shareButtons1','story','related_products','group_id','user'));
     }
     public function shopCart(Request $request)
@@ -135,7 +139,7 @@ class MicroSiteController extends Controller
         if (!$user_shop->shop_view && $user_shop->user_id != auth()->id()) {
             return back();
         }
-        
+
 
         $currency_record = UserCurrency::where('user_id',$user_shop->user_id)->get();
 
@@ -150,7 +154,7 @@ class MicroSiteController extends Controller
             $proIds = $proIds->pluck('product_id');
         }
         $additional_attribute = ProductExtraInfo::whereIn('product_id',$proIds)->groupBy('attribute_id')->pluck('attribute_id');
-        
+
         // if(request()->has('searchVal') && request()->get('searchVal') != null){
         //     // - Getting Search Parameter
         //     $SerchParam = $request->get('searchVal'); // ! Hold Search Keywords
@@ -187,9 +191,9 @@ class MicroSiteController extends Controller
             "From" => $request->get('from'),
             "To" => $request->get('to')
         ]);
-        
+
         if(request()->has('title') && request()->get('title') != null){
-            $user_shop_items->where('user_shop_id',$user_shop->id)->where('products.title','like','%'.request()->get('title').'%')->orwhere('products.model_code','like','%'.request()->get('model_code').'%');
+            $user_shop_items->where('user_shop_id',$user_shop->id)->where('products.title','like','%'.request()->get('title').'%')->orwhere('products.model_code','like','%'.request()->get('model_code').'%')->orwhere('products.search_keywords','like','%'.request()->get('model_code').'%');
         }
         if(request()->has('category_id') && request()->get('category_id') != null){
             $user_shop_items->where('user_shop_items.category_id', request()->get('category_id'));
@@ -201,11 +205,16 @@ class MicroSiteController extends Controller
         if(request()->has('brand') != null && request()->get('brand') != null){
             $user_shop_items->where('products.brand', request()->get('brand'));
         }
+
         if(request()->has('from')  && request()->get('from') != null &&  request()->has('to')  && request()->get('to') != null){
+
+            $from = request()->get('from') * session()->get('Currency_exchange') ?? request()->get('from');
+            $to = request()->get('to') * session()->get('Currency_exchange') ?? request()->get('to');
+
             if(request()->to == 10){
-                $user_shop_items->where('user_shop_items.price','>=',request()->get('from'));
+                $user_shop_items->where('user_shop_items.price','>=',$from);
             }else{
-                $user_shop_items->whereBetween('user_shop_items.price', [request()->get('from'), request()->get('to')]);
+                $user_shop_items->whereBetween('user_shop_items.price', [$from, $to]);
             }
         }
 
@@ -229,6 +238,16 @@ class MicroSiteController extends Controller
             $user_shop_items->where('products.exclusive','0');
         }
 
+
+
+
+        if ($request->has('pinned') && $request->get('pinned','off') == 'on' ) {
+            $pinned_products = Product::where('user_id',$user_shop->user_id)->where('pinned',1)->pluck('id');
+            $user_shop_items->whereIn('product_id',$pinned_products);
+            // magicstring($user_shop_items->get());
+        }
+
+
         $items = $user_shop_items
                 ->whereIsPublished(1)
                 ->where('user_shop_id',$user_shop->id)
@@ -239,8 +258,8 @@ class MicroSiteController extends Controller
                 ->where('user_shop_items.deleted_at', '=', null)
                 ->paginate(21);
 
-            
-                
+
+
         $user_shop = UserShop::whereSlug($slug)->first();
         $have_access_code = AccessCode::where('redeemed_user_id',$user_shop->user_id)->first();
         if(!$have_access_code){
@@ -262,20 +281,19 @@ class MicroSiteController extends Controller
         $brands = Brand::whereIn('id',$brands_ids)->whereStatus(1)->get();
         $category_id = request()->get('category_id');
         $selectedcolors = request()->get('color');
+
         $minID = Product::whereNotNull('price')->where('user_id',$user_shop->user_id)->min("price");
         $maxID = Product::whereNotNull('price')->where('user_id',$user_shop->user_id)->max("price");
-            // dd($minID);
-            // dd($maxID);
-            // magicstring($countattri);
-            // return;
-
 
         $proposalid = -1;
         $temdata = json_decode($user_shop->team);
         $manage_offer_guest = $temdata->manage_offer_guest ?? 0;
         $manage_offer_verified = $temdata->manage_offer_verified ?? 0;
-            
-            
+
+
+
+
+
         if ($request->ajax()) {
             return view('frontend.micro-site.shop.loadIndex',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','user_shop','alll_searches','currency_record'));
         }
@@ -488,7 +506,7 @@ class MicroSiteController extends Controller
         $order->save();
         return redirect(inject_subdomain("post-checkout?order_id=".$order->id,$slug,true));
     }
-    
+
     public function storeShopCheckout(Request $request)
     {
         // return $request->all();
@@ -572,8 +590,8 @@ class MicroSiteController extends Controller
         $debugingMode = 0;
         $id = crypt::decrypt($id) ?? $id;
         $show_product = $id;
-        // echo "Old Id is ". $id.newline(2);        
-        
+        // echo "Old Id is ". $id.newline(2);
+
         if (request()->has('selected_default') || request()->has('selected_Cust') ) {
             $request['search_keywords'] = array_merge(
                 request()->get('selected_default') ?? [],
@@ -585,18 +603,18 @@ class MicroSiteController extends Controller
         if(!$user_shop){
             return back()->with('error', 'Shop moved or does not exist!');
         }
-        
+
         $group_id = getPriceGroupId($slug);
         if($group_id == 0 && $request->has('pg') && $request->get('pg')){
             $group_id = $request->get('pg');
-        } 
-        
+        }
+
         if (!$user_shop->shop_view && $user_shop->user_id != auth()->id()) {
             return back();
         }
-        
 
-        $product = Product::whereId($id)->first(); 
+
+        $product = Product::whereId($id)->first();
 
 
 
@@ -604,20 +622,20 @@ class MicroSiteController extends Controller
         if (request()->has('search_keywords') &&  request()->get('search_keywords') != '') {
             $SerchParam = request()->get('search_keywords');
             $SerchParam = array_filter($SerchParam);
-            
+
             $result = ProductExtraInfo::whereIn('attribute_value_id',$SerchParam)->where('group_id',$product->sku)->groupBy('product_id')->pluck('product_id');
 
-            
-            
-            $result_attri_tmp = ProductExtraInfo::whereIn('product_id',$result)->groupBy('attribute_value_id')->pluck('attribute_value_id');   
+
+
+            $result_attri_tmp = ProductExtraInfo::whereIn('product_id',$result)->groupBy('attribute_value_id')->pluck('attribute_value_id');
             $result_attri = [];
-            
+
             foreach ($result_attri_tmp as $key => $value) {
                 array_push($result_attri,$value);
             }
             if ($request->has('debug')) {
                 echo "Id Is $id".newline(2);
-                
+
                 echo "SKU $product->sku".newline(2);
                 Echo "Result ";
                 magicstring($result);
@@ -626,12 +644,12 @@ class MicroSiteController extends Controller
                 Echo "Request That Received";
                 magicstring($request->all());
                 Echo "Search Parameters";
-                magicstring($SerchParam);    
-                
+                magicstring($SerchParam);
+
                 return;
             }
-            
-            
+
+
             foreach ($result as $key => $product_info_id) {
                 $gettingAttribute[$product_info_id] = ProductExtraInfo::where('product_id',$product_info_id)->groupBy('attribute_value_id')->pluck('attribute_value_id');
                 $array_New_products = [];
@@ -646,12 +664,12 @@ class MicroSiteController extends Controller
             }
             if ($array_New_products != null) {
                 // `  Change Request Product id
-                $product = Product::whereId($array_New_products[0])->first(); 
+                $product = Product::whereId($array_New_products[0])->first();
             }
-            
+
         }else{
             $result_attri  = [];
-        }    
+        }
         if(!$product){
             return back()->with('error', 'Product does not exist!');
         }
@@ -660,12 +678,12 @@ class MicroSiteController extends Controller
             return back()->with('error', 'Item does not exist!');
         }
 
-        
+
         $shipping_details = json_decode($product->shipping,true);
         $related_product_ids = UserShopItem::where('user_shop_id',$user_shop->id)->where('sub_category_id',$product->sub_category_id)->where('is_published',1)->where('product_id','!=',$product->id)->inRandomOrder()->take(4)->get()->pluck('product_id');
-        
+
         $related_products = Product::whereIn('id',$related_product_ids)->groupBy('sku')->get();
-        
+
         $carton_details = json_decode($product->carton_details,true);
         $variations = Product::whereSku($product->sku)->pluck('id');
         $scan = $request->get('scan');
@@ -673,22 +691,22 @@ class MicroSiteController extends Controller
         // ` Work Start Here
         $features = $product->features;
         $attributes = ProductAttribute::where('user_id',null)->orwhere('user_shop_id',$user_shop->id)->get();
-        
+
         $colors = ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',1)->groupBy('attribute_value_id')->get();
         $sizes = ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',2)->groupBy('attribute_value_id')->get();
-        $materials = ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',3)->groupBy('attribute_value_id')->get();      
+        $materials = ProductExtraInfo::where('group_id',$product->sku)->where('attribute_id',3)->groupBy('attribute_value_id')->get();
 
         $groupIds = ProductExtraInfo::where('group_id',$product->sku)->groupBy('Cust_tag_group')->pluck('Cust_tag_group');
-        
+
         $currency_record = UserCurrency::where('user_id',$user_shop->user_id)->get();
-        
+
 
         $curretpage = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
         $curretpage = shrinkurl($curretpage);
         $share_msg = "Hey I got Something New on The Internet That Help You!! \n\n $curretpage \n\n You Can Use this To Groww Your Business";
 
-        
-        
+
+
         $share_msg = "$product->title. \nOffer : $product->price \nMRP : $product->mrp \n\nHere's the link for more details :   \n$curretpage";
 
         $shareButtons1 = \Share::page(urlencode($share_msg))
@@ -699,9 +717,25 @@ class MicroSiteController extends Controller
         ->whatsapp()
         ->reddit();
 
-        
+
+        $attributes_count = [];
+
+        $attributes = ProductAttribute::where('user_id',null)->orwhere('user_shop_id',$user_shop->id)->get()->toArray();
+
+
+        foreach ($attributes as $key => $value) {
+            $finalCount =  ProductAttributeValue::where('parent_id',$value['id'])->get()->count() ?? 0;
+            array_push($attributes_count,$finalCount);
+        }
+
+        array_multisort($attributes_count,SORT_ASC,$attributes);
+
+        // Custom Columns
+        $custom_columns = CustomFields::where('product_id',$product->id)->get();
+
+
         // ` Work End Here
-        return view('frontend.micro-site.shop.show',compact('slug','group_id','product','user_shop','shipping_details','carton_details','user_product','related_products','variations','scan','proposalidrequest','show_product','features','attributes','colors','sizes','materials','result_attri','shareButtons1','groupIds','currency_record'));
+        return view('frontend.micro-site.shop.show',compact('slug','group_id','product','user_shop','shipping_details','carton_details','user_product','related_products','variations','scan','proposalidrequest','show_product','features','attributes','colors','sizes','materials','result_attri','shareButtons1','groupIds','currency_record','custom_columns'));
     }
 
     public function contactIndex(Request $request)
@@ -985,14 +1019,14 @@ class MicroSiteController extends Controller
 
 
     public function chagecurrency(Request $request) {
-        
-        if ($request->ajax()) {
+
+        if ($request->ajax() || $request->has('debug') ) {
             $slug = $request->subdomain;
             $user_shop = UserShop::whereSlug($slug)->first();
-    
+
             $record = UserCurrency::whereId($request->currency_Id)->where('user_id',$user_shop->user_id)->first();
-    
-    
+
+
             Session::put('Currency_exchange', $record->exchange);
             Session::put('Currency_id', $record->id);
             Session::put('currency_name', $record->currency);
@@ -1009,8 +1043,8 @@ class MicroSiteController extends Controller
 
     }
 
-    
-    
-    
+
+
+
 
 }

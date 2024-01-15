@@ -50,9 +50,9 @@
                                 <li style="padding-right:0"><a href="#"><i class="mdi mdi-check" style="color:#fff!important;"></i>
                                     <p class="mb-0" style="color:#444!important;">Finish</p>
                                 </a></li>
-                                
+
                             </ul> --}}
-                            
+
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <div class="mb-2">
@@ -66,7 +66,7 @@
                                     </div>
                                     <div class="form-check mb-3">
                                         <input required class="form-check-input" type="checkbox"  id="flexCheckDefault">
-                                        <label class="form-check-label" for="flexCheckDefault"><a href="{{ url('page/terms') }}" class="text-primary">Terms And Conditions <span class="text-danger">*</span></a></label>
+                                        <label class="form-check-label" for="flexCheckDefault"><a href="{{ url('page/terms') }}" target="_blank" class="text-primary">Terms And Conditions <i class="fas fa-external-link-alt"></i> <span class="text-danger">*</span></a></label>
                                     </div>
                                     <button class="btn btn-primary w-100" type="submit">Create Account</button>
                                 </div>

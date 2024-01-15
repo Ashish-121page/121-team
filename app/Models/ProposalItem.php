@@ -15,10 +15,10 @@ use Illuminate\Database\Eloquent\Model;
 class ProposalItem extends Model
 {
     use HasFactory;
-    
+
     protected $guarded = [];
     protected $fillable = [
-        'proposal_id','product_id','user_shop_item_id','price','user_id','sequence','margin'
+        'proposal_id','product_id','user_shop_item_id','price','user_id','sequence','margin','note'
     ];
-    
+
 }

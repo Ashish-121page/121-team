@@ -16,6 +16,8 @@
         $team = json_decode($user_shop->team);        
         $manage_offer_verified = $team->manage_offer_verified ?? 0; 
         $manage_offer_guest = $team->manage_offer_guest ?? 0; 
+
+        $defaultCurrecy = App\Models\UserCurrency::where('User_shop_id',$user_shop->id)->where('default_currency',1)->first();
 	@endphp
 @endsection
 @section('content')
@@ -32,9 +34,14 @@
     ==================================================*/
 
     #selector {
+    margin: 5px 5px;
+    width: 100% fit-content;
+    padding: 0px 10px;
+    }
+    /* #selector {
     margin: 5px 10%;
     width: 100%;
-    }
+    } */
     
     @media(max-width: 760px){
         #selector {
@@ -252,9 +259,9 @@
                                     </ul>
                                 @endif  
                                     <h6 class="widget-title mt-2">Price</h6>
-                                    <div class="mx-2 d-flex">
-                                        <input  style="width: 75px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" ₹ Min">
-                                        <input style="width: 75px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder="₹ Max">
+                                    <div class="d-flex">
+                                        <input  style="width: 70px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" ₹ Min">
+                                        <input style="width: 70px;height: 35px;" @if(request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif type="text" name="to" class="form-control ms-2" placeholder="₹ Max">
                                         <button class="price_go_btn ms-2" type="submit">GO</button>
                                     </div>
 
@@ -457,12 +464,21 @@
                         </div>
                     </div>
 
+
+                    @php
+                        if (Session::has('Currency_id') != null) {
+                            $curr = Session::get('Currency_id');
+                        }else{
+                            $curr = $defaultCurrecy->currency;
+                        }
+                    @endphp                    
+
                     <div class="d-flex mb-2">
                         <div class="container" id="selector" style="width: max-content !important;">
                             <select class="form-control select_box w-auto" id="changeCurrency" name="Currency">
                                 <option aria-readonly="true">Change Currency</option>
                                 @foreach ($currency_record as $item)
-                                    <option value="{{ $item->id }}" @if ($item->id == (Session::get('Currency_id') ?? 'INR')) selected @endif > {{ $item->currency }}</option>
+                                    <option value="{{ $item->id }}" @if ($item->id == ($curr ?? 'INR')) selected @endif > {{ $item->currency }}</option>
                                 @endforeach
                             </select>
                         </div>

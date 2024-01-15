@@ -21,7 +21,7 @@
                         <div id="collapseInternalCollection" class="accordion-collapse collapse show"
                             data-bs-parent="">
                             <div class="accordion-body">
-                                
+
                                     <div class="row">
                                         <div class="col-12">
                                             <table class="table table-striped" style="width: 100%;">
@@ -77,7 +77,7 @@
                         </h2>
                         <div id="collapseSample" class="accordion-collapse collapse show" data-bs-parent="">
                             <div class="accordion-body">
-                                
+
                                     <div class="row">
                                         <div class="col-12">
                                             <table class="table table-striped">
@@ -102,7 +102,7 @@
                                             </table>
                                         </div>
                                     </div>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -122,7 +122,7 @@
                         </h2>
                         <div id="collapseProduction" class="accordion-collapse collapse show" data-bs-parent="">
                             <div class="accordion-body">
-                                
+
                                     <div class="row">
                                         <div class="col-12">
                                             <table class="table table-striped" style="width: 100%;">
@@ -175,7 +175,59 @@
                                             </table>
                                         </div>
                                     </div>
-                                
+
+                            </div>
+                        </div>
+                    </div>
+                    {{-- </div> --}}
+                </div>
+            </div>
+            <div class="col-md-6 col-12 my-2">
+                <div class="accordion" id="accordionProduction">
+                    {{-- <div class="col-3 d-flex align-items-center"> --}}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseColumns" aria-expanded="false"
+                                aria-controls="collapseColumns">
+                                Custom Columns
+                            </button>
+                        </h2>
+                        <div id="collapseColumns" class="accordion-collapse collapse show" data-bs-parent="">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Column Name</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($custom_columns as $item)
+                                                    <tr>
+                                                        <td>
+                                                            {{ getFieldNameById($user_shop->user_id,$item->relatation_name) }}
+                                                        </td>
+                                                        <td>
+                                                            @if (is_base64_encoded($item->value))
+                                                                @if (json_decode(base64_decode($item->value)) != null)
+                                                                    @foreach (json_decode(base64_decode($item->value)) as $key => $item)
+                                                                        {{ $key.":".$item }}
+                                                                    @endforeach
+                                                                @endif
+                                                            @else
+                                                                {{$item->value}}
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

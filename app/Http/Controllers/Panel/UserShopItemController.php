@@ -23,8 +23,7 @@ use App\Models\UserShop;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-
-
+use function GuzzleHttp\Promise\all;
 
 class UserShopItemController extends Controller
 {
@@ -92,12 +91,6 @@ class UserShopItemController extends Controller
         }
     public function create(Request $request)
     {
-        // magicstring($request->all());
-        
-        // return;
-        
-        
-        
         try{  
             if(request()->get('length')){
                 $length = $request->get('length');
@@ -123,6 +116,7 @@ class UserShopItemController extends Controller
                     if($request->has('search') && $request->get('search') != null){
                         $product->where('title','like', '%' . $request->get('search') . '%')
                                 ->orWhere('model_code','like', '%' . $request->get('search') . '%')
+                                ->orWhere('search_keywords','like', '%' . $request->get('search') . '%')
                                 ->orWhere('id','like', '%' . $request->get('search') . '%')
                                 ->orWhereHas('product_items',function($q) use($request){
                                     $q->where('id','like', '%' . $request->get('search') . '%');
@@ -157,6 +151,7 @@ class UserShopItemController extends Controller
                     if($request->has('search') && $request->get('search') != null){
                         $product->where('title','like', '%' . $request->get('search') . '%')
                                 ->orWhere('model_code','like', '%' . $request->get('search') . '%')
+                                ->orWhere('search_keywords','like', '%' . $request->get('search') . '%')    
                                 ->orWhere('id','like', '%' . $request->get('search') . '%') 
                                 ->orWhereHas('product_items',function($q) use($request){
                                     $q->where('id','like', '%' . $request->get('search') . '%');
@@ -185,16 +180,13 @@ class UserShopItemController extends Controller
 
                     $qr_products = $product->whereIn('id', $scoped_items->pluck('product_id'))->latest()->paginate($length);
                     
-                    $categories = Category::whereIn('id',$scoped_items->pluck('category_id'))->get();
+                    $categories = Category::whereIn('id',$scoped_items->pluck('category_id'))->orderBy('name','ASC')->get();
                    
                     $parent_shop = getShopDataByUserId(@$supplier->id);
                     $title = $supplier->name ?? '';
 
                     $pinned_products = Product::whereUserId($request->type_id)->whereIn('id', $scoped_items->pluck('product_id'))->where('pinned',1)->orderBy('pinned','DESC')->get();
                     $pinned_items = $pinned_products->pluck('id')->toArray();
-
-
-                
                 }
             }else{
                 $scoped_products = [];
@@ -205,14 +197,31 @@ class UserShopItemController extends Controller
                 $subcategies = [];
             }
 
-
-
             $brand_record = [];
             $products = Product::query();
             $products = $products->select('*', \DB::raw('count(*) as total'))->groupBy('sku')->latest()->paginate($length);
             
+            if ($request->get('workload') == 'AjaxSearch' ) {
+                
+                if(AuthRole() == "User"){
+                    $user_id = auth()->id();
+                    $user = auth()->user();
+                }else{
+                    $user = User::find(request()->get('user_id'));
+                    $user_id = request()->get('user_id');
+                }
+                $user_shop = UserShop::whereUserId($user_id)->first();
+                
+                return view('panel.user_shop_items.includes.pages.productList',compact('scoped_products','pinned_items','parent_shop','title','categories','access_data','access_id','products','qr_products','type_id','price_group','user_id','user_shop'));
+                
+            }
+            
+            
             return view('panel.user_shop_items.create',compact('scoped_products','pinned_items','parent_shop','title','categories','access_data','access_id','products','qr_products','type_id','price_group'));
-        }catch(Exception $e){            
+
+            
+
+        }catch(\Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -506,14 +515,27 @@ class UserShopItemController extends Controller
                 return redirect()->route('panel.user_shop_items.index')->with('success',$totalProductCount.' Items added to shop  Successfully!');
             }
             
-        }catch(Exception $e){            
+        }catch(\Exception $e){            
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
     
+
+    public function linkedasset(Request $request) {
+        
+
+        magicstring($request->all());
+        return;
+    }
+
+
     public function removebulk(Request $request)
     {
         try {
+
+            // magicstring($request->all());
+            // return;            
+            
             $delete_request = $request->delproducts;
             $action = $request->delete_all;
             $count = 0;
@@ -530,8 +552,13 @@ class UserShopItemController extends Controller
                         $media_arr = explode(',',$media);
                         foreach ($media_arr as $value) {
                             $media_dir = DB::table('medias')->where('id',$value)->first();
-                            $del_path = str_replace('storage','public',$media_dir->path);
-                            Storage::delete($del_path);
+                            
+                            if ($request->delete_type == 'with_asset') {
+                                // Deleting File
+                                $del_path = str_replace('storage','public',$media_dir->path);
+                                Storage::delete($del_path);
+                            }
+                            
                             DB::table('medias')->where('id',$media_dir->id)->delete();
                         }
                         // ! Deleting User SHop Item Entry
@@ -574,10 +601,13 @@ class UserShopItemController extends Controller
                             foreach ($media_arr as $value) {
                                 // Getting File Path
                                 $media_dir = DB::table('medias')->where('id',$value)->first();
-                                // Converting Dir to make it deletable
-                                $del_path = str_replace('storage','public',$media_dir->path);
-                                // Deleting File
-                                Storage::delete($del_path);
+                                
+                                if ($request->delete_type == 'with_asset') {
+                                    // Deleting File
+                                    $del_path = str_replace('storage','public',$media_dir->path);
+                                    Storage::delete($del_path);
+                                }
+                                
                                 // Deleting Media Entry
                                 DB::table('medias')->where('id',$media_dir->id)->delete();
                             }
@@ -591,7 +621,7 @@ class UserShopItemController extends Controller
                     }
                 }
 
-                return back()->with('success',"$count Items Deleted to shop Successfully!");
+                return back()->with('success',"$count Item(s) deleted successfully!");
             }
 
         } catch (\Exception $e) {
@@ -602,7 +632,6 @@ class UserShopItemController extends Controller
 
     /**
      * Display the specified resource.
-     *
      * @param    int  $id
      * @return  \Illuminate\Http\Response
      */

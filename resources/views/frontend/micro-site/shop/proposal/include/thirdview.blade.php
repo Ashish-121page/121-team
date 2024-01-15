@@ -13,18 +13,18 @@
 
 {{-- <div class="col-12">
     <div class="row"> --}}
-            <div class="col-md-6 col-sm-6 col-12 ">
+            <div class="col-md-6 col-sm-6 col-12 my-5" style="height: 650px; width: 100% object-fit: contain;">
                 <div class="sampleenquiry" style="position: absolute1; top: 10px;left: 10px;">
                     <input type="checkbox" name="enquir[]" id="enquir-{{ $product->id }}" value="{{ $product->id }}">
                     <label for="enquir-{{ $product->id }}" class="checkmark bi" style="position: absolute;top: -1%;right: 1%;cursor: pointer;"></label>
                 </div>
                 <div class="shop-image position-relative overflow-hidden rounded ">
 
-                    <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank" style="height: 100vh; width: 100%; object-fit: contain; gap:2; display: inherit">
+                    <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank" style="height: 85vh; width: 100%; object-fit: contain; gap:2; display: inherit">
                         @if( getShopProductImage($product->id,'single') != null)
-                            <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" class="" style="height:70%;">
+                            <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" class="" style="height:100%;">
                         @else
-                            <img src="{{ asset('backend/default/placeholder.jpg')  }}" class="img-fluid rounded" style="height:70%;">
+                            <img src="{{ asset('backend/default/placeholder.jpg')  }}" class="img-fluid rounded" style="height:100%;">
                         @endif
 
                         <div class="sampleenquiry">
@@ -37,9 +37,9 @@
                 </div>
             </div>
 
-            <div class="col-md-6 col-sm-6 col-12 jusify-content-start">
+            <div class="col-md-6 col-sm-6 col-12 jusify-content-start" style="font-size:2rem;">
 
-                <a href="#" class="text-dark product-name h6" contenteditable="true">{{ $product->title }}</a>
+                <a href="#" class="text-dark product-name h3" contenteditable="true">{{ $product->title }}</a>
 
                 @if (isset($product->brand->name) && isset($product->brand->name) != '')
                     <p class="mb-0" contenteditable="true"><b>Brand:</b><span>{{ $product->brand->name ?? '--' }}</span></p>
@@ -64,6 +64,29 @@
                 {{-- @else 
                     <span>Ref ID :#{{ isset($usi) ? $usi->id : '' }}</span>
                 @endif    --}}
+
+                        @if ($selectedProp != [] && $selectedProp != null)
+                            @foreach ($selectedProp as $index => $item)
+                                @php
+                                    $ids_attri = getParentAttruibuteValuesByIds($item,[$product->id]);
+                                    $attri_count = count($ids_attri);
+                                @endphp
+                                
+                                @if ($attri_count != 0)
+                                    <span class="d-block print_content{{ $index }}" contenteditable="true">
+                                            {{ getAttruibuteById($item)->name }} : 
+
+                                        @foreach ($ids_attri as $key1 => $value)
+                                            {{ getAttruibuteValueById($value)->attribute_value }}
+                                            @if ($attri_count != 1 && $key1 < $attri_count-1 )
+                                                , 
+                                            @endif
+                                        @endforeach
+                                    </span>
+                                @endif
+                            @endforeach
+                        @endif
+
                 <div class="d-flex justify-content-start mt-1 ">
                     @php
                         $price = getProductProposalPriceByProposalId($proposal->id,$product->id) ?? $product->price;
@@ -85,11 +108,11 @@
                         <h6 class="text-dark small fst-italic mb-0 mt-1 w-100">
                         {{ format_price(($price)-($price*10/100)) }} - {{ format_price(($price)+ ($price*10/100)) }}</h6>
                     @else --}}
-                        <h6 class="text-dark small fst-italic mb-0 mt-1 w-100 product_price" contenteditable="true">
+                        <h3 align="left" class="text-dark small fst-italic mb-0 mt-1 w-100 product_price" contenteditable="true">
                             {{ $currency_symbol }}
                             {{ $price }}
                         {{-- {{ format_price($price) }} --}}
-                    </h6>
+                    </h3>
                     {{-- @endif --}}
                 </div>
                 @if ($proposal_options->show_Description == 1)
@@ -99,43 +122,22 @@
                 @endif                    
             </div> {{--Second column--}}
             
-
-                @if(++$key%2==0)
-                    <div class="col-12 pdf-margin d-none" style="margin-bottom: 0px">
-
-                    </div>
-                    @if($cust_details['customer_name'] != '' || $proposal->proposal_note != null)
-                        <div class="row justify-content-between d-none pdf-margin">
-                            <div class="col-12 col-md-12 col-lg-6">
-                                <div style="position: relative;width: fit-content">
-                                    <input type="file" id="offericon" class="visually-hidden">
-                                    <label for="offericon" style="position: absolute;right: 0%" class="noprint chicon" >
-                                        <i class="fas fa-pencil-alt text-primary fs-5" ></i>
-                                    </label>
-                                    <img src="{{ asset($proposal->client_logo) }}" alt="Client Logo" id="offerLogo" style="height: 150px;width: 250px;object-fit: contain;">
-                                </div>
-
-                                <div class="ms-3">
-                                    <h4 contenteditable="true">{{ $cust_details['customer_name'] }}</h4>
-                                    @if ($proposal_options->Show_notes == 1)
-                                        <p contenteditable="true" style="border: 1px solid grey; border-radius: 5px">{{ nl2br($proposal->proposal_note )?? '' }}</p>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6 col-lg-6 d-flex justify-content-lg-end">
-                                    <div style="position: relative;width: fit-content   ">
-                                        <input type="file" id="clienticon" class="visually-hidden">
-                                        <label for="clienticon" style="position: absolute;right: 2%" class="noprint chicon" >
-                                            <i class="fas fa-pencil-alt text-primary fs-5" ></i>
-                                        </label>
-                                        <img src="{{ asset('frontend/assets/img/Client_logo_placeholder.svg') }}" alt="Client Logo" id="clientLogo" style="height: 150px;width: 250px;object-fit: contain;">
-                                    </div>
-                            </div>
+            @if ($key < count($products) - 1 )
+                @if(++$key%1==0)
+                    <div class="col-12 justify-content-center mx-auto pdf-margin mx-5 d-none" style=" margin-top: 800px !important; margin-bottom: 10px! important;">
+                        <div style="position: relative;width: fit-content   ">
+                            <input type="file" id="clienticon" class="visually-hidden">
+                            <label for="clienticon" style="position: absolute;right: 2%" class="noprint chicon">
+                                <i class="fas fa-pencil-alt text-primary fs-5"></i>
+                            </label>
+                            {{-- <img src="{{ asset('frontend/assets/img/Client_logo_placeholder.svg') }}" alt="Client Logo" id="clientLogo" style="height: 150px;width: 250px;object-fit: contain;"> --}}
+                            <img src="{{ $offerbannerPath }}" alt="Client Logo" id="clientLogo" style="height:200px;width: 1100px;object-fit: contain;">
                         </div>
-                    @endif
-                    
+                    </div>
                 @endif
-            @endforeach
+            @endif
+
+    @endforeach
             {{-- </div>
             </div><!--end col--> --}}
             @else

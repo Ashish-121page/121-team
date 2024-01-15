@@ -1,7 +1,7 @@
 <meta charset="utf-8" />
 <title> {{ $meta_title ?? getSetting('seo_meta_title') }} </title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <meta charset="utf-8">
+<meta charset="utf-8">
 <meta name="description" content="{{ $meta_description ?? getSetting('seo_meta_description') }}">
 <meta name="keywords" content="{{ $meta_keywords }}">
 <meta name='subject' content='{{$meta_motto}}'>
@@ -18,6 +18,7 @@
 <meta name='owner' content='@isset($meta_reply_to){{$meta_reply_to}}@endisset'>
 <meta name='url' content='{{url()->current()}}'>
 <meta name="og:title" content="{{ $meta_title }}"/>
+<meta name="Developer" content="Ashish">
 <meta name="og:type" content="{{$meta_motto}}"/>
 <meta name="og:url" content="{{url()->current()}}"/>
 <meta name="og:image" content="@isset($meta_img){{$meta_img}}@endisset"/>
@@ -32,7 +33,7 @@
     <link rel="shortcut icon" href="{{  getBackendLogo(getSetting('app_favicon'))}}">
     <!-- Bootstrap -->
     <link href="{{ asset('frontend/assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
-    <!-- Slider --> 
+    <!-- Slider -->
     {{-- <link rel="stylesheet" href="{{ asset('backend/plugins/jquery-toast-plugin/dist/jquery.toast.min.css')}}">               --}}
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/tiny-slider.css') }}"/>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.css">
@@ -49,8 +50,8 @@
    <link rel="stylesheet" href="{{ asset('backend/plugins/fontawesome-free/css/all.min.css') }}">
    <link rel="stylesheet" href="{{ asset('backend/plugins/select2/dist/css/select2.min.css') }}">
     <style>
-            
-        
+
+
         .fltr-mnu p{
             font-size: 13px;
             padding: 0px 0px;
@@ -67,7 +68,7 @@
             border-color: #6666CC !important;
         }
         .active1{
-           border-color: #6666CC !important; 
+           border-color: #6666CC !important;
         }
         .owl-nav{
             display:block!important;
@@ -95,15 +96,15 @@
             .carosud{
                 text-align: center
             }
-            
-            
+
+
         }
 
         .owl-item {
             cursor: pointer;
         }
 
-        
+
     </style>
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-QGKE28888Y"></script>

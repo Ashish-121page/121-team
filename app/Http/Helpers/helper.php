@@ -7,8 +7,14 @@ use App\Models\ProductAttributeValue;
 use App\Models\ProductExtraInfo;
 use App\Models\shorturl;
 use App\Models\TimeandActionModal;
+use App\Models\Quotation;
+use App\Models\CustomFields;
 use Carbon\Carbon;
 use Twilio\Rest\Client;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+
+
 // from shn
 
 // for dynamic mail
@@ -1209,12 +1215,12 @@ if(!function_exists('getProductCountViaCategoryId')){
             $shop_items_ids = App\Models\UserShopItem::where('category_id',$categoryId)->
                                 where('user_id',$userId)->
                                 pluck('product_id');
-            
+
         }else{
             $shop_items_ids = App\Models\UserShopItem::where('category_id',$categoryId)->whereIsPublished(1)->where('user_id',$userId)->pluck('product_id');
 
         }
-        
+
 
         return App\Models\Product::whereIn('id', $shop_items_ids)->where('exclusive',0)->where('is_publish',1)->groupBy('sku')->get()->count();
     }
@@ -1227,12 +1233,12 @@ if(!function_exists('getProductCountViaCategoryIdOwner')){
             $shop_items_ids = App\Models\UserShopItem::where('category_id',$categoryId)->
                                 where('user_id',$userId)->
                                 pluck('product_id');
-            
+
         }else{
             $shop_items_ids = App\Models\UserShopItem::where('category_id',$categoryId)->whereIsPublished(1)->where('user_id',$userId)->pluck('product_id');
 
         }
-        
+
 
         return App\Models\Product::whereIn('id', $shop_items_ids)->where('is_publish',1)->groupBy('sku')->get()->count();
     }
@@ -1691,7 +1697,7 @@ if(!function_exists('shrinkurl')){
         if ($destination_url == "" || $destination_url == null) {
             return "Invailed Request";
         }
-        
+
         if ($url_key == null) {
             $url_key = generateRandomStringNative(10);
         }
@@ -1960,6 +1966,21 @@ if (!function_exists('checkLockedEnquiry')) {
 
 
 
+if (!function_exists('checkQuoteSlug')) {
+    function checkQuoteSlug($mark, $num, $userid)
+    {
+        $slug = $mark . "/" . $num;
+        $chk = Quotation::where('user_id', $userid)->where('user_slug', $slug)->first();
+        if ($chk == null) {
+            return $slug;
+        }
+        $num = $num + 1;
+        return checkQuoteSlug($mark, $num, $userid); // Added return statement
+    }
+}
+
+
+
 // Gettign Product Attribute value Name
 if (!function_exists('getAttruibuteValueById')) {
     function getAttruibuteValueById($id) {
@@ -1975,6 +1996,49 @@ if (!function_exists('getParentAttruibuteValuesByIds')) {
     }
 }
 
+if (!function_exists('getCustomFieldValueById')) {
+    // ! In This Case i Am Using Relational ID As Custom Field Value ID
+    function getCustomFieldValueById($id,$product_id) {
+        return CustomFields::where('relatation_name',$id)->where('product_id',$product_id)->first();
+    }
+}
+
+
+if (!function_exists('getFieldNameById')) {
+    function getFieldNameById($user_id,$fieldid){
+        $user = App\User::whereId($user_id)->first();
+        $custom_fields = $user->custom_fields;
+        $custom_fields = json_decode($custom_fields) ?? null;
+
+        if ($custom_fields != null) {
+            foreach ($custom_fields as $key => $value) {
+                if ($value->id == $fieldid) {
+                    return $value->text;
+                }
+            }
+        }
+
+    }
+}
+
+if (!function_exists('is_base64_encoded')) {
+    function is_base64_encoded($data) {
+        if (preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $data)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+}
+
+
+if (!function_exists("is_html")) {
+    function is_html($string) {
+        return $string != strip_tags($string);
+    }
+}
+
 
 // Gettign Product Attribute Name
 if (!function_exists('getAttruibuteById')) {
@@ -1983,14 +2047,124 @@ if (!function_exists('getAttruibuteById')) {
     }
 }
 
+if (!function_exists('countRepetitions')) {
+    function countRepetitions($numbers) {
+        $repetitionCount = array();
+        foreach ($numbers as $num) {
+            if (array_key_exists($num, $repetitionCount)) {
+                $repetitionCount[$num]++;
+            } else {
+                $repetitionCount[$num] = 1;
+            }
+        }
+        return $repetitionCount;
+    }
+}
+if (!function_exists('getAllPropertiesofProductById')) {
+    function getAllPropertiesofProductById($product_id,$user_id = null) {
+        if ($user_id == null) {
+            $user_id = auth()->id();
+        }
+        return ProductExtraInfo::where('product_id',$product_id)->where('user_id',$user_id)->get();
+    }
+}
+
+
+if (!function_exists('getMaxNumberWithIndex')) {
+    function getMaxNumberWithIndex($arr) {
+        arsort($arr);
+        $maxIndex = '';
+        $maxKey = '';
+        $count = 0;
+        foreach($arr as $key => $item){
+            if($count == 0){
+                $maxIndex = $key;
+                $maxKey = $item;
+            }
+            $count++;
+        }
+
+        return [$maxKey=>$maxIndex];
+    }
+}
+
+
+if (!function_exists('findLeastRepeatedNumber')) {
+    function findLeastRepeatedNumber($arr) {
+        $count = array();
+        foreach ($arr as $num) {
+            if (isset($count[$num])) {
+                $count[$num]++;
+            } else {
+                $count[$num] = 1;
+            }
+        }
+        $minCount = PHP_INT_MAX;
+        $leastRepeatedNumber = null;
+        foreach ($count as $num => $frequency) {
+            if ($frequency < $minCount) {
+                $minCount = $frequency;
+                $leastRepeatedNumber = $num;
+            }
+        }
+        return $leastRepeatedNumber;
+    }
+}
+
+
+if (!function_exists("findMostRepeatedNumber")) {
+    function findMostRepeatedNumber($arr) {
+        $count = array();
+        foreach ($arr as $num) {
+            if (isset($count[$num])) {
+                $count[$num]++;
+            } else {
+                $count[$num] = 1;
+            }
+        }
+        $maxCount = 0;
+        $mostRepeatedNumber = null;
+        foreach ($count as $num => $frequency) {
+            if ($frequency > $maxCount) {
+                $maxCount = $frequency;
+                $mostRepeatedNumber = $num;
+            }
+        }
+        return $mostRepeatedNumber;
+    }
+}
+
+
+
+
+
+if (!function_exists("combinationofSKu")) {
+    // Helps In making COmbination of Product Attributes
+    function combinationofSKu(...$arrays){
+        $result = [[]];
+        foreach ($arrays as $arr) {
+            $temp = [];
+            foreach ($result as $item) {
+                foreach ($arr as $element) {
+                    $temp[] = array_merge($item, [$element]);
+                }
+            }
+            $result = $temp;
+        }
+        return $result;
+    }
+}
 
 if (!function_exists('debugtext')) {
     function debugtext($debuging_mode = 0,$str,$color = 'red',$background = 'pink'){
         if ($debuging_mode) {
-            echo "<code style='color: $color; font-weight:800;padding: 8px; background-color: $background; margin:8px;display:block'>$str</code>".newline(); 
+            echo "<code style='color: $color; font-weight:800;padding: 8px; background-color: $background; margin:8px;display:block'>$str</code>".newline();
         }
     }
 }
+
+
+
 
 // ! Function to Search Array Inside ARRAY
 if (!function_exists('searchArray')) {
@@ -2010,7 +2184,7 @@ if (!function_exists('exchangerate')) {
     function exchangerate($Cost_Price,$exhange_currency_rate,$Home_currency_rate = 1) {
 
         $difference = $Home_currency_rate/$exhange_currency_rate;
-        $result = $Cost_Price*$difference;  
+        $result = $Cost_Price*$difference;
 
         return $result;
     }
@@ -2019,10 +2193,44 @@ if (!function_exists('exchangerate')) {
 
 
 if (!function_exists('getAttributeIdByName')) {
-    function getAttributeIdByName($name,$user_id = null){
-        return ProductAttribute::where('name',$name)->where('user_id',$user_id)->first()->id ?? 0;
+    function getAttributeIdByName($name,$user_id = null,$type = 'single') {
+        if ($type == 'single') {
+            return ProductAttribute::where('name',$name)->where('user_id',$user_id)->first()->id ?? 0;
+        }else{
+            return ProductAttribute::where('name',$name)->where('user_id',$user_id)->first();
+        }
     }
 }
+
+function convertImageUrlToDataUrl($imageUrl) {
+    // Fetch the image content
+    $response = Http::get($imageUrl);
+    if (!$response->successful()) {
+        return null;
+    }
+
+    // Store the image content temporarily
+    $tempImagePath = 'temp_image.jpg'; // Generate a unique name for actual use
+    Storage::disk('local')->put($tempImagePath, $response->body());
+
+    // Read the stored image
+    $imagePath = storage_path('app/' . $tempImagePath);
+    $imageContents = file_get_contents($imagePath);
+
+    // Get MIME type
+    $finfo = new \finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $finfo->buffer($imageContents);
+
+    // Encode in base64
+    $base64Encoded = base64_encode($imageContents);
+
+    // Delete the temporary file
+    Storage::disk('local')->delete($tempImagePath);
+
+    // Return the Data URL
+    return 'data:' . $mimeType . ';base64,' . $base64Encoded;
+}
+
 
 
 

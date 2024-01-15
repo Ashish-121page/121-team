@@ -5,12 +5,13 @@
 
     @if (request()->has('products') || request()->has('productsgrid'))
         <div class="d-flex">
-            <a href="?type={{ request()->get('type') }}&type_id={{ request()->get('type_id') }}&productsgrid=true" class="btn btn-icon btn-outline-primary mx-1">
-                <i class="fas fa-th-large"></i>
+            <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&productsgrid=true&category_id={{request()->get('category_id') }}&sub_category_id={{ request()->get('sub_category_id') }}" class="btn btn-icon btn-outline-primary mx-1 @if(request()->has('productsgrid')) active @endif">
+                <i class="fas fa-th-large" style="line-height:2 !important" ></i>
             </a>
-            <a href="?type={{ request()->get('type') }}&type_id={{ request()->get('type_id') }}&products=true" class="btn btn-icon btn-outline-primary mx-1">
-                <i class="fas fa-list"></i>
+            <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{request()->get('category_id') }}&sub_category_id={{ request()->get('sub_category_id') }}" class="btn btn-icon btn-outline-primary mx-1 @if(request()->has('products')) active @endif">
+                <i class="fas fa-list" style="line-height:2 !important"></i>
             </a>
+
         </div>
         <a href="{{ route('panel.products.create') }}?action=nonbranded&update_record"
             class="btn btn-outline-primary  mx-1">
@@ -18,15 +19,30 @@
         </a>
         @if($acc_permissions->addandedit == "yes")
             @if ($Team_proadd)
-                <a href="{{ route('panel.products.create') }}?action=nonbranded"
+                {{-- <a href="{{ route('panel.products.create') }}?action=nonbranded"
                     class="btn btn-outline-primary  mx-1">
                     Add Product
-                </a>
+                </a> --}}
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle mx-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Add Product
+                    </button>
+
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('panel.products.create') }}?action=nonbranded&single_product">Single Product</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('panel.products.create') }}?action=nonbranded&bulk_product">Bulk - by Excel</a>
+                        </li>
+                    </ul>
+                    
+                </div>
             @endif
         @endif
 
         @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id"))
-            <button id="delete_all_dummy"class="btn btn-outline-danger ">Delete All Products</button>
+            <button id="delete_all_dummy"class="btn btn-outline-primary">Delete All Products</button>
         @endif
     
 
@@ -45,3 +61,17 @@
     @endif
     
 </div>
+
+
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#pageSelect').change(function(){
+            var selectedValue = $(this).val();
+
+            if(selectedValue !== "0") {
+                window.location.href = selectedValue; 
+            }
+        });
+    });
+</script> --}}

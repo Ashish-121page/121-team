@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File as FacadesFile;
+use Illuminate\Support\Facades\Storage;
 use League\CommonMark\Extension\Table\Table;
 use ZipArchive;
 
@@ -127,53 +128,6 @@ class SellerController extends Controller
             abort(401);
         }
     }
-
-
-    public function ashish(Request $request)
-    {        
-
-
-        // $name = "Default Template";
-
-        // echo json_encode(
-        //     [
-        //         'name' => $name
-        //     ]
-        // );
-
-
-        
-
-        // echo "Test Function <br><br><br>";
-        // $user = auth()->user();
-        magicstring(session()->all());
-
-
-
-        // $costPrice = 500;
-        // $exchangePrice = 0;
-
-        // echo "Old exchange Price Is $exchangePrice".newline();
-        // echo "Old Cost Price Is $costPrice".newline(3);
-
-        // $doller = 85;
-        // $homecr = 1;
-
-        // $diffrence = $homecr / $doller;
-
-        
-        // $exchangePrice = $costPrice*$diffrence  ;
-
-        // echo "New exchange Price Is $exchangePrice".newline();
-        // echo "New Cost Price Is $costPrice".newline(3);
-        
-
-
-        
-        // return view('devloper.ashish.index',compact('msg','code'));
-    }
-
-
 
     public function userEnquiryIndex()
     {

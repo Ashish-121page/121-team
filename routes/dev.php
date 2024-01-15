@@ -19,14 +19,12 @@ use App\Http\Controllers\PermissionController;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/ 
+*/
 
 Route::group(['middleware' => 'can:manage_dev', 'prefix' => 'dev'], function(){
-	
-    // API Documentation
-    Route::get('/rest-api', function () { return view('api'); }); 
 
-		
+    // API Documentation
+    Route::get('/rest-api', function () { return view('api'); });
 	Route::get('/invoice', function () { return view('pages.invoice'); });
 
 	//form-controls
@@ -72,7 +70,7 @@ Route::group(['middleware' => 'can:manage_dev', 'prefix' => 'dev'], function(){
 	Route::get('/charts-chartist', function () { return view('pages.charts-chartist'); });
 	Route::get('/charts-flot', function () { return view('pages.charts-flot'); });
 	Route::get('/charts-knob', function () { return view('pages.charts-knob'); });
-	
+
 	// themekit ui pages
 	Route::get('/alerts', function () { return view('pages.ui.alerts'); });
 	Route::get('/badges', function () { return view('pages.ui.badges'); });
@@ -88,6 +86,14 @@ Route::group(['middleware' => 'can:manage_dev', 'prefix' => 'dev'], function(){
 	Route::get('/rating', function () { return view('pages.ui.rating'); });
 	Route::get('/session-timeout', function () { return view('pages.ui.session-timeout'); });
 	Route::get('/pricing', function () { return view('pages.pricing'); });
+
+
+
+	// Test Images API URLS
+	Route::get('/image-studio', ['uses' => 'DevRouteController@imagestudio', 'as' => 'image.studio']);
+	Route::get('/image-studio/test', ['uses' => 'DevRouteController@ashish', 'as' => 'image.studio']);
+
+
 
 });
 

@@ -3,6 +3,7 @@
 <meta name="description" content="{{ getSetting('seo_meta_description') }}">
 <meta name="keywords" content="{{ getSetting('seo_meta_keywords') }}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="Developer" content="Ashish">
 <meta name="csrf-token" content="{{ csrf_token() }}" />
 <link rel="icon" href="{{ getBackendLogo(getSetting('app_favicon')) }}" />
 <link rel="manifest" href="{{ asset('frontend/assets/manifest/manifest.webmanifest') }}">
