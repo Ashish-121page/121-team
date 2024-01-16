@@ -55,15 +55,15 @@
 
     <div class="container" style="max-width:1350px !important;">
 
-        <div class="col-12">
+        <div class="col-12 mb-3">
             <div class="row">
 
                 <div class="col-8">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-lg-6 col-md-8">                            
                             <div class="d-flex align-items-center">
                                 <button class="btn btn-secondary" value="Back" onclick="goBack()" type="button">Back</button>
-                                <h5 class="ms-3 mt-5 mb-0 quotation_number_sync" style="margin-left: 50px !important;">
+                                <h5 class="ms-3 mt-5 mb-0 quotation_number_sync" style="margin-left: 2rem !important;">
                                     {{ $QuotationRecord->user_slug ?? ($QuotationRecord->slug ?? '--') }}
                                 </h5>
                             </div>
@@ -71,7 +71,7 @@
                     </div>
                 </div>
 
-                <div class="col-4 d-flex justify-content-end align-items-center">
+                <div class="col-lg-4  col-md-4 d-flex justify-content-end align-items-center">
                     <a id="createvariant" href="#animatedModal12" role="button" class="btn btn-outline-primary mx-2"> Add
                         Product </a>
 
@@ -83,28 +83,37 @@
             </div>
         </div>
 
-
-        <div class="col-12">
-            <div class="row d-flex justify-content-center">
-                <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                    <div class="container-fluid">
+        <div class="container-fluid mt-5 mb-3">
+            <div class="row bg-light">
+                <div class="col-4">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
                         <ul class="navbar-nav">
                             <li class="nav-item mx-3">
-                                <a class="nav-link " href="#">1.Add Details</a>
+                                <a class="nav-link" href="#">1. Add Details</a>
                             </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-4">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                        <ul class="navbar-nav">
                             <li class="nav-item mx-3">
                                 <a class="nav-link active" href="#">2. Select Items</a>
                             </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-4">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                        <ul class="navbar-nav">
                             <li class="nav-item mx-3">
                                 <a class="nav-link" href="#">Generate</a>
                             </li>
-                            <!-- Add more steps as needed -->
                         </ul>
-                    </div>
-                </nav>
-
+                    </nav>
+                </div>
             </div>
-        </div>
+        </div>        
 
         <div class="col lg-6 col-md-5 d-flex justify-content-between align-items-center mt-5">
             <div class=" mx-1">

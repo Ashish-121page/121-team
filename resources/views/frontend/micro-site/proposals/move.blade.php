@@ -68,17 +68,6 @@
                 margin-bottom: 24px;
                 border-radius: 0.25rem;
             }
-            .card-body::-webkit-scrollbar{
-                width: 4px
-            }
-
-            .card-body::-webkit-scrollbar-track{
-                background: #f1f1f1;
-            }
-            .card-body::-webkit-scrollbar-thumb{
-                background: #6666CC;
-                border-radius: 5px;
-            }
             .prdct-checked {
                 position: absolute;
                 width: 30px;
@@ -446,7 +435,7 @@
                                                                 </a>
 
                                                             </div>
-                                                            <div class="card-body text-center" style="overflow: hidden;overflow-y: auto;height: 300px;">
+                                                            <div class="card-body text-center">
                                                                 <div class="profile-pic">
                                                                     <div class="row">
                                                                         <div class="col-md-12 pt-2 text-center p-0" style="margin-top: -15px;">
