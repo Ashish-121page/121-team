@@ -2975,18 +2975,18 @@ class ProductController extends Controller
             $mainsku_carton_height = [];
             foreach ($available_products as $key => $value) {
                 $product_tmp = getProductDataById($value);
-                $shipping = json_decode($product_tmp->shipping);
+                $shipping2 = json_decode($product_tmp->shipping2);
                 $carton_details = json_decode($product_tmp->carton_details);
                 $mainsku_prices[] = $product_tmp->min_sell_pr_without_gst ?? '';
                 $mainsku_mrp[] = $product_tmp->mrp ?? '';
                 $mainsku_selling_price_unit[] = $product_tmp->selling_price_unit ?? '';
                 $mainsku_hsn[] = $product_tmp->hsn ?? '';
                 $mainsku_hsnpercent[] = $product_tmp->hsn_percent ?? '';
-                $mainsku_grossweight[] = $shipping->gross_weight ?? '';
-                $mainsku_netweight[] = $shipping->net_weight ?? '';
-                $mainsku_length[] = $shipping->length ?? '';
-                $mainsku_width[] = $shipping->width ?? '';
-                $mainsku_height[] = $shipping->height ?? '';
+                $mainsku_grossweight[] = $shipping2->gross_weight ?? '';
+                $mainsku_netweight[] = $shipping2->net_weight ?? '';
+                $mainsku_length[] = $shipping2->length ?? '';
+                $mainsku_width[] = $shipping2->width ?? '';
+                $mainsku_height[] = $shipping2->height ?? '';
                 $mainsku_standard_carton[] = $carton_details->standard_carton ?? '';
                 $mainsku_carton_weight[] = $carton_details->carton_weight ?? '';
                 $mainsku_carton_length[] = $carton_details->carton_length ?? '';
@@ -3171,13 +3171,13 @@ class ProductController extends Controller
 
         // magicstring($request->all());
         // return;
-        
+
 
 
         $any_value = [];
         $newProp = [];
         $substring = "any_value";
-        
+
         foreach ($request->all() as $key => $value) {
             if (strpos($key, $substring) !== false) {
                 array_push($any_value,$key);

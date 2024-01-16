@@ -108,8 +108,8 @@
 
 
                         @if ($permi->documentaion == 'yes')
-                            <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.invoice.index'] ,'active' ) }}">
-                                <a href="{{ route('panel.invoice.index')."?type=direct&type_ide=".encrypt(auth()->id()) }}" class="a-item px-lg-3" style="color:#ccd3e4; " >
+                            <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.Documents.Quotation'] ,'active' ) }}">
+                                <a href="{{ route('panel.Documents.Quotation') }}" class="a-item px-lg-3" style="color:#ccd3e4; " >
                                     {{-- <i class="ik ik-archive"></i> --}}
                                     <span>{{ 'Documentation' }}</span>
                                 </a>
