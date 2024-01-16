@@ -576,7 +576,7 @@
                                                                 </label>
                                                                 @if (request()->has('type'))
                                                                 <input class="form-control" name="hsn_percent"
-                                                                    type="number" id="hsn_percent"
+                                                                    type="text" id="hsn_percent"
                                                                     value="{{ $mainsku_hsnpercent_str }}">
                                                                 @else
                                                                 <input class="form-control" name="hsn_percent"
@@ -716,7 +716,7 @@
                                                         {{-- -- Custom Fields of User 1 ` --}}
                                                         @if (in_array('1', $fileds_sections))
                                                             <div class="col-12">
-                                                                <div class="h5">Custom Cols</div>
+                                                                <div class="h5">Custom input</div>
                                                             </div>
                                                             @if ($user_custom_fields != null)
                                                                 <div class="col-12">
@@ -727,7 +727,7 @@
                                                                                     <div class="form-group">
                                                                                         <label
                                                                                             for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
-                                                                                        {!! $user_custom_field['tag'] !!}
+                                                                                            {!! $user_custom_field['tag'] !!}
                                                                                     </div>
                                                                                 </div>
                                                                             @endif
@@ -2597,6 +2597,30 @@
             });
         </script>
 
+<script>
+    $(document).ready(function () {
+        let custcols = {!! $user_custom_fields_types !!};
+        let length_unit = $("#length_unit").html()
+        let weight_unit = $("#all_units").html()
+
+        $.each(custcols, function (indexInArray, valueOfElement) {
+            if (valueOfElement == 'uom') {
+                // $('[name="elementName"]');
+                $(`[name="${indexInArray}[unit]"]`).parent('div').addClass('flex-wrap')
+                $(`[name="${indexInArray}[unit]"]`).empty();
+                $(`[name="${indexInArray}[unit]"]`).append(weight_unit);
+            }
+
+            if (valueOfElement == 'diamension') {
+                $(`[name="${indexInArray}[unit]"]`).parent('div').addClass('flex-wrap')
+                $(`[name="${indexInArray}[unit]"]`).empty();
+                $(`[name="${indexInArray}[unit]"]`).append(length_unit);
+            }
+
+        });
+    });
+</script>
+
         <script>
             // {{-- ` Updating Product Custom Fields Values --}}
             $(document).ready(function() {
@@ -2620,8 +2644,7 @@
                                     if (element.is('select')) {
                                         // Assuming valu[key] is an array of values for the multi-select
                                         console.log("Setting value for a SELECT element with an array.");
-                                        element.val(valu).trigger(
-                                        'change'); // Set value and trigger change for Select2
+                                        element.val(valu[key]).trigger('change'); // Set value and trigg?er change for Select2
                                         element.select2();
 
                                         // If you're using Select2, you may also need to re-initialize it
@@ -2644,7 +2667,7 @@
                     }
                 });
 
-                $(".select2").not("#category_id").trigger('change');
+                // $(".select2").not("#category_id").trigger('change');
             });
 
             function isBase64(str) {
@@ -2664,41 +2687,18 @@
 
         <script>
 
-            $('.select2').on('select2:unselect', function (e) {
-                var removedItemData = e.params.data;
-                var removedId = removedItemData.id;
-                removedId = btoa(removedId);
-                let url = "{{ route('panel.products.delete.variant',[encrypt($product->id),'']) }}?chk_id="+removedId;
-                window.location.href = url;
+            // $('.select2').on('select2:unselect', function (e) {
+            //     var removedItemData = e.params.data;
+            //     var removedId = removedItemData.id;
+            //     removedId = btoa(removedId);
+            //     let url = "{{ route('panel.products.delete.variant',[encrypt($product->id),'']) }}?chk_id="+removedId;
+            //     window.location.href = url;
 
-            });
+            // });
 
         </script>
 
-        <script>
-            $(document).ready(function () {
-                let custcols = {!! $user_custom_fields_types !!};
-                let length_unit = $("#length_unit").html()
-                let weight_unit = $("#all_units").html()
 
-                $.each(custcols, function (indexInArray, valueOfElement) {
-                    console.log(indexInArray);
-                    console.log(valueOfElement);
-
-
-                    if (valueOfElement == 'uom') {
-                        // $('[name="elementName"]');
-                        $(`[name="${indexInArray}[unit]"]`).empty();
-                        $(`[name="${indexInArray}[unit]"]`).append(weight_unit);
-                    }
-
-                    if (valueOfElement == 'diamension') {
-                        $(`[name="${indexInArray}[unit]"]`).empty();
-                        $(`[name="${indexInArray}[unit]"]`).append(length_unit);
-                    }
-                });
-            });
-        </script>
 
 
     @endpush

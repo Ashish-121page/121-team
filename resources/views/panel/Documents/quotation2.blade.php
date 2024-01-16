@@ -36,7 +36,7 @@
         <div class="row justify-content-center">
             <!-- Main Content -->
 
-            <div class="col-lg-10 mt-3">
+            <div class="col-lg-12 mt-3">
                 <!-- Main content goes here -->
                 <div class="mt-5">
                     <div class="row">
@@ -49,7 +49,7 @@
                                                 <button class="btn btn-secondary mx-2" onclick="goBack()" value="Back"
                                                     type="button">Back</button>
 
-                                                <h5 class="mt-5">Enquiry Details</h5>
+                                                <h5 class="mt-5">{{ $json_customer_info->buyerName ?? $json_customer_info->person_name ?? '' }} Quotations View</h5>
 
                                                 <span class="ms-auto" style="margin-left: 19px; margin-top: 5px;">
                                                     <i class="far fa-edit"></i>
@@ -105,27 +105,43 @@
                                             {{-- <td class="no-export action_btn">
                                                 <input type="checkbox" id="checkallinp">
                                             </td> --}}
-                                            <td class="col-2">Enquiry ID</td>
+                                            <td class="col-2">Offer ID</td>
+                                            <td class="col-2">Quotation ID</td>
+                                            <td class="col-2">Entity</td>
                                             <td class="col-2">Buyer Name</td>
                                             <td class="col-2">Buyer Email </td>
-                                            <td class="col-2">Buyer Company </td>
+                                            <td class="col-2">Person Name </td>
+                                            <td class="col-2"> No. of Product </td>
                                             <td class="col-2">Created On</td>
+                                            <td class="col-2">To do</td>
                                         </tr>
                                     </thead>
                                     <tbody id="rrecordtable">
 
-                                        @php
-                                            $json = json_decode($record->customer_info) ?? '';
-                                        @endphp
+
                                         <tr>
                                             {{-- <td class="no-export action_btn">
                                                 <input type="checkbox" id="checkallinp">
                                             </td> --}}
+                                            <td class="col-2">{{ $record->proposal_id ?? '--' }}</td>
                                             <td class="col-2">{{ $record->user_slug ?? $record->slug }}</td>
-                                            <td class="col-2">{{ $json->buyerName ?? $json->person_name ?? '' }}</td>
-                                            <td class="col-2"> {{ $json->buyerEmail ?? $json->person_email ?? '' }} </td>
-                                            <td class="col-2"> {{ $json->companyName ?? '' }} </td>
+                                            <td class="col-2 text-danger">Entity Name</td>
+                                            <td class="col-2 text-danger"> Buyer Name </td>
+                                            <td class="col-2"> {{ $json_customer_info->buyerEmail ?? $json_customer_info->person_email ?? '' }} </td>
+
+                                            <td class="col-2">{{ $json_customer_info->buyerName ?? $json_customer_info->person_name ?? '' }}</td>
+
+                                            <td class="col-2 text-danger"> 10 </td>
                                             <td class="col-2"> {{ $record->quotation_date ?? '' }} </td>
+
+                                            <td class="col-2">
+                                                <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $record->id }}" id="nnnbk" class="mx-1" ><i class="far fa-save text-primary"></i></a>
+
+                                                <a href="{{ route('panel.Documents.create.Quotation.form') }}?typeId={{ $record->id }}&action=edit" class="mx-1" >
+                                                    <i class="far fa-edit text-primary" title="Edit"></i>
+                                                </a>
+                                            </td>
+
                                         </tr>
 
                                     </tbody>
@@ -149,15 +165,15 @@
                                         </div>
                                     </div>
                                     <div class="text-center">
-                                        <p class="card-text h-4">You have not added quotation for this buyer</p>
+                                        {{-- <p class="card-text h-4">You have not added quotation for this buyer</p> --}}
                                         <p class="card-text text-muted">Add your own quotation or create new</p>
                                         <button type="button" class="btn btn-outline-primary mx-2 " data-toggle="modal" data-target="#uploadModal">
                                             Upload quotation
                                         </button>
 
-                                        <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $record->id }}" id="nnnbk" class="btn btn-primary mx-2">Go Next</a>
+                                        {{-- <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $record->id }}" id="nnnbk" class="btn btn-primary mx-2">Go Next</a>
 
-                                        <a href="{{ route('panel.Documents.create.Quotation.form') }}?typeId={{ $record->id }}&action=edit" class="btn btn-outline-dark mx-2">Edit Quote</a>
+                                        <a href="{{ route('panel.Documents.create.Quotation.form') }}?typeId={{ $record->id }}&action=edit" class="btn btn-outline-dark mx-2">Edit Quote</a> --}}
 
                                     </div>
                                 </div>
@@ -166,7 +182,7 @@
 
                         @if ($quote_flles->count() != 0)
                             <div class="col-12">
-                                <div class="h6">Uploaded Files</div>
+                                {{-- <div class="h6">Uploaded Files</div> --}}
                                 <table class="table">
                                     <thead>
                                         <th>#</th>
