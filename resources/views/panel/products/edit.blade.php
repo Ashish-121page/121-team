@@ -576,7 +576,7 @@
                                                                 </label>
                                                                 @if (request()->has('type'))
                                                                 <input class="form-control" name="hsn_percent"
-                                                                    type="number" id="hsn_percent"
+                                                                    type="text" id="hsn_percent"
                                                                     value="{{ $mainsku_hsnpercent_str }}">
                                                                 @else
                                                                 <input class="form-control" name="hsn_percent"
@@ -716,7 +716,7 @@
                                                         {{-- -- Custom Fields of User 1 ` --}}
                                                         @if (in_array('1', $fileds_sections))
                                                             <div class="col-12">
-                                                                <div class="h5">Custom Cols</div>
+                                                                <div class="h5">Custom input</div>
                                                             </div>
                                                             @if ($user_custom_fields != null)
                                                                 <div class="col-12">
@@ -727,7 +727,7 @@
                                                                                     <div class="form-group">
                                                                                         <label
                                                                                             for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
-                                                                                        {!! $user_custom_field['tag'] !!}
+                                                                                            {!! $user_custom_field['tag'] !!}
                                                                                     </div>
                                                                                 </div>
                                                                             @endif
@@ -966,7 +966,7 @@
                                                                     <th scope="col-6">Actions</th>
                                                                 </tr>
                                                             </thead>
-                                                            <tbody id="previewassetsitem">
+                                                            <tbody>
 
                                                                 @forelse ($mediaAssets as $media)
                                                                     @php
@@ -2226,7 +2226,6 @@
     </div>
     @include('panel.products.include.varient', ['product_id' => $product->id])
     @include('panel.products.include.singleProduct')
-    @include('panel.products.include.LInke-assets')
     <!-- push external js -->
     @push('script')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
@@ -2598,6 +2597,30 @@
             });
         </script>
 
+<script>
+    $(document).ready(function () {
+        let custcols = {!! $user_custom_fields_types !!};
+        let length_unit = $("#length_unit").html()
+        let weight_unit = $("#all_units").html()
+
+        $.each(custcols, function (indexInArray, valueOfElement) {
+            if (valueOfElement == 'uom') {
+                // $('[name="elementName"]');
+                $(`[name="${indexInArray}[unit]"]`).parent('div').addClass('flex-wrap')
+                $(`[name="${indexInArray}[unit]"]`).empty();
+                $(`[name="${indexInArray}[unit]"]`).append(weight_unit);
+            }
+
+            if (valueOfElement == 'diamension') {
+                $(`[name="${indexInArray}[unit]"]`).parent('div').addClass('flex-wrap')
+                $(`[name="${indexInArray}[unit]"]`).empty();
+                $(`[name="${indexInArray}[unit]"]`).append(length_unit);
+            }
+
+        });
+    });
+</script>
+
         <script>
             // {{-- ` Updating Product Custom Fields Values --}}
             $(document).ready(function() {
@@ -2621,8 +2644,7 @@
                                     if (element.is('select')) {
                                         // Assuming valu[key] is an array of values for the multi-select
                                         console.log("Setting value for a SELECT element with an array.");
-                                        element.val(valu).trigger(
-                                        'change'); // Set value and trigger change for Select2
+                                        element.val(valu[key]).trigger('change'); // Set value and trigg?er change for Select2
                                         element.select2();
 
                                         // If you're using Select2, you may also need to re-initialize it
@@ -2645,7 +2667,7 @@
                     }
                 });
 
-                $(".select2").not("#category_id").trigger('change');
+                // $(".select2").not("#category_id").trigger('change');
             });
 
             function isBase64(str) {
@@ -2663,172 +2685,20 @@
             }
         </script>
 
-
         <script>
 
-            $('.select2').on('select2:unselect', function (e) {
-                var removedItemData = e.params.data;
-                var removedId = removedItemData.id;
-                removedId = btoa(removedId);
-                let url = "{{ route('panel.products.delete.variant',[encrypt($product->id),'']) }}?chk_id="+removedId;
-                window.location.href = url;
+            // $('.select2').on('select2:unselect', function (e) {
+            //     var removedItemData = e.params.data;
+            //     var removedId = removedItemData.id;
+            //     removedId = btoa(removedId);
+            //     let url = "{{ route('panel.products.delete.variant',[encrypt($product->id),'']) }}?chk_id="+removedId;
+            //     window.location.href = url;
 
-            });
+            // });
 
         </script>
-        
-        <script>
-            const imageInput = document.getElementById('imageInput');
-            const imagePreview = document.getElementById('imagePreview');
-        
-            imageInput.addEventListener('change', function() {
-                const file = this.files[0];
-        
-                if (file) {
-                    const reader = new FileReader();
-        
-                    reader.onload = function(e) {
-                        imagePreview.src = e.target.result;
-                        imagePreview.style.display = 'block';
-                    };
-        
-                    reader.readAsDataURL(file);
-                } else {
-                    imagePreview.src = '{{ asset('frontend/assets/img/placeholder.png') }}';
-                    imagePreview.style.display = 'none';
-                }
-            });
-        
-            $(document).ready(function () {
-                $(".select2").trigger('change');
-        
-        
-        
-                $("#searchbyname").keyup(function (e) {
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ route('panel.products.search.assets') }}",
-                        data: {
-                            search: $(this).val(),
-                            type: 'search'
-                        },
-                        success: function (response) {
-                            $("#updateseachassets").html(response);
-        
-                            $(".addingitem").click(function(e) {
-                                e.preventDefault();
-                                $(this).addClass("active");
-                                $(this).addClass("disabled");
-        
-        
-        
-                                let mediaid = $(this).data("mediaid");
-                                let file_name = $(this).data("file_name");
-        
-                                if (addedassets != null) {
-                                    addedassets.push(mediaid);
-                                    addedassetsFilename.push(file_name);
-                                }
-        
-                                let addedassets1 = [...new Set(addedassets)];
-                                let addedassetsFilename1 = [...new Set(addedassetsFilename)];
-        
-                                localStorage.setItem("mediaId", addedassets1)
-                                localStorage.setItem("mediaFilename", addedassetsFilename1)
-        
-                                appendAssets(addedassets1, addedassetsFilename1);
-        
-                            });
-        
-        
-                        },error:function (error) {
-                            console.log(error);
-                        }
-                    });
-                });
-        
-                $('a.page-link').not('a.pageassets').attr("href","#");
-        
-                $("li.page-item").click(function (e) {
-                    $('a.page-link').not('a.pageassets').attr("href","#");
-                    e.preventDefault();
-                    console.log($(this).children('a').html());
-        
-        
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ route('panel.products.search.assets') }}",
-                        data: {
-                            page: $(this).children('a').html(),
-                            type:'page'
-                        },
-                        success: function (response) {
-                            $("#updateseachassets").html(response);
-        
-        
-                            $(".addingitem").click(function(e) {
-                                e.preventDefault();
-                                $(this).addClass("active");
-                                $(this).addClass("disabled");
-        
-        
-                                let mediaid = $(this).data("mediaid");
-                                let file_name = $(this).data("file_name");
-        
-                                if (addedassets != null) {
-                                    addedassets.push(mediaid);
-                                    addedassetsFilename.push(file_name);
-                                }
-        
-                                let addedassets1 = [...new Set(addedassets)];
-                                let addedassetsFilename1 = [...new Set(addedassetsFilename)];
-        
-                                localStorage.setItem("mediaId", addedassets1)
-                                localStorage.setItem("mediaFilename", addedassetsFilename1)
-        
-                                appendAssets(addedassets1, addedassetsFilename1);
-        
-                            });
-        
-                        },error:function (error) {
-                            console.log(error);
-                        }
-                    });
-                });
-        
-            });
-        
-            $(document).change(function (e) {
-                $('a.page-link').attr("href","#");
-            });
-        
-        </script>
-        
-
-        <script>
-            $(document).ready(function () {
-                let custcols = {!! $user_custom_fields_types !!};
-                let length_unit = $("#length_unit").html()
-                let weight_unit = $("#all_units").html()
-
-                $.each(custcols, function (indexInArray, valueOfElement) {
-                    console.log(indexInArray);
-                    console.log(valueOfElement);
 
 
-                    if (valueOfElement == 'uom') {
-                        // $('[name="elementName"]');
-                        $(`[name="${indexInArray}[unit]"]`).empty();
-                        $(`[name="${indexInArray}[unit]"]`).append(weight_unit);
-                    }
-
-                    if (valueOfElement == 'diamension') {
-                        $(`[name="${indexInArray}[unit]"]`).empty();
-                        $(`[name="${indexInArray}[unit]"]`).append(length_unit);
-                    }
-                });
-            });
-        </script>
 
 
     @endpush
