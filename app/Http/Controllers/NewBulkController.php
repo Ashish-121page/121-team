@@ -35,11 +35,11 @@ use PhpParser\Node\Expr\Cast\Object_;
 use PhpParser\Node\Stmt\Return_;
 use Psy\TabCompletion\Matcher\ObjectMethodDefaultParametersMatcher;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-
+use function GuzzleHttp\Promise\all;
 use ZipArchive;
 
 
-use function GuzzleHttp\Promise\all;
+
 class NewBulkController extends Controller
 {
 
@@ -51,6 +51,12 @@ class NewBulkController extends Controller
                 return back()->with('error','You do not have any active package!');
             }
         }
+
+
+        if (!$request->has('file')) {
+            return back()->with('error','Please Select a File');
+        }
+
 
         // - Configuring Important Variable
         $user = auth()->user();
@@ -2268,6 +2274,7 @@ class NewBulkController extends Controller
 
     // ` Export Excel Sheet for Bulk Upload
     public function ProductSheetExport(Request $request,User $user_id){
+
         // Fetch All attriubutes
         $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
         $custom_attributes = (array) json_decode($user_id->custom_attriute_columns) ?? ['Colours','Size','Material'];
@@ -2275,7 +2282,8 @@ class NewBulkController extends Controller
         $Export_columns = [];
 
 
-        $fileName = "Exported -".$user_id->name.' - '.date('d-m-Y').'.xlsx';
+        $fileName = "Exported -".$user_id->name.' - '.date('d-m-Y-h:i A').'.xlsx';
+
 
         // Getting sections custom Inputs Columns
         $custom_col1 = [];
@@ -2342,10 +2350,12 @@ class NewBulkController extends Controller
             $dropdownSheet->setTitle($SecondSheetName);
             $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
 
+
             foreach ($custom_attributes as $key => $custom_attribute) {
                 $optionsArray = [];
                 $index = $key + 1;
-                $dropdownSheet->setCellValue([$index,'1'],$custom_attribute);
+
+                $dropdownSheet->setCellValue([$index,'1'],strval($custom_attribute));
 
                 $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user_id->id)->first();
                 if ($attribute_rec == null) {
@@ -2680,7 +2690,9 @@ class NewBulkController extends Controller
             }
             $mytime = Carbon::now();
 
-            $filename = "Exported Data -$user_id->name -".$mytime->toDateTimeString();
+            // $filename = "Exported Data -$user_id->name -".$mytime->toDateTimeString();
+            $filename = "Exported -".$user_id->name.' - '.date('d-m-Y-h:i A').'.xlsx';
+
 
             // * Start: Marging Both Array Custom And Default Attributes
             $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
@@ -3049,11 +3061,10 @@ class NewBulkController extends Controller
                                         'attribute_value' => $search_value,
                                     ]);
                                 }elseif ($attr_Record->value == 'uom') {
-                                    $pattern_without_space = '/^(\d+)x(\d+)x(\d+)x(\w+)$/';
-                                    $pattern_decimal_without_space = '/^(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\w+)$/';
-                                    $pattern_with_space = '/^(\d+)\s*X\s*(\d+)\s*X\s*(\d+)\s*X\s*(\w+)$/';
-                                    $pattern_decimal_with_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
-
+                                    $pattern_without_space = '/^(\d+)\s*X\s*(\w+)$/';
+                                    $pattern_decimal_without_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
+                                    $pattern_with_space = '/^(\d+)\s*X\s*(\w+)$/';
+                                    $pattern_decimal_with_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
 
                                     if (preg_match($pattern_with_space, $search_value) || preg_match($pattern_decimal_with_space, $search_value) ) {
                                         ProductAttributeValue::create([
@@ -3069,7 +3080,7 @@ class NewBulkController extends Controller
                                         ]);
                                     }
                                     else {
-                                        $msg = "The $search_value does not match the pattern. The pattern should be L X B X H X unit. In column $attr_Record->name at row $row.";
+                                        $msg = "The $search_value does not match the pattern. The pattern should be L X unit. In column $attr_Record->name at row $row.";
                                         return back()->with('error',$msg);
                                     }
 
@@ -3472,6 +3483,11 @@ class NewBulkController extends Controller
     // ` For Uploaded New Custom Excel Data
     public function UploadDataCustom(Request $request,User $user_id) {
         try {
+
+
+            if (!$request->hasFile('uploadcustomfield')) {
+                return back()->with('error',"Please Select Upload File");
+            }
 
             $user_shop = UserShop::where('user_id',$user_id->id)->first();
             $Array_saprator = "^^";
@@ -3918,10 +3934,10 @@ class NewBulkController extends Controller
                                         'attribute_value' => $gvalue,
                                     ]);
                                 }elseif ($attribute_data->value == 'uom') {
-                                    $pattern_without_space = '/^(\d+)x(\d+)x(\d+)x(\w+)$/';
-                                    $pattern_decimal_without_space = '/^(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)x(\w+)$/';
-                                    $pattern_with_space = '/^(\d+)\s*X\s*(\d+)\s*X\s*(\d+)\s*X\s*(\w+)$/';
-                                    $pattern_decimal_with_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
+                                    $pattern_without_space = '/^(\d+)\s*X\s*(\w+)$/';
+                                    $pattern_decimal_without_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
+                                    $pattern_with_space = '/^(\d+)\s*X\s*(\w+)$/';
+                                    $pattern_decimal_with_space = '/^(\d+(?:\.\d+)?)\s*X\s*(\w+)$/';
 
 
                                     if (preg_match($pattern_with_space, $gvalue) || preg_match($pattern_decimal_with_space, $gvalue) ) {
@@ -3938,7 +3954,7 @@ class NewBulkController extends Controller
                                         ]);
                                     }
                                     else {
-                                        $msg = "The $gvalue does not match the pattern. The pattern should be L X B X H X unit. In column $attribute_data->name at row $row.";
+                                        $msg = "The $gvalue does not match the pattern. The pattern should be L X unit. In column $attribute_data->name at row $row.";
                                         return back()->with('error',$msg);
                                     }
                                 }else{

@@ -424,7 +424,7 @@ class invoiceController extends Controller
         if ( request()->has('typeId') && request()->get('typeId') != '') {
             $record = Quotation::whereId(request()->get('typeId'))->first();
             $quote_flles = Media::where('type_id',$record->id)->where('type','UserShop')->where('tag','quote_files')->get();
-
+            $json_customer_info = json_decode($record->customer_info) ?? '';
 
 
 
@@ -432,7 +432,7 @@ class invoiceController extends Controller
             return back()->with('Error occurred while retrieving the record. Please try again later.');
         }
 
-        return view('panel.Documents.quotation2',compact('record','quote_flles'));
+        return view('panel.Documents.quotation2',compact('record','quote_flles','json_customer_info'));
     }
 
 
@@ -531,6 +531,8 @@ class invoiceController extends Controller
         }
 
 
+
+
         if (request()->has('show_all') && request()->get('show_all') == 'true' || $QuotationRecord->proposal_id == '') {
             $products = $products->paginate($pagelength);
             $QuotationItem = QuotationItem::where('quotation_id', $quotation_id)
@@ -545,8 +547,25 @@ class invoiceController extends Controller
             $products = $products->whereIn('id',$QuotationItem)->paginate($pagelength);
             $showAll = false;
         }
+
+
+
+
+
         return view('panel.Documents.quotation3', compact('products', 'QuotationItem','QuotationRecord','showAll'));
     }
+
+    private function reorderArray($originalArray, $orderArray) {
+        usort($originalArray, function ($a, $b) use ($orderArray) {
+            $posA = array_search($a['id'], $orderArray);
+            $posB = array_search($b['id'], $orderArray);
+            return $posA - $posB;
+        });
+
+        return $originalArray;
+    }
+
+
 
     public function quotation4() {
 
@@ -556,8 +575,13 @@ class invoiceController extends Controller
         $QuotationRecord = Quotation::whereId($quotation_id)->where('user_id',$user->id)->first();
         $QuotationItems = QuotationItem::where('quotation_id',$quotation_id)->get();
         $countries = Country::get();
+        $custom_inputs = $user->custom_fields ?? null;
 
-        return view('panel.Documents.quotation4', compact('QuotationRecord','QuotationItems','user','countries'));
+        if ($custom_inputs != null) {
+            $custom_inputs = json_decode($custom_inputs);
+        }
+
+        return view('panel.Documents.quotation4', compact('QuotationRecord','QuotationItems','user','countries','custom_inputs'));
     }
 
     public function storeQuotation(){
