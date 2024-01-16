@@ -38,21 +38,32 @@ class DevRouteController extends Controller
     public function ashish(Request $request) {
 
         //` Uncomment Below Line to Check Available Sessions..
-        // magicstring(session()->all());
+        magicstring(session()->all());
         // echo "Ashish's Function";
 
-        $data = '{"general_details":["Model_Code","SKU Type","Product_name","Category","Sub_Category","Group_ID","Variation attributes","Base_currency","Selling_Price_Unit","Customer_Price_without_GST","mrpIncl_tax","Brand_Name","HSN_Code","HSN_Percnt","Search_keywords","description"],"custom_input_1":[],"general_details_2":["Sample_Year","Sample_Month","Sampling_time","Exclusive_Buyer_Name","Theme_Collection_Name","Season_Month","Theme_Collection_Year"],"images":["Image_main","image_name_front","image_name_back","image_name_side1","image_name_side2","image_name_poster","Additional_Image_Use"],"custom_input_4":[],"physical_attributes":["Gross_weight","Net_weight","Weight_unit","Product_length","Product_width","Product_height","Dimensions_unit","Carton_length","Carton_width","Carton_height","Carton_Dimensions_unit","standard_carton_pcs","carton_weight_actual","unit","Vendor_Sourced_from","Vendor_price","Product_Cost_Unit","Vendor_currency","Sourcing_Year","Sourcing_month","Remarks"],"custom_input_5":[]}';
+        $users = User::all();
 
-        $data2 = ['general_details_2'=> ["Sample_Year","Sample_Month","Sampling_time","Exclusive_Buyer_Name","Theme_Collection_Name","Season_Month","Theme_Collection_Year"]];
+        // magicstring($users);
+        $count = 0;
+
+        foreach ($users as $key => $user) {
+            $chk = UserCurrency::where('user_id',$user->id)->first();
+            $user_shop = UserShop::where('user_id',$user->id)->first();
+            if ($chk == null) {
+                UserCurrency::create([
+                    'user_id' => $user->id,
+                    'User_shop_id' => $user_shop->id ?? 0,
+                    'currency' => 'INR',
+                    'exchange' => 1,
+                    'remark' => 'Default Currency',
+                    'default_currency' => 1
+                ]);
+                $count++;
+            }
+        }
 
 
-        echo json_encode($data2);
-
-
-
-        magicstring(json_decode($data, true));
-
-        // echo "Total $count Records Updated Successfully.";
+        echo "Total $count Records Updated Successfully.";
 
 
 

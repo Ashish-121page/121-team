@@ -393,32 +393,11 @@
 
 
                                             {{-- moved --}}
-                                              {{-- -- Custom Fields of User 1 ` --}}
-                                              @if (in_array('1', $fileds_sections))
-                                              <div class="col-12">
-                                                  <div class="h6">Properties</div>
-                                                  <div class="mb-3">Custom Inputs</div>
-                                              </div>
-                                              @if ($user_custom_fields != null)
-                                                  <div class="col-12">
-                                                      <div class="row">
-                                                          @foreach ($user_custom_fields as $user_custom_field)
-                                                              @if ($user_custom_field['ref_section'] === '1')
-                                                                  <div class="col-6">
-                                                                      <div class="form-group">
-                                                                          <label
-                                                                              for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
-                                                                          {!! $user_custom_field['tag'] !!}
-
-                                                                      </div>
-                                                                  </div>
-                                                              @endif
-                                                          @endforeach
-                                                      </div>
-                                                  </div>
-                                              @endif
-                                      @endif
-
+                                            <div class="col-12 my-2">
+                                                <div class="h6 card-header" style="padding: 0px;">
+                                                    <h3>Properties</h3>
+                                                </div>
+                                            </div>
                                             @php
                                                 if (isset($product->shipping)) {
                                                     $shipping = json_decode($product->shipping) ?? [];
@@ -473,6 +452,32 @@
 
                                                 </div>
                                             </div>
+
+                                            {{-- -- Custom Fields of User 1 ` --}}
+                                            @if (in_array('1', $fileds_sections))
+                                                    <div class="col-12">
+                                                        <div class="h5">Custom Cols</div>
+                                                    </div>
+                                                    @if ($user_custom_fields != null)
+                                                        <div class="col-12">
+                                                            <div class="row">
+                                                                @foreach ($user_custom_fields as $user_custom_field)
+                                                                    @if ($user_custom_field['ref_section'] === '1')
+                                                                        <div class="col-6">
+                                                                            <div class="form-group">
+                                                                                <label
+                                                                                    for="{{ $user_custom_field['id'] }}">{{ $user_custom_field['text'] }}</label>
+                                                                                {!! $user_custom_field['tag'] !!}
+
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                            @endif
+
                                     </div>
 
                                     {{-- <div class="row">
@@ -1030,13 +1035,11 @@
                                             </div>
 
 
-
-
                                             {{-- -- Custom Fields of User 4 ` --}}
                                             @if (in_array('4', $fileds_sections))
-                                                    <div class="col-12">
-                                                        <div class="h5">Custom Input</div>
-                                                    </div>
+                                                <div class="col-12">
+                                                    <div class="h5">Custom Cols</div>
+                                                </div>
                                                 @if ($user_custom_fields != null)
                                                     <div class="col-12">
                                                         <div class="row">
@@ -1378,7 +1381,7 @@
                                 {{-- -- Custom Fields of User 5 ` --}}
                                 @if (in_array('5', $fileds_sections))
                                     <div class="col-12">
-                                        <div class="h5">Custom Inputs</div>
+                                        <div class="h5">Custom Cols</div>
                                     </div>
                                     @if ($user_custom_fields != null)
                                         <div class="col-12">

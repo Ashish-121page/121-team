@@ -50,8 +50,6 @@
                                 <td style="text-transform: capitalize">
                                     @if ($field['type'] == 'diamension')
                                         dimension
-                                    @elseif ($field['type'] == 'interger')
-                                        integer
                                     @else
                                         {{ $field['type'] }}
                                     @endif
@@ -121,7 +119,7 @@
                                                 required>
                                                 <option value="1">Product Info > Essentials</option>
                                                 {{-- <option value="2">Product Info > Sale Price</option> --}}
-                                                <option value="3">Product Variant</option>
+                                                <option value="3">Product Info > Property</option>
                                                 <option value="4">Internal - Reference</option>
                                                 <option value="5">Internal - Production</option>
                                             </select>
@@ -172,7 +170,7 @@
                                                 </div> --}}
 
                                                 <div class="cust_input">
-                                                    <input class="form-check-input" type="radio" value="integer" id="data_type1_interger"
+                                                    <input class="form-check-input" type="radio" value="interger" id="data_type1_interger"
                                                         name="data_type" />
                                                     <label class="form-check-label border" for="data_type1_interger">
                                                         <svg width="25" height="25" viewBox="0 0 32 32"
