@@ -20,6 +20,34 @@
                             <br>
                             <input type="file" id="fileElem" name="uploadFiles[]" multiple>
                         </div>
+
+                        <div class="form-group">
+                            <label for="entityname">Entity <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="entityname" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="quoteid">Quotation ID <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="quoteid" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="buyerperson">Buyer Person <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="buyerperson" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="buyername">Buyer Email </label>
+                            <input type="email" class="form-control" id="buyername">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="buyerphone">Buyer Phone </label>
+                            <input type="tel" class="form-control" id="buyerphone">
+                        </div>
+
+
+
                         <button class="btn btn-outline-primary" type="submit">submit</button>
                     </form>
                 </div>
