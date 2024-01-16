@@ -1,8 +1,8 @@
 <div class="row mt-4">
     @forelse ($products as $product)
         <!-- col1 -->
-        <div class="col-lg-3 col-md-4 col mb-4">
-            <div class="card" style="width: 18rem;">
+        <div class="col-lg-3 col-md-4  mb-4">
+            <div class="card" style="max-width: 18rem; width: fit-content;">
                 <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" class="card-img-top" alt="..." style="height:200px; background-color: #ffffff; object-fit: contain">
 
                 <div class="card-body" style="position: relative">

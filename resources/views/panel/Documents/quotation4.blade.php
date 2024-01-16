@@ -61,85 +61,96 @@
     @endpush
 
     <div class="container" style="max-width:1350px !important;">
-        <div class="row">
-            <div class="col lg-6 col-md-6 ">
-                <div class="col-6">
-                    <div class="d-flex align-items-center">
-                        <button class="btn btn-secondary" onclick="goBack()" type="button">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <h5 class="ms-3 mt-5 mb-0" style="margin-left: 30px !important;">
-                            {{ $QuotationRecord->user_slug ?? $QuotationRecord->slug }}</h5>
-
-                        @if ($QuotationRecord->status == 1)
-                            <button class="btn btn-outline-success mx-2 pubstatus">
-                                Sent
+        
+        <div class="col-12 mb-3">
+            <div class="row">
+                <div class="col lg-6 col-md-6 ">
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-secondary" onclick="goBack()" type="button">
+                                <i class="fas fa-chevron-left"></i>
                             </button>
-                        @else
-                            <button class="btn btn-outline-warning mx-2 pubstatus">
-                                Draft
-                            </button>
-                        @endif
+                            <h5 class="ms-3 mt-5 mb-0" style="margin-left: 30px !important;">
+                                {{ $QuotationRecord->user_slug ?? $QuotationRecord->slug }}</h5>
 
+                            @if ($QuotationRecord->status == 1)
+                                <button class="btn btn-outline-success mx-2 pubstatus">
+                                    Sent
+                                </button>
+                            @else
+                                <button class="btn btn-outline-warning mx-2 pubstatus">
+                                    Draft
+                                </button>
+                            @endif
+
+
+                        </div>
 
                     </div>
-
                 </div>
-            </div>
-            <div class="col-lg-6 col-md-6">
-                <div class="two" style="display: flex; align-items: center; justify-content: flex-end;">
-                    <div class="form-group w-100" style="margin-bottom: 0rem; display: flex; justify-content: flex-end;">
-                        <div class="dropdown">
-                            <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $QuotationRecord->id }}"
-                                class="btn btn-outline-primary mx-1">
-                                Add more products
+                <div class="col-lg-6 col-md-6">
+                    <div class="two" style="display: flex; align-items: center; justify-content: flex-end;">
+                        <div class="form-group w-100" style="margin-bottom: 0rem; display: flex; justify-content: flex-end;">
+                            <div class="dropdown">
+                                <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $QuotationRecord->id }}"
+                                    class="btn btn-outline-primary mx-1">
+                                    Add more products
+                                </a>
+                            </div>
+                            <a href="#" class="btn btn-outline-success mx-1" role="button" aria-expanded="false"
+                                data-bs-toggle="modal" data-bs-target="#AttriModal">
+                                Add Fields
                             </a>
+                            <a href="#" class="btn btn-dark mx-1" aria-expanded="false" role="button" id="saveQuote">Save
+                                quotation</a>
+                            @if ($QuotationRecord->status == 1)
+                                <a href="{{ route('panel.Documents.quotationpdf') }}?typeId={{ $QuotationRecord->id }}"
+                                    class="btn btn-outline-dark mx-1" aria-expanded="false">
+                                    Print PDF
+                                </a>
+                                <a href="{{ route('panel.Documents.printexcelqt1') }}?typeId={{ $QuotationRecord->id }}"
+                                    class="btn btn-outline-dark mx-1" aria-expanded="false">
+                                    Print EXCEL
+                                </a>
+                            @endif
                         </div>
-                        <a href="#" class="btn btn-outline-success mx-1" role="button" aria-expanded="false"
-                            data-bs-toggle="modal" data-bs-target="#AttriModal">
-                            Add Fields
-                        </a>
-                        <a href="#" class="btn btn-dark mx-1" aria-expanded="false" role="button" id="saveQuote">Save
-                            quotation</a>
-                        @if ($QuotationRecord->status == 1)
-                            <a href="{{ route('panel.Documents.quotationpdf') }}?typeId={{ $QuotationRecord->id }}"
-                                class="btn btn-outline-dark mx-1" aria-expanded="false">
-                                Print PDF
-                            </a>
-                            <a href="{{ route('panel.Documents.printexcelqt1') }}?typeId={{ $QuotationRecord->id }}"
-                                class="btn btn-outline-dark mx-1" aria-expanded="false">
-                                Print EXCEL
-                            </a>
-                        @endif
+
                     </div>
-
                 </div>
-            </div>
 
 
-            <div class="col-12">
-                <div class="row d-flex justify-content-center">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <div class="container-fluid">
-                            <ul class="navbar-nav">
-                                <li class="nav-item mx-3">
-                                    <a class="nav-link " href="#">1.Add Details</a>
-                                </li>
-                                <li class="nav-item mx-3">
-                                    <a class="nav-link" href="#">2. Select Items</a>
-                                </li>
-                                <li class="nav-item mx-3">
-                                    <a class="nav-link active" href="#">3. Generate</a>
-                                </li>
-                                <!-- Add more steps as needed -->
-                            </ul>
+                <div class="container-fluid mt-5 mb-3">
+                    <div class="row bg-light">
+                        <div class="col-4">
+                            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                                <ul class="navbar-nav">
+                                    <li class="nav-item mx-3">
+                                        <a class="nav-link" href="#">1. Add Details</a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
-                    </nav>
-
-                </div>
+                        <div class="col-4">
+                            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                                <ul class="navbar-nav">
+                                    <li class="nav-item mx-3">
+                                        <a class="nav-link active" href="#">2. Select Items</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <div class="col-4">
+                            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                                <ul class="navbar-nav">
+                                    <li class="nav-item mx-3">
+                                        <a class="nav-link active" href="#">Generate</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>  
             </div>
-
-
         </div>
 
 

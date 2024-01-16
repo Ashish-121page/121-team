@@ -228,22 +228,6 @@ class settingController extends Controller
         // magicstring($request->all());
 
         try {
-            $user = auth()->user();
-
-            $exist_col = $user->custom_fields ?? null;
-            $exist_col = json_decode($exist_col);
-            magicstring($exist_col);
-
-            if ($request->get('attr_name') == null) {
-                return back()->with('error','Please Enter Field Name');
-            }else{
-                $attr_name = $request->get('attr_name');
-                foreach ($exist_col as $key => $value) {
-                    if ($value->text == $attr_name) {
-                        return back()->with('error','Field Name Already Exist');
-                    }
-                }
-            }
 
             // ` Product Section Order we are using this to show Value
             // 1. Product Info > Essentials
@@ -286,6 +270,8 @@ class settingController extends Controller
 
                 // $responseRecevied = $destinationController->store($request);
                 $responseRecevied = app('App\Http\Controllers\Panel\ProductAttributeController')->store($request);
+
+
 
 
                 if ($responseRecevied->getData()->status == 'success') {
@@ -384,7 +370,7 @@ class settingController extends Controller
                     case 'html':
                         $tag = "<textarea class='form-control htmlinput' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field></textarea>";
                         break;
-                    case 'integer':
+                    case 'interger':
                         $tag = "<input type='number' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
                         break;
                     default:
@@ -404,6 +390,7 @@ class settingController extends Controller
                     'tag' => $tag,
                 );
 
+                $user = auth()->user();
                 if ($user->custom_fields != null) {
                     $tmp = json_decode($user->custom_fields, true);
                     array_push($tmp, $data);
@@ -536,7 +523,7 @@ class settingController extends Controller
                 case 'html':
                     $tag = "<textarea class='form-control htmlinput' name='".$uniquie_id."' placeholder='".request()->get('custname')."' $must_field></textarea>";
                     break;
-                case 'integer':
+                case 'interger':
                     $tag = "<input type='number' class='form-control' name='".$uniquie_id."' placeholder='".request()->get('custname')."' $must_field>";
                     break;
                 default:

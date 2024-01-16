@@ -32,11 +32,12 @@
                         </div>
                         <div class="col-12 col-lg-12 col-md-12 my-3 d-flex align-items-center">
                             <div class="form-group">
-                                <label for="select-All-Default" class="mx-2 h6"> Variant Basis </label>
+                                <label for="select-All-Default" class="mx-2 h6"> Default Attribute </label>
                                 <input type="checkbox" id="select-All-Default">
                             </div>
+
                         </div>
-                        <div class="col-12 col-lg-12 col-md-12">
+                        <div class="-12 col-lg-12 col-md-12">
                             <div class="row">
                                 @foreach (json_decode($user->custom_attriute_columns) as $item)
                                     @php
@@ -52,29 +53,6 @@
                                 @endforeach
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label for="select-All-Default" class="mx-2 h6"> Custom Columns </label>
-                                <input type="checkbox" id="select-All-Default">
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-12 col-md-12">
-                            <div class="row">
-                            @foreach ($custom_inputs as $item)
-                                @php
-                                    $tmp_name = str_replace(' ','_',$item->id);
-                                    $tmp_ID = str_replace(',','',$tmp_name);
-                                @endphp
-                                <div class="col-3">
-                                    <div style="display: flex;align-content: center;justify-content: start;margin: 10px">
-                                        <input type="checkbox" name="column-{{ $tmp_name }}[]" id="column-{{ $tmp_name }}" class="choosefields mx-2">
-                                        <label for="column-{{ $tmp_name }}" class="mb-0">{{ $item->text }}</label>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-
                     </div>
 
                 </div>

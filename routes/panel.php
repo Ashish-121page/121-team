@@ -519,14 +519,23 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
         Route::post('/upload/single/bulkcurrency/{user}', [CurrencyController::class,'uploadCurrency'])->name('upload.single');
         Route::post('/update/bulkcurrency/{user}', [NewBulkController::class,'updateCurrency'])->name('update.bulk');
+
         Route::post('/update/singlecurrency', [CurrencyController::class,'update'])->name('update.single');
+
+
     });
+
+
+
+
 
 
     // @ Group Route for Bulk Sheet
     Route::group(['middleware' => 'auth','namespace' => '/bulk', 'prefix' => '/', 'as' => 'bulk.'], function () {
+
         Route::post('/product-upload', [NewBulkController::class,'productUpload'])->name('product-upload');
         Route::get('/export/product-bulk-sheet/{user_id}', [NewBulkController::class,'ProductSheetExport'])->name('product.bulk-sheet-export');
+
         Route::post('/export/product-bulk-sheet/custom/{user_id}', [NewBulkController::class,'exportDataCustom'])->name('product.custom.bulk-sheet-export');
         Route::post('/product-upload/{user_id}', [NewBulkController::class,'UploadDataCustom'])->name('custom.product-upload');
 
