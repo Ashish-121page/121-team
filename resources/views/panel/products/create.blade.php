@@ -207,7 +207,7 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-10 col-md-12 mx-auto ">
+            <div class="col-lg-10 col-md-12 mx-auto">
                 {{-- Card start --}}
                 <div class="row">
                     <div class="col-md-4 product_boxes">
@@ -464,9 +464,10 @@
 
                 </div>
 
+
                 <div class="row get_custom_Product d-none mt-3">
 
-                    <div class="col-12">
+                    <div class="col-md-12 col-12">
 
                         <div class="table-responsive">
                             <table class="table">
