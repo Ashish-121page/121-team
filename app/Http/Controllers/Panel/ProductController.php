@@ -2975,18 +2975,18 @@ class ProductController extends Controller
             $mainsku_carton_height = [];
             foreach ($available_products as $key => $value) {
                 $product_tmp = getProductDataById($value);
-                $shipping = json_decode($product_tmp->shipping);
+                $shipping2 = json_decode($product_tmp->shipping2);
                 $carton_details = json_decode($product_tmp->carton_details);
                 $mainsku_prices[] = $product_tmp->min_sell_pr_without_gst ?? '';
                 $mainsku_mrp[] = $product_tmp->mrp ?? '';
                 $mainsku_selling_price_unit[] = $product_tmp->selling_price_unit ?? '';
                 $mainsku_hsn[] = $product_tmp->hsn ?? '';
                 $mainsku_hsnpercent[] = $product_tmp->hsn_percent ?? '';
-                $mainsku_grossweight[] = $shipping->gross_weight ?? '';
-                $mainsku_netweight[] = $shipping->net_weight ?? '';
-                $mainsku_length[] = $shipping->length ?? '';
-                $mainsku_width[] = $shipping->width ?? '';
-                $mainsku_height[] = $shipping->height ?? '';
+                $mainsku_grossweight[] = $shipping2->gross_weight ?? '';
+                $mainsku_netweight[] = $shipping2->net_weight ?? '';
+                $mainsku_length[] = $shipping2->length ?? '';
+                $mainsku_width[] = $shipping2->width ?? '';
+                $mainsku_height[] = $shipping2->height ?? '';
                 $mainsku_standard_carton[] = $carton_details->standard_carton ?? '';
                 $mainsku_carton_weight[] = $carton_details->carton_weight ?? '';
                 $mainsku_carton_length[] = $carton_details->carton_length ?? '';
@@ -3070,25 +3070,8 @@ class ProductController extends Controller
             $quantity_uom = json_decode(getSetting('item_uom'));
             $weight_uom = json_decode(getSetting('weight_uom'));
 
-            $user = auth()->user();
-            $user_id = auth()->id();
-            $folderPath = "public/files/$user_id";
 
-            if (Storage::exists($folderPath)) {
-                $files = Storage::allFiles($folderPath);
-                $page = request()->get('pageassets', 1);
-                $perPage = 30;
-                $offset = ($page - 1) * $perPage;
-                $slicedFiles = array_slice($files, $offset, $perPage);
-                $paginator = new LengthAwarePaginator($slicedFiles, count($files), $perPage, $page);
-
-            }else{
-                $paginator = [];
-                $files = [];
-            }
-
-
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months','mainsku_prices_str','mainsku_mrp_str','mainsku_exclbuyer_str','mainsku_hsn_str','mainsku_hsnpercent_str','mainsku_grossweight_str','mainsku_netweight_str','mainsku_length_str','mainsku_selling_price_unit_str','mainsku_width_str','mainsku_height_str','mainsku_standard_carton_str','mainsku_carton_weight_str','mainsku_carton_length_str','mainsku_carton_width_str','mainsku_carton_height_str','mainsku_sourcedfrom_str','mainsku_vendor_price_str','mainsku_product_cost_unit_str','mainsku_vendor_currency_str','mainsku_remarks_str','length_uom','quantity_uom','weight_uom','user_custom_fields_types','paginator','files','folderPath','user_id','user'));
+            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months','mainsku_prices_str','mainsku_mrp_str','mainsku_exclbuyer_str','mainsku_hsn_str','mainsku_hsnpercent_str','mainsku_grossweight_str','mainsku_netweight_str','mainsku_length_str','mainsku_selling_price_unit_str','mainsku_width_str','mainsku_height_str','mainsku_standard_carton_str','mainsku_carton_weight_str','mainsku_carton_length_str','mainsku_carton_width_str','mainsku_carton_height_str','mainsku_sourcedfrom_str','mainsku_vendor_price_str','mainsku_product_cost_unit_str','mainsku_vendor_currency_str','mainsku_remarks_str','length_uom','quantity_uom','weight_uom','user_custom_fields_types'));
 
         }catch(\Exception $e){
             // return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -3188,13 +3171,13 @@ class ProductController extends Controller
 
         // magicstring($request->all());
         // return;
-        
+
 
 
         $any_value = [];
         $newProp = [];
         $substring = "any_value";
-        
+
         foreach ($request->all() as $key => $value) {
             if (strpos($key, $substring) !== false) {
                 array_push($any_value,$key);

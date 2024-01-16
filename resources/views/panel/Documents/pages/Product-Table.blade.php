@@ -3,7 +3,7 @@
 
 
         <tr>
-            <th><input type="checkbox" aria-label="Checkbox for following text input"></th>
+            {{-- <th><input type="checkbox" aria-label="Checkbox for following text input"></th> --}}
             <!-- Checkbox header -->
             <th class="sdeds">ID</th>
             <th>image</th>
@@ -39,12 +39,12 @@
                 // }
             @endphp
             <tr>
-                <td class="sticky-col first-col">
+                {{-- <td class="sticky-col first-col">
                     <input type="checkbox">
-                    {{-- <span style="margin-left: 10px;">
+                    <span style="margin-left: 10px;">
                         {{ $loop->iteration }}
-                    </span> --}}
-                </td>
+                    </span>
+                </td> --}}
                 <td class="sdeds">
                     {{ $QuotationItem->id }}
                 </td>
