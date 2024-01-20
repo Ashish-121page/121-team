@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div class="modal fade" id="EditCustField" tabindex="-1" role="dialog" aria-labelledby="EditCustFieldLabel">
+<div class="modal fade" id="EditCustField" tabindex="-1" role="dialog" aria-labelledby="EditCustFieldLabel" style="top:5%;">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
         <form action="{{ route('panel.settings.update.custom.fields') }}" method="POST">
@@ -27,8 +27,8 @@
                         <label for="custattr_section" class="form-label">Section <span class="text-danger">*</span> </label>
                         <select name="attr_section" class="form-control" id="custattr_section" required readonly disabled>
                             <option value="1">Product Info > Essentials</option>
-                            <option value="2">Product Info > Sale Price</option>
-                            <option value="3">Product Info > Property</option>
+                            {{-- <option value="2">Product Info > Sale Price</option> --}}
+                            <option value="3">Product Variant</option>
                             <option value="4">Internal - Reference</option>
                             <option value="5">Internal - Production</option>
                         </select>

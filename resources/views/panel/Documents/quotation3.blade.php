@@ -47,8 +47,16 @@
                 background-color: #6666cc;
             }
 
+           .card-body::-webkit-scrollbar{
+                width: 4px
+            }
 
-
+            .card-body::-webkit-scrollbar-track{
+                background: #f1f1f1;
+            }
+            .card-body::-webkit-scrollbar-thumb{
+                background: #6666CC;
+            }
 
         </style>
     @endpush
@@ -60,7 +68,7 @@
 
                 <div class="col-8">
                     <div class="row">
-                        <div class="col-lg-6 col-md-8">                            
+                        <div class="col-lg-6 col-md-8">
                             <div class="d-flex align-items-center">
                                 <button class="btn btn-secondary" value="Back" onclick="goBack()" type="button">Back</button>
                                 <h5 class="ms-3 mt-5 mb-0 quotation_number_sync" style="margin-left: 2rem !important;">
@@ -82,6 +90,7 @@
                 </div>
             </div>
         </div>
+
 
         <div class="container-fluid mt-5 mb-3">
             <div class="row bg-light">
@@ -113,7 +122,7 @@
                     </nav>
                 </div>
             </div>
-        </div>        
+        </div>
 
         <div class="col lg-6 col-md-5 d-flex justify-content-between align-items-center mt-5">
             <div class=" mx-1">
@@ -124,7 +133,9 @@
             </div>
 
             @if (!$showAll)
-                <a href="?typeId={{ request()->get('typeId') }}&show_all=true&page={{request()->get('page',1)}}" class="btn btn-outline-danger mb-3 mx-1 @if(request()->get('show_all',false) == true) active   @endif" >Show All</a>
+
+                {{-- <a href="?typeId={{ request()->get('typeId') }}&show_all=true&page={{request()->get('page',1)}}" class="btn btn-outline-danger mb-3 mx-1 @if(request()->get('show_all',false) == true) active @endif" >Show All</a> --}}
+
             @endif
 
 
@@ -172,7 +183,7 @@
                         }
                     }
                 });
-                
+
                 if ($(this).children('input').attr('checked') == 'checked') {
                     $(this).children('input').removeAttr('Checked');
                 } else {

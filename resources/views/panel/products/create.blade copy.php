@@ -248,7 +248,7 @@
 
                 {{-- - new Front Card Section --}}
 
-                <div class="row get_custom_Product d-none">
+                <div class="row get_custom_Product d-none" >
 
                     <div class="col-md-6 col-12 mx-auto">
                         <div class="row p-2 card" style="height: 100%">

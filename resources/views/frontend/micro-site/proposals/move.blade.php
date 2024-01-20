@@ -3,64 +3,70 @@
 @section('content')
     @php
 
-    $breadcrumb_arr = [['name' => 'Edit Proposal', 'url' => 'javascript:void(0);', 'class' => '']];
-    $user = auth()->user();
-    $proposal_options = json_decode($proposal->options);
+        $breadcrumb_arr = [['name' => 'Edit Proposal', 'url' => 'javascript:void(0);', 'class' => '']];
+        $user = auth()->user();
+        $proposal_options = json_decode($proposal->options);
 
-    // $proposal_options->show_Attrbute = $proposal_options->show_Attrbute ?? 0;
+        // $proposal_options->show_Attrbute = $proposal_options->show_Attrbute ?? 0;
 
-    // $proposal_options->show_Description = $proposal_options->show_Description ?? 0;
-    $slug_guest = getShopDataByUserId(155)->slug;
-    $offer_url = inject_subdomain("shop/proposal/$proposal->slug",$slug_guest);
+        // $proposal_options->show_Description = $proposal_options->show_Description ?? 0;
+        $slug_guest = getShopDataByUserId(155)->slug;
+        $offer_url = inject_subdomain("shop/proposal/$proposal->slug", $slug_guest);
 
-    $make_offer_link = inject_subdomain('proposal/create', $slug_guest, false, false)."?linked_offer=".$proposal->id."&offer_type=2&shop=".$proposal->user_shop_id;
+        $make_offer_link = inject_subdomain('proposal/create', $slug_guest, false, false) . '?linked_offer=' . $proposal->id . '&offer_type=2&shop=' . $proposal->user_shop_id;
 
-    if ($proposal->type == 1) {
-        $offer_url = $make_offer_link;
-    }
-// echo $proposal->id;
-// return;
+        if ($proposal->type == 1) {
+            $offer_url = $make_offer_link;
+        }
+        // echo $proposal->id;
+        // return;
     @endphp
     <!-- push external head elements to head -->
     @push('head')
-    <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css">
-    {{-- Animated modal --}}
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.css">
+        <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
+        <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css">
+        {{-- Animated modal --}}
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.css">
 
 
         <style>
             /* .app-sidebar , .header-top{
-                display: none !important;
-            } */
+                                display: none !important;
+                            } */
 
-            .main-content{
+            .main-content {
                 padding: 0 !important;
             }
+
             .error {
                 color: red;
             }
 
-            #file-input{
-                padding:10px;
-                background-color:#6666CC;
+            #file-input {
+                padding: 10px;
+                background-color: #6666CC;
                 color: #fff;
             }
-            .image-preview,.image-preview-vs{
+
+            .image-preview,
+            .image-preview-vs {
                 height: 120px;
                 width: auto;
                 display: block;
                 padding: 5px;
                 margin-top: 10px;
             }
-            .cursor-pointer{
+
+            .cursor-pointer {
                 pointer-events: none;
             }
+
             .product-box {
                 position: relative;
                 overflow: hidden;
             }
+
             .card-box {
                 background-color: #fff;
                 padding: 1.5rem;
@@ -68,6 +74,20 @@
                 margin-bottom: 24px;
                 border-radius: 0.25rem;
             }
+
+            .card-body::-webkit-scrollbar {
+                width: 4px
+            }
+
+            .card-body::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            .card-body::-webkit-scrollbar-thumb {
+                background: #6666CC;
+                border-radius: 5px;
+            }
+
             .prdct-checked {
                 position: absolute;
                 width: 30px;
@@ -84,11 +104,11 @@
                 top: 10px;
             }
 
-            .prdct-pinned input{
+            .prdct-pinned input {
                 visibility: hidden;
             }
 
-            #checkmarkpin{
+            #checkmarkpin {
                 position: absolute;
                 top: 10px;
                 left: 0;
@@ -97,7 +117,8 @@
                 border-radius: 3px;
                 background-color: transparent !important;
             }
-            #checkmarkpin  img  {
+
+            #checkmarkpin img {
                 height: 30px;
                 width: 30px;
             }
@@ -111,11 +132,13 @@
                 border-radius: 3px;
                 background-color: #eee;
             }
+
             .checkmark:after {
                 content: "";
                 position: absolute;
                 display: block;
             }
+
             .custom-chk .checkmark:after {
                 left: 12px;
                 top: 5px;
@@ -126,222 +149,226 @@
                 -webkit-transform: rotate(45deg);
                 -ms-transform: rotate(45deg);
                 transform: rotate(45deg);
-                }
+            }
 
-                .custom-chk input:checked~.checkmark {
-                    background-color: #6666cc;
-                }
+            .custom-chk input:checked~.checkmark {
+                background-color: #6666cc;
+            }
 
 
+            .cust-display {
+                display: flex;
+            }
+
+
+
+            @media (max-width: 767px) {
                 .cust-display {
-                    display: flex;
-                }
-
-
-
-                @media (max-width: 767px) {
-                    .cust-display {
-                        display: block;
-                    }
-                }
-
-                .hdsjfibdsjk{
-                    display: none;
-                }
-
-                @media (max-width: 575px){
-                    .hdsjfibdsjk{
-                        display: block;
-                    }
-                }
-
-                .remove-ik-class {
-                    -webkit-box-shadow: unset !important;
-                    box-shadow: unset !important;
-                }
-
-
-
-                /* custome Loader */
-
-                .lds-roller {
-                    display: inline-block;
-                    position: absolute;
-                    z-index: 999;
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    backdrop-filter: grayscale(1) blur(5px);
-                }
-
-                .lds-roller div {
-                    animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-                    transform-origin: 40px 40px;
-                }
-
-                .lds-roller div:after {
-                    content: " ";
                     display: block;
-                    position: absolute;
-                    width: 7px;
-                    height: 7px;
-                    border-radius: 50%;
-                    background: #111;
-                    margin: -4px 0 0 -4px;
+                }
+            }
+
+            .hdsjfibdsjk {
+                display: none;
+            }
+
+            @media (max-width: 575px) {
+                .hdsjfibdsjk {
+                    display: block;
+                }
+            }
+
+            .remove-ik-class {
+                -webkit-box-shadow: unset !important;
+                box-shadow: unset !important;
+            }
+
+
+
+            /* custome Loader */
+
+            .lds-roller {
+                display: inline-block;
+                position: absolute;
+                z-index: 999;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: grayscale(1) blur(5px);
+            }
+
+            .lds-roller div {
+                animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+                transform-origin: 40px 40px;
+            }
+
+            .lds-roller div:after {
+                content: " ";
+                display: block;
+                position: absolute;
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: #111;
+                margin: -4px 0 0 -4px;
+            }
+
+            .lds-roller div:nth-child(1) {
+                animation-delay: -0.036s;
+            }
+
+            .lds-roller div:nth-child(1):after {
+                top: 63px;
+                left: 63px;
+            }
+
+            .lds-roller div:nth-child(2) {
+                animation-delay: -0.072s;
+            }
+
+            .lds-roller div:nth-child(2):after {
+                top: 68px;
+                left: 56px;
+            }
+
+            .lds-roller div:nth-child(3) {
+                animation-delay: -0.108s;
+            }
+
+            .lds-roller div:nth-child(3):after {
+                top: 71px;
+                left: 48px;
+            }
+
+            .lds-roller div:nth-child(4) {
+                animation-delay: -0.144s;
+            }
+
+            .lds-roller div:nth-child(4):after {
+                top: 72px;
+                left: 40px;
+            }
+
+            .lds-roller div:nth-child(5) {
+                animation-delay: -0.18s;
+            }
+
+            .lds-roller div:nth-child(5):after {
+                top: 71px;
+                left: 32px;
+            }
+
+            .lds-roller div:nth-child(6) {
+                animation-delay: -0.216s;
+            }
+
+            .lds-roller div:nth-child(6):after {
+                top: 68px;
+                left: 24px;
+            }
+
+            .lds-roller div:nth-child(7) {
+                animation-delay: -0.252s;
+            }
+
+            .lds-roller div:nth-child(7):after {
+                top: 63px;
+                left: 17px;
+            }
+
+            .lds-roller div:nth-child(8) {
+                animation-delay: -0.288s;
+            }
+
+            .lds-roller div:nth-child(8):after {
+                top: 56px;
+                left: 12px;
+            }
+
+            @keyframes lds-roller {
+                0% {
+                    transform: rotate(0deg);
                 }
 
-                .lds-roller div:nth-child(1) {
-                    animation-delay: -0.036s;
+                100% {
+                    transform: rotate(360deg);
                 }
+            }
 
-                .lds-roller div:nth-child(1):after {
-                    top: 63px;
-                    left: 63px;
-                }
-
-                .lds-roller div:nth-child(2) {
-                    animation-delay: -0.072s;
-                }
-
-                .lds-roller div:nth-child(2):after {
-                    top: 68px;
-                    left: 56px;
-                }
-
-                .lds-roller div:nth-child(3) {
-                    animation-delay: -0.108s;
-                }
-
-                .lds-roller div:nth-child(3):after {
-                    top: 71px;
-                    left: 48px;
-                }
-
-                .lds-roller div:nth-child(4) {
-                    animation-delay: -0.144s;
-                }
-
-                .lds-roller div:nth-child(4):after {
-                    top: 72px;
-                    left: 40px;
-                }
-
-                .lds-roller div:nth-child(5) {
-                    animation-delay: -0.18s;
-                }
-
-                .lds-roller div:nth-child(5):after {
-                    top: 71px;
-                    left: 32px;
-                }
-
-                .lds-roller div:nth-child(6) {
-                    animation-delay: -0.216s;
-                }
-
-                .lds-roller div:nth-child(6):after {
-                    top: 68px;
-                    left: 24px;
-                }
-
-                .lds-roller div:nth-child(7) {
-                    animation-delay: -0.252s;
-                }
-
-                .lds-roller div:nth-child(7):after {
-                    top: 63px;
-                    left: 17px;
-                }
-
-                .lds-roller div:nth-child(8) {
-                    animation-delay: -0.288s;
-                }
-
-                .lds-roller div:nth-child(8):after {
-                    top: 56px;
-                    left: 12px;
-                }
-
-                @keyframes lds-roller {
-                    0% {
-                        transform: rotate(0deg);
-                    }
-
-                    100% {
-                        transform: rotate(360deg);
-                    }
-                }
-
-                .loader-hidden {
-                    display: none;
-                }
+            .loader-hidden {
+                display: none;
+            }
 
 
-                 /* modal */
-                /* #btn-close-modal1{
-                    width:100%;
-                    text-align: center;
-                    cursor:pointer;
-                    color:#fff;
-                } */
+            /* modal */
+            /* #btn-close-modal1{
+                                    width:100%;
+                                    text-align: center;
+                                    cursor:pointer;
+                                    color:#fff;
+                                } */
+            .fa-lg {
+                line-height: 1em !important;
+            }
 
-                #btn-close-modal2{
-                    width: 80%;
-                    text-align: center;
-                    cursor:pointer;
-                    color:#fff;
-                    left: 60%
-                }
+            #btn-close-modal2 {
+                width: 80%;
+                text-align: center;
+                cursor: pointer;
+                color: #fff;
+                left: 60%
+            }
 
-                #animatedModal2{
-                    overflow-y: hidden!important;
-                    overflow-x: hidden!important;
+            #animatedModal2 {
+                overflow-y: hidden !important;
+                overflow-x: hidden !important;
 
-                }
-                .header-top {
-                    display: block !important;
-                    padding-left: 0px !important;
-                }
+            }
 
+            .header-top {
+                display: block !important;
+                padding-left: 0px !important;
+            }
         </style>
         @if (auth()->id() != 155)
-        <style>
+            <style>
                 .header-top {
                     display: block !important;
                     padding-left: 0px !important;
                 }
 
-                #back,#navbar-fullscreen{
+                #back,
+                #navbar-fullscreen {
                     display: none !important;
                 }
 
                 .main-content {
                     padding: 0 !important;
                 }
-        </style>
-    @endif
+            </style>
+        @endif
 
     @endpush
-@php
-    $customer_details = json_decode($proposal->customer_details) ?? '';
-    $customer_name = $customer_details->customer_name ?? '';
+    @php
+        $customer_details = json_decode($proposal->customer_details) ?? '';
+        $customer_name = $customer_details->customer_name ?? '';
 
-    if ($customer_name == auth()->user()->name) {
-        $customer_name = "";
-    }
+        if ($customer_name == auth()->user()->name) {
+            $customer_name = '';
+        }
 
-    $customer_mob_no = $customer_details->customer_mob_no ?? '';
-    $customer_email = $customer_details->customer_email ?? '';
-    $customer_alias = $customer_details->offer_alias ?? '';
-    $person_name = $customer_details->person_name ?? '';
-    $sample_charge = json_decode($proposal->customer_details)->sample_charge ?? '';
-    $user_shop_record = App\Models\UserShop::whereId($proposal->user_shop_id)->first();
+        $customer_mob_no = $customer_details->customer_mob_no ?? '';
+        $customer_email = $customer_details->customer_email ?? '';
+        $customer_alias = $customer_details->offer_alias ?? '';
+        $person_name = $customer_details->person_name ?? '';
+        $sample_charge = json_decode($proposal->customer_details)->sample_charge ?? '';
+        $user_shop_record = App\Models\UserShop::whereId($proposal->user_shop_id)->first();
 
-@endphp
+    @endphp
 
-    <div class="container-fluid">
+    <div class="container-fluid" style="overflow:hidden;">
         <div class="row">
             <div class="col-md-12">
                 <!-- start message area-->
@@ -360,43 +387,56 @@
 
                         <div class="card">
                             <div class="card-header">
-                                @if(request()->get('type') == 'search')
+                                @if (request()->get('type') == 'search')
                                     <h6>Filter Products</h6>
                                 @elseif(request()->get('type') == 'markup')
                                     <h6>Choose & Markup Products</h6>
                                 @elseif(request()->get('type') == 'picked')
                                     <h6>Picked Products</h6>
                                 @else
-                                <h6>Send Products</h6>
+                                    <h6>Send Products</h6>
                                 @endif
-                                <div class="ml-2 badge badge-{{ getProposalStatus($proposal->status)['color'] }}">{{ getProposalStatus($proposal->status)['name'] }}</div>
+                                <div class="ml-2 badge badge-{{ getProposalStatus($proposal->status)['color'] }}">
+                                    {{ getProposalStatus($proposal->status)['name'] }}</div>
                             </div>
                             <div class="card-body">
                                 <div class="tab-content" id="pills-tabContent">
-                                    <div class="tab-pane fade @if(request()->get('type') == "picked") show active @endif" id="product-tab" role="tabpanel" aria-labelledby="pills-products-tab">
+                                    <div class="tab-pane fade @if (request()->get('type') == 'picked') show active @endif"
+                                        id="product-tab" role="tabpanel" aria-labelledby="pills-products-tab">
 
                                         <div class="row my-2 justify-content-between">
-                                            <div class="col-12 col-md-4 d-none d-sm-block d-md-block">
-                                                <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">Back</a>
+                                            <div class="col-12 col-md-3 d-none d-sm-block d-md-block">
+                                                <a href="{{ url()->previous() }}"
+                                                    class="btn btn-sm btn-outline-primary">Back</a>
                                             </div>
-                                            <div class="col-12 col-md-4">
+                                            <div class="col-12 col-md-6">
                                                 @if (auth()->id() != 155)
-                                                    <div class="mx-2 d-flex justify-content-center align-item-center gap-2 flex-wrap">
+                                                    <div
+                                                        class="mx-2 d-flex justify-content-center align-item-center gap-2 flex-wrap">
                                                         <div class="d-flex gap-3">
-                                                            <label for="magrintochnage" class="form-label my-2 mx-2">Margin: <br><span id="range_bar"> {{ $proposal->margin ?? 0 }} </span>%</label>
-                                                            <input type="range" min="0" max="100" step="10" name="margin" class="form-range hdfhj" style="width: 150px" value="{{ $proposal->margin ?? 0 }}" id="magrintochnage">
+                                                            <label for="magrintochnage" class="form-label my-2 mx-2">Margin:
+                                                                <br><span id="range_bar"> {{ $proposal->margin ?? 0 }}
+                                                                </span>%</label>
+                                                            <input type="range" min="0" max="100"
+                                                                step="10" name="margin" class="form-range hdfhj"
+                                                                style="width: 150px; margin-bottom: 1rem;"
+                                                                value="{{ $proposal->margin ?? 0 }}" id="magrintochnage">
                                                         </div>
                                                         <div class="mx-2">
-                                                            <button id="hikebtn" class="btn btn-outline-primary mx-2 my-2 my-md-0 my-sm-0 ">Update</button>
+                                                            <button id="hikebtn"
+                                                                class="btn btn-outline-primary mx-2 my-2 my-md-0 my-sm-0 ">Update</button>
                                                         </div>
                                                     </div>
                                                 @endif
                                             </div>
-                                            <div class="col-12 col-md-4">
-                                                @if($added_products->count() > 0 )
-                                                    <div class="d-flex justify-content-between justify-content-md-end justify-content-sm-end">
-                                                        <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary hdsjfibdsjk">Back</a>
-                                                        <a href="{{ request()->url()  }}{{ '?type=send' }}" class="btn btn-sm btn-outline-primary">Next</a>
+                                            <div class="col-12 col-md-3">
+                                                @if ($added_products->count() > 0)
+                                                    <div
+                                                        class="d-flex justify-content-between justify-content-md-end justify-content-sm-end">
+                                                        <a href="{{ url()->previous() }}"
+                                                            class="btn btn-sm btn-outline-primary hdsjfibdsjk">Back</a>
+                                                        <a href="{{ request()->url() }}{{ '?type=send' }}"
+                                                            class="btn btn-sm btn-outline-primary">Next</a>
                                                     </div>
                                                 @endif
                                             </div>
@@ -405,49 +445,67 @@
 
 
                                         <div class="row mt-3" id="sortable">
-                                        @if($added_products->count() > 0)
-                                            @foreach ($added_products as $proposal_item)
+                                            @if ($added_products->count() > 0)
+                                                @foreach ($added_products as $proposal_item)
                                                     @php
-                                                        $product = fetchFirst('App\Models\Product',$proposal_item->product_id);
+                                                        $product = fetchFirst('App\Models\Product', $proposal_item->product_id);
                                                         $brand_id = getBrandRecordByProductId($proposal_item->product_id)->id ?? '--';
-                                                        if($product != null){
-                                                            $product_record = App\Models\UserShopItem::whereProductId($product->id)->whereUserId(auth()->id())->first() ?? null;
-                                                        }else{
+                                                        if ($product != null) {
+                                                            $product_record =
+                                                                App\Models\UserShopItem::whereProductId($product->id)
+                                                                    ->whereUserId(auth()->id())
+                                                                    ->first() ?? null;
+                                                        } else {
                                                             $product_record = null;
                                                         }
-                                                        if($product_record){
-                                                            $proposal_item_record = App\Models\ProposalItem::where('proposal_id',$proposal->id)->whereProductId($product->id)->whereUserShopItemId($product_record->id)->first();
-                                                        }else{
+                                                        if ($product_record) {
+                                                            $proposal_item_record = App\Models\ProposalItem::where('proposal_id', $proposal->id)
+                                                                ->whereProductId($product->id)
+                                                                ->whereUserShopItemId($product_record->id)
+                                                                ->first();
+                                                        } else {
                                                             $proposal_item_record = null;
                                                         }
                                                     @endphp
                                                     <div class="col-md-3 card-drag" data-id="{{ $proposal_item->id }}">
                                                         <div class="card">
                                                             <div class="d-none d-md-block d-sm-none">
-                                                                <img src="{{ asset('backend/img/move.png') }}" alt="" height="20px" style="margin-top: 15px;
+                                                                <img src="{{ asset('backend/img/move.png') }}"
+                                                                    alt="" height="20px"
+                                                                    style="margin-top: 15px;
                                                                 margin-left: 15px;">
                                                             </div>
-                                                            <img src="{{ (isset($product) && (getShopProductImage($product->id,'single') != null)  ? asset(getShopProductImage($product->id,'single')->path) : asset('frontend/assets/img/placeholder.png')) }}" alt="" class="custom-img" style="height:185px;object-fit: contain;">
+                                                            <img src="{{ isset($product) && getShopProductImage($product->id, 'single') != null ? asset(getShopProductImage($product->id, 'single')->path) : asset('frontend/assets/img/placeholder.png') }}"
+                                                                alt="" class="custom-img"
+                                                                style="height:185px;object-fit: contain;">
 
                                                             <div style="position: absolute;right: -2%; top: 2%;z-index: 1;">
-                                                                <a href="{{ route('pages.proposals.destroy',$proposal_item->id) }}" class="btn remove-item mr-2">
-                                                                    <i class="fas fa-trash" style="color: #ff0c0c;font-size: 3vh"></i>
+                                                                <a href="{{ route('pages.proposals.destroy', $proposal_item->id) }}"
+                                                                    class="btn remove-item mr-2">
+                                                                    <i class="fas fa-trash"
+                                                                        style="color: #ff0c0c;font-size: 3vh"></i>
                                                                 </a>
 
                                                             </div>
-                                                            <div class="card-body text-center">
+                                                            <div class="card-body text-center"
+                                                                style="overflow: hidden;overflow-y: auto;height: 200px;;">
                                                                 <div class="profile-pic">
                                                                     <div class="row">
-                                                                        <div class="col-md-12 pt-2 text-center p-0" style="margin-top: -15px;">
-                                                                            <span class="mb-0 ">{{$product->title??"--"}}</span>
+                                                                        <div class="col-md-12 pt-2 text-center p-0"
+                                                                            style="margin-top: -15px;">
+
+                                                                            <span title="{{ $product->title }}"
+                                                                                class="mb-0 ">{{ Str::limit($product->title, 30, '...') ?? '--' }}</span>
 
                                                                             <br>
 
-                                                                            {{-- @if(isset($product->category_id) || isset($product->sub_category))
+                                                                            {{-- @if (isset($product->category_id) || isset($product->sub_category))
                                                                             <span>{{fetchFirst('App\Models\Category',$product->sub_category,'name','--')}}</span> <br>
                                                                             @endif --}}
                                                                             @if (isset(getBrandRecordByProductId($proposal_item->product_id)->name))
-                                                                                <span>Brand: {{ (getBrandRecordByProductId($proposal_item->product_id)->name ?? '--') }}</span> <br>
+                                                                                <span>Brand:
+                                                                                    {{ getBrandRecordByProductId($proposal_item->product_id)->name ?? '--' }}</span>
+                                                                                <br>
                                                                             @endif
 
 
@@ -464,82 +522,120 @@
                                                                                 }
                                                                             @endphp --}}
                                                                             {{-- <span>{{ isset($usi) ? 'Ref Id: '.($usi->id) : 'Ref Id: ###' }}</span> <br> --}}
-                                                                            <span>Model Code: {{ $product->model_code ?? '' }}</span>
+                                                                            <span>Model Code:
+                                                                                {{ $product->model_code ?? '' }}</span>
                                                                             <br>
                                                                             @php
                                                                                 $catelogue_author = @App\User::whereId($product->user_id)->first();
-                                                                                $group_id = @App\Models\AccessCatalogueRequest::whereNumber($catelogue_author->phone)->latest()->first()->price_group_id ?? 0;
-                                                                                $price =  $product->price ?? 0;
-                                                                                if($group_id && $group_id != 0){
-                                                                                    $price =  getPriceByGroupIdProductId($group_id,$product->id,$price);
+                                                                                $group_id =
+                                                                                    @App\Models\AccessCatalogueRequest::whereNumber($catelogue_author->phone)
+                                                                                        ->latest()
+                                                                                        ->first()->price_group_id ?? 0;
+                                                                                $price = $product->price ?? 0;
+                                                                                if ($group_id && $group_id != 0) {
+                                                                                    $price = getPriceByGroupIdProductId($group_id, $product->id, $price);
                                                                                 }
 
-                                                                                $record = App\Models\UserCurrency::where('currency',$product->base_currency ?? 'INR')->where('user_id',$product->user_id ?? 0)->first();
+                                                                                $record = App\Models\UserCurrency::where('currency', $product->base_currency ?? 'INR')
+                                                                                    ->where('user_id', $product->user_id ?? 0)
+                                                                                    ->first();
                                                                                 $exhangerate = Session::get('Currency_exchange') ?? 1;
                                                                                 $HomeCurrency = $record->exchange ?? 1;
                                                                                 $currency_symbol = Session::get('currency_name') ?? 'INR';
-                                                                                $price = exchangerate($price,$exhangerate,$HomeCurrency);
+                                                                                $price = exchangerate($price, $exhangerate, $HomeCurrency);
                                                                             @endphp
-                                                                                Product Price:
-                                                                                <span>
-                                                                                    {{ $currency_symbol }}
-                                                                                    {{ isset($price) ? number_format(round($price,2)) : '' }}
-                                                                                </span>
-                                                                                <br>
+                                                                            Product Price:
+                                                                            <span>
+                                                                                {{ $currency_symbol }}
+                                                                                {{ isset($price) ? number_format(round($price, 2)) : '' }}
+                                                                            </span>
+                                                                            <br>
                                                                             {{-- Shop Price:<span> {{ (isset($product_record) && $product_record->price > 0) ?  format_price($product_record->price) : 'Ask for Price' }}</span> --}}
                                                                             {{-- <br> --}}
                                                                             @php
                                                                                 $proposal_item->margin = $proposal_item->margin ?? 0;
                                                                                 if ($proposal_item->user_price == null) {
                                                                                     $price = $proposal_item->price;
-                                                                                    if($proposal_item->margin < 100){
-                                                                                        $margin = ($proposal_item->margin) / 100;
-                                                                                        $margin_factor =  (100-$proposal_item->margin)/100;
-                                                                                        $price  = $price/$margin_factor;
+                                                                                    if ($proposal_item->margin < 100) {
+                                                                                        $margin = $proposal_item->margin / 100;
+                                                                                        $margin_factor = (100 - $proposal_item->margin) / 100;
+                                                                                        $price = $price / $margin_factor;
                                                                                     }
-                                                                                    $margin = "Margin Added: ".$proposal_item->margin."%";
+                                                                                    $margin = 'Margin Added: ' . $proposal_item->margin . '%';
                                                                                     $userPrice = null;
-                                                                                }else{
+                                                                                } else {
                                                                                     $price = $proposal_item->user_price;
                                                                                     $userPrice = $proposal_item->user_price;
-                                                                                    $margin = "Custom Price";
+                                                                                    $margin = 'Custom Price';
                                                                                 }
-                                                                                $price = exchangerate($price,$exhangerate,$HomeCurrency);
+                                                                                $price = exchangerate($price, $exhangerate, $HomeCurrency);
                                                                                 // $user = session()->get('temp_user_id') ?? session()->get('user_id');
-                                                                                $user = auth()->id() ?? session()->get('user_id') ?? session()->get('temp_user_id');
+                                                                                $user = auth()->id() ?? (session()->get('user_id') ?? session()->get('temp_user_id'));
                                                                                 $ashus = json_decode($proposal_item->note);
                                                                             @endphp
 
                                                                             {{-- @if ($proposal->user_id == $user) --}}
-                                                                                {{-- <span>Offer Price: {{ format_price($price) }}</span> --}}
-                                                                                <br>
-                                                                                <span>Offer Price:
-                                                                                    {{ $currency_symbol }}
-                                                                                    @if ($userPrice != null)
-                                                                                        {{ $userPrice }}
-                                                                                    @else
-                                                                                        {{  $userPrice ?? isset($price) ? number_format(round($price,2)) : '' }}
-                                                                                    @endif
-                                                                                </span>
-                                                                                <a href="javascript:void(0)" data-product="{{ $proposal_item->product_id }}" data-notes="{!! $ashus->remarks_offer ?? '' !!}"  data-price="{{ $userPrice ?? $price ?? '' }}" class="edit-price" >
-                                                                                    <i class="fas fa-pencil-alt text-primary"></i>
-                                                                                </a>
+                                                                            {{-- <span>Offer Price: {{ format_price($price) }}</span> --}}
+                                                                            <hr class="bg-primary border border-primary ">
+                                                                            <span>Offer Price:
+                                                                                {{ $currency_symbol }}
+                                                                                @if ($userPrice != null)
+                                                                                    {{ $userPrice }}
+                                                                                @else
+                                                                                    {{ $userPrice ?? isset($price) ? number_format(round($price, 2)) : '' }}
+                                                                                @endif
+                                                                            </span>
+                                                                            <a href="javascript:void(0)"
+                                                                                data-product="{{ $proposal_item->product_id }}"
+                                                                                data-notes="{!! $ashus->remarks_offer ?? '' !!}"
+                                                                                data-price="{{ $userPrice ?? ($price ?? '') }}"
+                                                                                class="edit-price">
+                                                                                <i
+                                                                                    class="fas fa-pencil-alt text-primary"></i>
+                                                                            </a>
                                                                             {{-- @endif --}}
 
-
-                                                                            @if ($proposal_item->note != null)
                                                                             <br>
-
-                                                                                <span>Customisation: {!! $ashus->remarks_offer !!}</span>
-                                                                                {{-- <br>
-                                                                                <span>Customise: {!! $ashus->Customise_product !!}</span> --}}
-                                                                            @endif
-
                                                                             @if ($proposal_item->attachment != null)
+                                                                                <span>
+                                                                                    <a href="{{ asset(getMediaByIds([$proposal_item->attachment])->path) }}"
+                                                                                        class="btn-link text-primary">Download</a>
+                                                                                </span>
+                                                                            @else
                                                                                 <br>
-                                                                                <span>Attachment: <a href="{{ asset(getMediaByIds([$proposal_item->attachment])->path) }}" class="btn-link text-primary">Download</a></span>
                                                                             @endif
 
+
+                                                                            @if ($ashus->remarks_offer != null)
+                                                                                <div class="accordion"
+                                                                                    id="accordionExample">
+                                                                                    <div class="accordion-item">
+
+                                                                                        <h2 class="accordion-header">
+                                                                                            <button
+                                                                                                class="btn text-primary collapsed" style="background-color: transparent;"
+                                                                                                type="button"
+                                                                                                data-bs-toggle="collapse"
+                                                                                                data-bs-target="#accor_{{ $proposal_item->id }}"
+                                                                                                aria-expanded="false"
+                                                                                                aria-controls="collapseThree">
+                                                                                                <span class="text-dark ">{{ Str::limit($ashus->remarks_offer, 20) }}</span>
+                                                                                                <span title="{{$ashus->remarks_offer }}" class="btn-link">More</span>
+                                                                                            </button>
+                                                                                        </h2>
+
+                                                                                        <div id="accor_{{ $proposal_item->id }}"
+                                                                                            class="accordion-collapse collapse"
+                                                                                            data-bs-parent="#{{ $proposal_item->id }}">
+                                                                                            <div class="accordion-body">
+                                                                                                {!! $ashus->remarks_offer !!}
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            @endif
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -553,50 +649,58 @@
                                                 </div>
                                             @endif
                                         </div>
-                                        @if($added_products->count() > 0 )
+                                        @if ($added_products->count() > 0)
                                             <div class="d-flex justify-content-between">
-                                                <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">Back</a>
-                                                <a href="{{ request()->url()  }}{{ '?type=send' }}" class="btn btn-sm btn-outline-primary">Next</a>
+                                                <a href="{{ url()->previous() }}"
+                                                    class="btn btn-sm btn-outline-primary">Back</a>
+                                                <a href="{{ request()->url() }}{{ '?type=send' }}"
+                                                    class="btn btn-sm btn-outline-primary">Next</a>
                                             </div>
                                         @endif
                                     </div>
 
 
 
-                                    @if(request()->get('type') == 'send')
-                                        {{-- @if($customer_name == '' && $customer_mob_no == '')
+                                    @if (request()->get('type') == 'send')
+                                        {{-- @if ($customer_name == '' && $customer_mob_no == '')
                                             <div class="alert alert-info">
                                                 <p class="mb-0">Please fill the prospect information. </p>
                                             </div>
                                         @endif --}}
-                                        <form action="{{ route('pages.proposal.update', $proposal->id) }}" method="post" enctype="multipart/form-data" id="ProposalForm" class="row">
+                                        <form action="{{ route('pages.proposal.update', $proposal->id) }}" method="post"
+                                            enctype="multipart/form-data" id="ProposalForm" class="row">
                                             @csrf
                                             <input type="hidden" name="user_id" value="{{ decrypt($user_key) }}">
-                                            <input type="hidden" name="user_shop_id" value="{{ getShopDataByUserId(decrypt($user_key))->id }}">
-                                        <div class="col-md-12 col-lg-6">
-                                            <div class="col-md-12 ">
-                                                <div class="d-flex justify-content-between">
-                                                    <div class="">
-                                                        <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">Back</a>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <button type="submit" class="btn btn-outline-primary">Save</button>
-                                                    </div>
+                                            <input type="hidden" name="user_shop_id"
+                                                value="{{ getShopDataByUserId(decrypt($user_key))->id }}">
+                                            <div class="col-md-12 col-lg-6">
+                                                <div class="col-md-12 ">
+                                                    <div class="d-flex justify-content-between">
+                                                        <div class="">
+                                                            <a href="{{ url()->previous() }}"
+                                                                class="btn btn-sm btn-outline-primary">Back</a>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <button type="submit"
+                                                                class="btn btn-outline-primary">Save</button>
+                                                        </div>
                                                         <div class="d-flex">
-                                                                <div class="form-group">
-                                                                    {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
-                                                                    {{-- <a href="{{ url('proposal/offeroptions') }}" class="btn btn-sm btn-outline-primary">Next</a> --}}
-                                                                    @if ($proposal->status == 1 && $proposal->type == 0)
-                                                                        <a class="btn btn-outline-primary jaya2" id="jaya2" href="#animatedModal2" role="button">Next</a>
-                                                                    @endif
-                                                                </div>
+                                                            <div class="form-group">
+                                                                {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
+                                                                {{-- <a href="{{ url('proposal/offeroptions') }}" class="btn btn-sm btn-outline-primary">Next</a> --}}
+                                                                @if ($proposal->status == 1 && $proposal->type == 0)
+                                                                    <a class="btn btn-outline-primary jaya2"
+                                                                        id="jaya2" href="#animatedModal2"
+                                                                        role="button">Next</a>
+                                                                @endif
+                                                            </div>
 
-                                                                {{-- commmented save and preview buttons --}}
+                                                            {{-- commmented save and preview buttons --}}
 
 
 
                                                             {{-- @if ($proposal->status == 1 && $proposal->type == 0) --}}
-                                                                {{-- <div class="">
+                                                            {{-- <div class="">
                                                                     @if ($customer_mob_no != null)
                                                                         <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
@@ -613,10 +717,10 @@
                                                                 </div> --}}
                                                             {{-- @endif --}}
 
-                                                            {{--` Share Offer for Makeing Offer --}}
+                                                            {{-- ` Share Offer for Makeing Offer --}}
 
                                                             {{-- @if ($proposal->status == 1 && $proposal->type == 1) --}}
-                                                                {{-- <div class="">
+                                                            {{-- <div class="">
                                                                     @if ($customer_mob_no != null)
                                                                         <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                             <i class="fab fa-whatsapp" class=""></i>
@@ -642,114 +746,147 @@
                                                         @if ($proposal->status == 1 && $proposal->type == 0)
                                                             <div class="">
                                                                 <div class="form-group mx-2">
-                                                                    @if(proposalCustomerDetailsExists($proposal->id))
+                                                                    @if (proposalCustomerDetailsExists($proposal->id))
                                                                         <a href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}" class="ml-auto btn-link" target="_balnk" >Preview</a>
                                                                     @endif
                                                                 </div>
                                                             </div>
                                                         @endif --}}
-                                                </div>
-                                            </div>
-
-
-                                            <div class="col-md-12">
-                                                <div class="row justify-content-between">
-                                                    <div class="col-md-12 col-12 d-none">
-                                                        <div class="form-group {{ $errors->has('slug') ? 'has-error' : '' }}">
-                                                            <label for="slug" class="control-label">Your proposal link<span
-                                                                    class="text-danger">*</span> </label>
-                                                            <input required class="form-control" name="slug" type="text"
-                                                                id="slug" value="{{ $proposal->slug }}">
-                                                        </div>
                                                     </div>
+                                                </div>
+
+
+                                                <div class="col-md-12">
+                                                    <div class="row justify-content-between">
+                                                        <div class="col-md-12 col-12 d-none">
+                                                            <div
+                                                                class="form-group {{ $errors->has('slug') ? 'has-error' : '' }}">
+                                                                <label for="slug" class="control-label">Your proposal
+                                                                    link<span class="text-danger">*</span> </label>
+                                                                <input required class="form-control" name="slug"
+                                                                    type="text" id="slug"
+                                                                    value="{{ $proposal->slug }}">
+                                                            </div>
+                                                        </div>
 
                                                         <div class="col-md-12 col-12">
                                                             <div class="row">
-                                                            <div class="col-6">
-                                                                <div class="form-group {{ $errors->has('customer_name') ? 'has-error' : '' }}">
-                                                                    <label for="customer_name" class="control-label">
-                                                                        @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == null  )
-                                                                            Buyer Entity
-                                                                        @else
-                                                                            Offer By
-                                                                        @endif
-                                                                        <span
-                                                                            class="text-danger">*</span> </label>
-                                                                    <input required class="form-control" name="customer_name" type="text"
-                                                                        id="customer_name" value="{{ $customer_name }}" list="mycustomer" autocomplete="off" required>
+                                                                <div class="col-6">
+                                                                    <div
+                                                                        class="form-group {{ $errors->has('customer_name') ? 'has-error' : '' }}">
+                                                                        <label for="customer_name" class="control-label">
+                                                                            @if ($proposal->relate_to == $proposal->user_shop_id || $proposal->relate_to == null)
+                                                                                Buyer Entity
+                                                                            @else
+                                                                                Offer By
+                                                                            @endif
+                                                                            <span class="text-danger">*</span>
+                                                                        </label>
+                                                                        <input required class="form-control"
+                                                                            name="customer_name" type="text"
+                                                                            id="customer_name"
+                                                                            value="{{ $customer_name }}"
+                                                                            list="mycustomer" autocomplete="off" required>
 
-                                                                    <datalist id="mycustomer">
-                                                                        @if ($my_resellers != null)
-                                                                            @forelse ($my_resellers as $my_reseller)
-                                                                                <option value="{{ App\User::whereId($my_reseller->user_id)->first()->name ." ,".UserShopNameByUserId($my_reseller->user_id) }}">{{ App\User::whereId($my_reseller->user_id)->first()->name ." ,".UserShopNameByUserId($my_reseller->user_id) }}</option>
-                                                                            @empty
+                                                                        <datalist id="mycustomer">
+                                                                            @if ($my_resellers != null)
+                                                                                @forelse ($my_resellers as $my_reseller)
+                                                                                    <option
+                                                                                        value="{{ App\User::whereId($my_reseller->user_id)->first()->name . ' ,' . UserShopNameByUserId($my_reseller->user_id) }}">
+                                                                                        {{ App\User::whereId($my_reseller->user_id)->first()->name . ' ,' . UserShopNameByUserId($my_reseller->user_id) }}
+                                                                                    </option>
+                                                                                @empty
+                                                                                @endforelse
 
-                                                                            @endforelse
-
-                                                                        @endif
-                                                                    </datalist>
-                                                                </div>
-                                                            </div>
-
-
-                                                            {{-- original alias, phone and email --}}
-                                                            <div class="col-6">
-                                                                <div class="form-group {{ $errors->has('customer_alias') ? 'has-error' : '' }}">
-                                                                    <label for="customer_alias" class="control-label">Alias (optional)</label>
-                                                                    <input class="form-control" name="customer_alias" type="text" id="customer_alias" value="{{ $customer_alias }}">
-                                                                </div>
-                                                            </div>
-
-                                                            {{-- Person Name --}}
-                                                            <div class="col-12">
-                                                                <div class="form-group {{ $errors->has('person_name') ? 'has-error' : '' }}">
-                                                                    <label for="person_name" class="control-label">Person Name</label>
-                                                                    <input class="form-control" name="person_name" type="text" id="person_name" value="{{ $person_name }}" placeholder="Enter Person Name">
-                                                                </div>
-                                                            </div>
-
-
-                                                        </div>
-                                                        </div>
-
-                                                    <div class="col-md-12 col-6">
-                                                        <div class="row">
-                                                            <div class="col-5">
-                                                                <div class="form-group {{ $errors->has('customer_mob_no') ? 'has-error' : '' }}">
-                                                                    <label for="customer_mob_no" class="control-label">Phone</label>
-                                                                    <div class="input-group">
-                                                                        <span class="input-group-prepend" id="basic-addon2">
-                                                                            <label class="input-group-text">+91</label>
-                                                                        </span>
-                                                                        <input class="form-control" name="customer_mob_no" type="number"
-                                                                        id="customer_mob_no" value="{{ $customer_mob_no }}" placeholder="(Optional)">
+                                                                            @endif
+                                                                        </datalist>
                                                                     </div>
                                                                 </div>
-                                                            </div>
 
-                                                            <div class="col-5">
-                                                                <div class="form-group {{ $errors->has('customer_email') ? 'has-error' : '' }}">
-                                                                    <label for="customer_email" class="control-label">Email</label>
-                                                                    <div class="input-group">
-                                                                        <input class="form-control" name="customer_email" type="email"
-                                                                        id="customer_email" value="{{ $customer_email }}" placeholder="(Optional)">
+
+                                                                {{-- original alias, phone and email --}}
+                                                                <div class="col-6">
+                                                                    <div
+                                                                        class="form-group {{ $errors->has('customer_alias') ? 'has-error' : '' }}">
+                                                                        <label for="customer_alias"
+                                                                            class="control-label">Alias (optional)</label>
+                                                                        <input class="form-control" name="customer_alias"
+                                                                            type="text" id="customer_alias"
+                                                                            value="{{ $customer_alias }}">
                                                                     </div>
                                                                 </div>
+
+                                                                {{-- Person Name --}}
+                                                                <div class="col-12">
+                                                                    <div
+                                                                        class="form-group {{ $errors->has('person_name') ? 'has-error' : '' }}">
+                                                                        <label for="person_name"
+                                                                            class="control-label">Person Name</label>
+                                                                        <input class="form-control" name="person_name"
+                                                                            type="text" id="person_name"
+                                                                            value="{{ $person_name }}"
+                                                                            placeholder="Enter Person Name">
+                                                                    </div>
+                                                                </div>
+
+
                                                             </div>
-                                                            @if (isset($currency_record) && count($currency_record) != 0)
-                                                                <div class="col-2">
-                                                                    <div class="form-group {{ $errors->has('offer_currency') ? 'has-error' : '' }}">
-                                                                        <label for="customer_mob_no" class="control-label">Currency</label>
-                                                                        <div class="">
-                                                                            {{-- <select name="offer_currency" id="offer_currency" class="form-control" readonly>
+                                                        </div>
+
+                                                        <div class="col-md-12 col-6">
+                                                            <div class="row">
+                                                                <div class="col-5">
+                                                                    <div
+                                                                        class="form-group {{ $errors->has('customer_mob_no') ? 'has-error' : '' }}">
+                                                                        <label for="customer_mob_no"
+                                                                            class="control-label">Phone</label>
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-prepend"
+                                                                                id="basic-addon2">
+                                                                                <label class="input-group-text">+91</label>
+                                                                            </span>
+                                                                            <input class="form-control"
+                                                                                name="customer_mob_no" type="number"
+                                                                                id="customer_mob_no"
+                                                                                value="{{ $customer_mob_no }}"
+                                                                                placeholder="(Optional)">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-5">
+                                                                    <div
+                                                                        class="form-group {{ $errors->has('customer_email') ? 'has-error' : '' }}">
+                                                                        <label for="customer_email"
+                                                                            class="control-label">Email</label>
+                                                                        <div class="input-group">
+                                                                            <input class="form-control"
+                                                                                name="customer_email" type="email"
+                                                                                id="customer_email"
+                                                                                value="{{ $customer_email }}"
+                                                                                placeholder="(Optional)">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                @if (isset($currency_record) && count($currency_record) != 0)
+                                                                    <div class="col-2">
+                                                                        <div
+                                                                            class="form-group {{ $errors->has('offer_currency') ? 'has-error' : '' }}">
+                                                                            <label for="customer_mob_no"
+                                                                                class="control-label">Currency</label>
+                                                                            <div class="">
+                                                                                {{-- <select name="offer_currency" id="offer_currency" class="form-control" readonly>
                                                                               @foreach ($currency_record as $item)
-                                                                                <option value="{{ $item->currency }}" @if ($item->currency == ($proposal->offer_currency ?? session()->get('currency_name') ?? 'INR')) selected @endif>{{ $item->currency }}</option>
+                                                                                <option value="{{ $item->currency }}" @if ($item->currency == ($proposal->offer_currency ?? (session()->get('currency_name') ?? 'INR'))) selected @endif>{{ $item->currency }}</option>
                                                                               @endforeach
                                                                             </select> --}}
 
-                                                                            <input type="text" name="offer_currency" disabled class="form-control" value="{{ $proposal->offer_currency ?? session()->get('currency_name') ?? 'INR' }}">
-                                                                          </div>
-                                                                        {{-- <div class="input-group">
+                                                                                <input type="text"
+                                                                                    name="offer_currency" disabled
+                                                                                    class="form-control"
+                                                                                    value="{{ $proposal->offer_currency ?? (session()->get('currency_name') ?? 'INR') }}">
+                                                                            </div>
+                                                                            {{-- <div class="input-group">
 
                                                                             <select name="offer_currency" id="offer_currency" class="form-group select2">
                                                                                 @foreach ($currency_record as $item)
@@ -757,29 +894,30 @@
                                                                                 @endforeach
                                                                             </select>
                                                                         </div> --}}
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            @endif
+                                                                @endif
 
+                                                            </div>
                                                         </div>
-                                                    </div>
 
-                                                    {{-- @if ($proposal->relate_to == $proposal->user_shop_id) --}}
+                                                        {{-- @if ($proposal->relate_to == $proposal->user_shop_id) --}}
                                                         <div class="col-md-12 col-12">
                                                             <div class="form-group">
-                                                                <label for="proposal_note" class="control-label">Offer Notes</label>
-                                                                <textarea  class="form-control" rows="7" name="proposal_note" id="proposal_note"
-                                                                placeholder="Enter Offer Notes">{{ $proposal->proposal_note }}</textarea>
+                                                                <label for="proposal_note" class="control-label">Offer
+                                                                    Notes</label>
+                                                                <textarea class="form-control" rows="7" name="proposal_note" id="proposal_note"
+                                                                    placeholder="Enter Offer Notes">{{ $proposal->proposal_note }}</textarea>
                                                             </div>
                                                             {{-- <div>
-                                                                <input type="checkbox" id="enable_price_range" name="enable_price_range" value="1" @if($proposal->enable_price_range == 1 ) checked @endif>
+                                                                <input type="checkbox" id="enable_price_range" name="enable_price_range" value="1" @if ($proposal->enable_price_range == 1) checked @endif>
                                                                 <label for="enable_price_range d-none">Enable Price Range</label>
                                                             </div> --}}
                                                         </div>
-                                                    {{-- @endif --}}
+                                                        {{-- @endif --}}
 
 
-                                                    {{-- <div class="col-md-6 col-12">
+                                                        {{-- <div class="col-md-6 col-12">
                                                         <div class="form-group">
                                                             <label for="pdf_view" class="form-label">PDF View</label>
                                                             <a class="btn btn-outline-primary" id="jaya1" href="#animatedModal1" role="button">Download PDF</a>
@@ -788,51 +926,61 @@
 
 
 
-                                                    @if ($proposal->relate_to == $proposal->user_shop_id)
-                                                       <div class="row d-none">
-                                                            <div class="col-md-6">
-                                                                <div class="card-body">
+                                                        @if ($proposal->relate_to == $proposal->user_shop_id)
+                                                            <div class="row d-none">
+                                                                <div class="col-md-6">
+                                                                    <div class="card-body">
                                                                         <label for="">Upload Client Logo</label>
-                                                                        <input type='file' id="file-input"  name="client_logo_file" />
-                                                                        @if($proposal->client_logo != null)
+                                                                        <input type='file' id="file-input"
+                                                                            name="client_logo_file" />
+                                                                        @if ($proposal->client_logo != null)
                                                                             <div id='img_contain'>
-                                                                                <img class="image-preview" src="{{ asset($proposal->client_logo) }}" alt="" title=''/>
-                                                                                <a class="btn btn-icon btn-primary cross-icon delete-item" href="{{ route('panel.proposals.remove-image',$proposal->id) }}"><i class="fa fa-times"></i></a>
+                                                                                <img class="image-preview"
+                                                                                    src="{{ asset($proposal->client_logo) }}"
+                                                                                    alt="" title='' />
+                                                                                <a class="btn btn-icon btn-primary cross-icon delete-item"
+                                                                                    href="{{ route('panel.proposals.remove-image', $proposal->id) }}"><i
+                                                                                        class="fa fa-times"></i></a>
                                                                             </div>
                                                                         @else
                                                                             <div id='img_contain'>
-                                                                                <img class="image-preview" src="" alt="" title=''/>
+                                                                                <img class="image-preview" src=""
+                                                                                    alt="" title='' />
                                                                             </div>
                                                                         @endif
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="card-body">
+                                                                        <label for="file-input">Upload Visiting
+                                                                            Card</label>
+                                                                        <br>
+                                                                        <input type='file' id="file-input"
+                                                                            class="file-input-vs"
+                                                                            name="client_visiting_card" />
+                                                                        @if ($proposal->client_logo != null)
+                                                                            <div id='img_contain'>
+                                                                                <img class="image-preview-vs"
+                                                                                    src="{{ asset($proposal->visiting_card) ?? '' }}"
+                                                                                    alt="" title='' />
+                                                                                {{-- <a class="btn btn-icon btn-primary cross-icon delete-item" href="{{ route('panel.proposals.remove-image',$proposal->id) }}"><i class="fa fa-times"></i></a> --}}
+                                                                            </div>
+                                                                        @else
+                                                                            <div id='img_contain'>
+                                                                                <img class="image-preview-vs"
+                                                                                    src="" alt=""
+                                                                                    title='' />
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-6">
-                                                                <div class="card-body">
-                                                                    <label for="file-input">Upload Visiting Card</label>
-                                                                    <br>
-                                                                    <input type='file' id="file-input" class="file-input-vs"  name="client_visiting_card" />
-                                                                    @if($proposal->client_logo != null)
-                                                                        <div id='img_contain'>
-                                                                            <img class="image-preview-vs" src="{{ asset($proposal->visiting_card) ?? "" }}" alt="" title=''/>
-                                                                            {{-- <a class="btn btn-icon btn-primary cross-icon delete-item" href="{{ route('panel.proposals.remove-image',$proposal->id) }}"><i class="fa fa-times"></i></a> --}}
-                                                                        </div>
-                                                                    @else
-                                                                        <div id='img_contain'>
-                                                                            <img class="image-preview-vs" src="" alt="" title=''/>
-                                                                        </div>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                       </div>
-                                                    @endif
+                                                        @endif
 
 
+                                                    </div> {{-- End Of ROw --}}
 
-
-
-                                                </div> {{-- End Of ROw --}}
-
-                                                {{-- download buttons --}}
+                                                    {{-- download buttons --}}
                                                     {{-- <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between ">
                                                         <div class="col-6">
                                                             <div class="row mt-3" style="display: flex;
@@ -871,7 +1019,7 @@
 
 
 
-                                                    {{--<div class="row">
+                                                    {{-- <div class="row">
                                                         <div class="d-flex justify-content-center justify-content-sm-between justify-content-md-between align-items-center flex-wrap gap-3 my-3" style="margin-left: 100px">
                                                             <div class="col-6">
                                                                 <div class="row mt-3">
@@ -885,7 +1033,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>--}}
+                                                    </div> --}}
 
 
 
@@ -894,7 +1042,7 @@
 
                                                     {{-- original custom fields --}}
                                                     {{-- <div class="col-md-6 float-start"> --}}
-                                                            {{-- <div class="form-group">
+                                                    {{-- <div class="form-group">
                                                                 <label for="passcode" class="form-label">Enter Passcode <span class="text-danger" title="This details are kept private"><i class="uil-info-circle"></i></span> </label>
                                                                 <input type="text" class="form-control" placeholder="0 0 0 0" name="password" id="passcode" maxlength="4" oninvalid="alert('Enter minimum 4 digit passcode')" value="{{ $offerPasscode ?? ""}}" required>
                                                             </div> --}}
@@ -910,7 +1058,7 @@
                                                         @foreach ($aval_atrribute as $item)
                                                             <option value="{{ $item }}"
                                                             @if ($proposal->options != null && isset(json_decode($proposal->options)->show_Attrbute))
-                                                                @if (in_array($item,((array) json_decode($proposal->options)->show_Attrbute) ?? ['']))
+                                                                @if (in_array($item, ((array) json_decode($proposal->options)->show_Attrbute) ?? ['']))
                                                                     selected
                                                                 @endif
                                                             @endif
@@ -934,11 +1082,11 @@
                                                         </div>
                                                         <div class="form-group my-3">
                                                             <label class="form-label" for="sample_charge"> Weekly Update </label> --}}
-                                                            {{-- <select name="offer_type" class="form-select form-control" id="offer_type">
+                                                    {{-- <select name="offer_type" class="form-select form-control" id="offer_type">
                                                                 <option value="0" @if ($proposal->type == 0) selected @endif>No</option>
                                                                 <option value="1" @if ($proposal->type == 1) selected @endif>Yes</option>
                                                             </select> --}}
-                                                            {{-- <br>
+                                                    {{-- <br>
                                                             <input type="checkbox" name="offer_type"  value="1" @if ($proposal->type == 1) checked @endif id="weekupdate">
 
                                                         </div>
@@ -947,26 +1095,30 @@
 
 
 
-                                                <div class="col-md-12 ">
-                                                    <div class="d-flex justify-content-between mt-5">
-                                                        <div class="">
-                                                            <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">Back</a>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <button type="submit" class="btn btn-outline-primary">Save</button>
-                                                        </div>
-                                                        <div class="d-flex">
-                                                        <div class="form-group">
-                                                            {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
-                                                                @if ($proposal->status == 1 && $proposal->type == 0)
-                                                                    <a class="btn btn-outline-primary jaya2" id="jaya2" href="#animatedModal2" role="button">Next</a>
-                                                                @endif
-                                                        </div>
+                                                    <div class="col-md-12 ">
+                                                        <div class="d-flex justify-content-between mt-5">
+                                                            <div class="">
+                                                                <a href="{{ url()->previous() }}"
+                                                                    class="btn btn-sm btn-outline-primary">Back</a>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <button type="submit"
+                                                                    class="btn btn-outline-primary">Save</button>
+                                                            </div>
+                                                            <div class="d-flex">
+                                                                <div class="form-group">
+                                                                    {{-- <button type="submit" class="btn btn-outline-primary">Next</button> --}}
+                                                                    @if ($proposal->status == 1 && $proposal->type == 0)
+                                                                        <a class="btn btn-outline-primary jaya2"
+                                                                            id="jaya2" href="#animatedModal2"
+                                                                            role="button">Next</a>
+                                                                    @endif
+                                                                </div>
 
                                                                 {{-- commented save and preview buttons --}}
 
                                                                 {{-- @if ($proposal->status == 1 && $proposal->type == 0) --}}
-                                                                    {{-- <div class="">
+                                                                {{-- <div class="">
                                                                         @if ($customer_mob_no != null)
                                                                             <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20offer%20and%20export%20directly%20as%20pdf%20or%20ppt%20.%0A%0AThis%20is%20confidential%20link%20ONLY%20for%20you%20-%20do%20NOT%20share%20further.%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                                 <i class="fab fa-whatsapp" class=""></i>
@@ -981,9 +1133,9 @@
                                                                             <i class="far fa-envelope"></i>
                                                                         </a>
                                                                     </div> --}}
-                                                                    {{-- @endif          --}}
-                                                                    {{-- @if ($proposal->status == 1 && $proposal->type == 1) --}}
-                                                                        {{-- <div class="">
+                                                                {{-- @endif          --}}
+                                                                {{-- @if ($proposal->status == 1 && $proposal->type == 1) --}}
+                                                                {{-- <div class="">
                                                                             @if ($customer_mob_no != null)
                                                                                 <a href="https://api.whatsapp.com/send?phone=91{{ $customer_mob_no }}&text=Click%20on%20link%20below%20to%20access%20latest%20in-stock%20products.%0A%0AExport%20directly%20as%20pdf%20or%20ppt%20.%0A%20%20%0A{{ urlencode($offer_url) }}" target="_blank" class="btn btn-success mx-2">
                                                                                     <i class="fab fa-whatsapp" class=""></i>
@@ -998,28 +1150,28 @@
                                                                                 <i class="far fa-envelope"></i>
                                                                             </a>
                                                                         </div> --}}
-                                                                    {{-- @endif
+                                                                {{-- @endif
                                                             </div> --}}
 
 
-                                                            {{-- @if ($proposal->type == 1)
+                                                                {{-- @if ($proposal->type == 1)
                                                                 <button class="btn btn-outline-primary btn-sm copyLInk" type="button" data-link="{{ inject_subdomain('proposal/create', $slug_guest, false, false)}}?linked_offer={{$proposal->id}}&offer_type=2&shop={{$proposal->user_shop_id}}" >Copy LInk <i class="far fa-copy"></i> </button>
                                                             @endif   --}}
 
 
-                                                        {{-- @if ($proposal->status == 1 && $proposal->type == 0)
+                                                                {{-- @if ($proposal->status == 1 && $proposal->type == 0)
                                                             <div class="">
                                                                 <div class="form-group mx-2">
-                                                                    @if(proposalCustomerDetailsExists($proposal->id))
+                                                                    @if (proposalCustomerDetailsExists($proposal->id))
                                                                         <a href="{{inject_subdomain('shop/proposal/'.$proposal->slug, $user_shop_record->slug) }}" class="ml-auto btn-link" target="_balnk" >Preview</a>
                                                                     @endif
                                                                 </div>
                                                             </div>
                                                         @endif --}}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
                                         </form>
                                     @endif
                                 </div>
@@ -1031,7 +1183,8 @@
         </div>
     </div>
 
-    <div id="ajax-loading" style="display:none;background-color: green; color: white; position: fixed; bottom: 50px; right: 25px;padding: 10px; font-weight: 700; border-radius: 35px;">
+    <div id="ajax-loading"
+        style="display:none;background-color: green; color: white; position: fixed; bottom: 50px; right: 25px;padding: 10px; font-weight: 700; border-radius: 35px;">
         Please Wait...
     </div>
     @include('frontend.micro-site.proposals.modal.updateprice')
@@ -1057,59 +1210,56 @@
         <script src="{{ asset('backend/js/form-advanced.js') }}"></script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
         <script>
-            $(document).ready(function () {
+            $(document).ready(function() {
 
-                $("#magrintochnage").change(function (e) {
+                $("#magrintochnage").change(function(e) {
                     e.preventDefault();
                     $("#range_bar").html($(this).val());
                 });
 
-                    // Single swithces
-                    var acr_btn = document.querySelector('#weekupdate');
-                    var switchery = new Switchery(acr_btn, {
-                        color: '#6666CC',
-                        jackColor: '#fff'
-                    });
+                // Single swithces
+                var acr_btn = document.querySelector('#weekupdate');
+                var switchery = new Switchery(acr_btn, {
+                    color: '#6666CC',
+                    jackColor: '#fff'
+                });
 
 
 
-                    // Copy Text To Clipboard
-                    function copyTextToClipboard(text) {
-                            if (!navigator.clipboard) {
-                                fallbackCopyTextToClipboard(text);
-                                return;
-                            }
-                            navigator.clipboard.writeText(text).then(function() {
-                            }, function(err) {
-                            });
-                            $.toast({
-                                heading: 'SUCCESS',
-                                text: "Offer link copied.",
-                                showHideTransition: 'slide',
-                                icon: 'success',
-                                loaderBg: '#f96868',
-                                position: 'top-right'
-                            });
+                // Copy Text To Clipboard
+                function copyTextToClipboard(text) {
+                    if (!navigator.clipboard) {
+                        fallbackCopyTextToClipboard(text);
+                        return;
                     }
-
-                    $(".copyLInk").click(function (e) {
-                        e.preventDefault();
-                        var link = $(this).data('link');
-                        copyTextToClipboard(link);
+                    navigator.clipboard.writeText(text).then(function() {}, function(err) {});
+                    $.toast({
+                        heading: 'SUCCESS',
+                        text: "Offer link copied.",
+                        showHideTransition: 'slide',
+                        icon: 'success',
+                        loaderBg: '#f96868',
+                        position: 'top-right'
                     });
+                }
+
+                $(".copyLInk").click(function(e) {
+                    e.preventDefault();
+                    var link = $(this).data('link');
+                    copyTextToClipboard(link);
+                });
 
             });
         </script>
 
         <script>
-
             var hike = $('#hike').val();
 
-            function updateURLParam(key,val){
+            function updateURLParam(key, val) {
                 var url = window.location.href;
-                var reExp = new RegExp("[\?|\&]"+key + "=[0-9a-zA-Z\_\+\-\|\.\,\;]*");
+                var reExp = new RegExp("[\?|\&]" + key + "=[0-9a-zA-Z\_\+\-\|\.\,\;]*");
 
-                if(reExp.test(url)) {
+                if (reExp.test(url)) {
                     // update
                     var reExp = new RegExp("[\?&]" + key + "=([^&#]*)");
                     var delimiter = reExp.exec(url)[0].charAt(0);
@@ -1117,12 +1267,14 @@
                 } else {
                     // add
                     var newParam = key + "=" + val;
-                    if(!url.indexOf('?')){url += '?';}
+                    if (!url.indexOf('?')) {
+                        url += '?';
+                    }
 
-                    if(url.indexOf('#') > -1){
+                    if (url.indexOf('#') > -1) {
                         var urlparts = url.split('#');
-                        url = urlparts[0] +  "&" + newParam +  (urlparts[1] ?  "#" +urlparts[1] : '');
-                    }else if(url.indexOf('&') > -1 || url.indexOf('?') > -1){
+                        url = urlparts[0] + "&" + newParam + (urlparts[1] ? "#" + urlparts[1] : '');
+                    } else if (url.indexOf('&') > -1 || url.indexOf('?') > -1) {
                         url += "&" + newParam;
                     } else {
                         url += "?" + newParam;
@@ -1130,7 +1282,7 @@
                 }
                 window.history.pushState(null, document.title, url);
                 return url;
-                    // window.history.pushState(null, document.title, url);
+                // window.history.pushState(null, document.title, url);
             }
             var checkUrlParameter = function checkUrlParameter(sParam) {
                 var sPageURL = window.location.search.substring(1),
@@ -1153,37 +1305,39 @@
             $('#hikebtn').click(function() {
                 hike = $("#magrintochnage").val();
                 var route = "{{ route('pages.proposals.updatemargin') }}";
-                    $.ajax({
-                        url: route,
-                        method: "get",
-                        data: {
-                            'proposal_id': {{ $proposal->id }},
-                            'hike': hike,
-                        },
-                        success: function(res){
-                            console.log(res);
-                            location.reload();
+                $.ajax({
+                    url: route,
+                    method: "get",
+                    data: {
+                        'proposal_id': {{ $proposal->id }},
+                        'hike': hike,
+                    },
+                    success: function(res) {
+                        console.log(res);
+                        location.reload();
                     }
                 });
             });
 
-            $('.input-check').click(function(){
+            $('.input-check').click(function() {
 
-                if($(this).prop('checked')){
-                    var route = "{{ route('panel.proposal_items.api.store') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}"+"&hike="+hike;
+                if ($(this).prop('checked')) {
+                    var route = "{{ route('panel.proposal_items.api.store') }}" + "?product_id=" + $(this).val() +
+                        '&proposal_id=' + "{{ $proposal->id }}" + "&hike=" + hike;
                     $.ajax({
                         url: route,
                         method: "get",
-                        success: function(res){
+                        success: function(res) {
 
                         }
                     });
-                }else{
-                    var route = "{{ route('panel.proposal_items.api.remove') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}";
+                } else {
+                    var route = "{{ route('panel.proposal_items.api.remove') }}" + "?product_id=" + $(this).val() +
+                        '&proposal_id=' + "{{ $proposal->id }}";
                     $.ajax({
                         url: route,
                         method: "get",
-                        success: function(res){
+                        success: function(res) {
 
                         }
                     });
@@ -1192,30 +1346,33 @@
 
             // Add Product To Pin
 
-            $('.input-checkpin').click(function(){
+            $('.input-checkpin').click(function() {
 
-                if($(this).prop('checked')){
-                    var  id = $(this).val();
+                if ($(this).prop('checked')) {
+                    var id = $(this).val();
                     // var img = ;?
-                    var route = "{{ route('panel.proposal_items.api.addpin') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}"+"&hike="+hike;
+                    var route = "{{ route('panel.proposal_items.api.addpin') }}" + "?product_id=" + $(this).val() +
+                        '&proposal_id=' + "{{ $proposal->id }}" + "&hike=" + hike;
                     $.ajax({
                         url: route,
                         method: "get",
-                        success: function(res){
+                        success: function(res) {
                             console.log(res);
-                            $("img."+id).attr('src', "{{ asset('frontend/assets/svg/bookmark_added.svg')}}");
+                            $("img." + id).attr('src',
+                                "{{ asset('frontend/assets/svg/bookmark_added.svg') }}");
                         }
                     });
 
-                }else{
-                    $("img."+id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg')}}");
-                    var route = "{{ route('panel.proposal_items.api.removepin') }}"+"?product_id="+$(this).val()+'&proposal_id='+"{{ $proposal->id }}";
+                } else {
+                    $("img." + id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg') }}");
+                    var route = "{{ route('panel.proposal_items.api.removepin') }}" + "?product_id=" + $(this).val() +
+                        '&proposal_id=' + "{{ $proposal->id }}";
                     $.ajax({
                         url: route,
                         method: "get",
-                        success: function(res){
+                        success: function(res) {
                             console.log(res);
-                            $("img."+id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg')}}");
+                            $("img." + id).attr('src', "{{ asset('frontend/assets/svg/bookmark.svg') }}");
                         }
                     });
                 }
@@ -1225,38 +1382,38 @@
 
 
             $('#ProposalForm').validate();
-                $('#category_id').change(function(){
+            $('#category_id').change(function() {
                 var id = $(this).val();
-                if(id){
+                if (id) {
                     $.ajax({
-                        url: "{{route('panel.user_shop_items.get-category')}}",
+                        url: "{{ route('panel.user_shop_items.get-category') }}",
                         method: "get",
                         datatype: "html",
                         data: {
-                            id:id
+                            id: id
                         },
-                        success: function(res){
+                        success: function(res) {
                             $('#sub_category_id').html(res);
                         }
                     })
                 }
             })
             $(document).ready(function() {
-                    $('#suppliers').select2({
-                        placeholder : "All Suppliers",
-                    });
-                    $('#brands').select2({
-                        placeholder : "All Brands",
-                    });
-                    $('#size').select2({
-                        placeholder : "All Size",
-                    });
-                    $('#color').select2({
-                        placeholder : "All Color",
-                    });
-                    $("#materials").select2({
-                        placeholder: "All Materials"
-                    })
+                $('#suppliers').select2({
+                    placeholder: "All Suppliers",
+                });
+                $('#brands').select2({
+                    placeholder: "All Brands",
+                });
+                $('#size').select2({
+                    placeholder: "All Size",
+                });
+                $('#color').select2({
+                    placeholder: "All Color",
+                });
+                $("#materials").select2({
+                    placeholder: "All Materials"
+                })
                 var table = $('.table').DataTable({
                     responsive: true,
                     fixedColumns: true,
@@ -1274,17 +1431,17 @@
                 });
             });
 
-            $(document).on('click','.nav-link',function(e){
-                var type =  $(this).data('type');
+            $(document).on('click', '.nav-link', function(e) {
+                var type = $(this).data('type');
                 var url = "";
-                if(checkUrlParameter('type')){
-                    url = updateURLParam('type',type);
-                }else{
-                    url =  updateURLParam('type',type);
+                if (checkUrlParameter('type')) {
+                    url = updateURLParam('type', type);
+                } else {
+                    url = updateURLParam('type', type);
                 }
                 window.location.href = url;
             });
-            $(document).on('click','.add-item',function(e){
+            $(document).on('click', '.add-item', function(e) {
                 e.preventDefault();
                 var url = $(this).attr('href');
                 var msg = $(this).data('msg') ?? "You won't be able to revert back!";
@@ -1298,16 +1455,15 @@
                         tryAgain: {
                             text: 'Add',
                             btnClass: 'btn-success',
-                            action: function(){
-                                    window.location.href = url;
+                            action: function() {
+                                window.location.href = url;
                             }
                         },
-                        close: function () {
-                        }
+                        close: function() {}
                     }
                 });
             });
-            $(document).on('click','.click-send',function(e){
+            $(document).on('click', '.click-send', function(e) {
                 e.preventDefault();
                 var url = $(this).attr('href');
                 var msg = $(this).data('msg') ?? "Send sms to check the proposal !";
@@ -1321,16 +1477,15 @@
                         tryAgain: {
                             text: 'Confirm',
                             btnClass: 'btn-blue',
-                            action: function(){
-                                    window.location.href = url;
+                            action: function() {
+                                window.location.href = url;
                             }
                         },
-                        close: function () {
-                        }
+                        close: function() {}
                     }
                 });
             });
-            $(document).on('click','.remove-item',function(e){
+            $(document).on('click', '.remove-item', function(e) {
                 e.preventDefault();
                 var url = $(this).attr('href');
                 // var msg = $(this).data('msg') ?? "You won't be able to revert back!";
@@ -1344,18 +1499,18 @@
                         tryAgain: {
                             text: 'Yes',
                             btnClass: 'btn-red',
-                            action: function(){
-                                    window.location.href = url;
+                            action: function() {
+                                window.location.href = url;
                             }
                         },
-                        close: function () {
+                        close: function() {
                             test: "Cancel"
                         }
                     }
                 });
             });
 
-            $('.filterable-btn').on('click',function(){
+            $('.filterable-btn').on('click', function() {
                 // Get the current URLSearchParams object
                 const urlParams = new URLSearchParams(window.location.search);
 
@@ -1365,10 +1520,21 @@
 
                 // Check if the new parameter already exists in the URL
                 if (urlParams.has(newParamName)) {
-                // Check if the current value is different from the new value
-                if (urlParams.get(newParamName) !== newParamValue) {
-                    // Update the value of the existing parameter
-                    urlParams.set(newParamName, newParamValue);
+                    // Check if the current value is different from the new value
+                    if (urlParams.get(newParamName) !== newParamValue) {
+                        // Update the value of the existing parameter
+                        urlParams.set(newParamName, newParamValue);
+
+                        // Replace the current URL with the modified URL
+                        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+                        window.history.replaceState({}, '', newUrl);
+
+                        // Refresh the page
+                        window.location.reload();
+                    }
+                } else {
+                    // Add a new parameter to the existing parameters
+                    urlParams.append(newParamName, newParamValue);
 
                     // Replace the current URL with the modified URL
                     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
@@ -1376,17 +1542,6 @@
 
                     // Refresh the page
                     window.location.reload();
-                }
-                } else {
-                // Add a new parameter to the existing parameters
-                urlParams.append(newParamName, newParamValue);
-
-                // Replace the current URL with the modified URL
-                const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-                window.history.replaceState({}, '', newUrl);
-
-                // Refresh the page
-                window.location.reload();
                 }
 
 
@@ -1402,7 +1557,7 @@
                 //     $('.cid-'+cid).removeClass('d-none');
                 // }
             });
-            $('#my_product').on('click',function(){
+            $('#my_product').on('click', function() {
                 if ($(this).is(':checked')) {
                     $('#all_supplier_brand').addClass('d-none');
                 } else {
@@ -1414,25 +1569,25 @@
                 if (input.files && input.files[0]) {
                     var reader = new FileReader();
                     reader.onload = function(e) {
-                    $('.image-preview').attr('src', e.target.result);
-                    $('.image-preview').hide();
-                    $('.image-preview').fadeIn(650);
+                        $('.image-preview').attr('src', e.target.result);
+                        $('.image-preview').hide();
+                        $('.image-preview').fadeIn(650);
                     }
                     reader.readAsDataURL(input.files[0]);
                 }
             }
 
             $("#file-input").change(function() {
-                readURL(this,'.image-preview');
+                readURL(this, '.image-preview');
             });
 
             function readURLVS(input) {
                 if (input.files && input.files[0]) {
                     var reader = new FileReader();
                     reader.onload = function(e) {
-                    $('.image-preview-vs').attr('src', e.target.result);
-                    $('.image-preview-vs').hide();
-                    $('.image-preview-vs').fadeIn(650);
+                        $('.image-preview-vs').attr('src', e.target.result);
+                        $('.image-preview-vs').hide();
+                        $('.image-preview-vs').fadeIn(650);
                     }
                     reader.readAsDataURL(input.files[0]);
                 }
@@ -1440,7 +1595,7 @@
 
 
             $(".file-input-vs").change(function() {
-                readURLVS(this,);
+                readURLVS(this, );
             });
 
 
@@ -1456,66 +1611,66 @@
 
             });
 
-            @if(request()->get('my_product') == 1)
+            @if (request()->get('my_product') == 1)
                 setTimeout(() => {
-                $('#my_product').trigger('click');
+                    $('#my_product').trigger('click');
                 }, 500);
             @endif
 
 
-                $('#select-all').click(function(){
-                    $(document).find('#ajax-loading').show();
-                    var interval = 10;
-                    if($('.input-check').is(':checked')){
-                        $('.input-check').prop('checked',false).change();
-                    }else{
-                        $('.filterable-items').each(function(){
-                            if(!$(this).hasClass('d-none')){
-                                setTimeout(() => {
-                                    $(this).find('.input-check').trigger('click');
-                                }, interval);
-                                interval += 150;
-                            }
-
+            $('#select-all').click(function() {
+                $(document).find('#ajax-loading').show();
+                var interval = 10;
+                if ($('.input-check').is(':checked')) {
+                    $('.input-check').prop('checked', false).change();
+                } else {
+                    $('.filterable-items').each(function() {
+                        if (!$(this).hasClass('d-none')) {
                             setTimeout(() => {
-                                $(document).find('#ajax-loading').hide();
-                            }, 9000);
-                        });
-                    }
+                                $(this).find('.input-check').trigger('click');
+                            }, interval);
+                            interval += 150;
+                        }
+
+                        setTimeout(() => {
+                            $(document).find('#ajax-loading').hide();
+                        }, 9000);
+                    });
+                }
 
 
-                });
-                $('.unSelectAll').click(function(){
-                    var interval = 10;
-                    if($('.input-check').is(':checked')){
-                        $('.input-check').prop('checked',false).change();
-                    }else{
-                        $('.filterable-items').each(function(){
-                            if(!$(this).hasClass('d-none')){
-                                setTimeout(() => {
-                                    $(this).find('.input-check').trigger('click');
-                                }, interval);
-                                interval += 150;
-                            }
-                        });
-                    }
-                });
-
-                // Update Sequence
-                $(function () {
-
-                    $( "#sortable" ).sortable({
-                        items: "div.card-drag",
-                        cursor: 'move',
-                        opacity: 0.6,
-                        update: function() {
-                            sendOrderToServer();
+            });
+            $('.unSelectAll').click(function() {
+                var interval = 10;
+                if ($('.input-check').is(':checked')) {
+                    $('.input-check').prop('checked', false).change();
+                } else {
+                    $('.filterable-items').each(function() {
+                        if (!$(this).hasClass('d-none')) {
+                            setTimeout(() => {
+                                $(this).find('.input-check').trigger('click');
+                            }, interval);
+                            interval += 150;
                         }
                     });
+                }
+            });
 
-                    function sendOrderToServer() {
+            // Update Sequence
+            $(function() {
+
+                $("#sortable").sortable({
+                    items: "div.card-drag",
+                    cursor: 'move',
+                    opacity: 0.6,
+                    update: function() {
+                        sendOrderToServer();
+                    }
+                });
+
+                function sendOrderToServer() {
                     var order = [];
-                    $('div.card-drag').each(function(index,element) {
+                    $('div.card-drag').each(function(index, element) {
                         order.push({
                             id: $(this).attr('data-id'),
                             position: index + 1
@@ -1525,72 +1680,69 @@
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        // url: "{{ url('pages/update/sequence') }}"+'/'+"{{$proposal->id}}",
-                        url: "{{ route('pages.proposals.updateSequence',$proposal->id) }}",
+                        // url: "{{ url('pages/update/sequence') }}"+'/'+"{{ $proposal->id }}",
+                        url: "{{ route('pages.proposals.updateSequence', $proposal->id) }}",
                         data: {
-                        order:order,
-                        _token: '{{csrf_token()}}'
+                            order: order,
+                            _token: '{{ csrf_token() }}'
                         },
                         success: function(response) {
                             if (response.status == "success") {
-                            console.log(response);
+                                console.log(response);
                             } else {
-                            console.log(response);
+                                console.log(response);
                             }
                         }
                     });
-                    }
-                });
+                }
+            });
 
-                $('#validateMargin').on('click', function(e){
-                    if($('#hike').val() > 99){
+            $('#validateMargin').on('click', function(e) {
+                if ($('#hike').val() > 99) {
 
-                        $('#hike').val(99);
+                    $('#hike').val(99);
 
-                        $.toast({
-                            heading: 'ERROR',
-                            text: "Margin must be less than 100",
-                            showHideTransition: 'slide',
-                            icon: 'error',
-                            loaderBg: '#f2a654',
-                            position: 'top-right'
-                        });
+                    $.toast({
+                        heading: 'ERROR',
+                        text: "Margin must be less than 100",
+                        showHideTransition: 'slide',
+                        icon: 'error',
+                        loaderBg: '#f2a654',
+                        position: 'top-right'
+                    });
 
-                        e.preventDefault();
+                    e.preventDefault();
 
-                    }
-                });
+                }
+            });
 
 
-                // custom Loder
+            // custom Loder
 
-                window.addEventListener('load', () =>{
-                    const cloader = $(".cloader")
-                    cloader.addClass('loader-hidden');
-                })
-
+            window.addEventListener('load', () => {
+                const cloader = $(".cloader")
+                cloader.addClass('loader-hidden');
+            })
         </script>
 
 
 
 
-    <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
+        <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
 
 
-    <script>
-        $(".jaya2").animatedModal({
-             animatedIn: 'lightSpeedIn',
-             animatedOut: 'lightSpeedOut',
-             color: 'FFFFFF',
-             height: '60%',
-             width: '50%',
-             top: '10%',
-             left: '52%',
+        <script>
+            $(".jaya2").animatedModal({
+                animatedIn: 'lightSpeedIn',
+                animatedOut: 'lightSpeedOut',
+                color: 'FFFFFF',
+                height: '60%',
+                width: '50%',
+                top: '10%',
+                left: '52%',
 
-         });
-
+            });
         </script>
-
-@endpush
+    @endpush
 
 @endsection

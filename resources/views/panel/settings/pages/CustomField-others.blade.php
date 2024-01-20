@@ -27,7 +27,7 @@
 
     {{-- @if(count($custom_fields) > 0) --}}
         <div class="row my-3 justify-content-center ">
-            <div class="col-10">
+            <div class="col-lg-11 col-md-12">
                 {{-- <div class="h6">Existing Columns</div> --}}
                 <table class="table">
                     <thead>
@@ -50,6 +50,8 @@
                                 <td style="text-transform: capitalize">
                                     @if ($field['type'] == 'diamension')
                                         dimension
+                                    @elseif ($field['type'] == 'interger')
+                                        integer
                                     @else
                                         {{ $field['type'] }}
                                     @endif
@@ -73,7 +75,7 @@
                                     @endswitch
                                 </td>
                                 <td>
-                                    <a href="#download" id="editCust" class="btn-link editCust" data-custid="{{ $field['id'] }}"  data-custname="{{ $field['text'] }}" data-values="{{ (is_array($field['value'])) ? implode(",",$field['value']) : $field['value'] }}" data-required="{{ $field['required'] ?? '' }}" data-data_type="{{ (($field['type'] == 'diamension') ? 'dimension' : $field['type'] ) ?? '' }}" data-attr_section="{{ $field['ref_section'] ?? '1'}}" >Edit</a>
+                                    <a href="#download" id="editCust" class="btn-link editCust" style="color:#6666CC;" data-custid="{{ $field['id'] }}"  data-custname="{{ $field['text'] }}" data-values="{{ (is_array($field['value'])) ? implode(",",$field['value']) : $field['value'] }}" data-required="{{ $field['required'] ?? '' }}" data-data_type="{{ (($field['type'] == 'diamension') ? 'dimension' : $field['type'] ) ?? '' }}" data-attr_section="{{ $field['ref_section'] ?? '1'}}" >Edit</a>
 
                                     {{-- <a href="{{ route('panel.settings.remove.custom.fields',encrypt($field['id'])) }}" class="btn btn-outline-danger delete-btn">Delete</a> --}}
 
@@ -90,7 +92,7 @@
     {{-- @endif --}}
 
     <!-- modal -->
-        <div class="modal fade text-dark " id="customFieldModal" tabindex="-1" role="dialog" aria-labelledby="customFieldModalLabel" aria-hidden="true">
+        <div class="modal fade text-dark " id="customFieldModal" tabindex="-1" role="dialog" aria-labelledby="customFieldModalLabel" aria-hidden="true" style="top:5%;">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -119,7 +121,7 @@
                                                 required>
                                                 <option value="1">Product Info > Essentials</option>
                                                 {{-- <option value="2">Product Info > Sale Price</option> --}}
-                                                <option value="3">Product Info > Property</option>
+                                                <option value="3">Product Variant</option>
                                                 <option value="4">Internal - Reference</option>
                                                 <option value="5">Internal - Production</option>
                                             </select>
@@ -170,7 +172,7 @@
                                                 </div> --}}
 
                                                 <div class="cust_input">
-                                                    <input class="form-check-input" type="radio" value="interger" id="data_type1_interger"
+                                                    <input class="form-check-input" type="radio" value="integer" id="data_type1_interger"
                                                         name="data_type" />
                                                     <label class="form-check-label border" for="data_type1_interger">
                                                         <svg width="25" height="25" viewBox="0 0 32 32"
@@ -293,7 +295,7 @@
                                                     <label class="btn"> Enter Values: </label>
 
                                                     <div class="mb-3 d-flex justify-content-between align-items-center">
-                                                        <div class="col-lg-6 col-md-6">
+                                                        <div class="col-lg-6 col-md-12 mb-3">
                                                             <input type="text" placeholder="Enter Value" name="value[]"
                                                             class="form-control value-field">
                                                         </div>
@@ -308,7 +310,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-12 justify-content-center d-flex">
+                                    <div class="col-lg-12 col-md-12 justify-content-center d-flex">
                                         <button type="submit" class="btn btn-outline-primary">Create</button>
                                     </div>
 
@@ -400,7 +402,7 @@
         var valueField = document.createElement('div');
         valueField.classList.add('mb-3', 'col-lg-6'); // Add 'col-lg-6' class to limit the width
         valueField.innerHTML =
-            ' <div class="col-lg-6"> <input type="text" placeholder="Enter Value" name="value[]" class="form-control value-field"> </div>';
+            ' <div class="col-lg-6 col-md-6"> <input type="text" placeholder="Enter Value" name="value[]" class="form-control value-field"> </div>';
         document.querySelector('.value-field-bx').appendChild(valueField);
     }
 

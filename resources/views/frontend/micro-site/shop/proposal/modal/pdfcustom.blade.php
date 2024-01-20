@@ -27,15 +27,15 @@
 
 @if (count($aval_atrribute) != 0)
     <!-- {{-- modal start --}} -->
-    <div id="animatedModal3">
-        <div id="btn-close-modal3" class="close-animatedModal3 custom-spacing" style="color: black; font-size: 1.5rem; height: fit-content; display: inline-block; padding: 5px;">
+    <div id="animatedModal3" style="position: fixed;">
+        <div id="btn-close-modal3" class="close-animatedModal3 custom-spacing" style="color: black; font-size: 1.5rem; height:0px; display: inline-block; padding: 5px;">
             <i class="far fa-times-circle fa-lg" style="transform: rotate(270deg);"></i>
         </div>
         
         {{-- <div id="btn-close-modal3" class="close-animatedModal3 custom-spacing" style="color:black; font-size: 1.5rem; height: fit-content; ">
             <i class="far fa-times-circle fa-rotate-270 fa-lg "></i>
         </div> --}}
-        <div class="modal-content custom-spacing " style="background-color:#f3f3f3; height: 50vh; width: 50%;overflow-y:hidden!important; overflow-x:hidden!important">
+        <div class="modal-content custom-spacing " style="background-color:#f3f3f3; top: 4%; height: 50vh; width: 50%;overflow-y:hidden!important; overflow-x:hidden!important">
             <div class="row">
 
                 {{-- Code WIll Goes Heree.. --}}

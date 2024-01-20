@@ -8,7 +8,7 @@
 	<title>@yield('title','') | {{ getSetting('app_name') }}</title>
 	<!-- initiate head with meta tags, css and script -->
 	@include('backend.include.head')
-    
+
 
 	@if(AuthRole() != 'Admin')
 		<style>
@@ -27,7 +27,7 @@
 	<style>
 		/* .fas{
 			line-height: 2 !important;
-		} */		
+		} */
 
 		.fas .fa-cloud-upload-alt{
 			line-height: 1 !important;
@@ -66,6 +66,7 @@
 
 	<!-- initiate scripts-->
 	@include('backend.include.script')
+    @yield('push-script')
 	@yield('firebase_footer')
 </body>
 </html>

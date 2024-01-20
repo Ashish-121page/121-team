@@ -22,15 +22,16 @@
             <div class="col-12 sidebar mt-3">
                 <!-- Sidebar content -->
 
-                <a href="{{ route('panel.invoice.index') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}"
+                {{-- <a href="{{ route('panel.invoice.index') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}"
                     class="btn btn-outline-primary  {{ activeClassIfRoutes(['panel.invoice.index'], 'active') }}">All
-                    Documents</a>
+                    Documents</a> --}}
 
-                <a class="btn btn-outline-primary {{ activeClassIfRoutes(['panel.Documents.Quotation'], 'active') }}"
+                <a class="btn btn-outline-primary @if (request()->access == '') active  @endif "
                     href="{{ route('panel.Documents.Quotation', 'active') }}">Quotations</a>
 
-                <a href="{{ route('panel.Documents.secondview') }}"
-                    class="btn btn-outline-primary {{ activeClassIfRoutes(['panel.Documents.secondview'], 'active') }}">Invoice</a>
+                <a href="{{ route('panel.Documents.Quotation',['access'=>'pi-data']) }}" class="btn btn-outline-primary  @if (request()->access == 'pi-data') active  @endif">Performa Invoices</a>
+
+                <a href="{{ route('panel.Documents.secondview') }}" class="btn btn-outline-primary {{ activeClassIfRoutes(['panel.Documents.secondview'], 'active') }}">Invoice</a>
 
             </div>
 
@@ -86,61 +87,14 @@
                 </div>
                 <div class="row mt-5">
                     <div class="col-12">
-                        <div class="table-responsive mt-3">
-                            <table id="table" class="table">
-                                <thead class="h6 text-muted">
-                                    <tr>
-                                        {{-- <td class="no-export action_btn">
-                                            <input type="checkbox" id="checkallinp">
-                                        </td> --}}
-                                        <td class="col-2">Enquiry ID</td>
-                                        <td class="col-2">Buyer Name</td>
-                                        <td class="col-2">Buyer Email </td>
-                                        <td class="col-2">Buyer Company </td>
-                                        <td class="col-2">Created On</td>
-                                        <td class="col-4"></td>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                        <div class="mt-3">
 
-                                    @forelse ($Quotation as $record)
-                                        @php
-                                            $jsonData = json_decode($record->customer_info) ?? '';
+                            @if (request()->access == 'active' || request()->access == '' || !request()->access)
+                                @include('panel.Documents.pages.quote-index')
+                            @elseif (request()->access == 'pi-data')
+                                @include('panel.Documents.pages.pi-data')
+                            @endif
 
-                                        @endphp
-                                        <tr>
-                                            {{-- <td>
-                                                <input type="checkbox" class="checkinp" name="checkinp[]"
-                                                    value="{{ $record->id }}">
-                                            </td> --}}
-                                            <td>
-                                                {{ $record->user_slug ?? $record->slug }}
-                                                <span class="text-danger">({{ $record['record_count'] ?? 1 }})</span>
-                                            </td>
-                                            <td>
-                                                {{ $jsonData->buyerName ?? ($jsonData->person_name ?? '') }}
-                                            </td>
-                                            <td>
-                                                {{ $jsonData->buyerEmail ?? ($jsonData->person_email ?? '-') }}
-                                            </td>
-                                            <td>
-                                                {{ $jsonData->companyName ?? '-' }}
-                                            </td>
-                                            <td>
-                                                {{ $record->quotation_date }}
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}"
-                                                    class="btn btn-outline-primary">
-                                                    Edit
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                    @endforelse
-
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>

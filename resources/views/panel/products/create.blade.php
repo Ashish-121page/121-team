@@ -179,6 +179,10 @@
                 }
             } */
 
+            .card1{
+                margin-bottom: 0px !important;
+            }
+
 
 
         </style>
@@ -206,8 +210,8 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-10 col-md-12 mx-auto">
+        {{-- <div class="row"> --}}
+            <div class="col-lg-12 col-md-12 mx-auto ">
                 {{-- Card start --}}
                 <div class="row">
                     <div class="col-md-4 product_boxes">
@@ -292,7 +296,7 @@
                 {{-- single product end --}}
 
 
-                {{-- Bulk Cart start --}}
+                {{-- Bulk Cart start --}} {{--not being used--}}
                 <div class="row bulk_product d-none">
                     <div class="col-md-10 mx-auto">
                         <div class="justify-content-center mx-auto d-flex mb-3">
@@ -353,29 +357,32 @@
                         </div>
                     </div>
                 </div>
-                {{-- Bulk Cart end --}}
+                {{-- Bulk Cart end --}} {{--not being used--}}
 
 
 
                 {{-- Custom Bulk Sheet Start --}}
 
-                <div class="row get_custom_Product d-none">
+                <div class="row get_custom_Product d-none" style="margin-left: 0px!important;">
 
-                    <div class="col-md-6 col-12 mx-auto">
-                        <div class="row p-2 card" style="height: 100%">
-                            <div class="col-12">
+                    <div class="col-md-4 col-12 mx-auto border">
+                        <div class="row p-2 card1" style="height: 100%; margin-bottom: 0px!important;">
+                            <div class="col-12 mt-4">
                                 <div class="row">
                                     <div class="col-2 d-flex align-items-center justify-content-center">
                                         <i class="fas fa-cloud-upload-alt text-light bg-primary p-3 rounded-circle"
-                                            style="font-size:2vh; margin-bottom:38px !important;"></i>
+                                            style="font-size:2vh; margin-bottom:36px !important;"></i>
                                     </div>
                                     <div class="col-10 d-flex flex-column justify-content-center">
                                         <form action="{{ route('panel.bulk.custom.product-upload', auth()->id()) }}"
                                             method="POST" enctype="multipart/form-data">
                                             @csrf
-                                            <div class="content">
-                                                <h5>Import file</h5>
-                                                <span>Upload Excel Sheet to Upload New Products Data.</span>
+                                            <div class="content text-center">
+                                                {{-- <h5>Import file</h5> --}}
+                                                <h5 class="text-center">Add New Products</h5>
+                                                <div class="mt-3">
+                                                <span class="mt-4">Upload Excel Sheet to Upload New Products Data.</span>
+                                                </div>
 
                                                 <input type="file" name="uploadcustomfield" id="uploadcustomfield"
                                                     class="form-control my-3">
@@ -392,24 +399,65 @@
                         </div>
                     </div>
 
+
+                    {{-- <div class="row update_products "> --}}
+                        <div class="col-md-4 col-12 mx-auto border">
+                            <div class="row p-2 card1" style="height: 100%">
+                                <div class="col-12 mt-4">
+                                    <div class="row">
+                                        <div class="col-2 d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-cloud-upload-alt text-light bg-primary p-3 rounded-circle"
+                                                style="font-size:2vh; margin-bottom: 35px"></i>
+                                        </div>
+                                        <div class="col-10 d-flex flex-column justify-content-center">
+                                            <form action="{{ route('panel.bulk.product.bulk-update') }}" method="post"
+                                                enctype="multipart/form-data" class="">
+                                                @csrf
+                                                <div class="content text-center">
+                                                    {{-- <h5>Update Record</h5> --}}
+                                                    <h5 class="text-center">Update Products</h5>
+                                                    <div class="mt-3">
+                                                    <span>Upload Excel Sheet to Update Products Data.</span>
+                                                    </div>
+    
+                                                    <input required type="file" name="file" class="form-control my-3">
+                                                </div>
+                                                <div class="action justify-content-center text-center" style="margin: 20px 0">
+                                                    <button class="btn btn-outline-primary" type="submit">
+                                                        Upload
+                                                    </button>
+    
+                                                    {{-- <a href="{{ route('panel.bulk.product.bulk-export', auth()->id()) }}"
+                                                        type="button" class="btn btn-outline-primary">Fill & Upload</a> --}}
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {{-- </div> --}}
+
                     {{-- 2nd Card --}}
 
-                    <div class="col-md-6 col-12 mx-auto">
-                        <div class="row p-2 card" style="height: 100%">
-                            <div class="col-12">
+                    <div class="col-md-4 col-12 mx-auto border">
+                        <div class="row p-2 card1" style="height: 100%">
+                            <div class="col-12 mt-4">
                                 <div class="row">
                                     <div class="col-2 d-flex align-items-center justify-content-center">
                                         <i class="fas fa-cloud-download-alt text-light bg-primary p-3 rounded-circle"
-                                            style="font-size:2vh"></i>
+                                            style="font-size:2vh; margin-bottom: 5px;"></i>
                                     </div>
                                     <div class="col-10">
-                                        <div class="content">
-                                            <h5>Export data </h5>
+                                        <div class="content text-center">
+                                            <h5 class="text-center">Export data </h5>
+                                            <div class="mt-3">
                                             <span>Information will be downloaded as per <a
                                                     href="{{ asset('instructions/instructions.pdf') }}"
                                                     download="instructions.pdf" class="btn-link text-primary">Template</a>
                                                 - All Details. Change
                                                 template.</span>
+                                            </div>
                                             <div class="alert alert-warning p-1 mt-2 invisible"
                                                 style="width: fit-content;" role="alert">
                                                 <i class="fas fa-info-circle text-warning mx-1"></i> Sheet will have
@@ -418,10 +466,16 @@
                                             </div>
                                         </div>
                                         <div class="action">
-                                            <a href="{{ route('panel.bulk.product.bulk-sheet-export', auth()->id()) }}"
-                                                type="button" class="btn btn-outline-primary">Download</a>
-                                            <a class="btn btn-outline-primary" id="demo01" href="#animatedModal"
-                                                role="button">Create Template</a>
+                                            <div class="row col-12">
+                                                <div class="col-lg-6 ">
+                                                    <a href="{{ route('panel.bulk.product.bulk-sheet-export', auth()->id()) }}"
+                                                        type="button" class="btn btn-outline-primary">Download</a>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <a class="btn btn-link text-primary" id="demo01" href="#animatedModal"
+                                                        role="button">Create Template</a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -464,10 +518,9 @@
 
                 </div>
 
-
                 <div class="row get_custom_Product d-none mt-3">
 
-                    <div class="col-md-12 col-12">
+                    <div class="col-12 col-md-12">
 
                         <div class="table-responsive">
                             <table class="table">
@@ -487,10 +540,14 @@
                                             <td scope="row">{{ $loop->iteration }}</td>
                                             <td> {{ $item->template_name ?? 'No Name' }} </td>
                                             <td>
-                                                <a href="{{ route('panel.products.download.template', $item->id) }}"
-                                                    class="btn btn-outline-primary btn-sm">Download</a>
-                                                <a href="{{ route('panel.products.edit.template', $item->id) }}"
-                                                    class="btn btn-outline-primary btn-sm">Edit</a>
+                                                {{-- <a href="{{ route('panel.products.download.template', $item->id) }}"
+                                                    class="btn btn-outline-primary btn-sm">Download</a> --}}
+                                                    <a href="{{ route('panel.products.download.template', $item->id) }}"
+                                                        class="btn btn-outline-primary btn-sm">Download</a>
+                                                {{-- <a href="{{ route('panel.products.edit.template', $item->id) }}"
+                                                    class="btn btn-outline-primary btn-sm">Edit</a> --}}
+                                                    <a href="{{ route('panel.products.edit.template', $item->id) }}"
+                                                        class="btn btn-link text-primary btn-sm">Edit</a>
                                             </td>
                                             <td>
                                                 {{ $item->created_at }}
@@ -515,7 +572,7 @@
                 {{-- upload Bulk Record --}}
 
                 <div class="row update_products d-none">
-                    <div class="col-md-8 col-lg-6 col-12 mx-auto my-3">
+                    <div class="col-md-4 col-lg-4 col-12 mx-auto my-3">
                         <div class="row p-2 card" style="height: 100%">
                             <div class="col-12">
                                 <div class="row">
@@ -528,7 +585,8 @@
                                             enctype="multipart/form-data" class="">
                                             @csrf
                                             <div class="content">
-                                                <h5>Update Record</h5>
+                                                {{-- <h5>Update Record</h5> --}}
+                                                <h5>Update Products</h5>
                                                 <span>Upload Excel Sheet to Update Products Data.</span>
 
                                                 <input required type="file" name="file" class="form-control">
@@ -548,6 +606,8 @@
                         </div>
                     </div>
                 </div>
+
+                
 
 
             </div>

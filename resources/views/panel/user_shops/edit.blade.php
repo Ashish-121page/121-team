@@ -661,7 +661,7 @@
                                                     <div class="col-md-12">
                                                         <div class="d-flex justify-content-between my-3">
                                                             <h6>Team Members</h6>
-                                                            <a href="{{ route('panel.teams.create') }}{{ '?shop_id='.$user_shop->id }}" class="mb-2 btn btn-icon btn-sm btn-outline-primary" title="Add New Team Member"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                                            <a href="{{ route('panel.teams.create') }}{{ '?shop_id='.$user_shop->id }}" class="mb-2 btn btn-icon btn-sm btn-outline-primary" title="Add New Team Member"><i class="fa fa-plus" style="line-height: 2 !important;" aria-hidden="true"></i></a>
                                                         </div>
                                                             @php
                                                                 $items = App\Models\Team::whereUserShopId($user_shop->id)->paginate(4);
@@ -1128,29 +1128,26 @@
                                                     // return;
                                                 @endphp
                                                 <div class="col-lg-4 col-md-4 mb-3 pl-0 custom-height">
-                                                    <div class="m-1 p-2 border rounded" style="max-height: 439px;">
+                                                    <div class="m-1 p-2 border rounded" style="max-height: 469px;">
                                                         <div class="mb-2">
-                                                              <div class="d-flex align-items-center justify-content-between" style="background-color: #f3f3f3">
-                                                                {{-- <h6 class="m-0 p-0">{{ $address->type == 0 ? "Billing" : "Site" }} Address:</h6> --}}
+                                                            <div class="d-flex align-items-center justify-content-between" style="background-color: #f3f3f3">
                                                                 <h6>
                                                                     {{ substr($address_decoded['acronym'] ?? $address_decoded['entity_name'], 0, 12) . (strlen($address_decoded['acronym'] ?? $address_decoded['entity_name']) > 12 ? '..' : '') }}
                                                                 </h6>
-                                                                <div class="" style="width:20%;">
-                                                                    {{-- <p class="text-muted mb-1"> --}}
-                                                                        @if($address->type == 1)
-                                                                            Site
-                                                                        @else
-                                                                            Entity
-                                                                        @endif
-                                                                    {{-- </p> --}}
-                                                                    <a href="javascript:void(0)"  style="margin-left: 15px;" class="text-primary editAddress mb-0" title="Edit Address" data-id="{{ $address }}" data-original-title="Edit" ><i class="ik ik-edit"></i></a>
+                                                                <div class="d-flex d-lg d-none align-items-center" style="width:23%;">
+                                                                    @if($address->type == 1)
+                                                                        <span class="mr-2">Site</span>
+                                                                    @else
+                                                                        <span class="mr-2">Entity</span>
+                                                                    @endif
+                                                                    <a href="javascript:void(0)" class="text-primary editAddress mb-0" title="Edit Address" data-id="{{ $address }}" data-original-title="Edit" ><i class="ik ik-edit"></i></a>
                                                                     {{-- <a href="{{ route('customer.address.delete',$address->id) }}" class="text-primary delete-item mb-0" title=""data-original-title="delete" ><i class="ik ik-trash"></i></a> --}}
                                                                 </div>
-                                                              </div>
+                                                            </div>
                                                         </div>
                                                         <div class="pt-1 border-top">
-                                                            <div class="d-flex align-items-center justify-content-between" style="max-height: 200px; height:200px;">
-                                                                <div>
+                                                            <div class="d-flex align-items-center justify-content-between" >
+                                                                <div style="max-height: 200px; height:200px;  overflow: auto;">
 
 
                                                                     <p class="text-muted mb-1">
@@ -1173,17 +1170,17 @@
                                                                 </div>
                                                             </div>
 
-                                                            <div class="col-lg-12" style="max-height: 200px; height:200px;">
+                                                            <div class="" >
                                                                 <div class="col-lg-12 col-md-12" style="padding: 0;">
                                                                     <div class="d-flex align-items-center justify-content-center" style="background-color:#f3f3f3; padding: 5px;">
                                                                         Bank Accounts
                                                                     </div>
                                                                 </div>
-                                                                <div class="row">
+                                                                <div class="row scrollable"style="max-height: 200px; height:200px; overflow: auto;">
                                                                     @forelse ((array) json_decode($address->account_details) as $acc)
                                                                         @if($loop->index < 6)
-                                                                            <div class="col-lg-6 mb-1" >
-                                                                                <p class="text-muted">
+                                                                            <div class="col-lg-6 col-md-6 mb-1"  >
+                                                                                <p class="text-muted" style="background-color:white;">
                                                                                     {{ $acc->bank_name ?? '' }} ...
                                                                                     {{ substr($acc->account_number, -5) }}
                                                                                 </p>

@@ -7,8 +7,10 @@ use App\Models\Media;
 use App\Models\UserCurrency;
 use App\Models\UserShop;
 use App\Models\CustomFields;
+use App\Models\UserAddress;
 use App\User;
 use App\Models\Category;
+use App\Models\BuyerList;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Panel\ProductAttributeController;
 
@@ -23,6 +25,9 @@ class settingController extends Controller
         $user_shop = getShopDataByUserId($user->id);
         $currency_record = UserCurrency::where('user_id',$user->id)->get();
         $acc_permissions = json_decode($user->account_permission);
+
+        $buyer_records = BuyerList::where('user_id',auth()->id())->get();
+
 
         $length = 20;
         $industries = Category::where('parent_id',null)->get();
@@ -60,17 +65,16 @@ class settingController extends Controller
                 $category =  $category_own;
             }
             $sub_category = Category::where('level',3)->get();
-
-
         }
 
 
-        // magicstring($product_attributes);
-        // return;
+
+        $address = UserAddress::where('user_id',auth()->id())->get();
+
 
         $custom_fields = json_decode($user->custom_fields,true) ?? [];
 
-        return view("panel.settings.index",compact('templates','user','user_shop','currency_record','acc_permissions','category','industries','category_global','sub_category','custom_fields'));
+        return view("panel.settings.index",compact('templates','user','user_shop','currency_record','acc_permissions','category','industries','category_global','sub_category','custom_fields','address','buyer_records'));
     }
 
 
@@ -228,6 +232,27 @@ class settingController extends Controller
         // magicstring($request->all());
 
         try {
+            $user = auth()->user();
+
+            $exist_col = $user->custom_fields ?? null;
+            $exist_col = json_decode($exist_col) ?? [];
+            magicstring($exist_col);
+
+            if ($request->get('attr_name') == null) {
+                return back()->with('error','Please Enter Field Name');
+            }else{
+                $attr_name = $request->get('attr_name');
+                foreach ($exist_col as $key => $value) {
+                    $existtext = strtoupper($value->text);
+                    $existtext = strtolower($existtext);
+                    $attr_name = strtoupper($attr_name);
+                    $attr_name = strtolower($attr_name);
+
+                    if ($existtext == $attr_name) {
+                        return back()->with('error','The Custom input name already exists. Unable to create duplicate names.');
+                    }
+                }
+            }
 
             // ` Product Section Order we are using this to show Value
             // 1. Product Info > Essentials
@@ -270,8 +295,6 @@ class settingController extends Controller
 
                 // $responseRecevied = $destinationController->store($request);
                 $responseRecevied = app('App\Http\Controllers\Panel\ProductAttributeController')->store($request);
-
-
 
 
                 if ($responseRecevied->getData()->status == 'success') {
@@ -370,7 +393,7 @@ class settingController extends Controller
                     case 'html':
                         $tag = "<textarea class='form-control htmlinput' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field></textarea>";
                         break;
-                    case 'interger':
+                    case 'integer':
                         $tag = "<input type='number' class='form-control' name='".$uniquie_id."' placeholder='".$request->get('attr_name')."' $must_field>";
                         break;
                     default:
@@ -390,7 +413,6 @@ class settingController extends Controller
                     'tag' => $tag,
                 );
 
-                $user = auth()->user();
                 if ($user->custom_fields != null) {
                     $tmp = json_decode($user->custom_fields, true);
                     array_push($tmp, $data);
@@ -523,7 +545,7 @@ class settingController extends Controller
                 case 'html':
                     $tag = "<textarea class='form-control htmlinput' name='".$uniquie_id."' placeholder='".request()->get('custname')."' $must_field></textarea>";
                     break;
-                case 'interger':
+                case 'integer':
                     $tag = "<input type='number' class='form-control' name='".$uniquie_id."' placeholder='".request()->get('custname')."' $must_field>";
                     break;
                 default:
@@ -596,10 +618,21 @@ class settingController extends Controller
 
         try {
             $user = User::whereId(request()->get('user_id'))->first();
-            $record = [
-                'quotaion_mark' => request()->get('quotaion_mark'),
-                'quotaion_index' => request()->get('quotaion_index')
-            ];
+            // $record = [
+            //     'quotaion_mark' => request()->get('quotaion_mark'),
+            //     'quotaion_index' => request()->get('quotaion_index')
+            // ];
+
+            $record = [];
+
+            foreach (request()->all() as $key => $value) {
+                if ($key == 'user_id') {
+                    continue;
+                }
+                $record[$key] = $value;
+            }
+
+
             $record = json_encode($record);
             $user->settings = $record;
             $user->save();

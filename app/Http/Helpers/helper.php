@@ -1979,7 +1979,32 @@ if (!function_exists('checkQuoteSlug')) {
     }
 }
 
+if (!function_exists('checkProposalSlug')) {
+    function checkProposalSlug($mark, $num, $userid)
+    {
+        $slug = $mark . "/" . $num;
+        $chk = App\Models\Proposal::where('user_id', $userid)->where('slug', $slug)->first();
+        if ($chk == null) {
+            return $slug;
+        }
+        $num = $num + 1;
+        return checkProposalSlug($mark, $num, $userid); // Added return statement
+    }
+}
 
+
+
+if (!function_exists('searchKeyMultiDiaArray')) {
+    function searchKeyMultiDiaArray($multi_dia_arr,$searchval,$search_key) {
+        foreach ($multi_dia_arr as $key => $value) {
+            foreach ($value as $key2 => $item) {
+                if ($item == $searchval && $key2 == $search_key) {
+                    return $value;
+                }
+            }
+        }
+    }
+}
 
 // Gettign Product Attribute value Name
 if (!function_exists('getAttruibuteValueById')) {
@@ -1987,6 +2012,15 @@ if (!function_exists('getAttruibuteValueById')) {
         return ProductAttributeValue::whereId($id)->first();
     }
 }
+
+// Gettign Proposal Record BY Id
+if (!function_exists('getProposalRecordById')) {
+    function getProposalRecordById($id) {
+        return App\Models\Proposal::whereId($id)->first();
+    }
+}
+
+
 
 // Gettign Product Attribute value Name
 if (!function_exists('getParentAttruibuteValuesByIds')) {
@@ -2002,6 +2036,7 @@ if (!function_exists('getCustomFieldValueById')) {
         return CustomFields::where('relatation_name',$id)->where('product_id',$product_id)->first();
     }
 }
+
 
 
 if (!function_exists('getFieldNameById')) {

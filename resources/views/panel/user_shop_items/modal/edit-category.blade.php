@@ -1,8 +1,8 @@
 <div id="animatedModal">
-    <div class="modal-content custom-spacing bg-transparent" style="border: none !important; padding: 10px">
+    <div class="modal-content custom-spacing bg-transparent" style="border: none !important; padding: 10px; >
         <form method="POST" action="{{ route('panel.constant_management.category.rename',auth()->id()) }}">
             <input type="hidden" name="catid" value="" id="catid">
-            <div class="row justify-content-center ">
+            <div class="row justify-content-center " style="background-color: #f3f3f3;">
                 <div class="col-md-10 col-12">
                     <div class="col-12 my-3">
                         <h1>Rename <span>Category</span></h1>

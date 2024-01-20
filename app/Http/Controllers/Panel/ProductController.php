@@ -3185,16 +3185,53 @@ class ProductController extends Controller
     public function update(Request $request,Product $product)
     {
 
+        if($request->avl_assets != null){
+            $arr_images = [];
+            foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
+                $user = auth()->user();
+                $filetype = explode('/',Storage::mimeType($value));
+                $filename =basename($value);
+                $path = "storage/files/$user->id/$filename";
+                $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                $record = Media::create([
+                    'type' => 'Product',
+                    'type_id' => $product->id,
+                    'file_name' => $filename,
+                    'path' => $path,
+                    'extension' => $extension,
+                    'file_type' => 'Image',
+                    'tag' => 'Product_Image',
+                ]);                
+                array_push($arr_images,$record->id);
+            }
+            $user_shop = getShopDataByUserId($user->id);
+            $price = $request->customer_price_without_gst;
+            $usi = UserShopItem::create([
+                'user_id'=> $user->id,
+                'category_id'=> $request->category_id,
+                'sub_category_id'=> $request->category_id,
+                'product_id'=> $product->id,
+                'user_shop_id'=> $user_shop->id,
+                'parent_shop_id'=> 0,
+                'is_published'=> 1,
+                'price'=> $price,
+                'images' => count($arr_images) > 0 ? implode(',',$arr_images) : null,
+            ]);
 
-        // magicstring($request->all());
+            if(count($arr_images) > 0) {
+                $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                $usi->save();
+            }
+        }
+        // magicstring($arr_images);
         // return;
-        
+
 
 
         $any_value = [];
         $newProp = [];
         $substring = "any_value";
-        
+
         foreach ($request->all() as $key => $value) {
             if (strpos($key, $substring) !== false) {
                 array_push($any_value,$key);

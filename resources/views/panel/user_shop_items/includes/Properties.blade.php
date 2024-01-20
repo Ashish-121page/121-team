@@ -138,7 +138,6 @@
                                             Edit
                                         </a>
                                     </td>
-
                                 </tr>
                             @endforeach
                             @else

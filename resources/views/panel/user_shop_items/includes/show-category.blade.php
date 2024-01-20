@@ -1,16 +1,10 @@
 <div class="card-body1 mt-5" style="padding:30px  0px ! important;" id="hztab">
-   <div class=" col-md-12 col-lg-12 col-sm-12  d-flex gap-5 flex-wrap"  style="padding: 0px ;">
+   <div class=" col-md-12 col-lg-12 col-sm-12  d-flex flex-wrap justify-content-between gap-1"  style="padding: 0px ;">
 
         @if($acc_permissions->managegroup == "yes")
             @if ($Team_categorygroup)
-            <div class="cardbx mx-3 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white m-1"  style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
-                {{-- <a href="{{ route('panel.seller.category.index','13') }}" class="bg-primary text-danger" style="color:white;height: 100%;width: 100%;display: flex;align-items: center;justify-content: center;font-size: larger;background-color: #6e6ee683;"> --}}
-
-                {{-- <a href="{{ route('panel.seller.category.index','13') }}" class="text-dark btn btn-outline-primary" style="display: block;height: 100%;width: 100%;position: absolute;left: 0;text-align: center;">
-                    <span style="height: 100%;display: flex;width: 100%;justify-content: center;align-items: center;">+ Add Category</span>
-                </a> --}}
-
-                <a id="addcategory" href="#animatedModal12" role="button" class="text-dark btn btn-outline-primary" style="display: block;height: 100%;width: 100%;position: absolute;left: 0;text-align: center;">
+            <div class="cardbx col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 ywqgqdya product-card product-box d-flex flex-column border bg-white"  style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;outline: none !important">
+                <a id="addcategory" href="#animatedModal12" role="button" class="text-dark btn btn-outline-primary" style="display: block;height: 92%;width: 100%;position: absolute;left: 0;text-align: center;">
                     <span style="height: 100%;display: flex;width: 100%;justify-content: center;align-items: center;">+ Add Category</span>
                 </a>
 
@@ -19,7 +13,7 @@
         @endif
 
         @foreach ($categories as $item)
-            <div class="cardbx mx-3 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white m-1"  style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
+            <div class="cardbx col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 ywqgqdya product-card product-box d-flex flex-column border bg-white"  style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
                 <div class="head d-flex justify-content-between  my-2" style="font-size: .rem !important;">
                     <div class="one col-10">
                         <div style="font-weight: bold; font-size: large !important;" > {{ $item->name }} </div>
@@ -34,7 +28,7 @@
                         </a> --}}
                         @if (auth()->id() == $item->user_id)
                             <a href="#edit" class="btn text-primary border border-primary btn-icon btn-sm opencateedit" data-catidchange="{{ $item->id }}"  data-catname="{{ $item->name }}">
-                                <i class="fas fa-pencil-alt"></i>
+                                <i class="fas fa-pencil-alt" style="line-height: 2 !important;"></i>
                             </a>
                         @endif
                         <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&productsgrid=true&category_id={{ $item->id }}" class="btn text-primary btn-sm">
@@ -50,7 +44,7 @@
                     @endphp
 
                     @foreach ($last_Records as $last_Record)
-                        <div class="col-6 col-md-4 col-lg-4" style="height: 100px; width: 100px;object-fit: contain; padding:0px;">
+                        <div class="col-6 col-md-4 col-lg-3 justify-content-between d-flex" style="height: 100px; width: 100px;object-fit: contain; padding:0px;">
                             <img src="{{ asset(getShopProductImage($last_Record->id)->path ?? '')  ?? ''}}"  class="img-fluid p-1" style="border-radius: 10px;height: 100%; width: 100%;">
                         </div>
                     @endforeach
@@ -79,7 +73,7 @@
         @endphp
 
         @foreach ($own_categories as $item)
-            <div class="cardbx mx-3 col-md-5 col-lg-4 product-card product-box d-flex flex-column border bg-white m-1" style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
+            <div class="cardbx col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 ywqgqdya product-card product-box d-flex flex-column border bg-white" style="width: 25rem;;max-width: 25rem; min-height: 13.5rem;max-height: 15rem;">
                 <div class="head d-flex justify-content-between my-2">
                     <div class="one col-10">
                         <div style="font-weight: bold"> {{ $item->name }} </div>
@@ -91,7 +85,7 @@
                         </a> --}}
                         @if (auth()->id() == $item->user_id)
                             <a href="#edit" class="btn text-primary border border-primary btn-icon btn-sm opencateedit" data-catidchange="{{ $item->id }}"  data-catname="{{ $item->name }}">
-                                <i class="fas fa-pencil-alt"></i>
+                                <i class="fas fa-pencil-alt" style="line-height: 2 !important;"></i>
                             </a>
                         @endif
                         <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{ $item->id }}" class="btn text-primary btn-sm">

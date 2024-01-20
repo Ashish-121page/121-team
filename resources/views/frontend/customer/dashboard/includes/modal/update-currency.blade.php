@@ -1,4 +1,4 @@
-<div class="modal fade" id="updatecurrency" role="dialog" aria-labelledby="updatecurrencyTitle" aria-hidden="true">
+<div class="modal fade" id="updatecurrency" role="dialog" aria-labelledby="updatecurrencyTitle" aria-hidden="true" style="top:5%;">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">

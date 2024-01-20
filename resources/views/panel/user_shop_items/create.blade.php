@@ -92,6 +92,18 @@
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}">
 
     <style>
+        .ywqgqdya , .ywqgqdya .card , .ywqgqdya .card-body{
+            padding: 1rem;
+            border: none !important;
+            box-shadow: none !important;    
+        }
+        
+        .ywqgqdya{
+            outline:1px solid #eee0ee !important;
+            outline-offset:-10px; 
+        }
+
+        
         .error{
             color:red;
         }
@@ -234,44 +246,11 @@
                @include('backend.include.message')
                 <!-- end message area-->
 
-                <div class="row">
-                    <div class="col-lg-6 col-md-12  col-12 my-2">
-                        <div class="one" style="display: flex; align-items: center; justify-content: flex-start;">
-                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}"
-                                class="btn btn-outline-primary mx-1
-                                @if (!request()->has('products') && !request()->has('assetsafe') && !request()->has('properties') && !request()->has('productsgrid')) active @endif
-                                ">
-                                Categories
-                            </a>
-                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&productsgrid=true"
-                                class="btn btn-outline-primary mx-1 @if (request()->has('products') OR request()->has('productsgrid')) active @endif">
-                                Products
-                            </a>
-                            {{-- <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&properties=true"
-                                class="btn btn-outline-primary mx-1 @if (request()->has('properties')) active @endif">
-                                Properties
-                            </a> --}}
-                            <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&assetsafe=true"
-                                class="btn btn-outline-primary mx-1 @if (request()->has('assetsafe')) active @endif">
-                                Assets Safe
-                            </a>
-                        </div>
-                    </div>
-
-                    {{-- This Menu is Always Visible --}}
-                    <div class="col-lg-6 col-md-12 col-12 my-2">
-                        <div class="two" style="display: flex; align-items: center; justify-content: flex-end;">
-                            @include('panel.user_shop_items.includes.action_menu')
-                        </div>
-                    </div>
-                </div>
-
-
-                    {{-- <div class="row">
-                        <div class="col-md-6 col-12 my-2">
-                            <div class="one" style="display: flex;align-items: center;justify-content: flex-start;">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-12  col-12 my-2">
+                            <div class="one" style="display: flex; align-items: center; justify-content: flex-start;">
                                 <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}"
-                                    class="btn btn-outline-primary  mx-1
+                                    class="btn btn-outline-primary mx-1
                                     @if (!request()->has('products') && !request()->has('assetsafe') && !request()->has('properties') && !request()->has('productsgrid')) active @endif
                                     ">
                                     Categories
@@ -280,27 +259,24 @@
                                     class="btn btn-outline-primary mx-1 @if (request()->has('products') OR request()->has('productsgrid')) active @endif">
                                     Products
                                 </a>
-                                <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&properties=true"
+                                {{-- <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&properties=true"
                                     class="btn btn-outline-primary mx-1 @if (request()->has('properties')) active @endif">
                                     Properties
-                                </a>
-
+                                </a> --}}
                                 <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&assetsafe=true"
                                     class="btn btn-outline-primary mx-1 @if (request()->has('assetsafe')) active @endif">
                                     Assets Safe
                                 </a>
-
                             </div>
-                        </div> --}}
+                        </div>
 
-                        {{-- ` This Menu is Always Visible  --}}
-                        {{-- <div class="col-md-6 col-12 my-2">
-                            <div class="two" style="display: flex;align-items: center;justify-content: flex-end;">
+                        {{-- This Menu is Always Visible --}}
+                        <div class="col-lg-6 col-md-12 col-12 my-2">
+                            <div class="two" style="display: flex; align-items: center; justify-content: flex-end;">
                                 @include('panel.user_shop_items.includes.action_menu')
                             </div>
                         </div>
-                    </div> --}}
-
+                    </div>
 
                     {{-- ` This Menu Only Visible when Checkbox Is Checked  --}}
                     <div class="row d-none" id="quickaction">
@@ -310,7 +286,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-12 col-lg-12" id="contentbx">
+                    <div class="col-md-12 col-lg-12 col-12" id="contentbx">
 
                         @if (request()->has('products'))
                             @include('panel.user_shop_items.includes.show-productTable')

@@ -31,4 +31,11 @@ define('DB_USERNAME', 'giftingb_newroot');
 define('DB_PASSWORD', 'WgDF5#IeRl2@');
 define('DB_DATABASE', 'giftingb_newdb');
 define('DB_PREFIX', 'oc_');
+
+
+
+
+
+
+
 ?>

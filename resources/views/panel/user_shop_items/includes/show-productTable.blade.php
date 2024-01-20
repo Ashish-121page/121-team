@@ -413,3 +413,6 @@
 <div>
     {{ $scoped_products->appends(request()->query())->links() }}
 </div>
+<form method="get" action="{{ route('panel.bulk.product.bulk-export',auth()->id()) }}" id="products_exportform">
+    <input type="hidden" name="products" id="products_export" value="">
+</form>

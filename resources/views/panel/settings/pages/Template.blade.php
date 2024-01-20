@@ -1,7 +1,7 @@
 <div class="col-12">
     {{-- {{ asset('frontend/assets/img/default_ppt.svg') }} --}}
     <div class="row">
-        <div class="col-12 my-3 text-center">
+        <div class="col-lg-12 col-md-12 my-3 text-center">
             <div class="h4">Powerpoint Templates</div>
         </div>
 
@@ -10,7 +10,7 @@
                 @continue
             @endif
 
-            <div class="col-md-3 col-sm-4 col-6 d-flex justify-content-center flex-column card">
+            <div class="col-md-4 col-sm-4 col-6 d-flex justify-content-center flex-column card">
                 <div class="head d-flex justify-content-between align-items-center w-100" style="height: 100px;width: 250px;object-fit: contain;">
                     <img src="{{ asset($template->thumbnail ?? '') }}" alt="test" class="img-fluid rounded"
                         style="height: 100%;width: 100%;">
@@ -78,8 +78,8 @@
                     @endif
 
 
-                    <div class="col-12">
-                        <div class="d-flex justify-content-center align-content-center">
+                    <div class="col-lg-12 col-md-12" >
+                        <div class="d-flex justify-content-center align-content-center" style="margin-top: 5rem;">
                             <button type="submit" class="btn btn-outline-primary my-2">Save</button>
                         </div>
                     </div>

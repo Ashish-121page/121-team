@@ -53,11 +53,12 @@ if (isset($quotationRecord->customer_info)) {
 
                 <input type="hidden" name="proposal_id" value="{{ $offer_data['proposal_id'] ?? null }}">
                 <input type="hidden" name="proposal_products" value="{{ $offer_data['products'] ?? null }}">
+
                 <div class="col-lg-12 col-md-12 mb-3">
                     <div class="row">
                         <div class="col-lg-8 col-md-8">
                             <div class="row">
-                                <div class="col-lg-6 col-md-8">                                                                       
+                                <div class="col-lg-6 col-md-8">
                                     <div class="d-flex align-items-center">
                                         <button class="btn btn-secondary" onclick="goBack()" value="Back"
                                             type="button">Back</button>
@@ -67,8 +68,9 @@ if (isset($quotationRecord->customer_info)) {
                                     </div>
                                 </div>
                             </div>
+
                         </div>
-                        <div class="col-lg-4 col-md-4 d-flex justify-content-end align-items-center">
+                        <div class="col-lg-4 col-md-4 d-flex justify-content-end align-items-center" id="eufh_efreeafN_WHRU">
 
                             @if (isset($quotationRecord))
                                 {{-- <button type="submit" class="btn btn-outline-secondary mx-2" name="submitdraft">Save as Draft</button> --}}
@@ -85,7 +87,7 @@ if (isset($quotationRecord->customer_info)) {
                         </div>
                     </div>
                 </div>
-                 
+
 
                 <div class="container-fluid mt-5">
                     <div class="row bg-light">
@@ -119,14 +121,13 @@ if (isset($quotationRecord->customer_info)) {
                     </div>
                 </div>
 
-
                 {{-- ` Main Form Conatiner --}}
-                <div class="col-md-12 col-lg-12 ">
+                <div class="col-md-12 col-lg-12">
 
                     <div class="row mt-3 d-flex justify-content-center">
                         {{--  Side details in md screen --}}
-                        <div class="card col-md-12 col-lg-4">                            
-                                <div class="row">                                   
+                        <div class="card col-md-12 col-lg-4">
+                                <div class="row">
                                     {{-- Exporter Details --}}
                                     <div class="col-lg-12 col-md-12 mb-3">
                                         <div class="card" style="height: fit-content;">
@@ -156,6 +157,8 @@ if (isset($quotationRecord->customer_info)) {
                                                     <label for="entity_bank"> Select Bank <span class="text-danger">*</span></label>
                                                     <select name="entity_bank" class="form-control select2" id="entity_bank"
                                                         name="entity_details[bankname]" required>
+
+                                                        <option value="{{ $bank_details[0]->bank_name ?? '' }}">{{ $bank_details[0]->bank_name ?? '' }}</option>
                                                         {{-- <option>No saved entities found</option> --}}
                                                     </select>
                                                 </div>
@@ -185,7 +188,7 @@ if (isset($quotationRecord->customer_info)) {
                                             </div>
                                         </div>
                                     </div>
-
+{{--
                                     <div class="col-lg-12 col-md-12">
                                         <div class="card" style="height: 15rem;">
                                             <div class="card-header d-flex align-items-center justify-content-between"
@@ -193,15 +196,15 @@ if (isset($quotationRecord->customer_info)) {
                                                 <span class="d-flex">
                                                     <h6>Consignee &nbsp;</h6><span>(optional)</span>
                                                 </span>
-                                                <a href="#" class="btn-link" data-toggle="modal" data-target="#exampleModal">Add New</a>
+                                                <a href="#" class="btn-link" data-toggle="modal" data-target="#addconsigneeModal">Add New</a>
                                             </div>
                                             <div class="card-body">
                                                 <!-- Consignee content goes here -->
                                             </div>
                                         </div>
-                                    </div>                                        
-                                </div>                            
-                        </div>                       
+                                    </div> --}}
+                                </div>
+                        </div>
 
                         {{-- Main Quotation details --}}
                         <div class="card col-md-12 col-lg-8">
@@ -485,7 +488,6 @@ if (isset($quotationRecord->customer_info)) {
         </div>
 
         @include('panel.Documents.modals.exporterDetails')
-        @include('panel.Documents.modals.add-consign')
     </div>
     <!--end of container -->
 
@@ -500,6 +502,9 @@ if (isset($quotationRecord->customer_info)) {
         }
 
         $(document).ready(function() {
+
+            // $("#addconsigneeModal").modal('show');
+
 
             var Quote_num = $("#quotation_number");
             $(".quotation_number_sync").text(Quote_num.val())
@@ -516,8 +521,14 @@ if (isset($quotationRecord->customer_info)) {
                     },
                     dataType: "JSON",
                     success: function(response) {
-                        console.log(response);
                         $("#checkslug").attr('class', '');
+                        if (response.status === 'error') {
+                            $("#eufh_efreeafN_WHRU").removeClass('d-flex');
+                            $("#eufh_efreeafN_WHRU").hide();
+                        } else {
+                            $("#eufh_efreeafN_WHRU").show();
+                            $("#eufh_efreeafN_WHRU").addClass('d-flex');
+                        }
                         $("#checkslug").addClass(response.class);
                         $("#checkslug").html(response.message);
                     }

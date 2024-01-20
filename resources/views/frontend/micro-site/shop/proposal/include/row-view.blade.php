@@ -1,6 +1,6 @@
 @if($products->count() > 0)
             @foreach ($products as $key => $product)
-                                
+
             @php
                 $user_shop = App\Models\UserShop::where('user_id',(auth()->id() ?? 155))->first();
                 // $usi = productExistInUserShop($product->id,auth()->id(),$user_shop->id);
@@ -10,35 +10,35 @@
                 $HomeCurrency = 1;
                 $currency_symbol = $proposal->offer_currency ?? 'INR';
             @endphp
-                <div class="col-lg-4 col-md-4 col-12 mt-4 pt-2 d-print-none" style="position: relative;min-height: 500px" id="contain-{{ $product->id }}">
+                <div class="col-lg-4 col-md-4 col-12 mt-4 pt-2  d-print-none" style="position: relative;" id="contain-{{ $product->id }}">
 
 
-                    <div class="sampleenquiry" style="position: absolute1; top: 10px;left: 10px;">
+                    {{-- <div class="sampleenquiry" style="position: absolute1; top: 10px;left: 10px;">
                         <input type="checkbox" name="enquir[]" id="enquir-{{ $product->id }}" value="{{ $product->id }}">
                         <label for="enquir-{{ $product->id }}" class="checkmark bi" style="position: absolute;top: -1%;right: 1%;cursor: pointer;"></label>
-                    </div>
+                    </div> --}}
 
-                    <div class="card shop-list border-10 position-relative">
+                    <div class="card shop-list h-100 border-10 position-relative">
                         <div class="shop-image position-relative overflow-hidden rounded text-center">
-                            <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank" style="height: 55%; width: 100%; object-fit: contain; gap:2; display: inherit;  top: 20px;left: 20px;">
+                            <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank" style="height: 100%; width: 100%; object-fit: contain; gap:2; display: inherit;  top: 20px;left: 20px;">
                                 @if( getShopProductImage($product->id,'single') != null)
-                                    <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" class="" style="height:100%;">
+                                    <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" class="" style="height:255px;">
                                 @else
                                     <img src="{{ asset('backend/default/placeholder.jpg')  }}" class="img-fluid rounded" style="height:255px;">
                                 @endif
 
-                                <div class="sampleenquiry">
+                                {{-- <div class="sampleenquiry">
                                     <label for="" data-contain="contain-{{ $product->id }}" class="deleteitem">
                                         <i class="fas fa-trash" style="color: #ff0c0c;"></i>
                                     </label>
-                                </div>
+                                </div> --}}
 
-                            </a> 
+                            </a>
                         </div>
                         <div class="card-body content pt-4 p-2" style="font-size:2rem;  top: 20px; left: 20px;">
 
-                            <a href="#" class="text-dark product-name h4" contenteditable="true">{{ $product->title }}</a>
-                            
+                            <a href="#" class="text-dark product-name " contenteditable="true">{{ $product->title }}</a>
+
                             {{-- <div style="width:100%">
                                 <span></span><small contenteditable="true">{{ fetchFirst('App\Models\Category',$product->sub_category_id,'name') }} </small>
                             </div> --}}
@@ -49,21 +49,21 @@
 
                             <div style="wdith:100%">
                                 <small contenteditable="true" >
-                                    
+
                                         @if ($proposal_options->show_color)
-                                            {{ $product->color ?? '' }} 
+                                            {{ $product->color ?? '' }}
                                         @endif
 
                                         @if ($proposal_options->show_size)
-                                            @if($product->size) , @endif 
+                                            @if($product->size) , @endif
                                             {{ $product->size ?? ''}}
-                                        @endif                                                        
+                                        @endif
                                 </small>
                             </div>
 
                             {{-- @if($product->user_id == auth()->id()) --}}
-                            <span contenteditable="true">Model Code :# <span class="product-model">{{ $product->model_code }}</span></span>
-                            {{-- @else 
+                            <span contenteditable="true"><b>Model Code :</b> <span class="product-model">{{ $product->model_code }}</span></span>
+                            {{-- @else
                                 <span>Ref ID :#{{ isset($usi) ? $usi->id : '' }}</span>
                             @endif    --}}
 
@@ -73,15 +73,15 @@
                                                 $ids_attri = getParentAttruibuteValuesByIds($item,[$product->id]);
                                                 $attri_count = count($ids_attri);
                                             @endphp
-                                            
+
                                             @if ($attri_count != 0)
                                                 <span class="d-block print_content{{ $index }}" contenteditable="true">
-                                                        {{ getAttruibuteById($item)->name }} : 
+                                                       <b> {{ getAttruibuteById($item)->name }} :</b>
 
                                                     @foreach ($ids_attri as $key1 => $value)
                                                         {{ getAttruibuteValueById($value)->attribute_value }}
                                                         @if ($attri_count != 1 && $key1 < $attri_count-1 )
-                                                            , 
+                                                            ,
                                                         @endif
                                                     @endforeach
                                                 </span>
@@ -112,24 +112,24 @@
                                     <h6 class="text-dark small fst-italic mb-0 mt-1 w-100">
                                     {{ format_price(($price)-($price*10/100)) }} - {{ format_price(($price)+ ($price*10/100)) }}</h6>
                                 @else --}}
-                                    <h4 align="left" class="text-dark small fst-italic mb-0 mt-1 w-100 product_price" contenteditable="true">
+                                    <div align="left" class="text-dark  mb-0 mt-1 w-100 product_price" contenteditable="true">
                                         {{ $currency_symbol }}
                                         {{ $price }}
 
                                     {{-- {{ format_price($price) }} --}}
-                                </h4>
+                                    </div>
                                 {{-- @endif --}}
-                                
+
                             </div>
                             @if ($proposal_options->show_Description == 1)
                             <span contenteditable="true" class="product-description">
                                     {!! $product->description ?? "No Description" !!}
                                 </span>
                             @endif
-                            
+
                         </div>
                     </div>
-                    
+
                 </div>
 
                 @if ($key < count($products) - 1 )
@@ -153,10 +153,10 @@
         <div class="col-lg-3 mx-auto text-center mt-3">
             <div class="card">
                 <div class="card-body">
-                    
+
                     <i class="fa text-primary fa-lg fa-shopping-cart"></i>
                     <p class="mt-4">No Products added yet!</p>
-                                                            
+
                 </div>
             </div>
         </div>

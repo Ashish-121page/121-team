@@ -11,7 +11,7 @@ use App\Models\Team;
 use App\User;
 use Illuminate\Support\Facades\Http;
 use App\Models\UserShop;
-use App\Models\UserCurrency;
+use App\Models\QuotationItem;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -38,36 +38,29 @@ class DevRouteController extends Controller
     public function ashish(Request $request) {
 
         //` Uncomment Below Line to Check Available Sessions..
-        magicstring(session()->all());
+        // magicstring(session()->all());
         // echo "Ashish's Function";
 
-        $users = User::all();
 
-        // magicstring($users);
-        $count = 0;
-
-        foreach ($users as $key => $user) {
-            $chk = UserCurrency::where('user_id',$user->id)->first();
-            $user_shop = UserShop::where('user_id',$user->id)->first();
-            if ($chk == null) {
-                UserCurrency::create([
-                    'user_id' => $user->id,
-                    'User_shop_id' => $user_shop->id ?? 0,
-                    'currency' => 'INR',
-                    'exchange' => 1,
-                    'remark' => 'Default Currency',
-                    'default_currency' => 1
-                ]);
-                $count++;
-            }
-        }
+        $data = QuotationItem::whereId(30)->first();
+        $con = json_decode($data->consignee_set);
+        magicstring(searchKeyMultiDiaArray($con,2,'consignee_id'));
 
 
-        echo "Total $count Records Updated Successfully.";
-
-
-
+        // magicstring($con);
+        // echo "Total $count Records Updated Successfully.";
     }
+
+
+    // function searchkey($multi_dia_arr,$searchval,$search_key) {
+    //     foreach ($multi_dia_arr as $key => $value) {
+    //         foreach ($value as $key2 => $item) {
+    //             if ($item == $searchval && $key2 == $search_key) {
+    //                 return $value;
+    //             }
+    //         }
+    //     }
+    // }
 
 
     public function imagestudio(Request $request){

@@ -21,7 +21,7 @@
                                     <div class="row" id="appendbox-{{$key}}">
 
                                           {{-- Adding A New Item --}}
-                                          <div class="col-3 d-flex align-items-center">
+                                          <div class="col-lg-3 col-md-4 d-flex align-items-center">
                                             <div class="d-flex justify-content-between gap-2">
                                                 <div class="">
                                                     <span class="btn btn-outline-primary additems" data-parentdata="appendbox-{{$key}}">
@@ -45,7 +45,7 @@
                                         }
                                     @endphp
                                     @forelse ($subcategories as $index => $subcategory)
-                                        <div class="col-3 my-2">
+                                        <div class="col-lg-3 col-md-4 my-2">
                                             <div class="justify-content-between gap-2 d-none" id="pbox_edit-{{$key}}-{{ $index }}">
                                                 <input type="text" name="changeme" value="{{ $subcategory->name }}" class="form-control w-70" placeholder="Enter New Value" id="edit_box_{{$key}}-{{ $index }}">
 
@@ -66,12 +66,12 @@
                                                     <div class="w-70">
                                                         <span id="text-represent-{{$key}}-{{$index}}">{{ $subcategory->name }}</span>
                                                     </div>
-                                                    <div class="w-25">
+                                                    <div class="w-30">
                                                         <button class="btn btn-outline-primary shadow-none btn-icon editchange" type="button" data-box-parent="pbox_show-{{$key}}-{{$index}}" data-box-edit="pbox_edit-{{$key}}-{{ $index }}">
                                                             <i class="fas fa-pencil-alt"></i>
                                                         </button>
                                                         <a href="{{ route('panel.constant_management.category.delete',encrypt($subcategory->id)) }}"  class="btn btn-outline-danger shadow-none btn-icon">
-                                                            <i class="fas fa-trash"></i>
+                                                            <i class="fas fa-trash" style="line-height:2 !important;"></i>
                                                         </a>
                                                     </div>
                                             </div>

@@ -395,8 +395,9 @@
             color: 'fffff',
             height: '80%',
             width: '80%',
-            top: '10%',
+            top: '15%',
             left: '10%',
+            position: 'fixed'
         });
 
         $("#jaya1").click(function() {
