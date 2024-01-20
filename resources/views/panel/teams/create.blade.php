@@ -44,7 +44,7 @@ $breadcrumb_arr = [
             </div>
         </div>
         <div class="row">
-            <div class="col-md-8 mx-auto">
+            <div class="col-md-12 col-lg-10 mx-auto">
                 <!-- start message area-->
                @include('backend.include.message')
                 <!-- end message area-->

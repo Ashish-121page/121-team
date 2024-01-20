@@ -47,16 +47,16 @@
                 display: flex;
                 width: 40%;
             }
-            table{
+
+            table {
                 text-align: center;
                 vertical-align: middle;
             }
 
-            td{
+            td {
                 border: none !important;
                 border-left: 1px solid #dee2e6 !important;
             }
-
         </style>
     @endpush
 
@@ -88,6 +88,7 @@
             </div>
             <div class="col-lg-6 col-md-6">
                 <div class="two" style="display: flex; align-items: center; justify-content: flex-end;">
+
                     <div class="form-group w-100" style="margin-bottom: 0rem; display: flex; justify-content: flex-end;">
                         <div class="dropdown">
                             <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $QuotationRecord->id }}"
@@ -101,6 +102,7 @@
                         </a>
                         <a href="#" class="btn btn-dark mx-1" aria-expanded="false" role="button" id="saveQuote">Save
                             quotation</a>
+
                         @if ($QuotationRecord->status == 1)
                             <a href="{{ route('panel.Documents.quotationpdf') }}?typeId={{ $QuotationRecord->id }}"
                                 class="btn btn-outline-dark mx-1" aria-expanded="false">
@@ -117,25 +119,35 @@
             </div>
 
 
-            <div class="col-12">
-                <div class="row d-flex justify-content-center">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <div class="container-fluid">
+            <div class="container-fluid mt-5 mb-3">
+                <div class="row bg-light">
+                    <div class="col-4">
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
                             <ul class="navbar-nav">
                                 <li class="nav-item mx-3">
-                                    <a class="nav-link " href="#">1.Add Details</a>
+                                    <a class="nav-link" href="#">1. Add Details</a>
                                 </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="col-4">
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                            <ul class="navbar-nav">
                                 <li class="nav-item mx-3">
                                     <a class="nav-link" href="#">2. Select Items</a>
                                 </li>
-                                <li class="nav-item mx-3">
-                                    <a class="nav-link active" href="#">3. Generate</a>
-                                </li>
-                                <!-- Add more steps as needed -->
                             </ul>
-                        </div>
-                    </nav>
-
+                        </nav>
+                    </div>
+                    <div class="col-4">
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                            <ul class="navbar-nav">
+                                <li class="nav-item mx-3">
+                                    <a class="nav-link active" href="#">Generate</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
 
@@ -144,26 +156,178 @@
 
 
 
-
-
-        <div class="row mt-3 text-muted mx-3" style="">
-            <p> {{ $QuotationItems->count() }} Products added </p>
-
-        </div>
         <div class="row mt-3">
             <div class="col-lg-12 ">
-                <div class="table-responsive">
+                <div class="table-responsive accordion">
                     @include('panel.Documents.pages.Product-Table')
                 </div>
             </div>
         </div>
 
 
-        <div class="row mt-3 justify-content-start">
-            <div class="col-lg-5 col-md-5 d-flex align-items-center">
-                <input type="text" class="form-control d-none " placeholder="Add remarks here"
-                    id="Quotation-additional_notes" value="">
-                {{-- <button class="btn btn-primary mx-2 ms-2">Edit</button> --}}
+
+        <div class="row">
+            <div class="col-12">
+                @if ($QuotationRecord->status == 1)
+                    <a href="#" class="btn btn-outline-primary  mx-1" data-toggle="modal"
+                        data-target="#addconsigneeModal">
+                        Add Consignee
+                    </a>
+                @endif
+            </div>
+            <div class="col-lg-4 col-md-6 col-12 my-3 border mx-3 ">
+                <div class="row">
+
+                    <div class="col-6" style="background-color: #f6f8fb;">
+                        Name
+                    </div>
+                    <div class="col-6" style="background-color: #f6f8fb;">
+                        ID
+                    </div>
+
+                    @forelse ($consignee_details as $item)
+                        @php
+                            $emp_json = json_decode($item->consignee_details);
+                        @endphp
+
+                        <div class="col-6">
+                            {{ $emp_json->entity_name ?? '' }}
+                        </div>
+                        <div class="col-6">
+                            {{ $emp_json->ref_id ?? '' }}
+                        </div>
+                    @empty
+                        <div class="col-12">
+                            No Consignee Added
+                        </div>
+                    @endforelse
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-6">
+
+                <div class="card">
+                    <div class="card-title ">
+                        <b>Order Summary</b>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="d-flex">
+                            <span class="mr-2">Total Quantity:</span>
+                            <span>{{ $QuotationItems->count() }} Piece</span>
+                        </div>
+
+                        <div class="d-flex">
+                            <span class="mr-4">Remarks:</span>
+                            <textarea id="Quotation-additional_notes" class="form-control" cols="30" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-6">
+                <div class="col-12 d-flex justify-content-between">
+                    <span class="h6">
+                        <b> Total Amount (pre-tax) </b>
+                    </span>
+                    <span class="p-1 update_totalamt ">$0</span>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+
+                            {{-- Section one --}}
+                            <div class="col-4 mb-2 d-flex" data-rid="charge-eidhfne">
+                                <button class="btn remvechareg" onclick="removechargesbox(this)" type="button" style="background-color: transparent;" data-target="charge-eidhfne">
+                                    <i class="fas fa-trash-alt text-danger "></i>
+                                </button>
+                                <input type="text" disabled readonly value="GST"
+                                    class="form-control text-dark teaxname">
+                            </div>
+                            <div class="col-4 d-flex  mb-2" data-rid="charge-eidhfne">
+                                <input type="number" data-id="gst_tax_amt" class="form-control w-50"
+                                    onchange="updatecharges(this)" value="0">
+                                <button class="btn" type="button" style="background-color: transparent;">
+                                    <span class="currencyMark"></span>
+                                </button>
+                            </div>
+
+                            <div class="col-4 d-flex justify-content-end  mb-2" data-rid="charge-eidhfne">
+                                <span class="currencyMark"></span> &nbsp;&nbsp; <span id="gst_tax_amt"
+                                    class="additional_taxes">0</span>
+                            </div>
+
+
+
+                            {{-- Section TWO --}}
+                            {{-- <div class="col-4 mb-2">
+                                <button class="btn" type="button" style="background-color: transparent;">
+                                    <i class="fas fa-trash-alt text-danger "></i>
+                                </button>
+                                consolidation
+                            </div>
+                            <div class="col-4 d-flex  mb-2">
+                                <input type="number" data-id="consolidation_amt" class="form-control w-50"
+                                    onchange="updatecharges(this)" value="0">
+                                <button class="btn" type="button" style="background-color: transparent;">
+                                    <span class="currencyMark"></span>
+                                </button>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end  mb-2">
+                                <span class="currencyMark"></span> &nbsp;&nbsp; <span id="consolidation_amt"
+                                    class="additional_taxes">0</span>
+                            </div> --}}
+
+
+                            {{-- Section THREE --}}
+                            <div class="col-4 mb-2 d-flex  align-content-center" data-rid="charge-hgfhbas">
+                                <button class="btn remvechareg" onclick="removechargesbox(this)" type="button" style="background-color: transparent;" data-target="charge-hgfhbas">
+                                    <i class="fas fa-trash-alt text-danger "></i>
+                                </button>
+                                <input type="text" class="form-control teaxname" placeholder="Enter New Tax name">
+                            </div>
+
+                            <div class="col-4 d-flex  mb-2" data-rid="charge-hgfhbas">
+                                <input type="number" name="" id="" class="form-control  w-50"
+                                    data-id="custom_tax" onchange="updatecharges(this)" value="0">
+                                <button class="btn" type="button" style="background-color: transparent;">
+                                    <span class="currencyMark"></span>
+                                </button>
+                            </div>
+
+                            <div class="col-4 d-flex justify-content-end  mb-2" data-rid="charge-hgfhbas">
+                                <span class="currencyMark"></span> &nbsp;&nbsp; <span class="additional_taxes"
+                                    id="custom_tax"> 0</span>
+                            </div>
+
+
+                            {{-- Section End --}}
+
+                            <div class="col-12" id="appendchargebefore" >
+                                <button class="btn btn-link text-primary " id="dhfuidbsijk" onclick="appendCharges()">
+                                    <i class="fas fa-plus-circle"></i> Add Changes
+                                </button>
+                                <hr>
+                            </div>
+
+                            <div class="col-8 mb-2">
+                                <b>Final Amount</b>
+                            </div>
+                            <div class="col-4 mb-2 d-flex  justify-content-end ">
+                                <span class="currencyMark"></span> &nbsp;&nbsp; <span id="final_amt-eifhjc">0</span>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -173,6 +337,7 @@
     z
     {{-- Including Modal --}}
     @include('panel.Documents.modals.SelectAttribute')
+    @include('panel.Documents.modals.add-consign')
 
 
     <script src="{{ asset('backend/js/index-page.js') }}"></script>
@@ -184,56 +349,103 @@
     <script src="{{ asset('backend/js/form-advanced.js') }}"></script>
     <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        $(document).ready(function() {
+        function addCommasToNumber(number) {
+            const numberString = number.toString();
+            const formattedNumber = numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return formattedNumber;
+        }
+
+        function makeTotalAmt() {
+            let amt = 0;
+            $.each($(".totalnum"), function(indexInArray, valueOfElement) {
+
+                let valu = $(valueOfElement).text().replaceAll(',', '');
+                amt += parseInt(valu);
+            });
+            let currency = $(".currencySelect:first").text();
+            $(".update_totalamt").html(currency + " " + amt);
+            return amt;
+        }
+
+        function updatecharges(e) {
+            let id = e.getAttribute('data-id');
+            let valu = e.value;
+            $("#" + id).html(valu);
+            countTotal()
+        }
 
 
-            $("#9uou").click(function(e) {
-                e.preventDefault();
-                var url = $(this).attr('href');
-                var msg =
-                    "<div class='offcanvas-body'><input class='form-control' list='currencyList' id='currencyInput' placeholder='Type to search...'><datalist id='currencyList'><option value='USD'>United States Dollar</option><option value='EUR'>Euro</option><option value='JPY'>Japanese Yen</option></datalist></div>";
+        function updateCurrency() {
+            let currency = $(".currencySelect:first").text();
+            $(".currencyMark").html(currency);
+        }
 
-                $.confirm({
-                    draggable: true,
-                    title: ' Buyer Search',
-                    content: msg,
-                    type: 'blue',
-                    typeAnimated: true,
-                    buttons: {
-                        tryAgain: {
-                            text: 'Proceed',
-                            btnClass: 'btn-primary',
-                            // action: function () {
-                            //     // Redirect to the second view route
-                            //     window.location.href = "{{ route('panel.Documents.secondview') }}";
-                            // }
-                        },
-                        close: function() {
-                            // Additional action if needed upon dialog close
-                        }
-                    }
-                });
+
+
+        function removechargesbox(element){
+            let target = $(element).attr('data-target');
+            // $("#"+target).remove();
+            $("[data-rid='"+target+"']").remove();
+            countTotal()
+        }
+
+
+        function countTotal() {
+            let total = 0;
+            $.each($(".additional_taxes"), function(indexInArray, valueOfElement) {
+                let valu = $(this).text().replaceAll(',', '');
+                total += parseInt(valu);
             });
 
+            total += makeTotalAmt();
+
+            $("#final_amt-eifhjc").text(addCommasToNumber(total));
+            return total;
+        }
+
+
+        function generateRandomTagId() {
+            const randomId = Math.random().toString(36).substring(2, 8);
+            return `tag_${randomId}`;
+        }
+
+        function appendCharges() {
+            let tag_id = generateRandomTagId();
+            let Div_id = generateRandomTagId();
+
+            tags = `<div class="col-4 mb-2 d-flex  align-content-center " data-rid="${Div_id}">
+                    <button class="btn" type="button" style="background-color: transparent;" onclick="removechargesbox(this)" data-target="${Div_id}">
+                        <i class="fas fa-trash-alt text-danger "></i>
+                    </button>
+                    <input type="text" class="form-control teaxname" placeholder="Enter New Tax name" >
+                </div>
+
+                <div class="col-4 d-flex  mb-2" data-rid="${Div_id}">
+                    <input type="number" data-id="${tag_id}" class="form-control w-50" value="0"  onchange="updatecharges(this)">
+                    <button class="btn" type="button" style="background-color: transparent;">
+                        <span class="currencyMark"></span>
+                    </button>
+                </div>
+
+                <div class="col-4 d-flex justify-content-end  mb-2" data-rid="${Div_id}">
+                    <span class="currencyMark"></span> &nbsp;&nbsp; <span class="additional_taxes" id="${tag_id}"> 0</span>
+                </div>`;
+
+            $("#appendchargebefore").before(tags);
+            updateCurrency()
+        }
 
 
 
-            // $(function () {
-            //   $("#mybro").select2()
-            // });
-
-
-
-
-
-        });
-    </script>
-
-    <script>
+        updateCurrency()
         $(document).ready(function() {
-            // $("#AttriModal").modal('show');
+
+            // make total Amount
+        $(".form-control[type='number']").trigger('change');
+
+
+            makeTotalAmt()
 
             $(".choosefields").change(function(e) {
                 e.preventDefault();
@@ -276,109 +488,76 @@
 
 
     <script>
-
-        // function tableToJson(table) {
-        //     var data = [];
-
-        //     // Function to clean string
-        //     function cleanString(str) {
-        //         return str.replace(/\s+/g, ' ').trim();
-        //     }
-
-        //     // Function to get text, select value, or input value
-        //     function getTextOrSelectValue(element) {
-        //         // Check if element is a select element
-        //         if (element.tagName === "SELECT") {
-        //             return element.options[element.selectedIndex].value;
-        //         }
-        //         // Check if element is an input element
-        //         if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
-        //             return element.value;
-        //         }
-        //         // For content editable or other elements
-        //         return element.contentEditable === 'true' ? element.innerText : element.textContent;
-        //     }
-
-        //     // Get headers text, skip headers with class 'd-none'
-        //     var headers = [];
-        //     table.querySelectorAll('thead th:not(.d-none)').forEach(function(header, index) {
-        //         headers[index] = cleanString(getTextOrSelectValue(header));
-        //     });
-
-        //     // Convert rows to objects, skip rows and cells with class 'd-none'
-        //     Array.from(table.querySelectorAll('tbody tr:not(.d-none)')).forEach(function(row) {
-        //         var rowData = {};
-        //         Array.from(row.querySelectorAll('td:not(.d-none)')).forEach(function(cell, index) {
-        //             // Check for select or input elements within cell, else use cell text
-        //             var value = cell.querySelector('select, input, textarea') ?
-        //                 getTextOrSelectValue(cell.querySelector('select, input, textarea')) :
-        //                 cleanString(getTextOrSelectValue(cell));
-        //             if (headers[index]) {
-        //                 rowData[headers[index]] = value;
-        //             }
-        //         });
-        //         data.push(rowData);
-        //     });
-
-        //     return data;
-        // }
-
         function tableToJson(table) {
-    var data = [];
+            var data = [];
 
-    // Function to clean string
-    function cleanString(str) {
-        return str.replace(/\s+/g, ' ').trim();
-    }
-
-    // Function to get text, select value, or input value
-    function getTextOrSelectValue(element) {
-        // Check if element is a select element
-        if (element.tagName === "SELECT") {
-            return element.options[element.selectedIndex].value;
-        }
-        // Check if element is an input element or image
-        if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
-            return element.value;
-        }
-        if (element.tagName === "IMG") {
-            return element.src;
-        }
-        // For content editable or other elements
-        return element.contentEditable === 'true' ? element.innerText : element.textContent;
-    }
-
-    // Get headers text, skip headers with class 'd-none'
-    var headers = [];
-    table.querySelectorAll('thead th:not(.d-none)').forEach(function (header, index) {
-        headers[index] = cleanString(getTextOrSelectValue(header));
-    });
-
-    // Convert rows to objects, skip rows and cells with class 'd-none'
-    Array.from(table.querySelectorAll('tbody tr:not(.d-none)')).forEach(function (row) {
-        var rowData = {};
-        Array.from(row.querySelectorAll('td:not(.d-none)')).forEach(function (cell, index) {
-            // Check for select, input, textarea, or image elements within cell, else use cell text
-            var value = cell.querySelector('select, input, textarea, img') ?
-                getTextOrSelectValue(cell.querySelector('select, input, textarea, img')) :
-                cleanString(getTextOrSelectValue(cell));
-            if (headers[index]) {
-                rowData[headers[index]] = value;
+            // Function to clean string
+            function cleanString(str) {
+                return str.replace(/\s+/g, ' ').trim();
             }
-        });
-        data.push(rowData);
-    });
 
-    return data;
-}
+            // Function to get text, select value, or input value
+            function getTextOrSelectValue(element) {
+                // Check if element is a select element
+                if (element.tagName === "SELECT") {
+                    return element.options[element.selectedIndex].value;
+                }
+                // Check if element is an input element or image
+                if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+                    return element.value;
+                }
+                if (element.tagName === "IMG") {
+                    return element.src;
+                }
+                // For content editable or other elements
+                return element.contentEditable === 'true' ? element.innerText : element.textContent;
+            }
 
+            // Get headers text, skip headers with class 'd-none'
+            var headers = [];
+            table.querySelectorAll('thead th:not(.d-none)').forEach(function(header, index) {
+                headers[index] = cleanString(getTextOrSelectValue(header));
+            });
+
+            // Convert rows to objects, skip rows and cells with class 'd-none'
+            Array.from(table.querySelectorAll('tbody tr:not(.d-none)')).forEach(function(row) {
+                var rowData = {};
+                Array.from(row.querySelectorAll('td:not(.d-none)')).forEach(function(cell, index) {
+                    // Check for select, input, textarea, or image elements within cell, else use cell text
+                    var value = cell.querySelector('select, input, textarea, img') ?
+                        getTextOrSelectValue(cell.querySelector('select, input, textarea, img')) :
+                        cleanString(getTextOrSelectValue(cell));
+                    if (headers[index]) {
+                        rowData[headers[index]] = value;
+                    }
+                });
+                data.push(rowData);
+            });
+
+            return data;
+        }
 
         // Convert the table into JSON
         $("#saveQuote").click(function(e) {
             e.preventDefault();
             var table = document.getElementById('sdhfidsj');
             var json = tableToJson(table);
-            console.log(JSON.stringify(json));
+
+            console.log(json);
+
+            let taxes = [];
+
+            $.each($(".additional_taxes"), function(indexInArray, valueOfElement) {
+                let tax_name = $(".teaxname")[indexInArray].value;
+                if (tax_name == "") {
+                    tax_name = "Tax " + (indexInArray + 1);
+                }
+                let tax_amt = $(this).text();
+                taxes.push({
+                    "tax_name": tax_name,
+                    "tax_amt": tax_amt
+                })
+            });
 
 
             $.ajax({
@@ -389,7 +568,8 @@
                     "data": JSON.stringify(json),
                     "quotation_id": "{{ $QuotationRecord->id }}",
                     "currency": $("#currencySelect").val(),
-                    "additional_notes": $("#Quotation-additional_notes").val()
+                    "additional_notes": $("#Quotation-additional_notes").val(),
+                    "taxes": JSON.stringify(taxes)
                 },
                 dataType: "json",
                 success: function(response) {
@@ -402,7 +582,7 @@
                             stack: 6,
                             position: 'bottom-right'
                         })
-                        window.location.reload()
+                        // window.location.reload()
                     }
                 },
                 error: function(error) {

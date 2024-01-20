@@ -20,10 +20,11 @@
         /* modal */
     #btn-close-modal3{
         width: 100%;
-        text-align: center;
+        /* text-align: center; */
         cursor:pointer;
         color:#fff;
         left: 50%;
+        postion:fixed;
         
     }
 
@@ -142,12 +143,12 @@
          $("#jaya1").animatedModal({
              animatedIn: 'lightSpeedIn',
              animatedOut: 'lightSpeedOut',
-             color: 'white',
+             color: 'transparent',
              height: '80%',
              width: '60%',
              top: '10%',
-             left: '45%',
-             position:'relative'
+             left: '49%',
+             position:'fixed'
              
          });
 
@@ -167,6 +168,7 @@
         width: '60%',
         top: '10%',
         left: '45%',
+        
         
     });
 

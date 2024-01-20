@@ -389,6 +389,11 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('/create', ['uses' => 'invoiceController@createQuotationform', 'as' => 'create.Quotation.form']);
 
         Route::post('/Quotation/create', ['uses' => 'invoiceController@createQuotation', 'as' => 'create.Quotation']);
+
+        Route::post('/Quotation/create/consignee', ['uses' => 'ConsigneeController@store', 'as' => 'create.Quotation.consignee']);
+        Route::get('/Quotation/item/packingList', ['uses' => 'invoiceController@packinglist', 'as' => 'Quotation.item.packingList']);
+        Route::any('/Quotation/save/packingList', ['uses' => 'invoiceController@packingliststore', 'as' => 'Quotation.item.packingList.save']);
+
         Route::post('/Quotation/update/{quotation}', ['uses' => 'invoiceController@updateQuotation', 'as' => 'update.Quotation']);
         Route::get('/check/slug', ['uses' => 'invoiceController@checkslug', 'as' => 'Quotation.check.slug']);
 
@@ -405,6 +410,8 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         // Making Quotation From Offer
         Route::get('/make-quote/{proposal}', ['uses' => 'invoiceController@makequoteOffer', 'as' => 'make.quote.offer']);
 
+        // Making Quotation as Perfoma Invoice
+        Route::get('/make-quote-perfoma/{quotation}', ['uses' => 'invoiceController@makequotePerfoma', 'as' => 'make.quote.perfoma']);
 
 
 

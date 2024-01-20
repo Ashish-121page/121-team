@@ -28,7 +28,7 @@
 
 @endforeach
 
-<div class="col-12" >
+<div class="col-lg-12 col-md-12" style="overflow-x:auto;">
     @if ($paginator == null)
         <div class="alert alert-warning text-center" role="alert">
             No Assets Found

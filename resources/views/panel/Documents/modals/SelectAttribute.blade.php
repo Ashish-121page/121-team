@@ -9,31 +9,11 @@
                 <div class="col-lg-12 col-md-6 col-12 my-3" style="overflow: auto; max-height: 80vh">
 
                     <div class="row">
-                        <div class="col-12 col-lg-12 col-md-12 my-3">
-                            <div class="h5">Default Attribute</div>
-                        </div>
-                        <div class="-12 col-lg-12 col-md-12">
-                            <div class="row">
-                                <div class="col-3">
-                                    <div style="display: flex;align-content: center;justify-content: start;margin: 10px">
-                                        <input type="checkbox" name="column-Default[]" id="column-model_code" class="mx-2" checked>
-                                        <label for="column-model_code" class="mb-0">{{ __("Model Code") }}</label>
-                                    </div>
-                                </div>
 
-                                <div class="col-3">
-                                    <div style="display: flex;align-content: center;justify-content: start;margin: 10px">
-                                        <input type="checkbox" name="column-Default[]" id="column-product_img" class="mx-2" checked>
-                                        <label for="column-product_img" class="mb-0">{{ __("Product Image") }}</label>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-12 col-md-12 my-3 d-flex align-items-center">
-                            <div class="form-group">
+                        <div class="col-12 col-lg-12 col-md-12"  style="background-color: #f3f3f3">
+                            <div class="form-group  mb-0">
                                 <label for="select-All-Default" class="mx-2 h6"> Variant Basis </label>
-                                <input type="checkbox" id="select-All-Default">
+                                {{-- <input type="checkbox" id="select-All-Default"> --}}
                             </div>
                         </div>
                         <div class="col-12 col-lg-12 col-md-12">
@@ -52,10 +32,9 @@
                                 @endforeach
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label for="select-All-Default" class="mx-2 h6"> Custom Columns </label>
-                                <input type="checkbox" id="select-All-Default">
+                        <div class="col-12 d-flex align-items-center justify-content-start  mt-3" style="background-color: #f3f3f3">
+                            <div class="form-group mb-0">
+                                <label for="select-All-custom_prop" class="mx-2 h6"> Custom Inputs </label>
                             </div>
                         </div>
                         <div class="col-12 col-lg-12 col-md-12">

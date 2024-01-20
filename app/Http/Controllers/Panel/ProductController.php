@@ -2975,18 +2975,18 @@ class ProductController extends Controller
             $mainsku_carton_height = [];
             foreach ($available_products as $key => $value) {
                 $product_tmp = getProductDataById($value);
-                $shipping2 = json_decode($product_tmp->shipping2);
+                $shipping = json_decode($product_tmp->shipping);
                 $carton_details = json_decode($product_tmp->carton_details);
                 $mainsku_prices[] = $product_tmp->min_sell_pr_without_gst ?? '';
                 $mainsku_mrp[] = $product_tmp->mrp ?? '';
                 $mainsku_selling_price_unit[] = $product_tmp->selling_price_unit ?? '';
                 $mainsku_hsn[] = $product_tmp->hsn ?? '';
                 $mainsku_hsnpercent[] = $product_tmp->hsn_percent ?? '';
-                $mainsku_grossweight[] = $shipping2->gross_weight ?? '';
-                $mainsku_netweight[] = $shipping2->net_weight ?? '';
-                $mainsku_length[] = $shipping2->length ?? '';
-                $mainsku_width[] = $shipping2->width ?? '';
-                $mainsku_height[] = $shipping2->height ?? '';
+                $mainsku_grossweight[] = $shipping->gross_weight ?? '';
+                $mainsku_netweight[] = $shipping->net_weight ?? '';
+                $mainsku_length[] = $shipping->length ?? '';
+                $mainsku_width[] = $shipping->width ?? '';
+                $mainsku_height[] = $shipping->height ?? '';
                 $mainsku_standard_carton[] = $carton_details->standard_carton ?? '';
                 $mainsku_carton_weight[] = $carton_details->carton_weight ?? '';
                 $mainsku_carton_length[] = $carton_details->carton_length ?? '';
@@ -3070,8 +3070,25 @@ class ProductController extends Controller
             $quantity_uom = json_decode(getSetting('item_uom'));
             $weight_uom = json_decode(getSetting('weight_uom'));
 
+            $user = auth()->user();
+            $user_id = auth()->id();
+            $folderPath = "public/files/$user_id";
 
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months','mainsku_prices_str','mainsku_mrp_str','mainsku_exclbuyer_str','mainsku_hsn_str','mainsku_hsnpercent_str','mainsku_grossweight_str','mainsku_netweight_str','mainsku_length_str','mainsku_selling_price_unit_str','mainsku_width_str','mainsku_height_str','mainsku_standard_carton_str','mainsku_carton_weight_str','mainsku_carton_length_str','mainsku_carton_width_str','mainsku_carton_height_str','mainsku_sourcedfrom_str','mainsku_vendor_price_str','mainsku_product_cost_unit_str','mainsku_vendor_currency_str','mainsku_remarks_str','length_uom','quantity_uom','weight_uom','user_custom_fields_types'));
+            if (Storage::exists($folderPath)) {
+                $files = Storage::allFiles($folderPath);
+                $page = request()->get('pageassets', 1);
+                $perPage = 30;
+                $offset = ($page - 1) * $perPage;
+                $slicedFiles = array_slice($files, $offset, $perPage);
+                $paginator = new LengthAwarePaginator($slicedFiles, count($files), $perPage, $page);
+
+            }else{
+                $paginator = [];
+                $files = [];
+            }
+
+
+            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months','mainsku_prices_str','mainsku_mrp_str','mainsku_exclbuyer_str','mainsku_hsn_str','mainsku_hsnpercent_str','mainsku_grossweight_str','mainsku_netweight_str','mainsku_length_str','mainsku_selling_price_unit_str','mainsku_width_str','mainsku_height_str','mainsku_standard_carton_str','mainsku_carton_weight_str','mainsku_carton_length_str','mainsku_carton_width_str','mainsku_carton_height_str','mainsku_sourcedfrom_str','mainsku_vendor_price_str','mainsku_product_cost_unit_str','mainsku_vendor_currency_str','mainsku_remarks_str','length_uom','quantity_uom','weight_uom','user_custom_fields_types','paginator','files','folderPath','user_id','user'));
 
         }catch(\Exception $e){
             // return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -3168,8 +3185,45 @@ class ProductController extends Controller
     public function update(Request $request,Product $product)
     {
 
+        if($request->avl_assets != null){
+            $arr_images = [];
+            foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
+                $user = auth()->user();
+                $filetype = explode('/',Storage::mimeType($value));
+                $filename =basename($value);
+                $path = "storage/files/$user->id/$filename";
+                $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                $record = Media::create([
+                    'type' => 'Product',
+                    'type_id' => $product->id,
+                    'file_name' => $filename,
+                    'path' => $path,
+                    'extension' => $extension,
+                    'file_type' => 'Image',
+                    'tag' => 'Product_Image',
+                ]);                
+                array_push($arr_images,$record->id);
+            }
+            $user_shop = getShopDataByUserId($user->id);
+            $price = $request->customer_price_without_gst;
+            $usi = UserShopItem::create([
+                'user_id'=> $user->id,
+                'category_id'=> $request->category_id,
+                'sub_category_id'=> $request->category_id,
+                'product_id'=> $product->id,
+                'user_shop_id'=> $user_shop->id,
+                'parent_shop_id'=> 0,
+                'is_published'=> 1,
+                'price'=> $price,
+                'images' => count($arr_images) > 0 ? implode(',',$arr_images) : null,
+            ]);
 
-        // magicstring($request->all());
+            if(count($arr_images) > 0) {
+                $usi->images =  count($arr_images) > 0 ? implode(',',$arr_images) : null;
+                $usi->save();
+            }
+        }
+        // magicstring($arr_images);
         // return;
 
 

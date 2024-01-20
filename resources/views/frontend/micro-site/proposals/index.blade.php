@@ -337,7 +337,7 @@
 
         .ydfgwej{
             position: fixed;
-            right: 5%;
+            right: 3%;
             bottom: 40%;
             z-index: 99999;
             display: flex;
@@ -370,16 +370,16 @@
     {{-- Over The Layer Content --}}
     @if ( isset($proposalid) && $proposalid != -1)
         <div class="ydfgwej">
-            <button class="btn btn-outline-primary" type="button" id="select-all">
+            <button class="btn btn-outline-primary d-none " type="button" id="select-all">
                 <span class="d-none d-md-none d-sm-none">Select All</span>
                 <span class="d-block d-md-block d-sm-block">
                     <i class="fas fa-check-double"></i>
                 </span>
             </button>
             <a href="{{ route('pages.proposal.picked',['proposal' => $proposalid,'user_key' => $user_key]) }}?type=picked" class="btn btn-outline-primary" target="">
-                <span class="d-none d-md-none d-sm-none">Next</span>
+                {{-- <span class="d-none d-md-none d-sm-none">Next</span> --}}
                 <span class="d-block d-md-block d-sm-block">
-                    <i class="fas fa-chevron-right"></i>
+                    Next <i class="fas fa-chevron-right"></i>
                 </span>
             </a>
         </div>

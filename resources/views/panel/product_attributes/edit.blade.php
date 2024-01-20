@@ -70,7 +70,7 @@ $breadcrumb_arr = [
 
                             <div class="row asded">
                                 @if ($product_attribute->user_id == auth()->id() || AuthRole() == 'Admin')
-                                    <div class="col-md-8 col-12">
+                                    <div class="col-md-12 col-12">
                                 @else
                                     <div class="col-md-12 col-12">
                                 @endif

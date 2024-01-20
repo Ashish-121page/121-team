@@ -82,7 +82,10 @@
                         Custom Input
                     </a>
                     <a href="{{ request()->url() }}?open=quotation" class="btn btn-outline-primary @if (request()->get('open') == 'quotation') active @endif mx-1">
-                        Quotation
+                        Documentation
+                    </a>
+                    <a href="{{ request()->url() }}?open=buyermaster" class="btn btn-outline-primary @if (request()->get('open') == 'buyermaster') active @endif mx-1">
+                        Buyer Master
                     </a>
                 </div>
             </div>
@@ -115,6 +118,8 @@
                 @include('panel.settings.pages.CustomField')
             @elseif (request()->has('open') && request()->get('open') == 'quotation')
                 @include('panel.settings.pages.Quotation')
+            @elseif (request()->has('open') && request()->get('open') == 'buyermaster')
+                @include('panel.settings.pages.buyer-master')
             @else
                 @include('panel.settings.pages.Template')
             @endif

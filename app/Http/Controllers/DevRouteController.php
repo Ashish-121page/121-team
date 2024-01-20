@@ -11,7 +11,7 @@ use App\Models\Team;
 use App\User;
 use Illuminate\Support\Facades\Http;
 use App\Models\UserShop;
-use App\Models\UserCurrency;
+use App\Models\QuotationItem;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -41,22 +41,26 @@ class DevRouteController extends Controller
         // magicstring(session()->all());
         // echo "Ashish's Function";
 
-        $data = '{"general_details":["Model_Code","SKU Type","Product_name","Category","Sub_Category","Group_ID","Variation attributes","Base_currency","Selling_Price_Unit","Customer_Price_without_GST","mrpIncl_tax","Brand_Name","HSN_Code","HSN_Percnt","Search_keywords","description"],"custom_input_1":[],"general_details_2":["Sample_Year","Sample_Month","Sampling_time","Exclusive_Buyer_Name","Theme_Collection_Name","Season_Month","Theme_Collection_Year"],"images":["Image_main","image_name_front","image_name_back","image_name_side1","image_name_side2","image_name_poster","Additional_Image_Use"],"custom_input_4":[],"physical_attributes":["Gross_weight","Net_weight","Weight_unit","Product_length","Product_width","Product_height","Dimensions_unit","Carton_length","Carton_width","Carton_height","Carton_Dimensions_unit","standard_carton_pcs","carton_weight_actual","unit","Vendor_Sourced_from","Vendor_price","Product_Cost_Unit","Vendor_currency","Sourcing_Year","Sourcing_month","Remarks"],"custom_input_5":[]}';
 
-        $data2 = ['general_details_2'=> ["Sample_Year","Sample_Month","Sampling_time","Exclusive_Buyer_Name","Theme_Collection_Name","Season_Month","Theme_Collection_Year"]];
-
-
-        echo json_encode($data2);
+        $data = QuotationItem::whereId(30)->first();
+        $con = json_decode($data->consignee_set);
+        magicstring(searchKeyMultiDiaArray($con,2,'consignee_id'));
 
 
-
-        magicstring(json_decode($data, true));
-
+        // magicstring($con);
         // echo "Total $count Records Updated Successfully.";
-
-
-
     }
+
+
+    // function searchkey($multi_dia_arr,$searchval,$search_key) {
+    //     foreach ($multi_dia_arr as $key => $value) {
+    //         foreach ($value as $key2 => $item) {
+    //             if ($item == $searchval && $key2 == $search_key) {
+    //                 return $value;
+    //             }
+    //         }
+    //     }
+    // }
 
 
     public function imagestudio(Request $request){

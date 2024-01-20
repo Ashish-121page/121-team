@@ -71,9 +71,9 @@
 
         $.map(value, function(elementOrValue, indexOrKey) {
             let tag = `<tr>
-                <td> ${indexOrKey+1} </td>
-                <td>${name[indexOrKey]}</td>
-                <td>
+                <td class="col-1"> ${indexOrKey+1} </td>
+                <td class="col-4">${name[indexOrKey]}</td>
+                <td class="col-3">
                     <button value="${elementOrValue}" type="button" class="btn btn-outline-danger btn-sm" onclick="remveassets(this)">Remove</a>
                 </td>
             </tr>`;

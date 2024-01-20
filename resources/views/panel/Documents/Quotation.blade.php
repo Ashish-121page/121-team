@@ -26,11 +26,12 @@
                     class="btn btn-outline-primary  {{ activeClassIfRoutes(['panel.invoice.index'], 'active') }}">All
                     Documents</a> --}}
 
-                <a class="btn btn-outline-primary {{ activeClassIfRoutes(['panel.Documents.Quotation'], 'active') }}"
+                <a class="btn btn-outline-primary @if (request()->access == '') active  @endif "
                     href="{{ route('panel.Documents.Quotation', 'active') }}">Quotations</a>
 
-                <a href="{{ route('panel.Documents.secondview') }}"
-                    class="btn btn-outline-primary {{ activeClassIfRoutes(['panel.Documents.secondview'], 'active') }}">Invoice</a>
+                <a href="{{ route('panel.Documents.Quotation',['access'=>'pi-data']) }}" class="btn btn-outline-primary  @if (request()->access == 'pi-data') active  @endif">Performa Invoices</a>
+
+                <a href="{{ route('panel.Documents.secondview') }}" class="btn btn-outline-primary {{ activeClassIfRoutes(['panel.Documents.secondview'], 'active') }}">Invoice</a>
 
             </div>
 
@@ -87,63 +88,13 @@
                 <div class="row mt-5">
                     <div class="col-12">
                         <div class="mt-3">
-                            <table id="table" class="table table-responsive">
-                                <thead class="h6 text-muted">
-                                    <tr>
-                                        <td class="col-2">Offer ID</td>
-                                        <td class="col-2">Quoation ID</td>
-                                        <td class="col-2">Buyer Company </td>
-                                        <td class="col-2">Person Name</td>
-                                        <td class="col-2">Created On</td>
-                                        <td class="col-4"></td>
-                                        <td class="col-4"></td>
-                                    </tr>
-                                </thead>
-                                <tbody>
 
-                                    @forelse ($Quotation as $record)
-                                        @php
-                                            $jsonData = json_decode($record->customer_info) ?? '';
-                                        @endphp
-                                        <tr>
+                            @if (request()->access == 'active' || request()->access == '' || !request()->access)
+                                @include('panel.Documents.pages.quote-index')
+                            @elseif (request()->access == 'pi-data')
+                                @include('panel.Documents.pages.pi-data')
+                            @endif
 
-                                            <td>
-                                                {{ $record->proposal_id ?? '--' }}
-                                            </td>
-                                            <td>
-                                                {{ $record->user_slug ?? $record->slug }}
-                                                <span class="text-danger">({{ $record['record_count'] ?? 1 }})</span>
-                                            </td>
-                                            <td>
-                                                {{ $jsonData->companyName ?? '-' }}
-                                            </td>
-                                            <td>
-                                                {{ $jsonData->buyerName ?? ($jsonData->person_name ?? '') }}
-                                            </td>
-                                            <td>
-                                                {{ $record->quotation_date }}
-                                            </td>
-                                            <td>
-                                                {{-- <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}"
-                                                    class="btn btn-outline-primary">
-                                                    Edit
-                                                </a> --}}
-                                                <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}" class="mx-1" style="font-size:18px">
-                                                    <i class="far fa-save text-primary"></i>
-                                                </a>
-                                                <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}" class="mx-1" style="font-size:18px">
-                                                    <i class="far fa-edit text-primary" title="Edit"></i>
-                                                </a>
-                                            </td>
-                                            <td>
-                                                <span class="text-danger">Make Invoice / Invoiced</span>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                    @endforelse
-
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>

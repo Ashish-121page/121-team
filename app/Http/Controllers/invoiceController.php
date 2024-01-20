@@ -6,6 +6,7 @@ use App\Http\Controllers\UserAddressController;
 use Illuminate\Http\Request;
 use App\User;
 use App\Models\Product;
+use App\Models\Consignee;
 use App\Models\UserShop;
 use App\Models\Media;
 use App\Models\Brand;
@@ -15,9 +16,11 @@ use App\Models\QuotationItem;
 use App\Models\UserCurrency;
 use App\Models\BuyerList;
 use App\Models\Country;
+use App\Models\QuoteFiles;
 use App\Models\UserAddress;
 use App\Models\Proposal;
 use App\Models\ProposalItem;
+use App\Models\ProductExtraInfo;
 use Illuminate\Support\Facades\Http;
 
 class invoiceController extends Controller
@@ -79,11 +82,16 @@ class invoiceController extends Controller
         });
 
 
+        $pirecords = Quotation::where('user_id',auth()->id())->where('type_of_quote',1)->get();
         $buyerDetails = $Quotation->pluck('customer_info')->toArray();
 
+        return view('panel.Documents.Quotation',compact('Quotation','pirecords','buyerDetails'));
 
-        return view('panel.Documents.Quotation',compact('Quotation'));
     }
+
+
+
+
 
     public function createQuotationform() {
         $user = auth()->user();
@@ -108,18 +116,21 @@ class invoiceController extends Controller
             $quotationRecord = Quotation::whereId(request()->get('typeId'))->first();
             $additional_notes = json_decode($quotationRecord->additional_notes);
             $customer_record = json_decode($quotationRecord->customer_info) ?? null;
-
             $entity_details  = BuyerList::whereId($customer_record->Buyer_Id)->first();
+            $bank_details = json_decode(json_decode($entity_details->bank_details));
+            $consignee_record = json_decode($quotationRecord->consignee_details) ?? [];
+            $consignee_details = Consignee::whereIn('id',$consignee_record)->get() ?? [];
+
         }else{
             $quotationRecord = null;
             $additional_notes = null;
             $entity_details = null;
+            $bank_details = [];
+            $consignee_details = [];
         }
 
 
-
-
-        return view('panel.Documents.create-quotation',compact('entities','userShop','quotation_number','currency','terms_of_delivery','countries','offer_data','quotationRecord','additional_notes','entity_details'));
+        return view('panel.Documents.create-quotation',compact('entities','userShop','quotation_number','currency','terms_of_delivery','countries','offer_data','quotationRecord','additional_notes','entity_details','bank_details','consignee_details'));
     }
 
     function checkslug() {
@@ -128,20 +139,19 @@ class invoiceController extends Controller
         if ($chk > 0) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Slug Already Exist',
+                'message' => 'Duplicate number not permitted',
                 'class' => 'text-danger',
             ]);
         }else{
             return response()->json([
                 'status' => 'success',
-                'message' => 'Slug Available',
+                'message' => 'Available',
                 'class' => 'text-success',
             ]);
         }
     }
 
     public function createQuotation(Request $request) {
-
         try {
 
             // -- Sets for DataBase
@@ -152,6 +162,8 @@ class invoiceController extends Controller
             $bank_detailsdb = [];
             $user_shop_id = UserShopIdByUserId(auth()->id());
 
+
+
             $quotation = request()->get('quotation');
             $internal_remarks = request()->get('internal_remarks');
 
@@ -161,7 +173,6 @@ class invoiceController extends Controller
             ];
 
             $buyer_detailsdb = array_merge(['entity_details_id' => request()->get('entity_details')], request()->get('buyer'));
-
 
             $shipment_detailsdb = [
                 'terms_of_delivery' => request()->get('quotation')['term_of_delivery'] ?? '',
@@ -178,6 +189,8 @@ class invoiceController extends Controller
                 ];
             }
 
+
+            $additional_details = array_merge($quotation,['internal_remarks' => $internal_remarks]);
 
             // Getting Bank Details
             $tmp_request = new Request();
@@ -221,7 +234,6 @@ class invoiceController extends Controller
 
 
 
-
             // Uploading Final Data
             $record = [
                 'customer_info' => json_encode($Buyer_obj),
@@ -229,7 +241,7 @@ class invoiceController extends Controller
                 'user_shop_id' => $user_shop_id,
                 'quotation_date' => $quotation['date'],
                 'total_amount' => 0,
-                'additional_notes' => array_push($quotation,$internal_remarks) ?? null,
+                'additional_notes' => json_encode($additional_details) ?? null,
                 'exchange_rate' => $quotation['exchange'],
                 'slug' => getUniqueProposalSlug($buyer_detailsdb['entity_name']),
                 'user_slug' => $quotation['number'] ?? null,
@@ -304,15 +316,14 @@ class invoiceController extends Controller
         }
     }
 
-
-
     function updateQuotation(Request $request, Quotation $quotation) {
 
         $quotationRecord = $quotation;
 
-        magicstring(request()->all());
-
         try {
+
+            // magicstring(request()->all());
+            // return;
             // -- Sets for DataBase
             $buyer_detailsdb = [];
             $shipment_detailsdb = [];
@@ -324,8 +335,6 @@ class invoiceController extends Controller
             $quotation = request()->get('quotation');
             $internal_remarks = request()->get('internal_remarks');
             $additional_details = array_merge($quotation,['internal_remarks' => $internal_remarks]);
-
-
 
             $entity_array = [
                 'entity_details' => request()->get('entity_details'),
@@ -362,6 +371,7 @@ class invoiceController extends Controller
             $UserAddress = new UserAddressController();
             $bank_detailsdb = $UserAddress->EntityGet($tmp_request)->getData()->address->account_details ?? [];
             // Uploading Final Data
+
             $record = [
                 // 'customer_info' => json_encode($Buyer_obj),
                 'user_id' => auth()->id(),
@@ -416,15 +426,47 @@ class invoiceController extends Controller
 
     }
 
-
-
-
     public function quotation2() {
-
         if ( request()->has('typeId') && request()->get('typeId') != '') {
             $record = Quotation::whereId(request()->get('typeId'))->first();
-            $quote_flles = Media::where('type_id',$record->id)->where('type','UserShop')->where('tag','quote_files')->get();
+
             $json_customer_info = json_decode($record->customer_info) ?? '';
+            $customer_record = json_decode($record->customer_info) ?? null;
+            $entity_details  = BuyerList::whereId($customer_record->Buyer_Id)->first();
+            $bank_details = json_decode(json_decode($entity_details->bank_details));
+            $QuotationItem = QuotationItem::where('quotation_id', $record->id)->get();
+
+            // Filtering Simlar Results
+            $Quotation = Quotation::select('*')->where('user_id',auth()->id())
+            ->get()
+            ->groupBy(function ($item) {
+                return data_get(json_decode($item->customer_info, true), 'companyName');
+            })
+            ->map(function ($groupedResults) {
+                $resultIds = $groupedResults->pluck('id')->implode(',');
+                $fieldCount = $groupedResults->count();
+
+                $firstItem = $groupedResults->first();
+                $firstItem['record_ids'] = $resultIds;
+                $firstItem['record_count'] = $fieldCount;
+                $firstItem['similar_records'] = $resultIds;
+                return $firstItem;
+            });
+
+            $similar_records_ids = array_filter($Quotation->toArray(), function ($value) {
+                return $value['id'] == request()->get('typeId');
+            });
+
+
+            $similar_records_ids = explode(",",array_values($similar_records_ids)[0]['similar_records']) ?? [];
+            $similar_records = Quotation::whereIn('id',$similar_records_ids)->get();
+
+
+            $quote_flles = QuoteFiles::whereIn('quote_id',$similar_records_ids)->get();
+
+
+            // magicstring($quote_flles);
+            // return;
 
 
 
@@ -432,9 +474,8 @@ class invoiceController extends Controller
             return back()->with('Error occurred while retrieving the record. Please try again later.');
         }
 
-        return view('panel.Documents.quotation2',compact('record','quote_flles','json_customer_info'));
+        return view('panel.Documents.quotation2',compact('record','quote_flles','json_customer_info','entity_details','bank_details','QuotationItem','similar_records'));
     }
-
 
     public function createQuotationitem(Request $request) {
 
@@ -532,6 +573,14 @@ class invoiceController extends Controller
 
 
 
+        // checking Quote Item Exist or Not
+        $QuotationItem = QuotationItem::where('quotation_id', $quotation_id)->get();
+        if ($QuotationItem->count() != 0) {
+            $showAll = true;
+            request()->merge(['show_all'=> 'true']);
+        }else{
+            $showAll = false;
+        }
 
         if (request()->has('show_all') && request()->get('show_all') == 'true' || $QuotationRecord->proposal_id == '') {
             $products = $products->paginate($pagelength);
@@ -539,20 +588,17 @@ class invoiceController extends Controller
                 ->whereIn('product_id', $products->pluck('id'))
                 ->pluck('product_id')
                 ->toArray();
-            $showAll = true;
+
         }else{
             $QuotationItem = QuotationItem::where('quotation_id', $quotation_id)
             ->pluck('product_id')
             ->toArray();
             $products = $products->whereIn('id',$QuotationItem)->paginate($pagelength);
-            $showAll = false;
         }
 
-
-
-
-
         return view('panel.Documents.quotation3', compact('products', 'QuotationItem','QuotationRecord','showAll'));
+
+
     }
 
     private function reorderArray($originalArray, $orderArray) {
@@ -577,48 +623,174 @@ class invoiceController extends Controller
         $countries = Country::get();
         $custom_inputs = $user->custom_fields ?? null;
 
+        $consignee_record = json_decode($QuotationRecord->consignee_details) ?? [];
+        $consignee_details = Consignee::whereIn('id',$consignee_record)->get();
+
+
         if ($custom_inputs != null) {
             $custom_inputs = json_decode($custom_inputs);
         }
 
-        return view('panel.Documents.quotation4', compact('QuotationRecord','QuotationItems','user','countries','custom_inputs'));
+        return view('panel.Documents.quotation4', compact('QuotationRecord','QuotationItems','user','countries','custom_inputs','consignee_details'));
     }
 
     public function storeQuotation(){
-        // magicstring(request()->all());
         if (request()->ajax()) {
+            $taxes = json_decode(request()->get('taxes')) ?? [];
+            $add_nots = request()->get('additional_notes');
+
+            $charges = [
+                'taxes'=> $taxes,
+                'additional_notes'=>$add_nots,
+            ];
+
             $tablerecord = json_decode(request()->get('data'));
             $TotalPrice = 0;
+            $Quotation = Quotation::find(request()->get('quotation_id'));
 
-            $Quotation = Quotation::whereId(request()->get('quotation_id'))->first();
-            foreach ($tablerecord as $key => $trecords) {
-                $QuotationItemRecord = QuotationItem::whereId($trecords->ID)->where('quotation_id',request()->get('quotation_id'))->first();
-                $QuotationItemRecord->Price = $trecords->Price;
-                $QuotationItemRecord->currency = $trecords->Currency ?? 'INR';
-                $QuotationItemRecord->additional_notes = json_encode($trecords);
-
-                $QuotationItemRecord->quantity = $trecords->Quantity;
-                $QuotationItemRecord->unit = $trecords->Unit;
-                $QuotationItemRecord->save();
-                $TotalPrice += $trecords->Price ?? 0;
+            if (!$Quotation) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Quotation not found.',
+                ]);
             }
 
-            $Quotation->additional_notes = request()->get('additional_notes');
-            $Quotation->total_amount = $TotalPrice ?? 0;
-            $Quotation->status = 1;
-            $Quotation->save();
+            foreach ($tablerecord as $key => $trecords) {
+                $QuotationItemRecord = QuotationItem::whereId($trecords->ID)
+                    ->where('quotation_id', request()->get('quotation_id'))
+                    ->first();
 
+                if (!$QuotationItemRecord) {
+                    // Handle case where QuotationItem is not found
+                    continue;
+                }
+
+                if ($trecords->image == 'Consignee') {
+                    $consign_quant = [
+                        'consignee_id' => $trecords->Title,
+                        'quantity' => $trecords->Currency,
+                    ];
+
+                    $exist = $QuotationItemRecord->consignee_set ? json_decode($QuotationItemRecord->consignee_set, true) : [];
+
+                    $found = false;
+
+                    foreach ($exist as &$value) {
+                        if ($value['consignee_id'] == $trecords->Title) {
+                            $value['quantity'] = $trecords->Currency;
+                            $found = true;
+                            break;
+                        }
+                    }
+
+                    if (!$found) {
+                        $exist[] = $consign_quant;
+                    }
+
+                    $QuotationItemRecord->consignee_set = json_encode($exist);
+                    $QuotationItemRecord->save();
+                } else {
+                    // Update common fields for all QuotationItems
+                    $QuotationItemRecord->Price = $trecords->Price ?? 0;
+                    $QuotationItemRecord->currency = $trecords->Currency ?? 'INR';
+                    $QuotationItemRecord->additional_notes = json_encode($trecords);
+                    $QuotationItemRecord->quantity = $trecords->Quantity ?? 0;
+                    $QuotationItemRecord->unit = $trecords->Unit ?? 0;
+                    $QuotationItemRecord->save();
+
+                    $TotalPrice += $trecords->Price ?? 0;
+                }
+            }
+
+            // Update common fields for the Quotation
+            $Quotation->total_amount = $TotalPrice;
+            $Quotation->charges_info = json_encode($charges);
+            $Quotation->status = 1; // Assuming 1 represents a certain status
+            $Quotation->save();
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Quotation Updated Successfully',
             ]);
-        }else{
+
+        } else {
             return response()->json([
-                'status' => 'Error',
+                'status' => 'error',
                 'message' => 'Ajax Request Support Only.',
             ]);
         }
+
+
+
+        // if (request()->ajax()) {
+        //     $tablerecord = json_decode(request()->get('data'));
+        //     $TotalPrice = 0;
+        //     $skipit = false;
+
+        //     $Quotation = Quotation::whereId(request()->get('quotation_id'))->first();
+        //     foreach ($tablerecord as $key => $trecords) {
+        //         $QuotationItemRecord = QuotationItem::whereId($trecords->ID)->where('quotation_id',request()->get('quotation_id'))->first();
+        //         if ($trecords->image == "Consignee") {
+        //             $consign_quant = [
+        //                 'consignee_id' => $trecords->Title,
+        //                 'quantity' => $trecords->Currency,
+        //             ];
+
+        //             if ($QuotationItemRecord->consignee_set != null) {
+        //                 $exist = json_decode($QuotationItemRecord->consignee_set, true);
+
+        //                 $found = false; // Flag to check if consignee_id is found in $exist
+
+        //                 foreach ($exist as &$value) {
+        //                     if ($value['consignee_id'] == $trecords->Title) {
+        //                         $value['quantity'] = $trecords->Currency;
+        //                         $found = true; // Set flag to true if consignee_id is found
+        //                         continue;
+        //                     }
+        //                 }
+
+        //                 if (!$found) {
+        //                     array_push($exist, $consign_quant);
+        //                 }
+
+        //             } else {
+        //                 $exist = [$consign_quant];
+        //             }
+
+        //             // Convert the updated or new $exist array back to JSON if needed
+        //             $QuotationItemRecord->consignee_set = json_encode($exist);
+        //             $QuotationItemRecord->save();
+
+
+        //         }
+
+        //         $QuotationItemRecord->Price = $trecords->Price;
+        //         $QuotationItemRecord->currency = $trecords->Currency ?? 'INR';
+        //         $QuotationItemRecord->additional_notes = json_encode($trecords);
+
+        //         $QuotationItemRecord->quantity = $trecords->Quantity;
+        //         $QuotationItemRecord->unit = $trecords->Unit;
+        //         $QuotationItemRecord->save();
+        //         $TotalPrice += $trecords->Price ?? 0;
+        //     }
+
+        //     $Quotation->additional_notes = request()->get('additional_notes');
+        //     $Quotation->total_amount = $TotalPrice ?? 0;
+        //     $Quotation->status = 1;
+        //     $Quotation->save();
+
+
+        //     return response()->json([
+        //         'status' => 'success',
+        //         'message' => 'Quotation Updated Successfully',
+        //     ]);
+
+        // }else{
+        //     return response()->json([
+        //         'status' => 'Error',
+        //         'message' => 'Ajax Request Support Only.',
+        //     ]);
+        // }
     }
 
     public function quotationpdf() {
@@ -696,6 +868,7 @@ class invoiceController extends Controller
         try {
 
             $count = 0;
+            $misc_details = json_encode($request->misc_details) ?? null;
             foreach ($request->uploadFiles as $key => $file) {
 
                 $file_extension = $file->getClientOriginalExtension();
@@ -706,14 +879,14 @@ class invoiceController extends Controller
                 $folderPath = "public/files/$user_id/quote_files";
                 $uploaded_path = $file->storeAs($folderPath, $tmp_filename);
                 $uploaded_path = str_replace('public','storage',$uploaded_path);
-                $media = new Media();
+
+                $media = new QuoteFiles();
                 $media->file_name = $og_file_name;
-                $media->path = $uploaded_path;
-                $media->extension = $file_extension;
+                $media->quote_id = $request->get('typeId');
+                $media->file_path = $uploaded_path;
                 $media->file_type = $file_type;
-                $media->tag = 'quote_files';
-                $media->type_id = $request->get('typeId');
-                $media->type = 'UserShop';
+                $media->user_id = $user_id;
+                $media->misc_notes = $misc_details;
                 $media->save();
                 $count++;
             }
@@ -769,6 +942,118 @@ class invoiceController extends Controller
     }
 
 
+    function packinglist(Request $request) {
+        $QuotationItem = QuotationItem::where('id',$request->get('item_id'))->first();
+        $Quotation = Quotation::whereId($QuotationItem->quotation_id)->first();
+        $ProductRecord = Product::whereId($QuotationItem->product_id)->first();
+        $shipping = json_decode($ProductRecord->shipping);
+        $consignee_details = json_decode($Quotation->consignee_details) ?? [];
+        $consignee_record = Consignee::whereIn('id',$consignee_details)->get();
+
+        $carton_details = json_decode($ProductRecord->carton_details);
+        $length_uom = json_decode(getSetting('dimension_uom'));
+        $quantity_uom = json_decode(getSetting('item_uom'));
+        $weight_uom = json_decode(getSetting('weight_uom'));
+
+        // magicstring($consignee_record->pluck('consignee_details','id'));
+        $consign_select = [];
+
+        foreach($consignee_record->pluck('consignee_details','id') as $key => $item){
+
+            $consign_select[$key] = json_decode($item)->ref_id;
+        }
+
+
+        return view('panel.Documents.pages.packing-list',compact('QuotationItem','ProductRecord','shipping','consignee_record','Quotation','carton_details','length_uom','quantity_uom','weight_uom','consign_select'));
+    }
+
+    function packingliststore(Request $request) {
+
+        try {
+            $summary = [
+                "consignee_wise" => json_decode(request()->get('consignee-tabledata')),
+                "overall" => json_decode(request()->get('summary-tabledata')),
+            ];
+
+
+            $record = [
+                'weight' => $request->get('weight'),
+                'product' => $request->get('product'),
+                'packing_record' => json_decode($request->tabledata),
+            ];
+
+            $itemId = decrypt($request->quote_id_item);
+            QuotationItem::whereId($itemId)->update(['packing_list' => json_encode($record),'packing_summary' => json_encode($summary)]);
+
+            return redirect(route('panel.Documents.quotation4',['typeId' => decrypt($request->quote_id)]))->with('success','Packing List Updated Successfully');
+
+
+            // return back()->with('success','Packing List Updated Successfully');
+        } catch (\Throwable $th) {
+            throw $th;
+            return back()->with('error','Error Occurred While Updating Packing List');
+        }
+
+    }
+
+
+
+    function makequotePerfoma(Request $request,Quotation $quotation) {
+
+        try {
+
+            $count_quote = 0;
+            $count_quoteItem = 0;
+            $user = auth()->user();
+            $entities =  UserAddress::where('user_id',$user->id)->get();
+            $userShop = UserShop::whereUserId($user->id)->first();
+            $userset = json_decode($user->settings);
+
+
+            // PI ID Prefix
+            if (isset($userset->performa_mark) && $userset->performa_mark != null && $userset->performa_mark != '') {
+                $PI_number = checkQuoteSlug($userset->performa_mark,$userset->performa_index,$user->id) ?? 'Quotation';
+            }else{
+                $PI_number = getUniqueProposalSlug('performa-invoice');
+            }
+
+            $system_PI_slug = getUniqueProposalSlug('performa-invoice');
+
+            // `` Replicating Quotation to Performa Invoice
+            $PerfomaInvoice = $quotation->replicate();
+            $PerfomaInvoice->status = 0;
+            $PerfomaInvoice->type_of_quote = 1;
+            $PerfomaInvoice->user_slug = $PI_number;
+            $PerfomaInvoice->linked_quote = $quotation->id;
+            $PerfomaInvoice->slug = $system_PI_slug;
+            $PerfomaInvoice->created_at = date('Y-m-d H:i:s');
+            $PerfomaInvoice->updated_at = date('Y-m-d H:i:s');
+            $PerfomaInvoice->save();
+            $count_quote++;
+
+            $QuotationItems = QuotationItem::where('quotation_id',$quotation->id)->get();
+
+            foreach ($QuotationItems as $key => $item) {
+                $PerfomaInvoiceItem = $item->replicate();
+                $PerfomaInvoiceItem->quotation_id = $PerfomaInvoice->id;
+                $PerfomaInvoiceItem->created_at = date('Y-m-d H:i:s');
+                $PerfomaInvoiceItem->updated_at = date('Y-m-d H:i:s');
+                $PerfomaInvoiceItem->save();
+                $count_quoteItem++;
+            }
+
+
+            return redirect(route('panel.Documents.quotation2',['typeId' => $PerfomaInvoice->id]))->with('success','Quotation Converted to Performa Successfully, PI Number : '.$PI_number.' and Total Items : '.$count_quoteItem);
+
+        } catch (\Throwable $th) {
+            throw $th;
+            // return back()->with('error','Error Occurred While Converting Quotation to Performa');
+        }
+
+
+
+
+    }
 
 
 }

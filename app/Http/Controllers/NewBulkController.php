@@ -54,7 +54,7 @@ class NewBulkController extends Controller
 
 
         if (!$request->has('file')) {
-            return back()->with('error','Please Select a File');
+            return back()->with('error','Select excel file before Uploading');
         }
 
 
@@ -3165,7 +3165,7 @@ class NewBulkController extends Controller
                     'remarks' => $item[${'col_Remarks'}] ?? '',
                     'vendor_sourced_from' => $item[${'col_Vendor_Sourced_from'}] ?? '',
                     'vendor_price' => $item[${'col_Vendor_price'}] ?? '',
-                    'product_cost_unit' => $item[${'col_Product_Cost_unit'}] ?? '',
+                    'product_cost_unit' => '',
                     'vendor_currency' => $item[${'col_Exclusive_Buyer_Name'}] ?? '',
                     'sourcing_year' => $item[${'col_Sourcing_Year'}] ?? '',
                     'sourcing_month' => $item[${'col_Sourcing_month'}] ?? '',
@@ -3221,7 +3221,7 @@ class NewBulkController extends Controller
                                     'remarks' => $item[${'col_Remarks'}] ?? '',
                                     'vendor_sourced_from' => $item[${'col_Vendor_Sourced_from'}] ?? '',
                                     'vendor_price' => $item[${'col_Vendor_price'}] ?? '',
-                                    'product_cost_unit' => $item[${'col_Product_Cost_unit'}] ?? '',
+                                    'product_cost_unit' => '',
                                     'vendor_currency' => $item[${'col_Exclusive_Buyer_Name'}] ?? '',
                                     'sourcing_year' => $item[${'col_Sourcing_Year'}] ?? '',
                                     'sourcing_month' => $item[${'col_Sourcing_month'}] ?? '',

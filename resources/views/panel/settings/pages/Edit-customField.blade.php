@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div class="modal fade" id="EditCustField" tabindex="-1" role="dialog" aria-labelledby="EditCustFieldLabel">
+<div class="modal fade" id="EditCustField" tabindex="-1" role="dialog" aria-labelledby="EditCustFieldLabel" style="top:5%;">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
         <form action="{{ route('panel.settings.update.custom.fields') }}" method="POST">

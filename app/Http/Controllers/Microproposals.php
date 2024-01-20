@@ -107,9 +107,19 @@ class Microproposals extends Controller
             ];
 
 
+            $user = auth()->user();
+            $userset = json_decode($user->settings);
+            if (isset($userset->quotaion_mark)) {
+                $user_slug = checkQuoteSlug($userset->offer_mark,$userset->offer_index,$user->id) ?? 'Offer';
+            }else{
+                $user_slug = null;
+            }
+
+
             $proposal = new Proposal();
             $proposal->customer_details = json_encode($arr);
             $proposal->slug = getUniqueProposalSlug("proposal".auth()->id());
+            $proposal->user_slug = $user_slug;
             $proposal->user_id = auth()->id();
             $proposal->user_shop_id = UserShopIdByUserId(auth()->id());
             $proposal->margin = $request->margin;
