@@ -59,7 +59,7 @@
                                         <input type="text" required name="name" class="form-control" id="name" placeholder="Business Name" value="{{ old('name') }}">
                                     </div>
                                     <div class="mb-2">
-                                        <input type="email" required name="email" class="form-control" id="Email" placeholder="Business Email" value="{{ old('email') }}">
+                                        <input type="text" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" required name="email" class="form-control" id="Email" placeholder="Business Email" value="{{ old('email') }}">
                                     </div>
                                     <div class="mb-2">
                                         <input type="password" required name="password" class="form-control" id="Password" placeholder="Enter Password" value="{{ old('password') }}">

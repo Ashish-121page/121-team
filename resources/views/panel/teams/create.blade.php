@@ -158,11 +158,15 @@ $breadcrumb_arr = [
                                     </div>
                                 </div>
                                 
-                                <div class="col-md-12 ml-auto">
+                                <div class="col-md-12 d-flex justify-content-between mr-15 ml-15">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-primary" onclick="history.back()">Cancel</button>
+                                    </div>
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary">Create</button>
                                     </div>
                                 </div>
+                                
                             </div>
                         </form>
                     </div>

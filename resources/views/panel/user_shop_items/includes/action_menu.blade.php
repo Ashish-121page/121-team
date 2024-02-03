@@ -13,9 +13,9 @@
             </a>
 
         </div>
-        <a href="{{ route('panel.products.create') }}?action=nonbranded&update_record"
+        <a href="{{ route('panel.products.create') }}?action=nonbranded"
             class="btn btn-outline-primary  mx-1">
-            Update SKUs
+            Update Products
         </a>
         @if($acc_permissions->addandedit == "yes")
             @if ($Team_proadd)

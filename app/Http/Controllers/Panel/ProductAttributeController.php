@@ -190,15 +190,8 @@ class ProductAttributeController extends Controller
 
     public function store(Request $request)
     {
-        // if ($request->has('request_from')) {
-        //     // $response = new Response();
-        //     return response()->json([
-        //         'status' => 'success',
-        //         'msg' => 'Product Property Created Successfully!'
-        //     ]);
-        // }
 
-        // return magicstring($request->all());
+
 
         $this->validate($request, [
                         'name'     => 'required',
@@ -207,8 +200,6 @@ class ProductAttributeController extends Controller
                     ]);
 
         try{
-
-
             $UserRole = AuthRole();
             if ($UserRole != 'Admin') {
                 // `  Start Creating Custom Attribute....
@@ -263,17 +254,18 @@ class ProductAttributeController extends Controller
                 }
 
             }else{
-                return back()->with('error',"$request->name Property already exists in your Account.");
+                if ($request->has('request_from')) {
+                    // $response = new Response();
+                    return response()->json([
+                        'status' => 'success',
+                        'msg' => 'Product Property Created Successfully!'
+                    ]);
+                }else{
+                    return back()->with('error',"$request->name Property already exists in your Account.");
+                }
             }
 
 
-        if ($request->has('request_from')) {
-            // $response = new Response();
-            return response()->json([
-                'status' => 'success',
-                'msg' => 'Product Property Created Successfully!'
-            ]);
-        }
 
 
             return redirect()->route('panel.product_attributes.index')->with('success','Product Attribute Created Successfully!');
@@ -332,6 +324,9 @@ class ProductAttributeController extends Controller
     public function update(Request $request,ProductAttribute $product_attribute)
     {
 
+        // magicstring(request()->all());
+        // return;
+
         // $this->validate($request, [
         //         '*' => 'required|alpha_num:ascii'
         //     ]);
@@ -343,7 +338,7 @@ class ProductAttributeController extends Controller
             //` Create New Values
             if (request()->has('newval') && request()->get('newval') != null) {
                 foreach (explode(",",request()->get('newval')) as $key => $items) {
-                    $chk = ProductAttributeValue::where('attribute_value',$items)->where('parent_id',$product_attribute->id)->get();
+                    $chk = ProductAttributeValue::where('attribute_value',$items)->where('user_id',auth()->id())->where('parent_id',$product_attribute->id)->get();
                     if (count($chk) == 0) {
                         echo "New Value";
                         ProductAttributeValue::create([
@@ -355,6 +350,7 @@ class ProductAttributeController extends Controller
                     }
                 }
             }
+
 
             // Updating Existing Value
             foreach ($request->except(['_token','user_id','user_shop_id','name','newval']) as $key => $value) {

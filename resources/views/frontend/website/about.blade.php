@@ -142,7 +142,7 @@
                             </p>
 
                             <p class="fs-5">
-                                &#8226; To guarantee no-conflict with 121.page users, discontinued his family business, <span class="text-primary "><b><a href="https://giftingbazaar.com/" style="text-decoration: none" target="_blank">GiftingBazaar</a></b></span>, which <span class="text-primary "><b>was operating</b></span> in e-commerce, event management, and B2B gifting. 
+                                &#8226; To guarantee no-conflict with 121.page users, discontinued his family business, <span class="text-primary "><b><a href="https://giftingbazaar.com/" style="text-decoration: none" target="_blank">GiftingBazaar</a></b></span>, In 2022 which <span class="text-primary "><b>was operating</b></span> in e-commerce, event management, and B2B gifting. 
                             </p> 
 
                         </div>
@@ -272,7 +272,7 @@
         <!-- About End -->
 
         <!-- Team Start -->
-        <section class="section bg-light">
+        <section class="section bg-light" style="padding-top: 20px !important;">
             {{-- <div class="container">
                 <div class="row">
                     <div class="col-12 text-center">
@@ -308,7 +308,7 @@
                 </div><!--end row-->
             </div><!--end container--> --}}
 
-            <div class="container mt-100 mt-60">
+            <div class="container mt-50 mt-40">
                 <div class="row justify-content-center">
                     <div class="col-12 text-center">
                         <div class="section-title">

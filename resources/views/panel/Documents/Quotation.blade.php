@@ -29,9 +29,9 @@
                 <a class="btn btn-outline-primary @if (request()->access == '') active  @endif "
                     href="{{ route('panel.Documents.Quotation', 'active') }}">Quotations</a>
 
-                <a href="{{ route('panel.Documents.Quotation',['access'=>'pi-data']) }}" class="btn btn-outline-primary  @if (request()->access == 'pi-data') active  @endif">Performa Invoices</a>
+                <a href="{{ route('panel.Documents.Quotation',['access'=>'pi-data']) }}" class="btn btn-outline-primary  @if (request()->access == 'pi-data') active  @endif">Proforma Invoices</a>
 
-                <a href="{{ route('panel.Documents.secondview') }}" class="btn btn-outline-primary {{ activeClassIfRoutes(['panel.Documents.secondview'], 'active') }}">Invoice</a>
+                {{-- <a href="{{ route('panel.Documents.secondview') }}" class="btn btn-outline-primary {{ activeClassIfRoutes(['panel.Documents.secondview'], 'active') }}">Invoice</a> --}}
 
             </div>
 
@@ -53,36 +53,20 @@
                             </div>
                         </div>
                         <div class="col-4 d-flex justify-content-end align-items-center">
-                            {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#BuyerModal"> --}}
-                            {{-- <button type="button" id="bjkhkh" class="btn btn-outline-primary mx-1">
-                                Create new quotation
-                            </button> --}}
-
-                            <a href="{{ route('panel.Documents.create.Quotation.form') }}"
-                                class="btn btn-outline-primary mx-1">
-                                Create new quotation
-                            </a>
+                            <select id="filterdata" class="form-control select2">
+                                <option value="1" @if (request()->get('sort') == '1') selected @endif>By Date</option>
+                                <option value="2" @if (request()->get('sort') == '2') selected @endif>By Name (A to Z)</option>
+                                @if (request()->get('access') != 'pi-data')
+                                    <option value="3" @if (request()->get('sort') == '3') selected @endif>PI Status</option>
+                                @endif
+                            </select>
+                            @if (request()->get('access') != 'pi-data')
+                                <a href="{{ route('panel.Documents.create.Quotation.form') }}"
+                                    class="btn btn-outline-primary mx-1">
+                                    Create new quotation
+                                </a>
+                            @endif
                         </div>
-                    </div>
-                </div>
-
-                <!-- Other elements (filter, select, buttons) -->
-                <div class="row mt-3 justify-content-between ">
-                    {{-- <div class="col-2">
-                          <input type="text" class="form-control" id="search_buyer" name="search" placeholder="Buyer Search">
-                        </div> --}}
-                    <!-- Filter options -->
-                    {{-- <div class="col-2" style="margin-left:10rem">
-                          <select name="" id="status_check" class="form-control" style="padding-right: 40px !important;">
-                            <option value="status">All</option>
-                            <option value="sent">Sent</option>
-                            <option value="draft">Draft</option>
-                          </select>
-                        </div> --}}
-
-                    <!-- Loop through proposals -->
-                    <div class="col-6">
-                        <!-- Your PHP loop logic for proposals -->
                     </div>
                 </div>
                 <div class="row mt-5">
@@ -239,6 +223,25 @@
                 $("#890out").select2()
             });
 
+
+            $("#filterdata").change(function (e) {
+                e.preventDefault();
+                let val = $(this).val();
+                if ({{ request()->access != 'pi-data' || !request()->access ? 'false' : 'true' }}) {
+                    let url = "{{ route('panel.Documents.Quotation',['access'=>'pi-data']) }}&sort=" + val;
+                    window.location.href = url;
+                } else {
+                    let url = "{{ route('panel.Documents.Quotation') }}?sort=" + val;
+                    window.location.href = url;
+                }
+            });
+
         });
     </script>
+    @if (request()->access != 'pi-data' || !request()->access)
+
+    @endif
+
+
+
 @endsection

@@ -11,6 +11,7 @@ use App\Models\UserAddress;
 use App\User;
 use App\Models\Category;
 use App\Models\BuyerList;
+use App\Models\ProductAttribute;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Panel\ProductAttributeController;
 
@@ -67,14 +68,34 @@ class settingController extends Controller
             $sub_category = Category::where('level',3)->get();
         }
 
-
-
         $address = UserAddress::where('user_id',auth()->id())->get();
 
 
+
+        // Settings
+
+        if (AuthRole() != 'Admin') {
+            $user_shop = UserShop::whereId($user_shop->id)->first();
+            if($user_shop->user_id != auth()->id()){
+                return redirect()->back();
+            }
+        }
+        $testimonial= json_decode($user_shop->testimonial,true);
+        $addresses = UserAddress::whereUserId($user_shop->user_id)->get();
+        $shop_address= json_decode($user_shop->address,true);
+        $products= json_decode($user_shop->products,true);
+        $story= json_decode($user_shop->story,true);
+        $vcard = Media::whereTypeId($user_shop->user_id)->whereType('UserVcard')->whereTag('vcard')->OrderBy('id','desc')->first();
+        $team= json_decode($user_shop->team,true);
+        $about= json_decode($user_shop->about,true);
+        $features= json_decode($user_shop->features,true) ?? '';
+        $payments= json_decode($user_shop->payment_details,true);
+
         $custom_fields = json_decode($user->custom_fields,true) ?? [];
 
-        return view("panel.settings.index",compact('templates','user','user_shop','currency_record','acc_permissions','category','industries','category_global','sub_category','custom_fields','address','buyer_records'));
+
+
+        return view("panel.settings.index",compact('templates','user','user_shop','currency_record','acc_permissions','category','industries','custom_fields','address','buyer_records','testimonial','addresses','shop_address','products','story','vcard','team','about','features','payments'));
     }
 
 
@@ -236,12 +257,18 @@ class settingController extends Controller
 
             $exist_col = $user->custom_fields ?? null;
             $exist_col = json_decode($exist_col) ?? [];
-            magicstring($exist_col);
+
+            $available_Properties_user = ProductAttribute::where('user_id',$user->id)->pluck('name')->toArray();
+            $available_Properties_default = ProductAttribute::where('user_id',null)->pluck('name')->toArray();
+            $available_Properties = array_merge($available_Properties_user,$available_Properties_default);
 
             if ($request->get('attr_name') == null) {
                 return back()->with('error','Please Enter Field Name');
             }else{
                 $attr_name = $request->get('attr_name');
+                $attr_name = str_replace(' ','_',$attr_name);
+                $request['attr_name'] = $attr_name;
+
                 foreach ($exist_col as $key => $value) {
                     $existtext = strtoupper($value->text);
                     $existtext = strtolower($existtext);
@@ -252,7 +279,19 @@ class settingController extends Controller
                         return back()->with('error','The Custom input name already exists. Unable to create duplicate names.');
                     }
                 }
+                foreach ($available_Properties as $value) {
+                    $existtext = strtoupper($value);
+                    $existtext = strtolower($existtext);
+                    $attr_name = strtoupper($attr_name);
+                    $attr_name = strtolower($attr_name);
+
+                    if ($existtext == $attr_name) {
+                        return back()->with('error','The Custom input name already exists. Unable to create duplicate names.');
+                    }
+                }
+
             }
+
 
             // ` Product Section Order we are using this to show Value
             // 1. Product Info > Essentials
@@ -291,16 +330,14 @@ class settingController extends Controller
                 $user_id = auth()->id();
                 $request->merge(['user_id' => $user_id, 'user_shop_id' => UserShopRecordByUserId($user_id)->id,'name' => $request->attr_name,'type' => $type,'request_from' => 'custom_fields','value' => $Tmp_values]);
 
-                // $destinationController = new ProductAttributeController();
-
-                // $responseRecevied = $destinationController->store($request);
-                $responseRecevied = app('App\Http\Controllers\Panel\ProductAttributeController')->store($request);
-
-
-                if ($responseRecevied->getData()->status == 'success') {
-                    return back()->with('success',$responseRecevied->getData()->msg);
+                $responseReceived = app('App\Http\Controllers\Panel\ProductAttributeController')->store($request);
+                if ($responseReceived instanceof \Illuminate\Http\RedirectResponse) {
+                    return back()->with('success', $responseReceived->getSession()->get('success'));
+                } elseif ($responseReceived->getData()->status == 'success') {
+                    return back()->with('success', $responseReceived->getData()->msg);
                 }
 
+                return;
                 // magicstring($responseRecevied->getData());
                 // return;
 
@@ -580,6 +617,9 @@ class settingController extends Controller
     }
 
     public function removecustomfields($fieldId) {
+
+
+
         try {
             $fieldId = decrypt($fieldId);
             if (request()->has('type_id') && request()->get('type_id') != '') {
@@ -607,7 +647,7 @@ class settingController extends Controller
 
             return back()->with('success','Custom Field Removed');
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
             return back()->with('error',"Error While Removing.");
         }
     }
@@ -643,5 +683,33 @@ class settingController extends Controller
         }
 
     }
+
+
+
+    public function uploadlogo(Request $request) {
+
+        try {
+            if ($request->hasFile("upload_log")) {
+                $img = $this->uploadFile($request->file("upload_log"), "user")->getFilePath();
+                magicstring($img);
+
+                $usershop = UserShop::where('user_id',auth()->id())->first();
+                $usershop->logo = $img;
+                $usershop->save();
+
+                return back()->with('success','Logo Updated');
+            }else{
+                return back()->with('error','Please Select File');
+            }
+
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+    }
+
+
+
+
 
 }

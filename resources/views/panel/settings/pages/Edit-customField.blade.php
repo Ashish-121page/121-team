@@ -56,8 +56,13 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-outline-primary">Save changes</button>
+                <div class="col-12 col-md-12 col-lg-12 text-center mt-4">
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-outline-primary">Save changes</button>
+                    </div>
+                </div>
+
             </div>
         </form>
 

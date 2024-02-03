@@ -330,7 +330,23 @@
             .header-top {
                 display: block !important;
                 padding-left: 0px !important;
+
+
+
             }
+
+
+            @media (min-width: 768px) and (max-width: 991.98px) {
+                #animatedModal2 {
+                    position: fixed !important;
+                    height: 45% !important;
+                    width: 80% !important;
+                    top: 15% !important;
+                    left: 20% !important;
+                    /* background-color: transparent !important;  */
+                }
+            }
+
         </style>
         @if (auth()->id() != 155)
             <style>
@@ -348,6 +364,53 @@
                     padding: 0 !important;
                 }
             </style>
+
+        <style>
+                .icon-container1 {
+                display: none;
+            }
+
+            #oneljmls:hover .icon-container1 {
+                display: flex;
+                color: #6666cc;
+                margin-right: 2.5rem;
+            }
+
+            #twojjlw:hover .icon-container1 {
+                display: flex;
+                color: #6666cc;
+                margin-right: 4rem;
+            }
+
+            #threelljlkn:hover .icon-container1 {
+                display: flex;
+                color: #6666cc;
+                margin-right: 4rem;
+            }
+
+            #fourmmb:hover .icon-container1 {
+                display: flex;
+                color: #6666cc;
+                margin-right: 2.5rem;
+            }
+
+
+            #fivelja:hover .icon-container1 {
+                display: flex;
+                color: #6666cc;
+                margin-right: 4rem;
+            }
+
+            #sixkhik:hover .icon-container1 {
+                display: flex;
+                color: #6666cc;
+                margin-right: 4rem;
+            }
+
+           
+        </style>
+
+
         @endif
 
     @endpush
@@ -547,7 +610,7 @@
                                                                             Product Price:
                                                                             <span>
                                                                                 {{ $currency_symbol }}
-                                                                                {{ isset($price) ? number_format(round($price, 2)) : '' }}
+                                                                                {{ isset($price) ? number_format($price, 2) : '' }}
                                                                             </span>
                                                                             <br>
                                                                             {{-- Shop Price:<span> {{ (isset($product_record) && $product_record->price > 0) ?  format_price($product_record->price) : 'Ask for Price' }}</span> --}}
@@ -580,9 +643,9 @@
                                                                             <span>Offer Price:
                                                                                 {{ $currency_symbol }}
                                                                                 @if ($userPrice != null)
-                                                                                    {{ $userPrice }}
+                                                                                    {{ number_format($userPrice,2) }}
                                                                                 @else
-                                                                                    {{ $userPrice ?? isset($price) ? number_format(round($price, 2)) : '' }}
+                                                                                    {{ number_format($userPrice,2) ?? isset($price) ? number_format($price, 2) : '' }}
                                                                                 @endif
                                                                             </span>
                                                                             <a href="javascript:void(0)"

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\File as FacadesFile;
 use App\Models\ProductAttributeValue;
 use GuzzleHttp\Client;
 use App\Models\MayaImage;
+use App\Models\UserShopItem;
 use App\Models\Media;
 
 
@@ -129,6 +130,11 @@ class ImageController extends Controller
         $dataUrl = $request->input('image');
         $oldFilePath =$request->input('old_path');
 
+        // magicstring(request()->all());
+
+        // return;
+
+
         // $filename = basename($oldFilePath);
         // $user_id = auth()->id();
         // $path = "storage/files/$user_id/$filename";
@@ -142,22 +148,61 @@ class ImageController extends Controller
         $imageData = base64_decode($data);
 
         $disk = 'public';
-        $fullOldFilePath = $disk . '/' . $oldFilePath;
-
-
+        // $fullOldFilePath = $disk . '/' . $oldFilePath;
         $user_id = auth()->user()->id;
-        $destinationPath = "public/files/$user_id/edited_old/".time()."-" . basename($oldFilePath);
-        if (!Storage::exists($destinationPath)) {
-            $data = Storage::move($oldFilePath,$destinationPath, 'public');
-        }
 
+
+        $fullOldFilePath = "public/files/$user_id/".basename($oldFilePath);;
 
         if (Storage::exists($fullOldFilePath)) {
-            Storage::delete($fullOldFilePath);
+
+            if ($request->get('keepnamecheck') == 'keeporiginal') {
+                // ` Keep Original File in Edited Old Folder...
+                $new_move_fullOldFilePath = "public/files/$user_id/edited_old/".time().'-'.basename($oldFilePath);;
+                // // Todo: Move the file or Say Keep The Original File...
+                Storage::move($fullOldFilePath, $new_move_fullOldFilePath);
+
+                // Todo: making Up the Media Table Record...
+                $new_move_fullOldFilePath = str_replace('public','storage',$new_move_fullOldFilePath);
+
+                // Todo: Finding the Media ID...
+                $exits_recs = Media::where('path',str_replace('public','storage',$oldFilePath))->get();
+
+                if ($exits_recs->count() > 0) {
+                    // Todo: magicstring($exits_rec);
+                    foreach ($exits_recs as $key => $exits_rec) {
+                        $new_ids = [];
+                        $newrecc = $exits_rec->replicate();
+                        $newrecc = $newrecc->fill([
+                            'path' => $new_move_fullOldFilePath,
+                            'type_id' => $exits_rec->type_id,
+                        ]);
+                        $newrecc->save();
+                        array_push($new_ids,$newrecc->id);
+                    }
+
+                    foreach ($exits_recs as $key => $exits_rec) {
+                        $usi = UserShopItem::where('product_id',$exits_rec->type_id ?? '')->first();
+                        if ($usi != null) {
+                            $imgs = explode(",", $usi->images);
+                            $imgs = array_merge($imgs,$new_ids);
+                            $usi->images = implode(",",$imgs);
+                            $usi->save();
+                        }
+                    }
+
+
+                }
+            }else{
+                // ! Delete the old file...
+                Storage::delete($fullOldFilePath);
+            }
+
         }
 
-
+        // Todo: Making New IMage...
         Storage::put($oldFilePath, $imageData, 'public');
+
         return response()->json(['message' => 'Image replaced successfully']);
 
 

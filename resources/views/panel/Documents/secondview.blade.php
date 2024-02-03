@@ -27,7 +27,7 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="d-flex align-items-center">
-                                <button class="btn btn-secondary" onclick="goBack()" value="Back"
+                                <button class="btn btn-primary" onclick="goBack()" value="Back"
                                     type="button">Back</button>
                                 <h5 class="ms-3 mt-5 mb-0" style="margin-left: 50px !important;">PI-231</h5>
                             </div>

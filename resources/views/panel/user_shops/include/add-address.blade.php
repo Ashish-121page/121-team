@@ -6,10 +6,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLongTitle">Add Entity</h5>
-                    <button type="button" class="btn close" data-bs-dismiss="modal" aria-label="Close"
+                    {{-- <button type="button" class="btn close" data-bs-dismiss="modal" aria-label="Close"
                         style="padding: 0px 20px;font-size: 20px;">
                         <span aria-hidden="true">&times;</span>
-                    </button>
+                    </button> --}}
                 </div>
                 <div class="modal-body">
                     <div class="row g-3">
@@ -169,12 +169,13 @@
 
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-outline-secondary " data-bs-dismiss="modal" >Close</button>
+                    <button type="submit" class="btn btn-outline-primary">Save Changes</button>
                 </div>
             </div>
         </form>

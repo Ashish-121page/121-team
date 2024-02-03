@@ -271,8 +271,7 @@
                             $offerbannerPath = asset('frontend/assets/img/Client_logo_placeholder.svg');
                         }
                     @endphp
-                    <div
-                        class="col-12 justify-content-center mx-auto d-flex">
+                    <div class="col-12 justify-content-center mx-auto d-flex">
                         <div style="position: relative;width: fit-content">
                             {{-- <input type="file" id="clienticon" class="visually-hidden">
                             <label for="clienticon" style="position: absolute;right: 2%" class="noprint chicon">
@@ -290,6 +289,7 @@
                 @csrf
                 <input type="hidden" name="proposal_id" value="{{ $proposal->id }}">
 
+                {{-- @if (request()->has('download') && request()->get('download') != 'excel') --}}
                 <div class="row justify-content-start mt-5 " style="margin-bottom: 180px">
                     {{-- <div class="col-12"> --}}
 
@@ -310,6 +310,7 @@
                     @endif
                     {{-- </div> --}}
                 </div>
+                {{-- @endif --}}
 
 
         </div><!--end container-->
@@ -348,8 +349,9 @@
 
         @include('frontend.micro-site.shop.proposal.modal.pdfcustom')
 
-        @if (session()->get('offer_attribute_count',0) != 0)
-            <a class="btn btn-outline-primary d-none mx-1" id="jaya1" href="#animatedModal3" role="button">Change Style</a>
+        @if (session()->get('offer_attribute_count', 0) != 0)
+            <a class="btn btn-outline-primary d-none mx-1" id="jaya1" href="#animatedModal3" role="button">Change
+                Style</a>
         @endif
 
 
@@ -367,17 +369,16 @@
     <script src="{{ asset('backend/plugins/select2/dist/js/select2.min.js') }}"></script>
 
     <script>
-
         function getTableData(tabelId) {
             var array = [];
             var headers = [];
-            $('#'+tabelId+' th').each(function (index, item) {
+            $('#' + tabelId + ' th').each(function(index, item) {
                 headers[index] = $(item).html().replace(/^\s+|\s+$/gm, '');
             });
 
-            $('#'+tabelId+' tr').has('td').each(function () {
+            $('#' + tabelId + ' tr').has('td').each(function() {
                 var arrayItem = {};
-                $('td', $(this)).each(function (index, item) {
+                $('td', $(this)).each(function(index, item) {
                     arrayItem[headers[index]] = $(item).html().replace(/^\s+|\s+$/gm, '');
                 });
                 array.push(arrayItem);
@@ -385,7 +386,6 @@
             });
             return array;
         }
-
     </script>
 
     <script>
@@ -474,23 +474,23 @@
                 readURL(this);
             });
 
-            $(".openmennu").click(function (e) {
+            $(".openmennu").click(function(e) {
                 e.preventDefault();
                 $.confirm({
                     title: 'Confirm!',
                     content: 'Simple confirm!',
                     buttons: {
-                        confirm: function () {
+                        confirm: function() {
                             $.alert('Confirmed!');
                         },
-                        cancel: function () {
+                        cancel: function() {
                             $.alert('Canceled!');
                         },
                         somethingElse: {
                             text: 'Something else',
                             btnClass: 'btn-blue',
                             keys: ['enter', 'shift'],
-                            action: function(){
+                            action: function() {
                                 $.alert('Something else?');
                             }
                         }
@@ -741,18 +741,24 @@
                 document.querySelectorAll(".print_content0").forEach(element => {
                     let model = element.innerHTML.replace(/^\s+|\s+$/gm, '');
                     model = model.replace('\n', ' ');
+                    model = model.replace('<b>', ' ');
+                    model = model.replace('</b>', ' ');
                     Additional1Array.push(model);
                 });
                 // ` Making Array Of shop-image
             document.querySelectorAll(".print_content1").forEach(element => {
                 let model = element.innerHTML.replace(/^\s+|\s+$/gm, '');
                 model = model.replace('\n', ' ');
+                model = model.replace('<b>', ' ');
+                model = model.replace('</b>', ' ');
                 Additional2Array.push(model);
             });
             // ` Making Array Of shop-image
                 document.querySelectorAll(".print_content2").forEach(element => {
                     let model = element.innerHTML.replace(/^\s+|\s+$/gm, '');
                     model = model.replace('\n', ' ');
+                    model = model.replace('<b>', ' ');
+                    model = model.replace('</b>', ' ');
                     Additional3Array.push(model);
                 });
 
@@ -773,12 +779,55 @@
     </script>
 
     <script>
+        // working perfectly without image and first row
+        function getTableData(tableId) {
+            var array = [];
+            var headers = [];
+
+            // trying to fetch data for 1st row
+
+            $('#' + tableId + ' tr:eq(0) th').each(function(index, item) {
+                headers[index] = $(item).html().replace(/^\s+|\s+$/gm, '');
+            });
+
+            // Fetch the second row of headers
+            $('#' + tableId + ' tr:eq(1) th').each(function(index, item) {
+                headers[index] = $(item).html().replace(/^\s+|\s+$/gm, '');
+            });
+
+            // Loop through the table rows starting from the third row
+            $('#' + tableId + ' tr:gt(1)').each(function() {
+                var arrayItem = {};
+                $('td', $(this)).each(function(index, item) {
+                    // Check if the cell contains an image
+                    if ($(item).find('img').length > 0) {
+                        // Extract the src of the image
+                        arrayItem[headers[index]] = $(item).find('img').attr('src');
+                    } else {
+                        // Extract the text
+                        // arrayItem[headers[index]] = $(item).html().trim();
+                        arrayItem[headers[index]] = $(item).html().replace(/^\s+|\s+$/gm, '');
+                    }
+                });
+
+                array.push(arrayItem);
+            });
+
+            return array;
+        }
+
+
+
+
+
 
         // {{-- ` Script for Excel Export --}}
         $(document).on('click', '#export_button', function() {
             // html_table_to_excel('xlsx');
             let tabledata = getTableData('printproposals');
-            let filename = "{{ $cust_details['customer_name'] ?? 'Excel_export' }}_{{Carbon\Carbon::now()}}.xlsx";
+            let filename =
+                "{{ $cust_details['customer_name'] ?? 'Excel_export' }}_{{ Carbon\Carbon::now() }}.xlsx";
+            filename = filename.replace(/ /g, "_");
 
             $.ajax({
                 type: "POST",
@@ -787,31 +836,27 @@
                     'tabelcontent': JSON.stringify(tabledata),
                     'filename': filename,
                 },
-                success: function (result) {
+                success: function(result) {
                     let response = JSON.parse(result);
                     if (response.message == 'File created') {
                         var url = response.downloadLink;
-                        var fileName = 'downloaded_file.xlsx';
+                        var fileName = response.fileName;
 
                         // Create a new anchor element dynamically
                         var downloadLink = $('<a></a>')
-                            .attr('href', url)
-                            .attr('download', fileName)
+                            .attr('href', response.downloadLink)
+                            .attr('download', fileName.split('/')[1])
                             .appendTo('body');
 
                         // Trigger click and remove element
                         downloadLink[0].click();
                         downloadLink.remove();
-                    }else{
+                    } else {
                         alert('Something went wrong. While Creating Excel File');
                     }
                 }
             });
 
         })
-
-
     </script>
-
-
 @endsection

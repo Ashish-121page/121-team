@@ -1,4 +1,4 @@
-<footer class="footer">    
+<footer class="footer">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -12,7 +12,13 @@
                             <ul class="list-unstyled social-icon foot-social-icon mb-0 mt-4">
                                 <li class="list-inline-item"><a target="_blank" href="{{ getSetting('facebook_link') }}" class="rounded"><i data-feather="facebook" class="fea icon-sm fea-social"></i></a></li>
                                 <li class="list-inline-item"><a target="_blank" href="{{ getSetting('instagram_link') }}" class="rounded"><i data-feather="instagram" class="fea icon-sm fea-social"></i></a></li>
-                                <li class="list-inline-item"><a target="_blank" href="{{ getSetting('twitter_link') }}" class="rounded"><i data-feather="twitter" class="fea icon-sm fea-social"></i></a></li>
+                                <li class="list-inline-item">
+                                    <a target="_blank" href="{{ getSetting('twitter_link') }}" class="rounded">
+                                        <svg width="12" height="12" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill="#fff" d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07l-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
+                                        </svg>
+                                    </a>
+                                </li>
                                 <li class="list-inline-item"><a target="_blank" href="{{ getSetting('linkedin_link') }}" class="rounded"><i data-feather="linkedin" class="fea icon-sm fea-social"></i></a></li>
                             </ul><!--end icon-->
                         </div><!--end col-->
@@ -21,7 +27,7 @@
                                 <div class="col-12 mb-2">
                                     <h5 class="footer-head mb-0">Company</h5>
                                 </div><!--end col-->
-                                
+
                                 <div class="col-lg-12 col-md-12 col-12 mt-2 mt-sm-0">
                                     <ul class="list-unstyled footer-list">
                                             <li><a href="{{ route('about') }}" class="text-foot"><i class="uil uil-angle-right-b me-1"></i>About</a></li>
@@ -36,10 +42,10 @@
                                 <div class="col-12 mb-2">
                                     <h5 class="footer-head mb-0">Quick Links</h5>
                                 </div><!--end col-->
-                                
+
                                 <div class="col-lg-12 col-md-12 col-12 mt-2 mt-sm-0">
                                     <ul class="list-unstyled footer-list">
-                                        
+
                                             <li><a href="@if (auth()->check()){{ route('customer.dashboard') }} @else {{ route('auth.login-index') }} @endif" class="text-foot"><i class="uil uil-angle-right-b me-1"></i> My account </a></li>
                                         {{-- <li><a href="{{ route('customer.order-history') }}" class="text-foot"><i class="uil uil-angle-right-b me-1"></i> Order History </a></li> --}}
                                         {{-- <li><a href="#" class="text-foot"><i class="uil uil-angle-right-b me-1"></i> Enquiries </a></li> --}}
@@ -49,20 +55,20 @@
                             </div><!--end row-->
                         </div><!--end col-->
 
-                        <div class="col-lg-4 col-md-6 col-12 mt-4 mt-lg-0 pt-2 pt-lg-0">
+                        {{-- Newsletter --}}
+                        {{-- <div class="col-lg-4 col-md-6 col-12 mt-4 mt-lg-0 pt-2 pt-lg-0">
                             <h5 class="footer-head">Newsletter</h5>
                             <p class="mt-3">Sign up and receive the latest tips via email.</p>
                             <form action="{{ route('newsletter.store') }}" method="post">
                                 @csrf
                                 <div class="row">
                                     <div class="col-lg-12">
-                                        <div class="foot-subscribe mb-3">                                        
+                                        <div class="foot-subscribe mb-3">
                                             <div class="form-icon position-relative">
                                                 <i data-feather="mail" class="fea icon-sm icons"></i>
                                                 <input type="text" name="name" id="namesubscribe" class="form-control ps-5 rounded" placeholder="Your Name : " required>
                                             </div>
-                                            
-                                            {{-- <label class="form-label pb-2">Write your email <span class="text-danger">*</span></label> --}}
+
                                             <div class="form-icon position-relative mt-3">
                                                 <i data-feather="mail" class="fea icon-sm icons"></i>
                                                 <input type="email" name="email" id="emailsubscribe" class="form-control ps-5 rounded" placeholder="Your email : " required>
@@ -72,10 +78,10 @@
                                             @endphp
                                             <div class="row mt-2">
                                                 <div class="col-4 mt-2">
-                                                    <select name="countrycode" id="country" class="form-select select2 countrycode" style="background-color: transparent"> 
-                                                        <option value="91" selected> India </option>    
+                                                    <select name="countrycode" id="country" class="form-select select2 countrycode" style="background-color: transparent">
+                                                        <option value="91" selected> India </option>
                                                         @foreach ($country as $item)
-                                                            <option value="{{$item->phonecode}}"> {{$item->name}} </option>    
+                                                            <option value="{{$item->phonecode}}"> {{$item->name}} </option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -95,6 +101,18 @@
                                     </div>
                                 </div>
                             </form>
+                        </div> --}}
+
+
+                        <div class="col-lg-4 col-md-6 col-12 mt-4 mt-lg-0 pt-2 pt-lg-0">
+                            <h5 class="footer-head">Book A Demo</h5>
+                            <p class="mt-3">Schedule a live demo with our
+                                representative.</p>
+                            <div class="col-lg-12">
+                                <div class="d-grid">
+                                    <a href="{{ url('start') }}" class="btn btn-soft-primary">Book Demo</a>
+                                </div>
+                            </div>
                         </div><!--end col-->
                     </div><!--end row-->
                 </div>
@@ -154,7 +172,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <p class="mb-0 text-center">{{ getSetting('app_name') }}</p> 
+                                <p class="mb-0 text-center">{{ getSetting('app_name') }}</p>
                             </div>
                             <div class="col-md-4">
                                     <ul class="policy-menu d-flex justify-content-center">
@@ -167,5 +185,5 @@
                 </div>
             </div>
         </div>
-    </div><!--end container-->    
+    </div><!--end container-->
 </footer>

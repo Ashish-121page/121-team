@@ -21,7 +21,20 @@
 
             table input,
             select {
-                width: 80px !important;
+                width: 65px !important;
+            }
+
+            .maintabel tr:nth-child(-n+4) {
+                widows: 150px !important;
+            }
+
+            .maintabel th:nth-child(-n+2),
+            .maintabel td:nth-child(-n+2) {
+                position: sticky;
+                left: 0;
+                background-color: #f2f2f2;
+                z-index: 1;
+                width: 150px !important;
             }
         </style>
     @endpush
@@ -34,7 +47,27 @@
                 <div class="card">
                     <div class="card-body">
                         <img src="{{ asset(getShopProductImage($ProductRecord->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
-                            class="img-fluid " style="height: 250px;width: 100%;object-fit: contain;" alt="">
+                            class="img-fluid my-2" style="height: 100px;width: 100%;object-fit: contain;" alt="">
+                        <span>
+                            <p class="text-center ">
+                                {{ $ProductRecord->model_code ?? '' }}
+                                @php
+                                    $rec = [];
+                                @endphp
+                                @foreach ($product_variant_combo as $loop1)
+                                    @foreach ($loop1 as $item)
+                                        @php
+                                            array_push($rec, getAttruibuteValueById($item)->parent_id);
+                                        @endphp
+                                    @endforeach
+                                @endforeach
+
+                                @foreach (array_unique($rec) as $item)
+                                    - {{ getAttruibuteValueById(getParentAttruibuteValuesByIds($item, [$ProductRecord->id]))->attribute_value }}
+                                @endforeach
+
+                            </p>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -56,7 +89,7 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-12">
+                                <div class="col-md-6 col-12 my-3">
                                     <div class="row">
                                         <div class="col-12 mb-3">
                                             <div class="h6">Product Weight</div>
@@ -98,12 +131,12 @@
                                     </div>
                                 </div>
 
-                                <div class="col-12 my-3">
+                                <div class="col-md-6 col-12 my-3">
                                     <div class="row">
                                         <div class="col-12 mb-3">
                                             <div class="h6">Product Dimensions</div>
                                         </div>
-                                        <div class="col-md-4 col-lg-4 col-sm-6 col-12 my-2">
+                                        <div class="col-md-4 col-lg-3 col-sm-6 col-12">
                                             <div class="form-group">
                                                 <label for="take-length">Product Length</label>
                                                 <input type="text" name="product[length]" id="take-length"
@@ -111,7 +144,7 @@
                                                     placeholder="Product Length">
                                             </div>
                                         </div>
-                                        <div class="col-md-4 col-lg-4 col-sm-6 col-12 my-2">
+                                        <div class="col-md-4 col-lg-3 col-sm-6 col-12">
                                             <div class="form-group">
                                                 <label for="take-width">Product Width</label>
                                                 <input type="text" name="product[width]" id="take-width"
@@ -120,7 +153,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4 col-lg-4 col-sm-6 col-12 my-2">
+                                        <div class="col-md-4 col-lg-3 col-sm-6 col-12">
                                             <div class="form-group">
                                                 <label for="take-height">Product Height</label>
                                                 <input type="text" name="product[height]" id="take-height"
@@ -129,7 +162,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4 col-lg-4 col-sm-6 col-12 my-2">
+                                        <div class="col-md-4 col-lg-3 col-sm-6 col-12">
                                             <div class="form-group">
                                                 <label for="take-lenuom">LWH UOM</label>
                                                 {{-- <input type="text" name="product[height]" id="take-lenuom"
@@ -182,8 +215,8 @@
 
 
         <div class="row">
-            <div class="col-12 table-responsive" id="working_table">
-                <table class="table">
+            <div class="col-12" id="working_table">
+                <table class="table table-responsive maintabel">
                     <thead>
                         <tr>
                             <th scope="col" style="display: none" data-dbf="consignee_id">Consignee Id</th>
@@ -209,104 +242,232 @@
                     </thead>
                     <tbody>
 
-                        @forelse ($consignee_record as $record)
-                            <tr>
-                                <td style="display: none">
-                                    {{ $record->id }}
-                                </td>
-                                <td scope="row">
-                                    <input type="text" class="form-control" id="consinee_name"
-                                        value="{{ json_decode($record->consignee_details)->ref_id ?? '' }}" readonly>
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control from_carton" id="from_carton"
-                                        data-rid="{{ $record->id }}">
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control to_carton" id="to_carton"
-                                        data-rid="{{ $record->id }}">
-                                </td>
-                                <td style="display: none">
-                                    <input type="text" class="form-control carton_quantity_box"
-                                        id="carton_quantity_box" data-rid="{{ $record->id }}">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control carton_quantity" id="carton_quantity"
-                                        value="{{ $carton_details->standard_carton ?? '' }}"
-                                        data-rid="{{ $record->id }}">
-                                </td>
+                        @if ($QuotationItem->packing_list != null || $QuotationItem->packing_list != '')
 
-                                <td>
-                                    <input type="text" class="form-control consign_qtyitem" id="consign_qtyitem"
-                                        data-rid="{{ $record->id }}" readonly value="0">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control take-length" id="length_packing"
-                                        value="{{ $carton_details->carton_length ?? 0 }}"
-                                        data-rid="{{ $record->id }}">
-                                </td>
+                            @php
+                                $tmp_ids_arr = [];
+                            @endphp
+                            @foreach ($avl_packinglist as $pindex => $record_packinglist)
+                                @php
+                                    $tmp_id = generateRandomStringNative(10);
+                                    array_push($tmp_ids_arr, $tmp_id);
+                                @endphp
+                                <tr>
+                                    <td style="display: none">
+                                        {{ $record_packinglist->consignee_id ?? '' }}
+                                    </td>
+                                    <td scope="row">
+                                        <input type="text" class="form-control" id="consinee_name"
+                                            value="{{ $record_packinglist->consignee_ref_id ?? '' }}"
+                                            @if ($record_packinglist->consignee_id ?? '' === '') readonly @endif>
+                                    </td>
+                                    <td>
+                                        <input type="number" min="0"  class="form-control from_carton" id="from_carton"
+                                            value="{{ $record_packinglist->consignment_from ?? '' }}"
+                                            data-rid="{{ $tmp_id }}">
+                                    </td>
+                                    <td>
+                                        <input type="number" min="0" class="form-control to_carton" id="to_carton"
+                                            value="{{ $record_packinglist->consignment_to ?? '' }}"
+                                            data-rid="{{ $tmp_id }}">
+                                    </td>
+                                    <td style="display: none">
+                                        <input type="text" class="form-control carton_quantity_box"
+                                            value="{{ $record_packinglist->consignment_carton_box_qty ?? '' }}"
+                                            id="carton_quantity_box" data-rid="{{ $tmp_id }}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control carton_quantity" id="carton_quantity"
+                                            value="{{ $record_packinglist->consignment_carton_qty ?? '' }}"
+                                            value="{{ $carton_details->standard_carton ?? '' }}"
+                                            data-rid="{{ $tmp_id }}">
+                                    </td>
 
-                                <td>
-                                    <input type="text" class="form-control take-width" id="width_packing"
-                                        value="{{ $carton_details->carton_width ?? 0 }}" data-rid="{{ $record->id }}">
-                                </td>
+                                    <td>
+                                        <input type="text" class="form-control consign_qtyitem" id="consign_qtyitem"
+                                            data-rid="{{ $tmp_id }}" readonly
+                                            value="{{ $record_packinglist->consignment_qty_consignment ?? 0 }}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control take-length" id="length_packing"
+                                            value="{{ $record_packinglist->consignment_length ?? ($carton_details->carton_length ?? 0) }}"
+                                            data-rid="{{ $tmp_id }}">
+                                    </td>
 
-                                <td>
-                                    <input type="text" class="form-control take-height" id="height_packing"
-                                        value="{{ $carton_details->carton_height ?? 0 }}"
-                                        data-rid="{{ $record->id }}">
-                                </td>
+                                    <td>
+                                        <input type="text" class="form-control take-width" id="width_packing"
+                                            value="{{ $record_packinglist->consignment_width ?? ($carton_details->carton_width ?? 0) }}"
+                                            data-rid="{{ $tmp_id }}">
+                                    </td>
 
-                                <td>
-                                    <select class="form-control take-lenuom" id="lenuom_packing"
-                                        data-rid="{{ $record->id }}">
-                                        @foreach ($length_uom as $item)
-                                            <option value="{{ $item }}"
-                                                @if ((Str::lower($carton_details->Carton_Dimensions_unit) ?? '') == $item) selected @endif>
-                                                {{ $item }}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control gross_weight_packing"
-                                        id="gross_weight_packing" readonly value="0"
-                                        data-rid="{{ $record->id }}">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control take-weight-uom"
-                                        id="gross_unit_weight_packing" readonly value="0"
-                                        data-rid="{{ $record->id }}" style="width:50px !important;">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control net_weight_packing" id="net_weight_packing"
-                                        readonly value="0" data-rid="{{ $record->id }}">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control take-weight-uom"
-                                        id="net_unit_weight_packing" readonly value="0"
-                                        data-rid="{{ $record->id }}" style="width:50px !important;">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="consign_qty_indiv" readonly
-                                        value="0" data-rid="{{ $record->id }}">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control consign_qty_carton" id="consign_qty_carton"
-                                        readonly value="0" data-rid="{{ $record->id }}">
-                                </td>
+                                    <td>
+                                        <input type="text" class="form-control take-height" id="height_packing"
+                                            value="{{ $record_packinglist->consignment_height ?? ($carton_details->carton_height ?? 0) }}"
+                                            data-rid="{{ $tmp_id }}">
+                                    </td>
 
-                                <td>
-                                    <input type="text" class="form-control" id="consign_qty_master" readonly
-                                        value="0" data-rid="{{ $record->id }}">
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="18">
-                                    <div class="alert alert-danger">No Consignee Found</div>
-                                </td>
-                            </tr>
-                        @endforelse
+                                    <td>
+                                        <select class="form-control take-lenuom" id="lenuom_packing"
+                                            data-rid="{{ $tmp_id }}">
+                                            @foreach ($length_uom as $item)
+                                                <option value="{{ $item }}"
+                                                    @if (
+                                                        (Str::lower($record_packinglist->consignment_lwnuom) ??
+                                                            (Str::lower($carton_details->Carton_Dimensions_unit) ?? '')) ==
+                                                            $item) selected @endif>
+                                                    {{ $item }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control gross_weight_packing"
+                                            id="gross_weight_packing" readonly
+                                            value="{{ $record_packinglist->consignment_gross_weight_total ?? 0 }}"
+                                            data-rid="{{ $tmp_id }}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control take-weight-uom"
+                                            id="gross_unit_weight_packing" readonly
+                                            value="{{ $record_packinglist->consignment_gross_weight_uom ?? 0 }}"
+                                            data-rid="{{ $tmp_id }}" style="width:50px !important;">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control net_weight_packing"
+                                            id="net_weight_packing" readonly
+                                            value="{{ $record_packinglist->consignment_net_weight_total ?? 0 }}"
+                                            data-rid="{{ $tmp_id }}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control take-weight-uom"
+                                            id="net_unit_weight_packing" readonly
+                                            value="{{ $record_packinglist->consignment_newt_weight_uom ?? 0 }}"
+                                            data-rid="{{ $tmp_id }}" style="width:50px !important;">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="consign_qty_indiv" readonly
+                                            value="{{ $record_packinglist->consignment_cbm_indiv ?? 0 }}"
+                                            data-rid="{{ $tmp_id }}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control consign_qty_carton"
+                                            id="consign_qty_carton" readonly
+                                            value="{{ $record_packinglist->consignment_cbm_indiv_caton ?? 0 }}"
+                                            data-rid="{{ $tmp_id }}">
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control" id="consign_qty_master" readonly
+                                            value="{{ $record_packinglist->consignment_cbm_batch_master ?? 0 }}"
+                                            data-rid="{{ $tmp_id }}">
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
+                            @forelse ($consignee_record as $record)
+                                <tr>
+                                    <td style="display: none">
+                                        {{ $record->id }}
+                                    </td>
+                                    <td scope="row">
+                                        <input type="text" class="form-control" id="consinee_name"
+                                            value="{{ json_decode($record->consignee_details)->ref_id ?? '' }}" readonly>
+                                    </td>
+                                    <td>
+                                        <input type="number" min="0" class="form-control from_carton" id="from_carton"
+                                            data-rid="{{ $record->id }}">
+                                    </td>
+                                    <td>
+                                        <input type="number" min="0" class="form-control to_carton" id="to_carton"
+                                            data-rid="{{ $record->id }}">
+                                    </td>
+                                    <td style="display: none">
+                                        <input type="text" class="form-control carton_quantity_box"
+                                            id="carton_quantity_box" data-rid="{{ $record->id }}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control carton_quantity" id="carton_quantity"
+                                            value="{{ $carton_details->standard_carton ?? '' }}"
+                                            data-rid="{{ $record->id }}">
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control consign_qtyitem" id="consign_qtyitem"
+                                            data-rid="{{ $record->id }}" readonly value="0">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control take-length" id="length_packing"
+                                            value="{{ $carton_details->carton_length ?? 0 }}"
+                                            data-rid="{{ $record->id }}">
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control take-width" id="width_packing"
+                                            value="{{ $carton_details->carton_width ?? 0 }}"
+                                            data-rid="{{ $record->id }}">
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control take-height" id="height_packing"
+                                            value="{{ $carton_details->carton_height ?? 0 }}"
+                                            data-rid="{{ $record->id }}">
+                                    </td>
+
+                                    <td>
+                                        <select class="form-control take-lenuom" id="lenuom_packing"
+                                            data-rid="{{ $record->id }}">
+                                            @foreach ($length_uom as $item)
+                                                <option value="{{ $item }}"
+                                                    @if ((Str::lower($carton_details->Carton_Dimensions_unit) ?? '') == $item) selected @endif>
+                                                    {{ $item }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control gross_weight_packing"
+                                            id="gross_weight_packing" readonly value="0"
+                                            data-rid="{{ $record->id }}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control take-weight-uom"
+                                            id="gross_unit_weight_packing" readonly value="0"
+                                            data-rid="{{ $record->id }}" style="width:50px !important;">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control net_weight_packing"
+                                            id="net_weight_packing" readonly value="0"
+                                            data-rid="{{ $record->id }}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control take-weight-uom"
+                                            id="net_unit_weight_packing" readonly value="0"
+                                            data-rid="{{ $record->id }}" style="width:50px !important;">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="consign_qty_indiv" readonly
+                                            value="0" data-rid="{{ $record->id }}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control consign_qty_carton"
+                                            id="consign_qty_carton" readonly value="0"
+                                            data-rid="{{ $record->id }}">
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control" id="consign_qty_master" readonly
+                                            value="0" data-rid="{{ $record->id }}">
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="18">
+                                        <div class="alert alert-danger">No Consignee Found</div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        @endif
+
+
+
 
                         <tr id="calc_total">
                             <td style="display: none"></td>
@@ -365,37 +526,56 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Total quantity</td>
-                            <td class="total_count-qty_consignee">0</td>
-                            <td>
-                                < PI </td>
-                        </tr>
-                        <tr>
-                            <td>Gross weight</td>
-                            <td class="total_count-gross_weight">0</td>
-                            <td>kgs</td>
-                        </tr>
-                        <tr>
-                            <td>Net weight</td>
-                            <td class="total_count-net_weight">0</td>
-                            <td>kgs</td>
-                        </tr>
-                        <tr>
-                            <td>CBM - cartons</td>
-                            <td class="total_count-cbn_ind">0</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>No. of cartons</td>
-                            <td class="total_count-to">0</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>No. of consignee</td>
-                            <td>{{ number_format($consignee_record->count(), 2) ?? 0 }}</td>
-                            <td></td>
-                        </tr>
+                        @php
+                            $data = json_decode($QuotationItem->packing_summary ?? '');
+                            if ($data != null) {
+                                $data = $data->overall;
+                            }
+                            $classArray = ['total_count-qty_consignee', 'total_count-gross_weight', 'total_count-net_weight', 'total_count-cbn_ind', 'total_count-to', 'number_of_consingee'];
+                        @endphp
+
+                        @if ($data != null)
+                            @foreach ($data as $inc => $item)
+                                <tr>
+                                    <td>{{ $item->text ?? '' }}</td>
+                                    <td class="{{ $classArray[$inc] ?? '' }}">{{ $item->value ?? '' }}</td>
+                                    <td> {{ $item->unit ?? '' }} </td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td>Total quantity</td>
+                                <td class="total_count-qty_consignee">0</td>
+                                <td>
+                                    < PI </td>
+                            </tr>
+                            <tr>
+                                <td>Gross weight</td>
+                                <td class="total_count-gross_weight">0</td>
+                                <td>kgs</td>
+                            </tr>
+                            <tr>
+                                <td>Net weight</td>
+                                <td class="total_count-net_weight">0</td>
+                                <td>kgs</td>
+                            </tr>
+                            <tr>
+                                <td>CBM - cartons</td>
+                                <td class="total_count-cbn_ind">0</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>No. of cartons</td>
+                                <td class="total_count-to">0</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>No. of consignee</td>
+                                <td>{{ number_format($consignee_record->count(), 2) ?? 0 }}</td>
+                                <td></td>
+                            </tr>
+                        @endif
+
                     </tbody>
                 </table>
             </div>
@@ -417,27 +597,44 @@
                     <tbody>
 
 
+                        @if (json_decode($QuotationItem->packing_summary ?? '') ?? [] != [])
+                            @foreach (json_decode($QuotationItem->packing_summary)->consignee_wise ?? [] as $ind => $consinee_summ)
+                                @php
+                                    $tmo_id = $tmp_ids_arr[$ind] ?? '';
+                                @endphp
+                                <tr>
+                                    <td>{{ $consinee_summ->ref_id ?? '' }}</td>
+                                    <td class="update_quantity" data-rid="{{ $tmo_id }}">110</td>
+                                    <td class="update_grossweight" data-rid="{{ $tmo_id }}">220</td>
+                                    <td class="update_newtweight" data-rid="{{ $tmo_id }}">154</td>
+                                    <td class="update_cbm" data-rid="{{ $tmo_id }}">0.0250</td>
+                                    <td class="update_num-carton" data-rid="{{ $tmo_id }}">10</td>
+                                </tr>
+                            @endforeach
+                        @else
+                            @forelse ($consignee_record as $record)
+                                @php
+                                    $json = json_decode($record->consignee_details) ?? '';
+                                @endphp
+                                <tr>
+                                    <td>{{ $json->ref_id ?? '' }}</td>
+                                    <td class="update_quantity" data-rid="{{ $record->id }}">110</td>
+                                    <td class="update_grossweight" data-rid="{{ $record->id }}">220</td>
+                                    <td class="update_newtweight" data-rid="{{ $record->id }}">154</td>
+                                    <td class="update_cbm" data-rid="{{ $record->id }}">0.0250</td>
+                                    <td class="update_num-carton" data-rid="{{ $record->id }}">10</td>
+                                </tr>
 
-                        @forelse ($consignee_record as $record)
-                            @php
-                                $json = json_decode($record->consignee_details) ?? '';
-                            @endphp
-                            <tr>
-                                <td>{{ $json->ref_id ?? '' }}</td>
-                                <td class="update_quantity" data-rid="{{ $record->id }}">110</td>
-                                <td class="update_grossweight" data-rid="{{ $record->id }}">220</td>
-                                <td class="update_newtweight" data-rid="{{ $record->id }}">154</td>
-                                <td class="update_cbm" data-rid="{{ $record->id }}">0.0250</td>
-                                <td class="update_num-carton" data-rid="{{ $record->id }}">10</td>
-                            </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="alert alert-danger">No Consignee Found</div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        @endif
 
-                        @empty
-                            <tr>
-                                <td colspan="6">
-                                    <div class="alert alert-danger">No Consignee Found</div>
-                                </td>
-                            </tr>
-                        @endforelse
+
 
                     </tbody>
                 </table>
@@ -454,6 +651,15 @@
 
 
     @section('push-script')
+
+        @if (isset($data) && $data != null)
+            <script>
+                $(document).ready(function() {
+                    $(".from_carton").trigger("input");
+                });
+            </script>
+        @endif
+
         <script>
             // Section for Updating the Value on Load of DOM
 
@@ -557,11 +763,28 @@
                 rid = +rid - 1;
                 let previnput = $("#to_carton[data-rid='" + rid + "']").val();
 
-                if (previnput === $(this).val()) {
-                    alert('Please Enter Different Value');
+                if (+previnput === +$(this).val()) {
+                    alert('Please Enter incremental Value');
                     $(this).val('');
                 }
             });
+
+
+            $(document).on('change', '.from_carton', function(e) {
+                let rid = $(this).data('rid');
+                if (rid == 1) {
+                    return;
+                }
+
+                rid = +rid - 1;
+                let previnput = $("#to_carton[data-rid='" + rid + "']").val();
+
+                if (+previnput > +$(this).val()) {
+                    alert('Please Enter incremental Value');
+                    $(this).val('');
+                }
+            })
+
 
             $(document).on('input', ".from_carton,.to_carton,.carton_quantity", function(e) {
                 let rid = $(this).data('rid');
@@ -614,9 +837,9 @@
             // For Carton Quantity
             $("#item_unit_weight").trigger("change");
             $("#take-lenuom").trigger("change");
-            $("#take-height").trigger("keyup");
-            $("#take-length").trigger("keyup");
-            $("#take-width").trigger("keyup");
+            // $("#take-height").trigger("keyup");
+            // $("#take-length").trigger("keyup");
+            // $("#take-width").trigger("keyup");
 
             function tableToJson(table) {
                 var data = [];
@@ -701,14 +924,14 @@
 
 
                 finalgweight = gweight * carton_quantity
-                finalgweight = finalgweight.toFixed(4);
+                finalgweight = finalgweight.toFixed(2);
 
 
                 $("#gross_weight_packing[data-rid='" + rid + "']").val(finalgweight);
                 $(".update_grossweight[data-rid='" + rid + "']").html(finalgweight);
 
                 finalnweight = nweight * carton_quantity;
-                finalnweight = finalnweight.toFixed(4);
+                finalnweight = finalnweight.toFixed(2);
 
                 $("#net_weight_packing[data-rid='" + rid + "']").val(finalnweight);
                 $(".update_newtweight[data-rid='" + rid + "']").html(finalnweight);
@@ -960,7 +1183,7 @@
                     let previnput = $("#to_carton[data-rid='" + rid + "']").val();
 
                     if (previnput === $(this).val()) {
-                        alert('Please Enter Different Value');
+                        alert('Please Enter incremental Value');
                         $(this).val('');
                     }
                 });
@@ -1046,7 +1269,7 @@
                     let previnput = $("#to_carton[data-rid='" + rid + "']").val();
 
                     if (previnput === $(this).val()) {
-                        alert('Please Enter Different Value');
+                        alert('Please Enter incremental Value');
                         $(this).val('');
                     }
                 });

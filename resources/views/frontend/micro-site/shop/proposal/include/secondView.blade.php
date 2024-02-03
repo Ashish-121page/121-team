@@ -21,9 +21,9 @@
 
                 {{-- <div class="card shop-list border-10 position-relative"> --}}
                 <div class="shop-image position-relative overflow-hidden rounded ">
-                    <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank" style="height: 40vh; width: 100%; object-fit: contain; gap:2; display: inherit; top: 20px;left: 20px;">
+                    <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank" style="height: 20rem;width: auto;display: inherit;top: 20px;left: 20px;">
                         @if( getShopProductImage($product->id,'single') != null)
-                            <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" class="" style="height:100%;">
+                            <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" class="" style="height:100%;object-fit: contain;">
                         @else
                             <img src="{{ asset('backend/default/placeholder.jpg')  }}" class="img-fluid rounded" style="height:100%;">
                         @endif

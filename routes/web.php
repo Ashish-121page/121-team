@@ -95,7 +95,7 @@ Route::group(['middleware' => 'subdomain'],  function () {
             Route::post('/enquiry', [MicroSiteController::class,'storeEnquiry'])->name('store-enquiry');
             Route::get('/thank-you', [MicroSiteController::class,'thankYou'])->name('thank-you');
             Route::get('/change-currency',[MicroSiteController::class,'chagecurrency'])->name('change.currency');
-            
+
         });
 });
 
@@ -142,12 +142,14 @@ Route::get('/user-shop-cs-filler', function () {
 
         // Website Controller
         Route::get('/', [WebsiteController::class,'index'])->name('website.index');
+        Route::get('/now', [WebsiteController::class,'now'])->name('website.now');
         Route::get('/microsite-proxy', [WebsiteController::class,'microSiteProxy'])->name('microsite.proxy');
         Route::get('/demo', [WebsiteController::class,'demoform'])->name('demoform');
         Route::get('/dtask', [WebsiteController::class,'formjaya'])->name('jayaform23');
 
         Route::get('/feedback', [WebsiteController::class,'feedbackform'])->name('feedbackform');
         Route::get('/about', [WebsiteController::class,'about'])->name('about');
+        Route::get('/about1', [WebsiteController::class,'about_one'])->name('about-one');
         Route::get('/plans', [WebsiteController::class,'planIndex'])->name('plan.index');
         Route::get('/plan/{id}/checkout', [WebsiteController::class,'checkout'])->name('plan.checkout');
         // Route::get('/plan/{id}/checkout/index', [WebsiteController::class,'checkoutIndex'])->name('plan.checkout.index');
@@ -155,6 +157,7 @@ Route::get('/user-shop-cs-filler', function () {
         Route::get('/faqs', [WebsiteController::class,'faq'])->name('website.faq');
         Route::post('/{id}/package', [WebsiteController::class,'packageStore'])->name('package.store');
         Route::get('/contact-us', [WebsiteController::class,'contact'])->name('contact.index');
+        Route::get('/contact-us1', [WebsiteController::class,'contact_one'])->name('contact.index-one');
         Route::post('/contact-us/store', [WebsiteController::class,'contactStore'])->name('contact-us.store');
         Route::get('/start', [WebsiteController::class,'joinIndex'])->name('join.index');
         Route::post('/start/resend-otp','WebsiteController@resendStartOTP')->name('join.resend-otp');
@@ -246,7 +249,7 @@ Route::get('/user-shop-cs-filler', function () {
 
         Route::get('login', [CustomerLoginController::class,'login'])->name('login');
         Route::post('login', [LoginController::class,'login']);
-        // Route::get('register', [RegisterController::class,'showRegistrationForm'])->name('register');
+        Route::get('register', [RegisterController::class,'showRegistrationForm'])->name('register');
         // Route::post('register', [RegisterController::class,'register']);
 
         // Socialite Routes

@@ -16,7 +16,7 @@
                         <div class="form-group {{ $errors->has('price') ? 'has-error' : '' }}">
                             <input type="hidden" name="product_id" value="" class="productId">
                             <label for="price" class="control-label">Offer Price</label>
-                            <input class="form-control" name="price" min="0" type="number" id="price" placeholder="Enter price">
+                            <input class="form-control" name="price" min="0" type="text" pattern="^[0-9]+(\.[0-9]+)?$" id="price" placeholder="Enter price">
 
 
                             <label for="remarks_offer">Customisation</label>

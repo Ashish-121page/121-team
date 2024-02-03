@@ -1,5 +1,5 @@
 @extends('backend.layouts.main')
-@section('title', 'Asset Manager')
+@section('title', 'Image Studio')
 @section('content')
 
     <!-- push external head elements to head -->
@@ -8,15 +8,21 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
 
-        <style>
-            .main-content {
-                padding-top: 0 !important;
-                margin-top: 0px !important;
-            }
 
-            .header-top {
-                display: none !important;
-            }
+        {{-- @if (!request()->has('refer'))
+            <style>
+                .main-content {
+                    padding-top: 0 !important;
+                    margin-top: 0px !important;
+                }
+
+                .header-top {
+                    display: none !important;
+                }
+            </style>
+        @endif --}}
+
+        <style>
 
             .logged-in-as {
                 display: none !important;
@@ -186,12 +192,18 @@
     <div class="main-container">
         <div class="row">
 
-            <div class="col-12 d-flex align-items-center" style="height: 50px; background-color:;">
+            <div class="col-12 d-flex align-items-center justify-content-around flex-wrap  mb-3" style="height: 50px; background-color:#e4e4e4;">
+                <a href="" id="back98" class="btn btn-outline-primary ">
+                    Back
+                </a>
                 <div style="padding-left: 50px;">
-
                     <span class="filename" data-oldname="{{ basename($file_path) }}">
                         {{ basename($file_path) }}
                     </span>
+                </div>
+                <div class=" d-flex align-items-center justify-content-between mx-3">
+                    <input type="checkbox" id="keepnamecheck" checked>
+                    <label for="keepnamecheck" class="m-0 p-0 mx-2">Keep Original File</label>
                 </div>
             </div>
 
@@ -217,6 +229,11 @@
 
                                         <img src="" alt="" id="RemovedBackgroundimage" class="d-none">
 
+                                        <div class="changebgcontainer d-none"
+                                            style="height: 100%;width: 100%">
+                                            <canvas id="changebgCanvas"></canvas>
+                                        </div>
+
                                         <div class="cropcontain d-none" style="height: 50vh;width: 50vw">
                                             <canvas id="croppedCanvas"></canvas>
                                         </div>
@@ -229,15 +246,19 @@
                                             <canvas id="rembgCanvas"></canvas>
                                         </div>
 
+                                        <div class="anotatecontainer d-none" style="height: 50vh;width: 50vw">
+                                            <canvas id="anotateCanvas"></canvas>
+                                        </div>
+
                                     </div>
                                 </div>
 
                                 <div class="col-12 col-md-12 d-flex justify-content-start mt-5"
-                                    style="position: absolute;bottom: -15%;right: -83%; padding-bottom: 15px;">
+                                    style="position: absolute;bottom: -27%;right: -82%; padding-bottom: 15px;">
                                     <div class="previewedit" style="width: 20vh">
                                         <div class="button-container"
-                                            style="background-color: black; display: flex; justify-content: center; align-items: center; height: 100%; padding:5px; margin-bottom: 10px; border-radius:5px">
-                                            <button id="downloadimage" class="btn btn-secondary" style="display: block; ">
+                                            style="background-color: black; display: flex; justify-content: center; align-items: center; height: 100%;border-radius:5px;padding: 10px;width: fit-content;">
+                                            <button id="downloadimage" class="btn btn-primary" style="display: block; ">
                                                 Save Image
                                             </button>
                                         </div>
@@ -347,7 +368,7 @@
                                     </button>
                                 </li>
                                 {{-- original content --}}
-                                <li class="nav-item my-3" role="presentation">
+                                <li class="nav-item my-3 d-none" role="presentation">
                                     <button class="pill-v-btn" id="pills-contact-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-contact" type="button" role="tab"
                                         aria-controls="pills-contact" aria-selected="false"
@@ -359,12 +380,10 @@
                                         </svg>
                                         Add Text
                                     </button>
-                                    {{-- <button class="pill-v-btn" id="pills-contact-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-contact" type="button" role="tab"
-                                        aria-controls="pills-contact" aria-selected="false" style="font-size: 0.75rem;" > Add Text</button> --}}
+
                                 </li>
 
-                                <li class="nav-item my-3" role="presentation">
+                                <li class="nav-item my-3 d-none" role="presentation">
                                     <button class="pill-v-btn " id="pills-cropbtn" data-bs-toggle="pill"
                                         data-bs-target="#pills-home" type="button" role="tab"
                                         aria-controls="pills-home" aria-selected="true"
@@ -378,7 +397,7 @@
                                     </button>
                                 </li>
 
-                                <li class="nav-item my-3" role="presentation">
+                                <li class="nav-item my-3 d-none" role="presentation">
                                     <button id="pills-profile-tab" class="pill-v-btn" data-bs-toggle="pill"
                                         style="font-size: 0.75rem;display: flex; align-items: center;"
                                         data-bs-target="#pills-profile" type="button" role="tab"
@@ -839,17 +858,20 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-12 d-none">
+                                    <div class="col-12 d-noe">
                                         Add Object:
                                     </div>
                                     <div class="col-12 mt-2">
-                                        <div class="mb-3 d-none">
+                                        <div class="mb-3">
                                             <label for="imageUrl">URL:</label>
                                             <input type="text" id="imageUrl" placeholder="Enter image URL"
                                                 class="form-control">
+
+                                            <input type="file" id="imagefilefeb" class="form-control">
+
                                         </div>
-                                        <button type="button" id="AddImageonCanvas"
-                                            class="btn d-none btn-outline-primary">Add Image</button>
+                                        <button type="button" id="AddImageonCanvas" class="btn btn-outline-primary">Add
+                                            Image</button>
 
                                         <button id="deleteSelectedobjects" class="btn btn-outline-danger"
                                             type="button">Reset</button>
@@ -857,6 +879,7 @@
                                             type="button">
                                             Apply Annotation
                                         </button>
+
                                     </div>
                                 </div>
                             </div>
@@ -917,6 +940,7 @@
 
                 reader.readAsDataURL(file);
             });
+
 
             function compressImage(originalImageUrl, callback) {
                 let img = new Image();
@@ -993,6 +1017,13 @@
                 localStorage.setItem("custombg", JSON.stringify(links));
             }
         </script>
+
+    <script>
+        document.getElementById('back98').addEventListener('click', function(e) {
+            e.preventDefault(); 
+            window.history.back(); 
+        });
+    </script>
 
         <script>
             function readycolor() {
@@ -1133,11 +1164,19 @@
             });
 
 
+            $("#keepnamecheck").change(function(e) {
+                if ($(this).is(':checked') === false) {
+                    $.alert("Original image will be unlinked from the product");
+                }
+            });
+
 
             $("#downloadimage").click(function(e) {
                 e.preventDefault();
                 const dataUrl = $("#editpreviewimage").attr('src');
-                console.log(dataUrl);
+                let keepnamecheck = $("#keepnamecheck").is(':checked');
+                keepnamecheck = keepnamecheck ? "keeporiginal" : "dontkeeporiginal";
+                console.log(keepnamecheck);
                 $.ajax({
                     type: "POST",
                     url: "{{ route('panel.image.crop.image') }}",
@@ -1145,7 +1184,9 @@
                         _token: "{{ csrf_token() }}",
                         image: dataUrl,
                         old_path: $("#old_path").val(),
+                        keepnamecheck: keepnamecheck
                     },
+                    
                     success: function(response) {
                         $.toast({
                             heading: 'SUCCESS',
@@ -1155,6 +1196,10 @@
                             loaderBg: '#f96868',
                             position: 'top-right'
                         });
+
+                    if (window.location.search.includes('refer=pedit')){
+                        window.history.back();
+                    }
 
                     },
                     error: function(response) {
@@ -1193,7 +1238,8 @@
 
             //     $("#editpreviewimage").attr('src', '');
 
-            //     changeImageBackground('rembgCanvas', forgroundImgsrc, backgorundImagSRC, function(dataURL) {
+            //     changeImageBackground('rembgCanvas', forgroundImgsrc, backgorundImagSRC, function(
+            //         dataURL) {
             //         $("#editpreviewimage").attr('src', dataURL);
             //     });
 
@@ -1282,6 +1328,7 @@
                 loadImageButton.addEventListener('click', function() {
                     $(".cropcontain").removeClass("d-none");
                     $(".filtercontainer").addClass("d-none");
+                    $(".anotatecontainer").addClass("d-none");
                     $("#editpreviewimage").addClass("d-none");
 
                     var imageUrl = imageUrlInput.src;
@@ -1293,8 +1340,8 @@
                                 cropper.destroy();
                             }
 
-                            croppedCanvas.width = 800; // Set the desired width of the cropped image
-                            croppedCanvas.height = '800px'; // Set the desired height of the cropped image
+                            croppedCanvas.width = '500px'; // Set the desired width of the cropped image
+                            croppedCanvas.height = '600px'; // Set the desired height of the cropped image
 
                             cropper = new Cropper(croppedCanvas, {
                                 aspectRatio: 0, // Default aspect ratio
@@ -1358,6 +1405,78 @@
         </script>
 
 
+
+        {{-- For Image Background --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const changebgbtn = document.getElementById("pills-addbg-tab");
+                const ImagePath = document.getElementById("editpreviewimage");
+                var canvas = new fabric.Canvas('changebgCanvas');
+
+                // $("#editpreviewimage").addClass("border border-primary");
+
+                changebgbtn.addEventListener("click", function() {
+                    $(".changebgcontainer").toggleClass("d-none");
+                    $(".filtercontainer, .cropcontain").addClass("d-none");
+
+                    canvas.setWidth(ImagePath.width);
+                    canvas.setHeight(ImagePath.height);
+
+                    fabric.Image.fromURL(ImagePath.src, function(img) {
+                        img.scaleToWidth(canvas.width);
+                        img.scaleToHeight(canvas.height);
+                        canvas.add(img);
+                    });
+
+                    $("#editpreviewimage").addClass("d-none");
+                });
+
+                $(".bgimage-btn").click(function(e) {
+                    let backgroundImgSrc = $(this).find('img').attr('src');
+
+                    fabric.Image.fromURL(backgroundImgSrc, function(img) {
+                        img.scaleToWidth(canvas.width);
+                        img.scaleToHeight(canvas.height);
+
+                        // Set the new image as the background
+                        // canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+                        canvas.setBackgroundImage(img, function() {
+                            // Get Data URL after setting the background
+                            let dataURL = canvas.toDataURL({
+                                format: 'png',
+                                quality: 0.8
+                            });
+
+                            // Updating Url to the preview image...
+                            $("#editpreviewimage").attr('src', dataURL);
+                        });
+
+                        // Bring existing images to the front
+                        canvas.getObjects().forEach(function(object) {
+                            if (object.type === 'image') {
+                                canvas.bringToFront(object);
+                            }
+                        });
+                    });
+                    $("#editpreviewimage").addClass("d-none");
+                });
+
+
+                // Event listener for object modification (e.g., moving)
+                canvas.on('object:modified', function(event) {
+                    // Log new Data URL whenever an element is moved
+                    let dataURL = canvas.toDataURL({
+                        format: 'png',
+                        quality: 0.8
+                    });
+                    // console.log("Data URL after element move:", dataURL);
+                    $("#editpreviewimage").attr('src', dataURL);
+                });
+            });
+        </script>
+
+
+
         {{-- For Filter Section --}}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -1376,6 +1495,7 @@
                     $(".filtercontainer").removeClass("d-none");
                     $(".cropcontain").addClass("d-none");
                     $("#editpreviewimage").addClass("d-none");
+                    $(".anotatecontainer").addClass("d-none");
 
 
 
@@ -1489,55 +1609,48 @@
             });
         </script>
 
-
         {{-- For Image Anotation --}}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                // Get elements
                 const anotationbtn = document.getElementById("pills-contact-tab");
                 const ImagePath = document.getElementById("editpreviewimage");
+                const canvas = new fabric.Canvas('anotateCanvas');
 
+                // Add click event for annotation button
                 anotationbtn.addEventListener('click', function() {
+                    // Show annotation tools and hide other elements
+                    $(".anotatecontainer").removeClass("d-none");
+                    // $(".anotateCanvas").addClass("border");
+                    // $(".anotateCanvas").addClass("border-primary");
 
 
-                    $(".filtercontainer").removeClass("d-none");
+                    $(".filtercontainer").addClass("d-none");
                     $(".cropcontain").addClass("d-none");
-                    $("#editpreviewimage").addClass("d-none");
+                    $(".changebgcontainer").addClass("d-none");
 
-                    var canvas = new fabric.Canvas('canvasfilter');
-                    canvas.setWidth(500); // Set the width to 500 pixels
-                    canvas.setHeight(600); // Set the height to 600 pixels
-                    var currentObject;
-
-                    // fabric.Image.fromURL(ImagePath.src, function(img) {
-                    //     canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-                    //         scaleX: canvas.width / img.width,
-                    //         scaleY: canvas.height / img.height
-                    //     });
-                    // });
+                    canvas.setWidth(ImagePath.width);
+                    canvas.setHeight(ImagePath.height);
 
                     fabric.Image.fromURL(ImagePath.src, function(img) {
-                        // Set the original size of the image
                         img.scaleToWidth(canvas.width);
                         img.scaleToHeight(canvas.height);
-
                         canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
                     });
 
+                    $("#editpreviewimage").addClass("d-none");
 
-                    document.getElementById("AddtextonIMage").addEventListener('click', function() {
-                        var textValue = document.getElementById('text').value;
-                        var fontSize = document.getElementById('fontSize').value;
-                        var textColor = document.getElementById('textColor').value;
-                        var textObj = new fabric.IText(textValue, {
-                            left: 100,
-                            top: 100,
-                            fontSize: parseInt(fontSize, 10),
-                            fill: textColor
+
+                    // Event listener for object modification (e.g., moving)
+                    canvas.on('object:modified', function(event) {
+                        // Log new Data URL whenever an element is moved
+                        let dataURL = canvas.toDataURL({
+                            format: 'png',
+                            quality: 0.8
                         });
-                        canvas.add(textObj);
-                        canvas.setActiveObject(textObj);
-                        currentObject = textObj;
-                    })
+                        // console.log("Data URL after element move:", dataURL);
+                        $("#editpreviewimage").attr('src', dataURL);
+                    });
 
 
                     document.getElementById("BoldtextonIMage").addEventListener('click', function() {
@@ -1567,38 +1680,25 @@
                         }
                     });
 
-                    document.getElementById("AddarrowtextonIMage").addEventListener('click', function() {
-                        var points = [50, 100, 200, 100];
-                        var options = {
-                            stroke: 'black',
-                            strokeWidth: 5,
-                            fill: 'black',
-                            selectable: true
-                        };
-                        var line = new fabric.Line(points, options);
-                        var triangle = new fabric.Triangle({
-                            width: 20,
-                            height: 15,
-                            fill: 'black',
-                            left: 200,
-                            top: 95,
-                            angle: 90
-                        });
 
-                        var group = new fabric.Group([line, triangle], {});
-                        canvas.add(group);
+
+                    // Event listener for adding text on the image
+                    document.getElementById("AddtextonIMage").addEventListener('click', function() {
+                        // Create text object
+                        var textValue = document.getElementById('text').value;
+                        var fontSize = document.getElementById('fontSize').value;
+                        var textColor = document.getElementById('textColor').value;
+                        var textObj = new fabric.IText(textValue, {
+                            left: 100,
+                            top: 100,
+                            fontSize: parseInt(fontSize, 10),
+                            fill: textColor
+                        });
+                        canvas.add(textObj);
+                        canvas.setActiveObject(textObj);
                     });
 
-
-
-                    document.getElementById("AddImageonCanvas").addEventListener('click', function() {
-                        var imageUrl = document.getElementById('imageUrl').value;
-                        fabric.Image.fromURL(imageUrl, function(img) {
-                            img.scaleToWidth(100);
-                            img.scaleToHeight(100);
-                            canvas.add(img);
-                        });
-                    });
+                    // Other annotation functionalities...
 
                     // Event listener for real-time color change
                     document.getElementById('textColor').addEventListener('input', function() {
@@ -1609,6 +1709,7 @@
                         }
                     });
 
+                    // Event listener for deleting selected objects
                     document.getElementById('deleteSelectedobjects').addEventListener('click', function() {
                         var activeObject = canvas.getActiveObject();
                         if (activeObject) {
@@ -1622,28 +1723,46 @@
                             }
                             canvas.requestRenderAll(); // Re-render the canvas
                         }
-
                     });
 
+                    // Event listener for adding an image from file input
+                    document.getElementById('imagefilefeb').addEventListener('change', function(e) {
+                        var file = e.target.files[0];
+                        if (file) {
+                            var reader = new FileReader();
+                            reader.onload = function(event) {
+                                var imageUrl = event.target.result;
+                                fabric.Image.fromURL(imageUrl, function(img) {
+                                    canvas.add(img);
+                                });
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
 
+                    // Event listener for adding an image from URL
+                    document.getElementById("AddImageonCanvas").addEventListener('click', function() {
+                        var imageUrl = document.getElementById('imageUrl').value;
+                        fabric.Image.fromURL(imageUrl, function(img) {
+                            img.scaleToWidth(100);
+                            img.scaleToHeight(100);
+                            canvas.add(img);
+                        });
+                    });
 
+                    // Event listener for saving annotation
                     document.getElementById('saveAnotationbtn').addEventListener('click', function() {
                         const dataUrl = canvas.toDataURL('image/png');
-                        console.log(dataUrl);
+                        console.log("Data URL of the complete canvas:", dataUrl);
 
+                        // Update preview image with annotated image
                         $("#editpreviewimage").attr('src', dataUrl);
                         $("#editpreviewimage").removeClass("d-none");
                         $(".filtercontainer").addClass("d-none");
                         $(".cropcontain").addClass("d-none");
                         $("#pills-contact-tab").removeClass('active');
-
-
                     });
-
-
-                    // {{--  ============================================== --}}
-
-                }); //  Click Event End....
+                });
             });
         </script>
     @endpush

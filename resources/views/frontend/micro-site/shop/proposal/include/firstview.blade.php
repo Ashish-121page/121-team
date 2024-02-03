@@ -80,7 +80,7 @@
                                                <b> {{ getAttruibuteById($item)->name }} :</b>
 
                                             @foreach ($ids_attri as $key1 => $value)
-                                                {{ getAttruibuteValueById($value)->attribute_value }}
+                                                {{ getAttruibuteValueById($value)->attribute_value ?? ''}}
                                                 @if ($attri_count != 1 && $key1 < $attri_count-1 )
                                                     ,
                                                 @endif

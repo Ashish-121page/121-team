@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  *
 
@@ -26,6 +26,7 @@ use App\Models\UserPackage;
 use App\Models\Package;
 use App\Models\UserShop;
 use App\Models\AccessCode;
+use App\Models\UserCurrency;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
@@ -70,7 +71,7 @@ class CustomerLoginController extends Controller
         $phone = $request->phone;
         return view('frontend.login.otp', compact('phone'));
     }
-   
+
     protected function validateLogin(Request $request)
     {
         // return $request->resent;
@@ -104,6 +105,11 @@ class CustomerLoginController extends Controller
         $phone = session()->get('phone');
         session()->put('otp',$otp);
 
+        // ! Skip OTP Send Request In Localhost
+        if(env('WORKING_AREA','production') == 'local'){
+            return redirect(route('auth.otp-index').'?phone='.$phone);
+        }
+
         if(getSetting('sms_verify')){
             $mailcontent_data = App\Models\MailSmsTemplate::where('code','=',"otp-send")->first();
             if($mailcontent_data){
@@ -121,7 +127,7 @@ class CustomerLoginController extends Controller
         }
        return redirect(route('auth.otp-index').'?phone='.$phone);
     }
-    
+
     protected function validateOTP(Request $request)
     {
         $get_otp = implode('',$request->otp);
@@ -130,7 +136,7 @@ class CustomerLoginController extends Controller
         $user = User::where('phone','!=',null)
         ->wherePhone($phone)
         ->first();
-        
+
         $userAdd = DB::table('users')->where('additional_numbers','LIKE','%'.$phone.'%')->first() ?? "";
 
 
@@ -140,13 +146,13 @@ class CustomerLoginController extends Controller
             }
             // Setting Dynamic Session Domain for logging in
             auth()->loginUsingId($user->id);
-            
+
             if(AuthRole() == "User"){
                 return redirect()->route('customer.dashboard');
             }else{
                 return redirect()->route('panel.dashboard');
             }
-        } 
+        }
         elseif (isset($userAdd->additional_numbers) != "" ) {
             if (in_array($phone,json_decode($userAdd->additional_numbers))) {
                 // return redirect(route('auth.login-index'))->with('error','Account already exists. Login from Primary contact or Raise login ticket');
@@ -157,9 +163,9 @@ class CustomerLoginController extends Controller
                     return redirect()->route('customer.dashboard');
                 }else{
                     return redirect()->route('panel.dashboard');
-                }                
-                
-                
+                }
+
+
             }
         }
         else {
@@ -170,7 +176,7 @@ class CustomerLoginController extends Controller
         }
     }
 
-    
+
      public function signup(Request $request)
     {
         if(session()->has('phone')){
@@ -180,15 +186,15 @@ class CustomerLoginController extends Controller
             return redirect()->back()->with('error',"Something went wrong!");
         }
     }
-   
-    
+
+
     protected function validateSignup(Request $request)
     {
         $exist_user = User::whereEmail($request->email)->wherePhone($request->phone)->first();
         if($exist_user){
             return redirect(route('auth.access-code').'?user_id='.$exist_user->id);
         }
-        
+
         $validator = Validator::make($request->all(), [
             'name'     => 'required | string ',
             'email'    => 'required | email | unique:users',
@@ -199,7 +205,7 @@ class CustomerLoginController extends Controller
             return redirect()->back()->withInput()->with('error', $validator->messages()->first() );
         }
         $name = str_replace(" ", "", $request->name);
-        
+
         // Account Creation
         $user = User::create([
             'name'     => $request->name,
@@ -210,7 +216,6 @@ class CustomerLoginController extends Controller
             // 'password' => Hash::make($request->phone."@121"),
         ]);
 
-        
         $user->syncRoles(3);
         $contact_info = [
             'phone' => $request->phone,
@@ -239,7 +244,7 @@ class CustomerLoginController extends Controller
         $team = [
             'title' => 'Our Team',
         ];
-        
+
         // Micro Site Creation
         $ms = UserShop::create([
             'user_id' => $user->id,
@@ -258,6 +263,8 @@ class CustomerLoginController extends Controller
             'email' => null,
         ]);
 
+
+
         return redirect(route('auth.access-code').'?user_id='.$user->id);
     }
 
@@ -267,8 +274,8 @@ class CustomerLoginController extends Controller
         $user_data = User::whereId($user_id)->first();
 
         // magicstring($user_data);
-         
-         
+
+
         return view('frontend.login.access-code',compact('user_id','user_data'));
     }
 
@@ -302,9 +309,9 @@ class CustomerLoginController extends Controller
               return redirect()->back()->with('error','This access code is already redeemed!');
             }
 
-            // Update Access Code 
+            // Update Access Code
             $chk_code->update([
-                'redeemed_user_id' => $request->user_id,  
+                'redeemed_user_id' => $request->user_id,
                 'redeemed_at' => now()
             ]);
 
@@ -312,9 +319,11 @@ class CustomerLoginController extends Controller
                 'is_supplier' => 0, //UnApproved Seller Panel
             ]);
 
+
+
              // Assign Trial Package
             $package = Package::whereId(1)->first();
-            
+
             if($package){
                 if($package->duration == null){
                         $duration = 30;
@@ -330,51 +339,73 @@ class CustomerLoginController extends Controller
                 $package_child->limit = $package->limit;
                 $package_child->save();
             }
-            
+
         }else{
             $user->update([
             'is_supplier' => 0,
             ]);
         }
-        
+
 
         // TODO: Using FileManager as Settings
         if ($request->account_type == 'reseller' || $request->account_type == 'customer') {
+            $managegroup = 'yes';
+            $bulkupload = 'no';
+            $Filemanager = 'yes'; // ` Settings
+            $offers = 'yes';
+            $addandedit = 'yes'; // ` Display
+            $documentaion = 'no'; // ` documentaion, Quotation , Proforma Invoice
+            $maya = 'no'; // ` Maya
             $mycustomer = 'no';
             $mysupplier = 'no';
-            $Filemanager = 'no'; // ` Settings
-            $addandedit = 'no'; 
-            $bulkupload = 'no';
             $pricegroup = 'no';
-            $managegroup = 'no';
             $manangebrands = 'no';
-            $offers = 'no';
 
-        }elseif ($request->account_type == 'supplier' && $request->account_type == 'exporter') {
+        }elseif ($request->account_type == 'supplier' || $request->account_type == 'exporter') {
             $mycustomer = 'no';
             $mysupplier = 'no';
-            $Filemanager = 'no'; // ` Settings
-            $addandedit = 'yes'; 
-            $bulkupload = 'no';
+            $Filemanager = 'yes'; // ` Settings
+            $addandedit = 'no';
+            $bulkupload = 'yes';
             $pricegroup = 'no';
             $managegroup = 'yes';
             $manangebrands = 'no';
-            $offers = 'no';
+            $offers = 'yes';
+            $documentaion = 'no'; // ` Documentation, Quotation , Proforma Invoice
+            $maya = 'no'; // ` Maya
+
         }else{
             # If Got Some Error
             // ! Taking as A customer
+            $managegroup = 'yes';
+            $bulkupload = 'no';
+            $Filemanager = 'yes'; // ` Settings
+            $offers = 'yes';
+            $addandedit = 'yes'; // ` Display
+            $documentaion = 'no'; // ` documentaion, Quotation , Proforma Invoice
+            $maya = 'no'; // ` Maya
             $mycustomer = 'no';
             $mysupplier = 'no';
-            $Filemanager = 'no'; // ` Settings
-            $addandedit = 'no'; 
-            $bulkupload = 'no';
             $pricegroup = 'no';
-            $managegroup = 'no';
             $manangebrands = 'no';
-            $offers = 'no';
+
         }
 
-        $permission_user = ["mycustomer"=>$mycustomer,"manangebrands" => $manangebrands,"Filemanager" => $Filemanager,"addandedit"=> $addandedit,"pricegroup" => $pricegroup,"bulkupload"=> $bulkupload,"mysupplier"=> $mysupplier, "managegroup" => $managegroup,"offers" => $offers ];
+        $permission_user = [
+            "mycustomer" => $mycustomer,
+            "manangebrands" => $manangebrands,
+            "Filemanager" => $Filemanager,
+            "addandedit" => $addandedit,
+            "pricegroup" => $pricegroup,
+            "bulkupload" => $bulkupload,
+            "mysupplier" => $mysupplier,
+            "managegroup" => $managegroup,
+            "offers" => $offers,
+            "documentaion" => $documentaion,
+            'maya' => $maya
+        ];
+
+
 
         // Update Industry Info
         $user->update([
@@ -411,36 +442,36 @@ class CustomerLoginController extends Controller
         pushOnSiteNotification($onsite_notification);
 
         // Send Welcome Mail
-        $mailcontent_data = MailSmsTemplate::where('code','=',"Welcome")->first();
-        if($mailcontent_data){
-            $arr=[
-                '{id}'=>$request->user_id,
-                '{app_name}'=>'121.page',
-                '{name}'=>NameById($request->user_id),
-                ];
-            $action_button = null;
-            TemplateMail($user->name,$mailcontent_data,$user->email,$mailcontent_data->type, $arr, $mailcontent_data, $chk_data = null ,$mail_footer = null, $action_button);
-        }
-        
-        $mailcontent_data = MailSmsTemplate::where('code','=',"verify-mail")->first();
+        // $mailcontent_data = MailSmsTemplate::where('code','=',"Welcome")->first();
+        // if($mailcontent_data){
+        //     $arr=[
+        //         '{id}'=>$request->user_id,
+        //         '{app_name}'=>'121.page',
+        //         '{name}'=>NameById($request->user_id),
+        //         ];
+        //     $action_button = null;
+        //     TemplateMail($user->name,$mailcontent_data,$user->email,$mailcontent_data->type, $arr, $mailcontent_data, $chk_data = null ,$mail_footer = null, $action_button);
+        // }
 
+        // $mailcontent_data = MailSmsTemplate::where('code','=',"verify-mail")->first();
+
+        $mailcontent_data = MailSmsTemplate::where('code','=',"Verify- Email_2")->first();
         if($mailcontent_data){
             $arr=[
                 '{name}'=>$user->name,
-                '{email}'=>$user->email,
+                '{email}'=>$email,
                 '{mobile}'=>$user->phone,
                 ];
             $action_button = route('customer.verify.mail',$user->id);
             $action_button_2 = route('auth.login-index');
             $subject = DynamicMailTemplateFormatter($mailcontent_data->title, $mailcontent_data->variables, $arr);
             $body =  DynamicMailTemplateFormatter($mailcontent_data->body, $mailcontent_data->variables, $arr);
-            $body .= '<br><br><div class="d-flex justify-content-between">
-                            <a href="'. $action_button.'" class="btn btn-primary">Verify Email</a> 
-                            <a href="'.$action_button_2.'" class="btn btn-outline-primary">Verify Email Address</a> 
+            $body .= '<br><br><div class="d-flex  justify-content-center" >
+                            <a href="'. $action_button.'" class="btn btn-primary">Verify Email</a>
                         </div>';
-            StaticMail($user->name,$user->email, $subject, $body, $mail_footer = null, $action_button=null, $cc = null, $bcc = null,$attachment_path = null ,$attachment_name = null ,$attachment_mime = null);
+            $sent = StaticMail($user->name,$email, $subject, $body, $mail_footer = null, $action_button=null, $cc = null, $bcc = null,$attachment_path = null ,$attachment_name = null ,$attachment_mime = null);
         }
-        
+
             // LogIn User
             auth()->loginUsingId($request->user_id);
 
@@ -457,14 +488,16 @@ class CustomerLoginController extends Controller
                 $onsite_notification['title'] = "Your Seller Profile has been created succesfully";
                 $onsite_notification['link'] = "#";
                 $onsite_notification['notification'] = "Our team is glad to see you in.";
+
+
                 pushOnSiteNotification($onsite_notification);
 
-                return redirect()->route('panel.dashboard')->with('success','Welcome to 121, Seller zone is activated successfully!');
+                // return redirect()->route('panel.dashboard')->with('success','Welcome to 121, Seller zone is activated successfully!');
             }else{
                 return redirect()->route('customer.dashboard')->with('success','Welcome to 121.');
             }
-          
+
     }
 
-     
+
 }

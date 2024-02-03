@@ -741,9 +741,28 @@ class CustomerController extends Controller
                 $package_child->save();
             }
 
+            $user_shop = getShopDataByUserId($user->id);
+            UserCurrency::create([
+            'user_id' => $user->id,
+                'User_shop_id' => $user_shop->id ?? 0,
+                'currency' => 'INR',
+                'exchange' => 1,
+                'remark' => '',
+                'default_currency' => 1
+            ]);
+            UserCurrency::create([
+            'user_id' => $user->id,
+                'User_shop_id' => $user_shop->id ?? 0,
+                'currency' => 'USD',
+                'exchange' => 85,
+                'remark' => 'Estimated',
+                'default_currency' => 0
+            ]);
+
+
         // Seller
         if ($chk_code) {
-            return redirect()->route('panel.dashboard')->with('success','Welcome to 121, You have been Login Successfully');
+            return redirect()->route('panel.dashboard')->with('success','Welcome to 121,You have logged in Successfully.');
         }else{
             return redirect()->back()->with('error','Something went wrong!');
         }
@@ -753,18 +772,22 @@ class CustomerController extends Controller
 
     public function survey(Request $request){
         $user_id = auth()->id();
-        $response = json_encode($request->get('quest1a'));
-        $question = json_encode('Where may we help ?');
-        // magicstring($question);
-        survey::create([
-            'user_id' => $user_id,
-            'question' => $question,
-            'response' => $response,
-        ]);
+        $response = $request->get('quest1a');
+        $question = 'Where may we help ?';
 
-        return redirect()->back()->with('success','Welcome to 121');
+        // if (!empty($response)){
+            survey::create([
+                'user_id' => $user_id,
+                'question' => $question,
+                'response' => json_encode($response),
+            ]);
 
-    }
+
+            return redirect()->back()->with('success','Finish your e-KYC');
+        }
+
+        // return redirect()->back();
+    // }
 
 
 

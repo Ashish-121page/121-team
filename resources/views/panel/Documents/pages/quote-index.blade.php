@@ -4,6 +4,7 @@
             <td class="col-2">Quoation ID</td>
             <td class="col-2">Offer ID</td>
             <td class="col-2">Buyer Entity </td>
+            <td class="col-2"></td>
             <td class="col-2">Person Name</td>
             <td class="col-2">Created On</td>
             <td class="col-4"></td>
@@ -24,10 +25,6 @@
 
                 <td>
                     {{ $record->user_slug ?? $record->slug }}
-                    <span class="text-danger">({{ $record['record_count'] ?? 1 }})</span>
-                    <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}" class="btn-link">
-                        <i class="fas fa-eye text-primary "></i>
-                    </a>
                 </td>
                 @if ($proposal_id == '')
                     <td class="col-2">{{ _('Direct') }}</td>
@@ -44,6 +41,12 @@
 
                 <td>
                     {{ $jsonData->companyName ?? '-' }}
+                </td>
+                <td>
+                    <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}" class="btn-link  text-primary">
+                        <i class="fas fa-eye"></i>
+                        <span>({{ $record['record_count'] ?? 1 }})</span>
+                    </a>
                 </td>
                 <td>
                     {{ $jsonData->buyerName ?? ($jsonData->person_name ?? '') }}
@@ -65,7 +68,7 @@
                         <i class="far fa-edit text-primary" title="Edit"></i>
                     </a>
                 </td>
-                <td>
+                <td class="text-center ">
 
 
                     @php
@@ -74,9 +77,9 @@
 
                     @if ($chkrec->count() == 0)
                         <a href="{{ route('panel.Documents.make.quote.perfoma', $record->id) }}"
-                            class="btn btn-outline-danger" target="_blank">Make PI</a>
+                            class="btn btn-link text-primary " target="_blank">Make PI</a>
                     @else
-                        <h6><i class="fas fa-check"></i></h6>
+                        <h6 title="{{ $chkrec->first()->user_slug ?? '' }}"><i class="fas fa-check text-primary "></i></h6>
                     @endif
                 </td>
             </tr>

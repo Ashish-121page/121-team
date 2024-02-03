@@ -1235,6 +1235,8 @@ class ProductController extends Controller
                 'carton_width' => $request->carton_width,
                 'carton_height' => $request->carton_height,
                 'Carton_Dimensions_unit' => $request->Carton_Dimensions_unit,
+                'carton_weight_unit' => $request->carton_weight_unit,
+
             ];
 
             $shipping =[
@@ -2975,23 +2977,24 @@ class ProductController extends Controller
             $mainsku_carton_height = [];
             foreach ($available_products as $key => $value) {
                 $product_tmp = getProductDataById($value);
-                $shipping = json_decode($product_tmp->shipping);
-                $carton_details = json_decode($product_tmp->carton_details);
+                $shipping_tmp = json_decode($product_tmp->shipping);
+                $carton_details_tmp = json_decode($product_tmp->carton_details);
+
                 $mainsku_prices[] = $product_tmp->min_sell_pr_without_gst ?? '';
                 $mainsku_mrp[] = $product_tmp->mrp ?? '';
                 $mainsku_selling_price_unit[] = $product_tmp->selling_price_unit ?? '';
                 $mainsku_hsn[] = $product_tmp->hsn ?? '';
                 $mainsku_hsnpercent[] = $product_tmp->hsn_percent ?? '';
-                $mainsku_grossweight[] = $shipping->gross_weight ?? '';
-                $mainsku_netweight[] = $shipping->net_weight ?? '';
-                $mainsku_length[] = $shipping->length ?? '';
-                $mainsku_width[] = $shipping->width ?? '';
-                $mainsku_height[] = $shipping->height ?? '';
-                $mainsku_standard_carton[] = $carton_details->standard_carton ?? '';
-                $mainsku_carton_weight[] = $carton_details->carton_weight ?? '';
-                $mainsku_carton_length[] = $carton_details->carton_length ?? '';
-                $mainsku_carton_width[] = $carton_details->carton_width ?? '';
-                $mainsku_carton_height[] = $carton_details->carton_height ?? '';
+                $mainsku_grossweight[] = $shipping_tmp->gross_weight ?? '';
+                $mainsku_netweight[] = $shipping_tmp->net_weight ?? '';
+                $mainsku_length[] = $shipping_tmp->length ?? '';
+                $mainsku_width[] = $shipping_tmp->width ?? '';
+                $mainsku_height[] = $shipping_tmp->height ?? '';
+                $mainsku_standard_carton[] = $carton_details_tmp->standard_carton ?? '';
+                $mainsku_carton_weight[] = $carton_details_tmp->carton_weight ?? '';
+                $mainsku_carton_length[] = $carton_details_tmp->carton_length ?? '';
+                $mainsku_carton_width[] = $carton_details_tmp->carton_width ?? '';
+                $mainsku_carton_height[] = $carton_details_tmp->carton_height ?? '';
 
 
             }
@@ -3037,12 +3040,12 @@ class ProductController extends Controller
 
                 }
 
-                array_push($mainsku_exclbuyer, implode(",", array_unique($tmp_exc)));
-                array_push($mainsku_sourcedfrom, implode(",", array_unique($tmp_sourcefrm)));
-                array_push($mainsku_vendor_price, implode(",", array_unique($tmp_vendor_price)));
-                array_push($mainsku_product_cost_unit, implode(",", array_unique($tmp_product_cost_unit)));
-                array_push($mainsku_vendor_currency, implode(",", array_unique($tmp_vendor_currency)));
-                array_push($mainsku_remarks, implode(",", array_unique($tmp_remarks)));
+                array_push($mainsku_exclbuyer, implode(",", array_unique($tmp_exc ?? [])));
+                array_push($mainsku_sourcedfrom, implode(",", array_unique($tmp_sourcefrm ?? [])));
+                array_push($mainsku_vendor_price, implode(",", array_unique($tmp_vendor_price ?? [])));
+                array_push($mainsku_product_cost_unit, implode(",", array_unique($tmp_product_cost_unit ?? [])));
+                array_push($mainsku_vendor_currency, implode(",", array_unique($tmp_vendor_currency ?? [])));
+                array_push($mainsku_remarks, implode(",", array_unique($tmp_remarks ?? [])));
 
 
             }
@@ -3087,11 +3090,10 @@ class ProductController extends Controller
                 $files = [];
             }
 
-
             return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months','mainsku_prices_str','mainsku_mrp_str','mainsku_exclbuyer_str','mainsku_hsn_str','mainsku_hsnpercent_str','mainsku_grossweight_str','mainsku_netweight_str','mainsku_length_str','mainsku_selling_price_unit_str','mainsku_width_str','mainsku_height_str','mainsku_standard_carton_str','mainsku_carton_weight_str','mainsku_carton_length_str','mainsku_carton_width_str','mainsku_carton_height_str','mainsku_sourcedfrom_str','mainsku_vendor_price_str','mainsku_product_cost_unit_str','mainsku_vendor_currency_str','mainsku_remarks_str','length_uom','quantity_uom','weight_uom','user_custom_fields_types','paginator','files','folderPath','user_id','user'));
 
         }catch(\Exception $e){
-            // return back()->with('error', 'There was an error: ' . $e->getMessage());
+            return back()->with('error', 'There was an error: ' . $e->getMessage());
             throw $e;
         }
     }
@@ -3185,6 +3187,9 @@ class ProductController extends Controller
     public function update(Request $request,Product $product)
     {
 
+        // magicstring(request()->all());
+        // return;
+
         if($request->avl_assets != null){
             $arr_images = [];
             foreach (explode(",",$request->avl_assets[0]) as $key => $value) {
@@ -3201,7 +3206,7 @@ class ProductController extends Controller
                     'extension' => $extension,
                     'file_type' => 'Image',
                     'tag' => 'Product_Image',
-                ]);                
+                ]);
                 array_push($arr_images,$record->id);
             }
             $user_shop = getShopDataByUserId($user->id);
@@ -3403,11 +3408,7 @@ class ProductController extends Controller
                         'length_unit' => $request->length_unit,
                         'gross_weight' => $request->gross_weight,
                     ];
-                    $carton_details = [
-                        'standard_carton' => $request->standard_carton,
-                        'carton_weight' => $request->carton_weight,
-                        'carton_unit' => $request->carton_unit,
-                    ];
+
 
                     $carton_details = [
                         'standard_carton' => $request->standard_carton,
@@ -3417,6 +3418,7 @@ class ProductController extends Controller
                         'carton_width' => $request->carton_width,
                         'carton_height' => $request->carton_height,
                         'Carton_Dimensions_unit' => $request->Carton_Dimensions_unit,
+                        'carton_weight_unit' => $request->carton_weight_unit,
                     ];
 
 
@@ -3697,11 +3699,6 @@ class ProductController extends Controller
                             'length_unit' => $request->length_unit,
                             'gross_weight' => $request->gross_weight,
                         ];
-                        $carton_details = [
-                            'standard_carton' => $request->standard_carton,
-                            'carton_weight' => $request->carton_weight,
-                            'carton_unit' => $request->carton_unit,
-                        ];
 
                         $carton_details = [
                             'standard_carton' => $request->standard_carton,
@@ -3711,6 +3708,8 @@ class ProductController extends Controller
                             'carton_width' => $request->carton_width,
                             'carton_height' => $request->carton_height,
                             'Carton_Dimensions_unit' => $request->Carton_Dimensions_unit,
+                            'carton_weight_unit' => $request->carton_weight_unit,
+
                         ];
 
 
@@ -3939,6 +3938,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         try{
+
             if($product){
                 $childItems = UserShopItem::where('product_id',$product->id)
                 ->where('parent_shop_id','!=',0)->where('deleted_at','!=',null)

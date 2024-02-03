@@ -104,10 +104,6 @@ class CategoryController extends Controller
 
     }
 
-
-
-
-
     /**
      * Show the form for creating a new resource.
      *
@@ -137,7 +133,6 @@ class CategoryController extends Controller
             $request['name'] = explode(" > ",$request->name)[1];
         }
 
-        // return $request->all();
         try {
 
             if(AuthRole() == "Admin"){
@@ -376,80 +371,48 @@ class CategoryController extends Controller
     public function destroy($id)
     {
 
-        $id = decrypt($id);
+        try {
+            $id = decrypt($id);
 
-        $category = Category::whereId($id)->first();
+            echo "Received Param is ".$id.newline();
+            $category = Category::whereId($id)->first();
 
-        // Level 1
-        if($category->level == 1){
-            if($category){
-                $category->delete();
-                // deleteSubCategory($id);
-                if ($category) {
-                    return back()->with('success', 'Industry Deleted Successfully!');
-                }
+            echo "Category Name Is ' ".$category->name." '".newline();
+
+
+
+            if ($category->type == 1) {
+                return back()->with('error','You cannot Delete This Category, It Is System Category');
             }
 
 
-        }elseif($category->level == 2){
-            $product = Product::whereCategoryId($id)->exists();
-            $user_shop = UserShopItem::whereCategoryId($id)->exists();
-           // System Defined
-               if((!$product || !$user_shop) && (!$product && !$user_shop)){
-                   $category->delete();
-                //    deleteSubCategory($id);
-                   if ($category) {
-                       return back()->with('success', 'Category Deleted Successfully!');
-                   }
-               }else{
-                   return back()->with('error',"First move products to another category before deleting category");
-               }
+            $chk_category_in_products = Product::where('category_id',$id)->get();
+            $chk_subcategory_in_products = Product::where('sub_category',$id)->get();
 
+            $chk_category_in_usi = UserShopItem::where('category_id',$id)->get();
+            $chk_subcategory_in_usi = UserShopItem::where('sub_category_id',$id)->get();
 
-
-        }elseif($category->level == 3){
-
-
-            if (AuthRole() == 'Admin') {
-                $product = Product::whereSubCategory($id)->exists();
-                $user_shop = UserShopItem::whereSubCategoryId($id)->exists();
-            }else{
-                $product = Product::whereSubCategory($id)->where('user_id',auth()->id())->exists();
-                $user_shop = UserShopItem::whereSubCategoryId($id)->where('user_id',auth()->id())->exists();
+            if (count($chk_category_in_products) != 0 || count($chk_subcategory_in_products) != 0) {
+                return back()->with('error','You cannot Delete This Category, It Is Linked With Products');
+            }
+            if (count($chk_category_in_usi) != 0 || count($chk_subcategory_in_usi) != 0) {
+                return back()->with('error','You cannot Delete This Category, It Is Linked With User Shop Items');
             }
 
+            $get_sub_cat = Category::where('parent_id',$id)->get();
+            $count_sub = 0;
+            foreach($get_sub_cat as $sub_cat_index => $sub_cat) {
+                $sub_cat->delete();
+                $count_sub++;
+            }
 
-           // System Defined
-               if((!$product || !$user_shop) && (!$product && !$user_shop)){
-
-                    if ($category->user_id == auth()->id()) {
-                        $category->delete();
-                    }elseif (AuthRole() == 'Admin') {
-                        $category->delete();
-                    }else{
-                        $user = auth()->user();
-                        $selected_category = json_decode($user->selected_category) ?? [];
-
-                        foreach ($selected_category as $key => $value) {
-
-                            if ($category->id == $value) {
-                                array_splice($selected_category,$key);
-                            }
-                        }
-                        $user->selected_category = json_encode($selected_category);
-                        $user->save();
-                    }
-
-                //    deleteSubCategory($id);
-
-
-                   if ($category) {
-                       return back()->with('success', 'Sub Category Deleted Successfully!');
-                   }
-               }else{
-                   return back()->with('error','You cannot delete this Sub Category ID since it is linked to a product ');
-               }
+            $category->delete();
+            return back()->with('success', 'Category deleted successfully.');
+        } catch (\Throwable $th) {
+            return back()->with('error', 'Error: ' . $th->getMessage());
+            // throw $th;
         }
+
 
     }
 

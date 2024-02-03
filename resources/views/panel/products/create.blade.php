@@ -183,8 +183,30 @@
                 margin-bottom: 0px !important;
             }
 
+            .modal-fullscreen {
+            display: block !important;
+            /* align-items: center; */
+            /* justify-content: center; */
+            max-width: 100%
+            }
 
 
+            .modal-fullscreen .modal-dialog {
+            max-width: 100%;
+            }
+
+
+            .modal-fullscreen .modal-content {
+            width: 100%;
+            max-height: 100vh;
+            overflow-y: auto;
+            }
+            
+            th{
+                font-weight : 400;
+            }
+
+           
         </style>
     @endpush
 
@@ -213,8 +235,8 @@
         {{-- <div class="row"> --}}
             <div class="col-lg-12 col-md-12 mx-auto ">
                 {{-- Card start --}}
-                <div class="row">
-                    <div class="col-md-4 product_boxes">
+                <div class="row justify-content-center ">
+                    <div class="col-md-5 product_boxes">
                         <div class="card getSingleProduct" id="hztab1" style="cursor: pointer;">
                             <div class="card-header">
                                 <i class="fas fa-plus btn text-primary h5" style="font-size: 1.2rem; line-height: 1 !important;"></i>
@@ -228,7 +250,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 product_boxes">
+                    <div class="col-md-5 product_boxes">
                         <div class="card getcustomProduct" id="hztab2" style="cursor: pointer;">
                             <div class="card-header">
                                 <i class="fas fa-upload btn text-primary h5" style="font-size: 1.2rem; line-height: 1 !important;"></i>
@@ -245,7 +267,7 @@
                     </div>
 
 
-                    <div class="col-md-4 product_boxes">
+                    {{-- <div class="col-md-4 product_boxes d-none">
                         <div class="card updateproducts" id="hztab3" style="cursor: pointer;">
                             <div class="card-header">
                                 <svg width="24" height="28" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
@@ -262,7 +284,7 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
 
 
@@ -285,7 +307,7 @@
                     {{-- @endif --}}
 
                     <div class="col-12 col-md-10  mb-3 justify-content-start">
-                        <button class="btn btn-secondary back_btn d-none" id="back_btn">Back</button>
+                        <button class="btn btn-outline-primary back_btn d-none" id="back_btn">Back</button>
                     </div>
                 </div>
                 {{-- Card end --}}
@@ -733,7 +755,7 @@
             let keyindex = $(this).data('index');
             let tag = `<div class="form-group mt-2" id="parent_${$(this).data('index')}"style="margin-bottom:0rem;">
                 <input type="checkbox" value="${$(this).val()}" id="${$(this).attr('id')}" class="selected_prop d-none" checked data-parent="parent_${$(this).data('index')}">
-                <label for="${$(this).attr('id')}" class="form-label" style="font-size: 12.8px;font-weight:700;user-select: none; width:80%">${$(this).val()}</label>
+                <label for="${$(this).attr('id')}" class="form-label" style="font-size: 16px;user-select: none; width:80%">${$(this).val()}</label>
                 <span class="close-icon align-item-end " style="margin-left:80%:width:20%" data-parent="parent_${$(this).data('index')}">&times;</span>
             </div>`;
 
@@ -782,10 +804,10 @@
                 animatedIn: 'lightSpeedIn',
                 animatedOut: 'bounceOutDown',
                 color: '#fff',
-                left:'150px',
-                top: '150px',
-                height: '80%',
-                width: '80%'
+                left:'0px',
+                top: '0px',
+                height: '100%',
+                width: '100%'
 
 
             });

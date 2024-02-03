@@ -133,7 +133,8 @@
                                                 href="{{ inject_subdomain('proposal/picked/' . $proposal->id . '/' . $user_key, $slug, false, false) }}?type=send"
                                                 target="_blank"
                                                 style="text-decoration: none;  color:primary; padding:6px 5px!important;margin-bottom: 3px;">
-                                                <i class="far fa-save text-primary" style="font-size: 18px; margin-bottom: 3px;" title="Download"></i>
+                                                <i class="far fa-save text-primary"
+                                                    style="font-size: 18px; margin-bottom: 3px;" title="Download"></i>
                                             </a>
 
                                             <a class="btn-link text-primary"
@@ -181,16 +182,20 @@
                                     @php
                                         $chkQuote = App\Models\Quotation::where('proposal_id', $proposal->id)->first();
                                     @endphp
-                                    @if ($chkQuote != null && $chkQuote->status == 1)
-                                        <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $chkQuote->id }}"
-                                            class="text-success"> Quotation Sent </a>
-                                    @elseif ($chkQuote != null && $chkQuote->status == 0)
-                                        <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $chkQuote->id }}"
-                                            class="text-dark"> Quotation Created </a>
+                                    @if ($proposal->status == 1)
+                                        @if ($chkQuote != null && $chkQuote->type_of_quote == 0)
+                                            {{-- <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $chkQuote->id }}" class=""> --}}
+                                                <i class="fas fa-check text-primary " title="{{ $chkQuote->user_slug ?? '' }}"></i>
+                                            {{-- </a> --}}
+                                        @else
+                                            <a href="{{ route('panel.Documents.make.quote.offer',$proposal->id ) }}?proposalId={{ $proposal->id }}"
+                                                class="text-dark"> Create Quotation </a>
+                                            {{-- <h6 title="{{ $chkrec->first()->user_slug ?? '' }}"><i class="fas fa-check text-primary "></i></h6> --}}
+                                        @endif
                                     @else
-                                        <a href="{{ route('panel.Documents.make.quote.offer', $proposal->id) }}"
-                                            class="text-warning"> Make Quote </a>
+                                        <span class="text-danger"> Draft Offer </span>
                                     @endif
+
                                 </td>
 
 

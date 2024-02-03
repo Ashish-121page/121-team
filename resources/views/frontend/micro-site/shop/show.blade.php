@@ -80,6 +80,15 @@
     ul {
         list-style-type: none;
     }
+
+
+
+
+    @media (min-width: 768px) and (max-width: 991.98px) {
+            .col-md-6.flex-wrap {
+                flex-wrap: nowrap !important;
+            }
+        }
 </style>
 
 {{-- @dd($user_shop_item) --}}
@@ -166,7 +175,7 @@
                         </div>
 
 
-                        <div class="col-12 col-sm-6 col-md-6 d-flex justify-content-between gap-3 w-100 mt-3 flex-wrap">
+                        <div class="col-12 col-sm-6 col-md-6 d-flex d-lg justify-content-between gap-3 w-100 mt-3 flex-wrap">
                             {{-- @if ($user_shop->user_id == auth()->id()) --}}
                             <a class="btn btn-outline-primary" aria-current="page"
                                 href="{{ route('panel.products.edit', $product->id) }}" target="_parent">Edit</a>

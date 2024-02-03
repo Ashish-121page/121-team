@@ -26,14 +26,14 @@
                                         <div class="col-12">
                                             <table class="table table-striped" style="width: 100%;">
                                                 <tbody>
-                                                    <tr>
+                                                    {{-- <tr>
                                                         <th>Allow Resellers</th>
                                                         <td>{{ $productExtraInfo->allow_resellers ?? '' }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Live / Active</th>
                                                         <td>{{ ($product->is_publish == 1) ? "Yes" : "No"}}</td>
-                                                    </tr>
+                                                    </tr> --}}
                                                     <tr>
                                                         <th>Copyright/ Exclusive item</th>
                                                         <td>{{ ($product->exclusive == 1) ? "Yes" : "No" }}</td>
@@ -127,7 +127,7 @@
                                         <div class="col-12">
                                             <table class="table table-striped" style="width: 100%;">
                                                 <tbody>
-                                                    <tr>
+                                                    {{-- <tr>
                                                         <th>CBM</th>
                                                         <td>{{ $productExtraInfo->CBM ?? '--' }}</td>
                                                     </tr>
@@ -142,7 +142,7 @@
                                                     <tr>
                                                         <th>MBQ_units</th>
                                                         <td>{{ $productExtraInfo->MBQ_unit ?? '--' }}</td>
-                                                    </tr>
+                                                    </tr> --}}
                                                     <tr>
                                                         <th>Remarks</th>
                                                         <td>{{ $productExtraInfo->remarks ?? '--' }}</td>
@@ -211,7 +211,13 @@
                                                             {{ getFieldNameById($user_shop->user_id,$item->relatation_name) }}
                                                         </td>
                                                         <td>
-                                                            @if (is_base64_encoded($item->value))
+
+                                                            {{-- {{ $item->value }}
+                                                            {{ is_numeric($item->value) }}
+                                                            {{ Str::contains($item->value, '==')}} --}}
+
+
+                                                            @if (is_base64_encoded($item->value) && !is_numeric($item->value) || Str::contains($item->value, '=='))
                                                                 @if (json_decode(base64_decode($item->value)) != null)
                                                                     @foreach (json_decode(base64_decode($item->value)) as $key => $item)
                                                                         {{ $key.":".$item }}

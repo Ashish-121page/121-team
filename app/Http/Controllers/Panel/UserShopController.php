@@ -14,7 +14,7 @@ use App\Models\Media;
 
 class UserShopController extends Controller
 {
-    
+
 
     /**
      * Display a listing of the resource.
@@ -28,7 +28,7 @@ class UserShopController extends Controller
              $length = $request->get('length');
          }
          $user_shops = UserShop::query();
-         
+
             if($request->get('search')){
                 $user_shops->where('id','like','%'.$request->search.'%')
                                 ->orWhere('name','like','%'.$request->search.'%')
@@ -37,7 +37,7 @@ class UserShopController extends Controller
                                 ->orWhere('status','like','%'.$request->search.'%')
                 ;
             }
-            
+
             if($request->get('from') && $request->get('to')) {
                 $user_shops->whereBetween('created_at', [\Carbon\carbon::parse($request->from)->format('Y-m-d'),\Carbon\Carbon::parse($request->to)->format('Y-m-d')]);
             }
@@ -51,22 +51,22 @@ class UserShopController extends Controller
             if(AuthRole() != 'Admin'){
                 $user_shops->whereUserId(auth()->id());
             }
-            
+
             $user_shops = $user_shops->latest()->paginate($length);
 
             if ($request->ajax()) {
-                return view('panel.user_shops.load', ['user_shops' => $user_shops])->render();  
+                return view('panel.user_shops.load', ['user_shops' => $user_shops])->render();
             }
- 
+
         return view('panel.user_shops.index', compact('user_shops'));
      }
 
-    
+
     public function print(Request $request)
     {
         $user_shops = collect($request->records['data']);
-            return view('panel.user_shops.print', ['user_shops' => $user_shops])->render();  
-        
+            return view('panel.user_shops.print', ['user_shops' => $user_shops])->render();
+
     }
 
     public function updateTestimonial(Request $request)
@@ -74,7 +74,7 @@ class UserShopController extends Controller
        $this->validate($request, [
             'title'     => 'required'
         ]);
-        
+
         try{
             $user_shop = UserShop::whereId($request->user_shop_id)->first();
             $testimonial = [
@@ -85,18 +85,18 @@ class UserShopController extends Controller
                 'testimonial' => json_encode($testimonial),
             ]);
             return redirect()->route('panel.user_shops.edit',$request->user_shop_id."?active=about-section")->with('success','Team Updated Successfully!');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
 
     public function updateProductsSection(Request $request,UserShop $user_shop)
     {
-        
+
        $this->validate($request, [
             'title'     => 'required'
         ]);
-        
+
         try{
             $user_shop = UserShop::whereId($request->user_shop_id)->first();
             $products = [
@@ -108,7 +108,7 @@ class UserShopController extends Controller
                 'products' => json_encode($products),
             ]);
             return redirect()->route('panel.user_shops.edit',[$user_shop->id,'active'=>'products'])->with('success','Products Section Updated Successfully!');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -122,7 +122,7 @@ class UserShopController extends Controller
     {
         try{
             return view('panel.user_shops.create');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -144,25 +144,25 @@ class UserShopController extends Controller
             'status'     => 'sometimes',
             'address'     => 'sometimes',
         ]);
-        
+
         try{
-            
+
             if($request->hasFile("img")){
                     $img = $this->uploadFile($request->file("img"), "user_shops")->getFilePath();
                     $filename = $request->file('img')->getClientOriginalName();
                     $extension = pathinfo($filename, PATHINFO_EXTENSION);
                 } else
-                { 
+                {
                     return $this->error("Please upload an file for Banner");
                     $filename = null;
                     $extension = null;
                     $img = null;
                 }
-               
+
             if($request->hasFile("logo_file")){
                 $request['logo'] = $this->uploadFile($request->file("logo_file"), "user_shops")->getFilePath();
             }
-                
+
             $user_shop = UserShop::create($request->all());
             if($filename != null){
                 Media::create([
@@ -176,7 +176,7 @@ class UserShopController extends Controller
                 ]);
             }
             return redirect()->route('panel.user_shops.index')->with('success','User Shop Created Successfully!');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -191,7 +191,7 @@ class UserShopController extends Controller
     {
         try{
             return view('panel.user_shops.show',compact('user_shop'));
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -199,18 +199,18 @@ class UserShopController extends Controller
     {
         try{
            if($user_shop){
-                 
+
                 $chk = $user_shop->update([
                     'embedded_code'  => $request->embedded_code
                 ]);
-                
+
                 if (Authrole() == 'Admin') {
                     return redirect()->route('panel.user_shops.index')->with('success','Record Updated!');
                 } else {
                     return back()->with('success','Record Updated!');
                 }
            }
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -222,8 +222,8 @@ class UserShopController extends Controller
      * @return  \Illuminate\Http\Response
      */
     public function edit(UserShop $user_shop)
-   
-    {  
+
+    {
         try{
             if (AuthRole() != 'Admin') {
                 $user_shop = UserShop::whereId($user_shop->id)->first();
@@ -241,14 +241,14 @@ class UserShopController extends Controller
             $about= json_decode($user_shop->about,true);
             $features= json_decode($user_shop->features,true) ?? '';
             $payments= json_decode($user_shop->payment_details,true);
-            $media = Media::whereTypeId($user_shop->id)->whereType('UserShop')->first();         
-            
+            $media = Media::whereTypeId($user_shop->id)->whereType('UserShop')->first();
+
             return view('panel.user_shops.edit',compact('user_shop','media','testimonial','about','payments','story','features','team','products','shop_address','addresses','vcard'));
 
-            
 
-            
-        }catch(\Exception $e){            
+
+
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -257,7 +257,7 @@ class UserShopController extends Controller
 
     public function updatePayment (Request $request,UserShop $user_shop)
     {
-        try{ 
+        try{
             if($user_shop){
                 if($request->hasFile("upi_code")){
                     $qr_img = $this->uploadFile($request->file("upi_code"), "QR-Images")->getFilePath();
@@ -269,22 +269,22 @@ class UserShopController extends Controller
                         $qr_img = null;
                     }
                 }
-        
+
                 $payment = [
                     'upi' => $qr_img,
                     'po' => $request->po_details,
                 ];
-                        
+
                 $payment_details = json_encode($payment);
                 $user_shop->update([
                    'payment_details' =>$payment_details,
                 ]);
-                   
+
                 return back()->with('success','Payments Details Updated!');
-                
+
             }
             return back()->with('error','User Shop not found')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -303,12 +303,12 @@ class UserShopController extends Controller
             'slug'     => 'required',
             // 'slug'     => 'required|unique:user_shops,slug,'.$user_shop->id,
         ]);
-        
-    
-        try{  
+
+
+        try{
             $slugChk = UserShop::where('slug',$request->slug)->where('user_id','!=',$user_shop->user_id)->exists();
 
-        
+
             if($slugChk){
                 return back()->with('error','Slug already exists');
             }
@@ -322,7 +322,7 @@ class UserShopController extends Controller
                 }
             }
             return back()->with('error','User Shop not found')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -342,7 +342,7 @@ class UserShopController extends Controller
         $insta_link = $request->social_link['insta_link'];
         $pint_link = $request->social_link['pint_link'];
         $social_link = json_encode(array('fb_link' => $fb_link,'in_link' => $in_link ,'tw_link' => $tw_link , 'yt_link' => $yt_link,'insta_link' => $insta_link,'pint_link' => $pint_link));
-        
+
 
         if($request->hasFile("img")){
             $img = $this->uploadFile($request->file("img"), "user_shops")->getFilePath();
@@ -369,7 +369,7 @@ class UserShopController extends Controller
                 ]);
             }
 
-            
+
         }
         if($request->hasFile("logo_file")){
             $logo = $request['logo'] = $this->uploadFile($request->file("logo_file"), "user_shops")->getFilePath();
@@ -396,17 +396,17 @@ class UserShopController extends Controller
 
 
 
-       
-        
-        
+
+
+
     }
 
 
     public function otherFiledsUpdate(Request $request,UserShop $user_shop)
     {
-       
-        
-        try{  
+
+
+        try{
             if($user_shop){
 
 
@@ -415,8 +415,8 @@ class UserShopController extends Controller
                     return back()->with('error',"Slug Already Exist!!");
                 }
 
-                
-                
+
+
                 if($request->hasFile("img")){
                     $img = $this->uploadFile($request->file("img"), "user_shops")->getFilePath();
                     $this->deleteStorageFile($user_shop->img);
@@ -442,7 +442,7 @@ class UserShopController extends Controller
                         ]);
                     }
                 }
-                    
+
                     if($request->hasFile("logo_file")){
                         $request['logo'] = $this->uploadFile($request->file("logo_file"), "user_shops")->getFilePath();
                         $this->deleteStorageFile($user_shop->logo);
@@ -455,11 +455,11 @@ class UserShopController extends Controller
                     'email' => $request->email,
                     'whatsapp' => $request->whatsapp,
                 ];
-                
-                $request['social_links'] = json_encode($request->social_link);         
-                $request['contact_info'] = json_encode($contact_info);         
+
+                $request['social_links'] = json_encode($request->social_link);
+                $request['contact_info'] = json_encode($contact_info);
                 $chk = $user_shop->update($request->all());
-                
+
                 if (Authrole() == 'Admin') {
                     return redirect()->route('panel.user_shops.index')->with('success','Record Updated!');
                 } else {
@@ -467,14 +467,14 @@ class UserShopController extends Controller
                 }
             }
             return back()->with('error','User Shop not found')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
     public function Addressupdate(Request $request,UserShop $user_shop)
     {
-        
-        try{  
+
+        try{
             if($user_shop){
                 // $address = [
                 //     'flat_number' => $request->flat_number,
@@ -492,16 +492,16 @@ class UserShopController extends Controller
                 $request['address'] = json_encode($request->address);
                 $request['contact_info'] = json_encode($contact_info);
                 $user_shop->update($request->all());
-                
+
                 if (Authrole() == 'Admin') {
                     return redirect()->route('panel.user_shops.index')->with('success','Record Updated!');
                 } else {
                     return back()->with('success','Record Updated!');
                 }
-                    
+
             }
             return back()->with('error','User Shop not found')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -516,9 +516,9 @@ class UserShopController extends Controller
                 } else {
 
                     $tempAbout = json_decode($user_shop->about,true);
-                   
+
                     if(isset($tempAbout['img'])){
-                        $img = $tempAbout['img']; 
+                        $img = $tempAbout['img'];
                     }else{
                         $img = null;
                     }
@@ -533,16 +533,16 @@ class UserShopController extends Controller
                 ]);
 
                 return back()->with('success','Record Updated!');
-                    
+
             }
             return back()->with('error','User Shop not found')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
     public function updateStory(Request $request,UserShop $user_shop)
     {
-        
+
          try{
 
             if($user_shop){
@@ -563,7 +563,7 @@ class UserShopController extends Controller
                     $prl_file = $request->prl_link ?? "";
                 }
 
-                                
+
                 $story = [
                     'title' => $request->title,
                     'cta_link' => $cta_link,
@@ -574,26 +574,26 @@ class UserShopController extends Controller
                     'description' => $request->description,
                     'img' => $img,
                 ];
-                
-                
+
+
                  $user_shop->update([
                     'story' => json_encode($story),
                 ]);
-                
+
 
 
                 return back()->with('success','Record Updated!');
-                    
+
             }
             return back()->with('error','User Shop not found')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
     public function updateFeatures(Request $request,UserShop $user_shop)
     {
         // return $request->all();
-        try{ 
+        try{
             if($user_shop){
                 $features = [
                     'feature_title' => $request->feature_title,
@@ -603,12 +603,12 @@ class UserShopController extends Controller
                 $user_shop->update([
                     'features' => json_encode($features),
                 ]);
-                   
+
                 return back()->with('success','Record Updated!');
-                
+
             }
             return back()->with('error','User Shop not found')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -649,7 +649,7 @@ class UserShopController extends Controller
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
-    
+
 
     public function removeImage(Request $request ,UserShop $user_shop)
     {
@@ -663,12 +663,12 @@ class UserShopController extends Controller
                     } else {
                         return back()->with('error','Img not found');
                     }
-                }                         
+                }
                 if ($request->type == 'logo_file') {
                     $user_shop->update([
                         'logo' => null
                     ]);
-                }                         
+                }
                 return back()->with('success','Image deleted successfully');
             }else{
                 return back()->with('error','Image not found');
@@ -678,7 +678,7 @@ class UserShopController extends Controller
         }
     }
 
-    
+
     function printqr(Request $request) {
 
         $qr = json_decode($request->qr);

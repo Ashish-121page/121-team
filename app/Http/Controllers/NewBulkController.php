@@ -230,10 +230,12 @@ class NewBulkController extends Controller
                 }else{
                     $chk = Category::where('name',$temp_item[$SubCategoryIndex])->where('parent_id',$Category_id)->get();
                     if (!count($chk) > 0) {
-                        return back()->with('error',"Sub category Is Matched with Category at Row $row");
+                        return back()->with('error',"Sub category is mis-matched with Category at Row $row");
                     }
                     $sub_category_id = $chk[0]->id;
                 }
+
+
                 // ` Checking Currency
                 if ($temp_item[$CurrencyIndex] == null) {
                     $Currency = 'INR';
@@ -654,7 +656,7 @@ class NewBulkController extends Controller
             }else{
                 $chk = Category::where('name',$item[$SubCategoryIndex])->where('parent_id',$Category_id)->get();
                 if (!count($chk) > 0) {
-                    return back()->with('error',"Sub category Is Matched with Category at Row $row");
+                    return back()->with('error',"Sub category Is Mis-matched with Category at Row $row");
                 }
                 $sub_category_id = $chk[0]->id;
             }
@@ -2275,15 +2277,17 @@ class NewBulkController extends Controller
     // ` Export Excel Sheet for Bulk Upload
     public function ProductSheetExport(Request $request,User $user_id){
 
+
+
+
+        // echo "Working in Progress";
+        // return;
         // Fetch All attriubutes
         $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
         $custom_attributes = (array) json_decode($user_id->custom_attriute_columns) ?? ['Colours','Size','Material'];
         $custom_fields = (array) json_decode($user_id->custom_fields) ?? [];
         $Export_columns = [];
-
-
         $fileName = "Exported -".$user_id->name.' - '.date('d-m-Y-h:i A').'.xlsx';
-
 
         // Getting sections custom Inputs Columns
         $custom_col1 = [];
@@ -2291,9 +2295,6 @@ class NewBulkController extends Controller
         $custom_col5 = [];
 
         $custom_col_values = [];
-
-
-        // return;
 
         foreach ($custom_fields as $index => $custom_field) {
             if ($custom_field->ref_section == 1) {
@@ -2336,39 +2337,77 @@ class NewBulkController extends Controller
         $SecondSheetName = "Data Validation Sheet";
 
         ini_set('max_execution_time', 0);
-        ini_set('memory_limit', '4000M');
+        ini_set('memory_limit', '400M');
         try {
 
             $spreadsheet = new Spreadsheet();
             $actualWorkSheet = $spreadsheet->getActiveSheet();
             $actualWorkSheet->setTitle($FirstSheetName);
 
+            $actualWorkSheet->getDefaultColumnDimension()->setWidth(20);
+
             $actualWorkSheet->fromArray($merged_array, null, 'A3');
+
+            $actualWorkSheet->freezePane('B4');
+
 
             // Second Worksheet for Dropdown Values
             $dropdownSheet = $spreadsheet->createSheet();
             $dropdownSheet->setTitle($SecondSheetName);
+            $dropdownSheet->getDefaultColumnDimension()->setWidth(20);
             $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
 
+            $new_items = ['carton_weight_unit^^system','Weight_unit^^system','carton_weight_unit^^system','Dimensions_unit^^system','Carton_Dimensions_unit^^system','unit^^system','Product_Cost_Unit^^system','Selling_Price_Unit^^system'];
 
+            $custom_attributes = array_merge($custom_attributes,$new_items);
+
+            // return;
             foreach ($custom_attributes as $key => $custom_attribute) {
                 $optionsArray = [];
                 $index = $key + 1;
+                $exploded = explode('^^',$custom_attribute);
+                $custom_attribute = $exploded[0];
+
+                if (count($exploded) == 2) {
+                    $attribute_values = [];
+
+                    if ($exploded[1] == 'system') {
+                        switch ($custom_attribute) {
+                            case 'carton_weight_unit':
+                            case 'Weight_unit':
+                            case 'carton_weight_unit':
+                                $attribute_values = getSetting('weight_uom');
+                                break;
+                            case 'Dimensions_unit':
+                            case 'Carton_Dimensions_unit':
+                                $attribute_values = getSetting('dimension_uom');
+                                break;
+                            case 'unit':
+                            case 'Product_Cost_Unit':
+                            case 'Selling_Price_Unit':
+                                $attribute_values = getSetting('item_uom');
+                                break;
+                            default:
+                                $attribute_values = [];
+                                break;
+                        }
+                    }
+
+                    $attribute_values = json_decode($attribute_values);
+                }else{
+                    $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user_id->id)->first();
+                    if ($attribute_rec == null) {
+                        $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
+                    }
+
+                    if ($attribute_rec == null) {
+                        continue;
+                    }
+
+                    $attribute_values = ProductAttributeValue::where('parent_id',$attribute_rec->id)->pluck('attribute_value')->toArray();
+                }
 
                 $dropdownSheet->setCellValue([$index,'1'],strval($custom_attribute));
-
-                $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user_id->id)->first();
-                if ($attribute_rec == null) {
-                    $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
-                }
-
-                if ($attribute_rec == null) {
-                    continue;
-                }
-
-                $attribute_values = ProductAttributeValue::where('parent_id',$attribute_rec->id)->pluck('attribute_value')->toArray();
-
-
 
                 $optionsArray = array_chunk($attribute_values,1);
                 $excelColumn = $this->numToExcelColumn($index);
@@ -2379,7 +2418,6 @@ class NewBulkController extends Controller
                     null,
                     $startCell
                 );
-
 
                 $ActualSheetColIndex = array_search($custom_attribute, $merged_array);
                 $ActualSheetColIndex = $this->numToExcelColumn($ActualSheetColIndex + 1);
@@ -2407,24 +2445,21 @@ class NewBulkController extends Controller
                 // Apply the validation to each cell in the range A1:A100
                 for ($i = 1; $i <= 97; $i++) {
                     $cellCoordinate = $ActualSheetColIndex . strval($i + 3);
-                    $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                    if ($ActualSheetColIndex != 'A') {
+                        $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                    }
                 }
-
-
             }
+
 
             $ashu_arr_name = [[]];
             foreach ($custom_fields as $key => $custom_field) {
-
                 $optionsArray = [];
                 $index = $index + 1;
                 $dropdownSheet->setCellValue([$index,'1'],$custom_field->text);
 
                 if ($custom_field->value != '') {
 
-                    // $myarr = explode(',',$custom_field->value);
-
-                    // array_push($ashu_arr_name,$myarr);
 
                     $optionsArray = array_chunk(explode(',',$custom_field->value),1);
 
@@ -2445,11 +2480,12 @@ class NewBulkController extends Controller
                     // Apply the validation to each cell in the range A1:A100
                     for ($i = 1; $i <= 100; $i++) {
                         $cellCoordinate = $ActualSheetColIndex . strval($i + 3);
-                        $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                        // $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                        if ($ActualSheetColIndex != 'A') {
+                            $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                        }
                     }
-
                 }
-
             }
 
             // Prepare the response for a downloadable file
@@ -2462,9 +2498,7 @@ class NewBulkController extends Controller
             }, 200, [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 'Content-Disposition' => 'attachment;filename="'.$fileName.'"',
-                'Cache-Control' => 'max-age=0',
-                // Optional: Set the content length if possible
-                //'Content-Length' => $fileSize,
+                'Cache-Control' => 'max-age=0'
             ]);
 
         } catch (Exception $e) {
@@ -2578,27 +2612,64 @@ class NewBulkController extends Controller
             $spreadSheet = new Spreadsheet();
             $actualWorkSheet = $spreadSheet->getActiveSheet();
             $actualWorkSheet->setTitle($FirstSheetName);
-            // $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+            $actualWorkSheet->getDefaultColumnDimension()->setWidth(20);
+
             $actualWorkSheet->fromArray($products,null,'A3');
+            $actualWorkSheet->freezePane('C4');
 
             // Second Worksheet for Dropdown Values
             $dropdownSheet = $spreadSheet->createSheet();
             $dropdownSheet->setTitle($SecondSheetName);
+            $dropdownSheet->getDefaultColumnDimension()->setWidth(20);
 
             $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
+
+            $new_items = ['carton_weight_unit^^system','Weight_unit^^system','carton_weight_unit^^system','Dimensions_unit^^system','Carton_Dimensions_unit^^system','unit^^system','Product_Cost_Unit^^system','Selling_Price_Unit^^system'];
+
+            $custom_attributes = array_merge($custom_attributes,$new_items);
+
 
             foreach ($custom_attributes as $key => $custom_attribute) {
                 $optionsArray = [];
                 $index = $key + 1;
-                $dropdownSheet->setCellValue([$index,'1'],$custom_attribute);
 
-                $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user_id->id)->first();
-                if ($attribute_rec == null) {
-                    $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
+                $exploded = explode('^^',$custom_attribute);
+                $custom_attribute = $exploded[0];
+                if (count($exploded) == 2) {
+                    $attribute_values = [];
+
+                    if ($exploded[1] == 'system') {
+                        switch ($custom_attribute) {
+                            case 'carton_weight_unit':
+                            case 'Weight_unit':
+                            case 'carton_weight_unit':
+                                $attribute_values = getSetting('weight_uom');
+                                break;
+                            case 'Dimensions_unit':
+                            case 'Carton_Dimensions_unit':
+                                $attribute_values = getSetting('dimension_uom');
+                                break;
+                            case 'unit':
+                            case 'Product_Cost_Unit':
+                            case 'Selling_Price_Unit':
+                                $attribute_values = getSetting('item_uom');
+                                break;
+                            default:
+                                $attribute_values = [];
+                                break;
+                        }
+                    }
+
+                    $attribute_values = json_decode($attribute_values);
+                }else{
+                    $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',$user_id->id)->first();
+                    if ($attribute_rec == null) {
+                        $attribute_rec = ProductAttribute::where('name',$custom_attribute)->where('user_id',null)->first();
+                    }
+
+                    $attribute_values = ProductAttributeValue::where('parent_id',$attribute_rec->id)->pluck('attribute_value')->toArray();
                 }
-
-                $attribute_values = ProductAttributeValue::where('parent_id',$attribute_rec->id)->pluck('attribute_value')->toArray();
-
+                $dropdownSheet->setCellValue([$index,'1'],$custom_attribute);
                 $optionsArray = array_chunk($attribute_values,1);
                 $excelColumn = $this->numToExcelColumn($index);
                 $startCell = $excelColumn . '2';
@@ -2613,7 +2684,7 @@ class NewBulkController extends Controller
                 // -- Add Validation and Dropdown
                 if ($withColumnsDropdown == true) {
                     $ActualSheetColIndex = array_search($custom_attribute, $merged_array);
-                    $ActualSheetColIndex = $this->numToExcelColumn($ActualSheetColIndex + 1);
+                    $ActualSheetColIndex = $this->numToExcelColumn($ActualSheetColIndex);
 
                     $validation = new \PhpOffice\PhpSpreadsheet\Cell\DataValidation();
                     $validation->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST);
@@ -2639,40 +2710,41 @@ class NewBulkController extends Controller
                     $dropdownlength = count($products) - 1 ?? 0;
                     for ($i = 1; $i <= $dropdownlength; $i++) {
                         $cellCoordinate = $ActualSheetColIndex . strval($i + 3);
-                        $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                        if ($ActualSheetColIndex != 'A' && $ActualSheetColIndex != '') {
+                            $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                        }
                     }
                 }
-
-
             }
 
-
-            $Excel_writer = new Xls($spreadSheet);
-
-
-
-
+            $Excel_writer = new Xlsx($spreadSheet);
             $mytime = Carbon::now();
 
             $user = auth()->user();
             if ($name == null) {
                 $fileName = "$user->name Exported Data-".$mytime->toDateTimeString();
             }else{
-                $fileName = $name;
+                $fileName = explode(".",$name)[0];
             }
 
             header('Content-Type: application/vnd.ms-excel');
-            header("Content-Disposition: attachment;filename=$fileName.xls");
+            header("Content-Disposition: attachment;filename=$fileName.xlsx");
             header('Cache-Control: max-age=0');
             ob_end_clean();
             $Excel_writer->save('php://output');
             exit();
         } catch (Exception $e) {
+            throw $e;
             return;
+
         }
     }
 
     function exportData(Request $request,User $user_id){
+
+
+        // magicstring(request()->all());
+        // return;
         try {
 
             if ($request->has('products')) {
@@ -2790,6 +2862,7 @@ class NewBulkController extends Controller
                     $carton_width = $carton_details->carton_width ?? null;
                     $carton_height = $carton_details->carton_height ?? null;
                     $Carton_Dimensions_unit = $carton_details->Carton_Dimensions_unit ?? null;
+                    $carton_weight_unit = $carton_details->carton_weight_unit ?? null;
                 } else {
                     $carton_details = null ;
                     $standard_carton = null ;
@@ -2799,6 +2872,7 @@ class NewBulkController extends Controller
                     $carton_width =  null;
                     $carton_height = null;
                     $Carton_Dimensions_unit = null;
+                    $carton_weight_unit = null;
                 }
 
                 if($product->is_publish == 0){
@@ -2821,6 +2895,24 @@ class NewBulkController extends Controller
                 foreach ($custom_fields_Name as $keyIndex => $fields_Name) {
                     $FieldValue = CustomFields::where('product_id',$product->id)->where('relatation_name',$custom_fields_id[$keyIndex])->first();
                     $custom_fields_value[$fields_Name] = $FieldValue->value ?? '';
+
+
+                    if (is_base64_encoded($FieldValue->value) && is_numeric($FieldValue->value) == false) {
+
+                        $tmp_data = (array) json_decode(base64_decode($FieldValue->value));
+                        $tmp_data_l = $tmp_data[0] ?? '';
+                        $tmp_data_b = $tmp_data[1] ?? '';
+                        $tmp_data_h = $tmp_data[2] ?? '';
+                        $tmp_data_u = $tmp_data[3] ?? '';
+                        $tmp_data = $tmp_data_l.'x'.$tmp_data_b.'x'.$tmp_data_h.'x'.$tmp_data_u;
+                        if ($tmp_data == 'xxx' ) {
+                            $tmp_data = '';
+                        }
+
+                        $custom_fields_value[$fields_Name] = $tmp_data;
+                    }else{
+                        $custom_fields_value[$fields_Name] = $FieldValue->value;
+                    }
                 }
 
 
@@ -2921,6 +3013,8 @@ class NewBulkController extends Controller
                     'Carton_Dimensions_unit' => $Carton_Dimensions_unit ?? '',
                     'standard_carton_pcs' => $standard_carton ?? '',
                     'carton_weight_actual' => $carton_weight ?? '',
+                    'carton_weight_actual' => $carton_weight ?? '',
+                    'carton_weight_unit' => $carton_weight_unit ?? '',
                     'unit' => $carton_unit ?? '',
                     'Vendor_Sourced_from' =>  $extraInfoData->vendor_sourced_from ?? '',
                     'Vendor_price' =>  $extraInfoData->vendor_price ?? '',
@@ -2942,7 +3036,7 @@ class NewBulkController extends Controller
                         $index = array_search($keyHeader2,$delfault_cols);
                         $merged_array[$pkey+1][$index] = $header2;
                     }else{
-                        echo "Not Found".$keyHeader2.newline();
+                        echo "Not Found ".$keyHeader2.newline();
                     }
                     ksort($merged_array[$pkey+1]);
                 }
@@ -3097,6 +3191,9 @@ class NewBulkController extends Controller
                 }
             }
 
+
+            // magicstring($tmp_item);
+            // return;
             // ` Validating Loop End
 
             // ` Loop For Uploading Data start
@@ -3129,7 +3226,7 @@ class NewBulkController extends Controller
                 $carton_details = [
                     'standard_carton' => $item[${'col_standard_carton_pcs'}],
                     'carton_weight' => $item[${'col_carton_weight_actual'}],
-                    'carton_unit' => $item[${'col_unit'}] ?? '',
+                    'carton_unit' => $item[${'col_unit'} ?? ''] ?? '',
                     'carton_length' => $item[${'col_Carton_length'}],
                     'carton_width' => $item[${'col_Carton_width'}],
                     'carton_height' => $item[${'col_Carton_height'}],
@@ -3165,12 +3262,12 @@ class NewBulkController extends Controller
                     'remarks' => $item[${'col_Remarks'}] ?? '',
                     'vendor_sourced_from' => $item[${'col_Vendor_Sourced_from'}] ?? '',
                     'vendor_price' => $item[${'col_Vendor_price'}] ?? '',
-                    'product_cost_unit' => '',
-                    'vendor_currency' => $item[${'col_Exclusive_Buyer_Name'}] ?? '',
+                    'product_cost_unit' => $item[${'col_Product_Cost_Unit'}] ?? '',
+                    'vendor_currency' => $item[${'col_Vendor_currency'}] ?? '',
                     'sourcing_year' => $item[${'col_Sourcing_Year'}] ?? '',
                     'sourcing_month' => $item[${'col_Sourcing_month'}] ?? '',
-                    'brand_name' => $item[${'col_Brand_Name'}],
-                    'Cust_tag_group' => $item[${'col_Group_ID'}],
+                    'brand_name' => $item[${'col_Brand_Name'}] ?? '',
+                    'Cust_tag_group' => $item[${'col_Group_ID'}] ?? '',
                 ]);
 
 
@@ -3221,8 +3318,8 @@ class NewBulkController extends Controller
                                     'remarks' => $item[${'col_Remarks'}] ?? '',
                                     'vendor_sourced_from' => $item[${'col_Vendor_Sourced_from'}] ?? '',
                                     'vendor_price' => $item[${'col_Vendor_price'}] ?? '',
-                                    'product_cost_unit' => '',
-                                    'vendor_currency' => $item[${'col_Exclusive_Buyer_Name'}] ?? '',
+                                    'product_cost_unit' => $item[${'col_Product_Cost_Unit'}] ?? '',
+                                    'vendor_currency' => $item[${'col_Vendor_currency'}] ?? '',
                                     'sourcing_year' => $item[${'col_Sourcing_Year'}] ?? '',
                                     'sourcing_month' => $item[${'col_Sourcing_month'}] ?? '',
                                     'brand_name' => $item[${'col_Brand_Name'}],
@@ -3240,7 +3337,7 @@ class NewBulkController extends Controller
                 Product::whereId($item[${'col_id'}])->update(
                 [
                     'title' => $item[${'col_Product_name'}] ?? '',
-                    'model_code' => $item[${'col_Product_name'}] ?? '',
+                    'model_code' => $item[${'col_Model_Code'}] ?? '',
                     'category_id' => $categoryID ?? '',
                     'sub_category' => $SubCategoryId ?? '',
                     'description' => $item[${'col_description'}] ?? '',
@@ -3587,22 +3684,21 @@ class NewBulkController extends Controller
                     return back()->with('error',"Category Should Require Add That Field.");
                 }
 
-
                 // checking Category
                 if (isset(${'Sub_Category'})) {
                     if ($tmp_item[${'Sub_Category'}] == null) {
                         return back()->with('error',"Sub Category Is Blank at Row $row");
                     }else{
-                        $chk = Category::where('name',$tmp_item[${'Sub_Category'}])->where('parent_id',$Category_id)->get();
-                        if (!count($chk) > 0) {
-                            return back()->with('error',"Sub category Is Matched with Category at Row $row");
+                        $chk = Category::where('name',$tmp_item[${'Sub_Category'}])->where('parent_id',$Category_id)->where('user_id',auth()->id())->orwhere('user_id',null)->get();
+
+                        if ($chk->count() == 0) {
+                            return back()->with('error',"Sub category Is Mis-matched with Category at Row $row");
                         }
                         $sub_category_id = $chk[0]->id;
                     }
                 }else{
                     return back()->with('error',"Sub category Should Require Add That Field.");
                 }
-
 
                 // ` Checking Currency
                 if (isset(${'Base_currency'})) {
@@ -3879,9 +3975,9 @@ class NewBulkController extends Controller
 
 
                 // ` Checking Extra Image
-                // if (isset(${'Additional Image Use ^^'})) {
-                //     if ($temp_item[${'Additional Image Use ^^'}] != null) {
-                //         $ProductextraImages = explode($Array_saprator,$temp_item[${'Additional Image Use ^^'}]);
+                // if (isset(${'Additional_Image_Use'})) {
+                //     if ($temp_item[${'Additional_Image_Use'}] != null) {
+                //         $ProductextraImages = explode($Array_saprator,$temp_item[${'Additional_Image_Use'}]);
                 //     }else{
                 //         $ProductextraImages = null;
                 //     }
@@ -3972,7 +4068,11 @@ class NewBulkController extends Controller
                 }
 
             }
-            // return;
+
+
+
+                // echo "Hello ";
+                // return;
             // @ End of Validating Loop
 
 
@@ -4137,6 +4237,15 @@ class NewBulkController extends Controller
                     }
 
 
+                    // ` Exploding Additional Images
+                    if (isset(${'Additional_Image_Use'})) {
+                        if ($item[${'Additional_Image_Use'}] != null) {
+                            $ProductextraImages = explode($Array_saprator,$item[${'Additional_Image_Use'}]);
+                        }else{
+                            $ProductextraImages = null;
+                        }
+                    }
+
 
 
                     //` checking Category
@@ -4156,20 +4265,39 @@ class NewBulkController extends Controller
                     }
 
 
-                    //` checking Category
-                    if (isset(${'Sub_Category'})) {
-                        if ($item[${'Sub_Category'}] == null) {
-                            return back()->with('error',"Sub Category Is Blank at Row $row");
-                        }else{
-                            $chk = Category::where('name',$item[${'Sub_Category'}])->where('parent_id',$Category_id)->get();
-                            if (!count($chk) > 0) {
-                                return back()->with('error',"Sub category Is Matched with Category at Row $row");
+                      // checking Category
+                        if (isset(${'Sub_Category'})) {
+                            if ($item[${'Sub_Category'}] == null) {
+                                return back()->with('error',"Sub Category Is Blank at Row $row");
+                            }else{
+                                $chk = Category::where('name',$tmp_item[${'Sub_Category'}])->where('parent_id',$Category_id)->where('user_id',auth()->id())->orwhere('user_id',null)->get();
+
+                                if ($chk->count() == 0) {
+                                    return back()->with('error',"Sub category Is Mis-matched with Category at Row $row");
+                                }
+
+                                $sub_category_id = $chk[0]->id;
                             }
-                            $sub_category_id = $chk[0]->id;
+                        }else{
+                            return back()->with('error',"Sub category Should Require Add That Field.");
                         }
-                    }else{
-                        return back()->with('error',"Sub category Should Require Add That Field.");
-                    }
+
+
+
+                    // //` checking Category
+                    // if (isset(${'Sub_Category'})) {
+                    //     if ($item[${'Sub_Category'}] == null) {
+                    //         return back()->with('error',"Sub Category Is Blank at Row $row");
+                    //     }else{
+                    //         $chk = Category::where('name',$item[${'Sub_Category'}])->where('parent_id',$Category_id)->get();
+                    //         if (!count($chk) > 0) {
+                    //             return back()->with('error',"Sub category Is Mis-matched with Category at Row $row");
+                    //         }
+                    //         $sub_category_id = $chk[0]->id;
+                    //     }
+                    // }else{
+                    //     return back()->with('error',"Sub category Should Require Add That Field.");
+                    // }
 
 
                     // ` Checking Currency
@@ -4315,20 +4443,96 @@ class NewBulkController extends Controller
 
                                     $product_obj = Product::create($product_obj);
                                     $custom_fields = json_decode($user->custom_fields) ?? [];
+                                    // if ($custom_fields != null && count( (array) $custom_fields) > 0) {
+                                    //     foreach ($custom_fields as $key => $customfield) {
+
+                                    //         $ogname = $customfield->id;
+                                    //         // $customfieldID = str_replace("[]",'',$customfield->id);
+                                    //         $customfieldID = $tmp_item[${"$customfield->text"}] ?? '';
+
+                                    //         if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
+                                    //             echo "' $ogname ' It is an Array or HTML.".newline();
+                                    //             $updatevalue = base64_encode(json_encode($customfieldID));
+                                    //         }else{
+                                    //             // $customfield = str_replace("[]",'',$customfield);
+                                    //             $updatevalue = $customfieldID;
+                                    //         }
+
+                                    //         $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+
+                                    //         if ($custom_field == null) {
+                                    //             echo "Create New Records".newline(2);
+                                    //             CustomFields::create([
+                                    //                 'relatation_name' => $ogname,
+                                    //                 'product_id' => $product_obj->id,
+                                    //                 'value' => $updatevalue ?? '',
+                                    //                 'user_id' => auth()->id(),
+                                    //             ]);
+                                    //         }else{
+                                    //             echo "Record Are Exist Update It".newline(2);
+
+                                    //             $custom_field->update([
+                                    //                 'value' => $updatevalue ?? '',
+                                    //             ]);
+                                    //         }
+                                    //     }
+                                    // }
+
                                     if ($custom_fields != null && count( (array) $custom_fields) > 0) {
                                         foreach ($custom_fields as $key => $customfield) {
 
                                             $ogname = $customfield->id;
+                                            if (!isset(${"$customfield->text"})) {
+                                                continue;
+                                            }
                                             // $customfieldID = str_replace("[]",'',$customfield->id);
-                                            $customfieldID = $tmp_item[${"$customfield->text"}] ?? '';
+                                            $customfieldID = $item[${"$customfield->text"}] ?? '';
+
+                                            // [length] => 10
+                                            // [width] => 50
+                                            // [height] => 30
+                                            // [unit] => mm
+
+
+                                            if ($customfield->type == 'diamension') {
+                                                $lenarr = explode('x',$customfieldID);
+                                                if (count($lenarr) <= 1) {
+                                                    $lenarr = explode('X',$customfieldID);
+                                                }
+                                                $request[$customfieldID] = [
+                                                    'length' => $lenarr[0] ?? '',
+                                                    'width' => $lenarr[1] ?? '',
+                                                    'height' => $lenarr[2] ?? '',
+                                                    'unit' => $lenarr[3] ??'',
+                                                ];
+                                                // $request[$customfieldID]
+                                            }
+
+                                            if ($customfield->type == 'uom') {
+                                                $lenarr = explode('x',$customfieldID);
+                                                if (count($lenarr) <= 1) {
+                                                    $lenarr = explode('X',$customfieldID);
+                                                }
+                                                $request[$customfieldID] = [
+                                                    'measument' => $lenarr[0] ?? '',
+                                                    'unit' => $lenarr[3] ??'',
+                                                ];
+                                                // $request[$customfieldID]
+                                            }
+
+                                            // magicstring($request->get($customfieldID));
+                                            // continue;
+
 
                                             if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
                                                 echo "' $ogname ' It is an Array or HTML.".newline();
-                                                $updatevalue = base64_encode(json_encode($customfieldID));
+
+                                                $updatevalue = base64_encode(json_encode($request->get($customfieldID)));
                                             }else{
                                                 // $customfield = str_replace("[]",'',$customfield);
                                                 $updatevalue = $customfieldID;
                                             }
+
 
                                             $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
                                             if ($custom_field == null) {
@@ -4348,6 +4552,7 @@ class NewBulkController extends Controller
                                             }
                                         }
                                     }
+
 
 
                                     // debugtext($debuging_mode,"Printing Product Object","Red");
@@ -4852,20 +5057,95 @@ class NewBulkController extends Controller
 
                                 $product_obj = Product::create($product_obj);
                                 $custom_fields = json_decode($user->custom_fields) ?? [];
+                                // if ($custom_fields != null && count( (array) $custom_fields) > 0) {
+                                //     foreach ($custom_fields as $key => $customfield) {
+
+                                //         $ogname = $customfield->id;
+                                //         // $customfieldID = str_replace("[]",'',$customfield->id);
+                                //         $customfieldID = $tmp_item[${"$customfield->text"}] ?? '';
+
+                                //         if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
+                                //             echo "' $ogname ' It is an Array or HTML.".newline();
+                                //             $updatevalue = base64_encode(json_encode($customfieldID));
+                                //         }else{
+                                //             // $customfield = str_replace("[]",'',$customfield);
+                                //             $updatevalue = $customfieldID;
+                                //         }
+
+                                //         $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                //         if ($custom_field == null) {
+                                //             echo "Create New Records".newline(2);
+                                //             CustomFields::create([
+                                //                 'relatation_name' => $ogname,
+                                //                 'product_id' => $product_obj->id,
+                                //                 'value' => $updatevalue ?? '',
+                                //                 'user_id' => auth()->id(),
+                                //             ]);
+                                //         }else{
+                                //             echo "Record Are Exist Update It".newline(2);
+
+                                //             $custom_field->update([
+                                //                 'value' => $updatevalue ?? '',
+                                //             ]);
+                                //         }
+                                //     }
+                                // }
+
                                 if ($custom_fields != null && count( (array) $custom_fields) > 0) {
                                     foreach ($custom_fields as $key => $customfield) {
 
                                         $ogname = $customfield->id;
                                         // $customfieldID = str_replace("[]",'',$customfield->id);
-                                        $customfieldID = $tmp_item[${"$customfield->text"}] ?? '';
+                                        if (!isset(${"$customfield->text"})) {
+                                            continue;
+                                        }
+                                        $customfieldID = $item[${"$customfield->text"}] ?? '';
+
+                                        // [length] => 10
+                                        // [width] => 50
+                                        // [height] => 30
+                                        // [unit] => mm
+
+
+                                        if ($customfield->type == 'diamension') {
+                                            $lenarr = explode('x',$customfieldID);
+                                            if (count($lenarr) <= 1) {
+                                                $lenarr = explode('X',$customfieldID);
+                                            }
+                                            $request[$customfieldID] = [
+                                                'length' => $lenarr[0] ?? '',
+                                                'width' => $lenarr[1] ?? '',
+                                                'height' => $lenarr[2] ?? '',
+                                                'unit' => $lenarr[3] ??'',
+                                            ];
+                                            // $request[$customfieldID]
+                                        }
+
+                                        if ($customfield->type == 'uom') {
+                                            $lenarr = explode('x',$customfieldID);
+                                            if (count($lenarr) <= 1) {
+                                                $lenarr = explode('X',$customfieldID);
+                                            }
+                                            $request[$customfieldID] = [
+                                                'measument' => $lenarr[0] ?? '',
+                                                'unit' => $lenarr[3] ??'',
+                                            ];
+                                            // $request[$customfieldID]
+                                        }
+
+                                        // magicstring($request->get($customfieldID));
+                                        // continue;
+
 
                                         if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
                                             echo "' $ogname ' It is an Array or HTML.".newline();
-                                            $updatevalue = base64_encode(json_encode($customfieldID));
+
+                                            $updatevalue = base64_encode(json_encode($request->get($customfieldID)));
                                         }else{
                                             // $customfield = str_replace("[]",'',$customfield);
                                             $updatevalue = $customfieldID;
                                         }
+
 
                                         $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
                                         if ($custom_field == null) {
@@ -5328,20 +5608,95 @@ class NewBulkController extends Controller
                                 $product = $product_obj;
 
                                 $custom_fields = json_decode($user->custom_fields) ?? [];
+                                // if ($custom_fields != null && count( (array) $custom_fields) > 0) {
+                                //     foreach ($custom_fields as $key => $customfield) {
+
+                                //         $ogname = $customfield->id;
+                                //         // $customfieldID = str_replace("[]",'',$customfield->id);
+                                //         $customfieldID = $tmp_item[${"$customfield->text"}] ?? '';
+
+                                //         if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
+                                //             echo "' $ogname ' It is an Array or HTML.".newline();
+                                //             $updatevalue = base64_encode(json_encode($customfieldID));
+                                //         }else{
+                                //             // $customfield = str_replace("[]",'',$customfield);
+                                //             $updatevalue = $customfieldID;
+                                //         }
+
+                                //         $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
+                                //         if ($custom_field == null) {
+                                //             echo "Create New Records".newline(2);
+                                //             CustomFields::create([
+                                //                 'relatation_name' => $ogname,
+                                //                 'product_id' => $product_obj->id,
+                                //                 'value' => $updatevalue ?? '',
+                                //                 'user_id' => auth()->id(),
+                                //             ]);
+                                //         }else{
+                                //             echo "Record Are Exist Update It".newline(2);
+
+                                //             $custom_field->update([
+                                //                 'value' => $updatevalue ?? '',
+                                //             ]);
+                                //         }
+                                //     }
+                                // }
+
                                 if ($custom_fields != null && count( (array) $custom_fields) > 0) {
                                     foreach ($custom_fields as $key => $customfield) {
 
                                         $ogname = $customfield->id;
                                         // $customfieldID = str_replace("[]",'',$customfield->id);
-                                        $customfieldID = $tmp_item[${"$customfield->text"}] ?? '';
+                                        if (!isset(${"$customfield->text"})) {
+                                            continue;
+                                        }
+                                        $customfieldID = $item[${"$customfield->text"}] ?? '';
+
+                                        // [length] => 10
+                                        // [width] => 50
+                                        // [height] => 30
+                                        // [unit] => mm
+
+
+                                        if ($customfield->type == 'diamension') {
+                                            $lenarr = explode('x',$customfieldID);
+                                            if (count($lenarr) <= 1) {
+                                                $lenarr = explode('X',$customfieldID);
+                                            }
+                                            $request[$customfieldID] = [
+                                                'length' => $lenarr[0] ?? '',
+                                                'width' => $lenarr[1] ?? '',
+                                                'height' => $lenarr[2] ?? '',
+                                                'unit' => $lenarr[3] ??'',
+                                            ];
+                                            // $request[$customfieldID]
+                                        }
+
+                                        if ($customfield->type == 'uom') {
+                                            $lenarr = explode('x',$customfieldID);
+                                            if (count($lenarr) <= 1) {
+                                                $lenarr = explode('X',$customfieldID);
+                                            }
+                                            $request[$customfieldID] = [
+                                                'measument' => $lenarr[0] ?? '',
+                                                'unit' => $lenarr[3] ??'',
+                                            ];
+                                            // $request[$customfieldID]
+                                        }
+
+                                        // magicstring($request->get($customfieldID));
+                                        // continue;
+
 
                                         if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
                                             echo "' $ogname ' It is an Array or HTML.".newline();
-                                            $updatevalue = base64_encode(json_encode($customfieldID));
+
+                                            $updatevalue = base64_encode(json_encode($request->get($customfieldID)));
                                         }else{
                                             // $customfield = str_replace("[]",'',$customfield);
                                             $updatevalue = $customfieldID;
                                         }
+
 
                                         $custom_field = CustomFields::where('relatation_name',$ogname)->where('product_id',$product->id)->first();
                                         if ($custom_field == null) {
@@ -5676,6 +6031,7 @@ class NewBulkController extends Controller
                             $product_exist = null;
                         }
 
+
                         $carton_details = [
                             'standard_carton' => (isset(${'standard_carton_pcs'})) ? $item[${'standard_carton_pcs'}] : '',
                             'carton_weight' => (isset(${'carton_weight_actual'})) ? $item[${'carton_weight_actual'}] : '',
@@ -5696,10 +6052,28 @@ class NewBulkController extends Controller
                             'length_unit' => (isset(${'Dimensions_unit'})) ? $item[${'Dimensions_unit'}] : '',
                         ];
 
+                        $allow_carton = false;
+                        foreach ($carton_details as $key => $cart) {
+                            if ($cart !== '' && $cart !== null) {
+                                $allow_carton = true;
+                            }
+                        }
+
+                        $allow_shipping = false;
+                        foreach ($shipping as $key => $ship) {
+                            if ($ship !== '' && $ship !== null) {
+                                $allow_shipping = true;
+                            }
+                        }
+
                         $carton_details = json_encode($carton_details);
                         $shipping = json_encode($shipping);
 
 
+
+
+
+                        // return;
                         $price = ($product_exist != null && $item[${'Customer_Price_without_GST'}] == '') ? $product_exist->price : trim($item[${'Customer_Price_without_GST'}]);
 
 
@@ -5713,8 +6087,8 @@ class NewBulkController extends Controller
                             'sku' => $sku_code,
                             'slug' => $unique_slug,
                             'description' => ($product_exist != null && $item[${'description'}] == '') ? $product_exist->description : $item[${'description'}],
-                            'carton_details' =>  ($product_exist != null && $carton_details == null) ? $product_exist->carton_details : $carton_details,
-                            'shipping' =>  ($product_exist != null && $shipping == null) ? $product_exist->shipping : $shipping,
+                            'carton_details' => $carton_details,
+                            'shipping' =>  $shipping,
                             'manage_inventory' =>  0,
                             'stock_qty' => 0,
                             'status' => 0,
@@ -5742,6 +6116,10 @@ class NewBulkController extends Controller
 
                                 $ogname = $customfield->id;
                                 // $customfieldID = str_replace("[]",'',$customfield->id);
+                                if (!isset(${"$customfield->text"})) {
+                                    continue;
+                                }
+
                                 $customfieldID = $item[${"$customfield->text"}] ?? '';
 
                                 // [length] => 10
@@ -5762,10 +6140,23 @@ class NewBulkController extends Controller
                                         'unit' => $lenarr[3] ??'',
                                     ];
                                     // $request[$customfieldID]
-
                                 }
 
-                                magicstring($request->get($customfieldID));
+                                if ($customfield->type == 'uom') {
+                                    $lenarr = explode('x',$customfieldID);
+                                    if (count($lenarr) <= 1) {
+                                        $lenarr = explode('X',$customfieldID);
+                                    }
+                                    $request[$customfieldID] = [
+                                        'measument' => $lenarr[0] ?? '',
+                                        'unit' => $lenarr[3] ??'',
+                                    ];
+                                    // $request[$customfieldID]
+                                }
+
+                                // magicstring($request->get($customfieldID));
+                                // continue;
+
 
                                 if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
                                     echo "' $ogname ' It is an Array or HTML.".newline();
@@ -5796,7 +6187,7 @@ class NewBulkController extends Controller
                             }
                         }
 
-                        // return;
+                            // return;
 
                         array_push($Productids_array,$product_obj->id);
 
@@ -6018,7 +6409,7 @@ class NewBulkController extends Controller
                 }
             // ! Main For Uploading Data End
 
-
+                // return;
 
             // return;
             // return back()->with('success',"$count Record Are Uploaded");
@@ -6076,9 +6467,12 @@ class NewBulkController extends Controller
             $SecondSheetName = "Data Validation Sheet";
 
             $actualWorkSheet = $spreadsheet->getActiveSheet();
-            $actualWorkSheet->getDefaultColumnDimension()->setWidth(20);
+            $actualWorkSheet->getDefaultColumnDimension()->setWidth(50);
             $actualWorkSheet->setTitle($FirstSheetName);
             $actualWorkSheet->fromArray($record,null,'A3');
+            // Auto-size columns to fit content
+            $actualWorkSheet->freezePane('B4');
+            $actualWorkSheet->calculateColumnWidths();
             $user_id = auth()->user();
             $merged_array = request()->finaldata;
 
@@ -6087,6 +6481,8 @@ class NewBulkController extends Controller
 
             $dropdownSheet = $spreadsheet->createSheet();
             $dropdownSheet->setTitle($SecondSheetName);
+            $dropdownSheet->getDefaultColumnDimension()->setWidth(50);
+
             $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
 
 
@@ -6140,7 +6536,10 @@ class NewBulkController extends Controller
                     // Apply the validation to each cell in the range A1:A100
                     for ($i = 1; $i <= 97; $i++) {
                         $cellCoordinate = $ActualSheetColIndex . strval($i + 3);
-                        $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                        // $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                        if ($ActualSheetColIndex != 'A') {
+                            $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
+                        }
                     }
                 }
 

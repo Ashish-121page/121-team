@@ -34,7 +34,7 @@
     <!-- Bootstrap -->
     <link href="{{ asset('frontend/assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
     <!-- Slider -->
-    {{-- <link rel="stylesheet" href="{{ asset('backend/plugins/jquery-toast-plugin/dist/jquery.toast.min.css')}}">               --}}
+    {{-- <link rel="stylesheet" href="{{ asset('backend/plugins/jquery-toast-plugin/dist/jquery.toast.min.css')}}"> --}}
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/tiny-slider.css') }}"/>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.css">
     <!-- Icons -->
@@ -96,8 +96,6 @@
             .carosud{
                 text-align: center
             }
-
-
         }
 
         .owl-item {

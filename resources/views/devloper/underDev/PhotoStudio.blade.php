@@ -1,5 +1,5 @@
 @extends('backend.layouts.main')
-@section('title', 'Asset Manager')
+@section('title', 'Image Studio')
 @section('content')
 
     <!-- push external head elements to head -->
@@ -7,6 +7,11 @@
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/dropzone.min.css') }}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+
+        <style>
+
+        </style>
+
 
         <style>
             .main-content {

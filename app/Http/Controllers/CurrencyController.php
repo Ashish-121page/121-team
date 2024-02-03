@@ -14,7 +14,7 @@ class CurrencyController extends Controller
 
     public function index(Request $request) {
         // Return Index View of Page
-        
+
         $user = User::whereId($request->user)->first();
 
         $record = UserCurrency::where('user_id',$user->id)->get();
@@ -28,25 +28,26 @@ class CurrencyController extends Controller
 
         try {
             $currency = UserCurrency::whereId($request->crrid)->first();
-            
+
             $currency->currency = $request->currencyname;
             $currency->exchange = $request->currencyvalue;
             $currency->save();
-    
+
             return back()->with('success',"Record Updated Success Fully");
-            
+
         } catch (\Throwable $th) {
             //throw $th;
             return back()->with('error',"Error While Upoading.");
         }
-        
-        
+
+
     }
 
 
-    
+
     public function uploadCurrency(Request $request,User $user) {
         try {
+
             $user_shop = getShopDataByUserId($user->id);
             $count = 0;
             $chk = UserCurrency::where('currency',$request->nameofcr)->where('user_id',$user->id)->get();
@@ -66,6 +67,12 @@ class CurrencyController extends Controller
                 ]);
                 $count++;
             }
+
+            if($request->has('ref_type')){
+                return back()->json(['state'=>'success','msg'=>"$count Record are added",'code'=>200]);
+            }
+
+
             return back()->with('success',"$count Record are added");
         } catch (\Throwable $th) {
             //throw $th;
@@ -75,7 +82,7 @@ class CurrencyController extends Controller
 
 
     public function makedefault(Request $request, UserCurrency $record){
-        
+
 
         try {
 
@@ -99,19 +106,19 @@ class CurrencyController extends Controller
                 $value->save();
             }
 
-            // Make Default Currency 
+            // Make Default Currency
             $record->update([
                 'default_currency' => 1,
                 'exchange' => 1,
             ]);
             $record->save();
-            
+
             return back()->with('success',"Default Currency Changed.");
         } catch (\Throwable $th) {
             // throw $th;
             return back()->with('error',"Something went Wrong, Try again later");
         }
-        
+
     }
 
 

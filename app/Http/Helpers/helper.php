@@ -8,11 +8,13 @@ use App\Models\ProductExtraInfo;
 use App\Models\shorturl;
 use App\Models\TimeandActionModal;
 use App\Models\Quotation;
+use App\Models\Consignee;
 use App\Models\CustomFields;
 use Carbon\Carbon;
 use Twilio\Rest\Client;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use App\Models\survey;
 
 
 // from shn
@@ -988,50 +990,75 @@ if(!function_exists('getWorkStreamAttachment')){
 
 if(!function_exists('getUserProgressStatistics')){
     function getUserProgressStatistics($user_id){
+        $user_id = auth()->id();
         $user = App\User::whereId($user_id)->first();
-        $user_vcard = App\Models\Media::whereType('UserVcard')->whereTypeId($user->id)->exists();
-        $user_shop = App\Models\UserShop::whereUserId($user_id)->first();
-        $story = json_decode($user_shop->story);
-        $description = $story->description ?? null;
+        $survey_form = survey::whereUserId($user_id)->first();
 
-        if($user->email_verified_at != null){
-            $email_verified = 10;
-        }else{
-            $email_verified = 0;
+
+        $survey_progress = 0;
+        if ($survey_form != null && $survey_form->response != null) {
+            $survey_progress = 30;
         }
 
-        if($user_shop->logo != null){
-            $logo = 10;
-        }else{
-            $logo = 0;
+
+        $ekyc_progress = 0;
+        if($user->ekyc_status == 1){
+            $ekyc_progress = 60;
         }
 
-        if($user_vcard){
-            $vcard = 25;
-        }else{
-            $vcard = 0;
-        }
+        $sum = $survey_progress + $ekyc_progress ;
 
-        // TODO: if story of description is not empty then calculate
-        if($description != null){
-            $about = 15;
-        }else{
-            $about = 0;
-        }
+        return  $sum;
 
-        if(!str_contains($user->avatar, 'ui-avatars.com')){
-            $avatar = 25;
-        }else{
-            $avatar = 0;
-        }
 
-        if($user_shop->social_links != null){
-            $social_links = 15;
-        }else{
-            $social_links = 0;
-        }
 
-        return   $sum =  $email_verified + $logo + $vcard + $about + $avatar + $social_links;
+
+        // $user = App\User::whereId($user_id)->first();
+        // $user_vcard = App\Models\Media::whereType('UserVcard')->whereTypeId($user->id)->exists();
+        // $user_shop = App\Models\UserShop::whereUserId($user_id)->first();
+        // $story = json_decode($user_shop->story);
+        // $description = $story->description ?? null;
+
+
+
+        // if($user->email_verified_at != null){
+        //     $email_verified = 10;
+        // }else{
+        //     $email_verified = 0;
+        // }
+
+        // if($user_shop->logo != null){
+        //     $logo = 10;
+        // }else{
+        //     $logo = 0;
+        // }
+
+        // if($user_vcard){
+        //     $vcard = 25;
+        // }else{
+        //     $vcard = 0;
+        // }
+
+        // // TODO: if story of description is not empty then calculate
+        // if($description != null){
+        //     $about = 15;
+        // }else{
+        //     $about = 0;
+        // }
+
+        // if(!str_contains($user->avatar, 'ui-avatars.com')){
+        //     $avatar = 25;
+        // }else{
+        //     $avatar = 0;
+        // }
+
+        // if($user_shop->social_links != null){
+        //     $social_links = 15;
+        // }else{
+        //     $social_links = 0;
+        // }
+
+        // return
     }
 }
 if(!function_exists('getSellerProgressStatistics')){
@@ -1573,6 +1600,23 @@ if(!function_exists('getPriceRange')){
         }
     }
 }
+if(!function_exists('getCityName')){
+    function getCityName($id) {
+        return App\Models\City::whereId($id)->first()->name ?? null;
+    }
+}
+
+if(!function_exists('getCountryName')){
+    function getCountryName($id) {
+        return App\Models\Country::whereId($id)->first()->name ?? null;
+    }
+}
+if(!function_exists('getStateName')){
+    function getStateName($id) {
+        return App\Models\State::whereId($id)->first()->name ?? null;
+    }
+}
+
 if(!function_exists('invoiceFrom')){
     function invoiceFrom(){
         $data = [
@@ -1777,6 +1821,13 @@ if (!function_exists('getDeliveyStockbyProductSKU')) {
 }
 
 
+if (!function_exists('searchElement')) {
+    function searchElement( $target , $array) {
+        $index = array_search(strtolower($target), array_map('strtolower', $array), true);
+        return $index !== false ? true : false;
+    }
+}
+
 
 // Search Neaest Day Value of T&A in Array
 if (!function_exists('getClosestTandADay')) {
@@ -1840,8 +1891,6 @@ if (!function_exists('getPriceGroupByGroupName')) {
 
     }
 }
-
-
 
 
 if(!function_exists('getShopProductImageByIndex')){
@@ -1966,18 +2015,43 @@ if (!function_exists('checkLockedEnquiry')) {
 
 
 
+// if (!function_exists('checkQuoteSlug')) {
+//     function checkQuoteSlug($mark, $num, $userid)
+//     {
+//         $slug = $mark . "/" . $num;
+//         $chk = Quotation::where('user_id', $userid)->where('user_slug', $slug)->first();
+//         if ($chk == null) {
+//             return $slug;
+//         }
+//         $num = $num + 1;
+//         return checkQuoteSlug($mark, $num, $userid); // Added return statement
+//     }
+// }
+
+
 if (!function_exists('checkQuoteSlug')) {
-    function checkQuoteSlug($mark, $num, $userid)
-    {
+    function checkQuoteSlug($mark, $num, $userid) {
         $slug = $mark . "/" . $num;
         $chk = Quotation::where('user_id', $userid)->where('user_slug', $slug)->first();
+
         if ($chk == null) {
-            return $slug;
+            $checkConsignee = Consignee::where('user_id', $userid)->get();
+
+            foreach ($checkConsignee as $key => $value) {
+                $jsoncheck = json_decode($value->consignee_details);
+
+                if (isset($jsoncheck->p_id) && $jsoncheck->p_id == $slug) {
+                    $num = $num + 1;
+                    return checkQuoteSlug($mark, $num, $userid); // Recursively call the function
+                }
+            }
+            return $slug; // Return the slug if it doesn't exist
         }
         $num = $num + 1;
-        return checkQuoteSlug($mark, $num, $userid); // Added return statement
+        return checkQuoteSlug($mark, $num, $userid); // Recursively call the function
     }
 }
+
 
 if (!function_exists('checkProposalSlug')) {
     function checkProposalSlug($mark, $num, $userid)
@@ -2020,6 +2094,39 @@ if (!function_exists('getProposalRecordById')) {
     }
 }
 
+// Getting product Variants By Id
+if (!function_exists('getProductVariantsById')) {
+    function getProductVariantsById($product_id) {
+
+        $ProductRecord = App\Models\Product::whereId($product_id)->first();
+        $arraysd = App\Models\ProductExtraInfo::where('group_id',$ProductRecord->sku)->pluck('attribute_id','attribute_value_id')->toArray();
+        $varient_basis = countRepetitions($arraysd);
+        arsort($varient_basis);
+
+
+        $available_products = App\Models\ProductExtraInfo::where('group_id',$ProductRecord->sku)->groupBy('product_id')->pluck('product_id')->toArray();
+
+        $product_variant_combo = [];
+        $keysToKeep = [];
+        foreach ($varient_basis as $key => $lRepeated) {
+            if ($lRepeated > 1) {
+                array_push($keysToKeep, $key);
+            }
+        }
+        foreach ($available_products as $key => $products) {
+            $tmp = App\Models\ProductExtraInfo::where('product_id',$products)->pluck('attribute_value_id','attribute_id')->toArray();
+
+            $keysArray = array_flip($keysToKeep);
+            $filteredArray = array_intersect_key($tmp, $keysArray);
+            // $filteredArray = array_reverse($filteredArray);
+            array_push($product_variant_combo, $filteredArray);
+
+        }
+
+        return $product_variant_combo;
+    }
+}
+
 
 
 // Gettign Product Attribute value Name
@@ -2058,6 +2165,10 @@ if (!function_exists('getFieldNameById')) {
 
 if (!function_exists('is_base64_encoded')) {
     function is_base64_encoded($data) {
+        if (is_null($data)) {
+            return false;
+        }
+
         if (preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $data)) {
             return true;
         } else {
@@ -2196,6 +2307,65 @@ if (!function_exists('debugtext')) {
             echo "<code style='color: $color; font-weight:800;padding: 8px; background-color: $background; margin:8px;display:block'>$str</code>".newline();
         }
     }
+}
+if (!function_exists('calculateCBM')) {
+    function calculateCBM($length, $width, $height, $uom) {
+        // Convert dimensions to centimeters
+        $plen = convertToCentimeters($length, $uom);
+        $pwidth = convertToCentimeters($width, $uom);
+        $pheight = convertToCentimeters($height, $uom);
+
+        // Calculate CBM
+        $cbm = ($plen / 100) * ($pwidth / 100) * ($pheight / 100);
+        $roundedCBM = round($cbm, 4);
+
+        return $roundedCBM;
+    }
+}
+
+
+if (!function_exists('convertToCentimeters')) {
+    function convertToCentimeters($value, $unit) {
+        switch (strtolower($unit)) {
+            case 'mm':
+                return $value / 10; // 1 cm = 10 mm
+            case 'cm':
+                return $value;
+            case 'mtr':
+                return $value * 100; // 1 m = 100 cm
+            case 'km':
+                return $value * 100000; // 1 km = 100,000 cm
+            case 'ft':
+                return $value * 30.48; // 1 ft = 30.48 cm
+            case 'inches':
+                return $value * 2.54; // 1 in = 2.54 cm
+            case 'dia':
+                return $value; // Assuming diameter is already in cm
+            default:
+                return 'Invalid unit';
+        }
+    }
+}
+if (!function_exists('convertToKilograms')) {
+    function convertToKilograms($value, $unit) {
+        switch (strtolower($unit)) {
+            case 'gm':
+                return $value / 1000; // 1 kg = 1000 gm
+            case 'kg':
+                return $value;
+            case 'mg':
+                return $value / 1000000; // 1 kg = 1,000,000 mg
+            case 'tonnes':
+                return $value * 1000; // 1 tonne = 1000 kg
+            case 'carats':
+                return $value / 5000; // 1 kg = 5000 carats (approximate conversion)
+            case 'ltr':
+                return $value; // Assuming liters represent a liquid, not weight
+            default:
+                return 'Invalid unit';
+        }
+    }
+
 }
 
 
