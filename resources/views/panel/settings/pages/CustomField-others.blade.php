@@ -3,6 +3,16 @@
         ->where('type', 'OfferBanner')
         ->get();
 @endphp
+@push('head')
+    <style>
+              label.active {
+                background-color: #6666cc;
+                color: white;
+            }
+
+    </style>
+@endpush
+
 
 <div class="card-body">
     <div class="row mb-3">
@@ -77,7 +87,7 @@
                                 <td>
                                     <a href="#download" id="editCust" class="btn-link editCust" style="color:#6666CC;" data-custid="{{ $field['id'] }}"  data-custname="{{ $field['text'] }}" data-values="{{ (is_array($field['value'])) ? implode(",",$field['value']) : $field['value'] }}" data-required="{{ $field['required'] ?? '' }}" data-data_type="{{ (($field['type'] == 'diamension') ? 'dimension' : $field['type'] ) ?? '' }}" data-attr_section="{{ $field['ref_section'] ?? '1'}}" >Edit</a>
 
-                                    {{-- <a href="{{ route('panel.settings.remove.custom.fields',encrypt($field['id'])) }}" class="btn btn-outline-danger delete-btn">Delete</a> --}}
+                                    <a href="{{ route('panel.settings.remove.custom.fields',encrypt($field['id'])) }}" class="mx-2 btn-link text-danger  delete-btn">Delete</a>
 
                                 </td>
                             </tr>
@@ -310,9 +320,18 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-lg-12 col-md-12 justify-content-center d-flex">
+
+                                        <div class="col-lg-12 col-md-12 justify-content-center">
+                                            <div class="d-flex justify-content-between">
+                                                <button type="button" class="btn  btn btn-outline-primary" data-dismiss="modal" aria-label="Close" style="color:#6666CC; border-color:#6666CC; padding:">Cancel</button>
+                                                <button type="submit" class="btn btn-outline-primary">Create</button>
+                                            </div>
+                                        </div>
+
+
+                                    {{-- <div class="col-lg-12 col-md-12 justify-content-center d-flex">
                                         <button type="submit" class="btn btn-outline-primary">Create</button>
-                                    </div>
+                                    </div> --}}
 
                                 </div>
                             </form>

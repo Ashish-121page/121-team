@@ -1,4 +1,4 @@
-<div class="d-none">
+<div class="d-noddne">
     <table class="table" id="printquotations">
         <thead>
             <tr>
@@ -12,26 +12,26 @@
             <tr>
                 <th scope="col" colspan="2"></th>
                 <th scope="col"></th>
-                <th scope="col"></th>              
+                <th scope="col"></th>
                 <th scope="col" colspan="4">Item Size</th>
                 <th scope="col"></th>
                 <th scope="col"></th>
                 <th scope="col"></th>
-                <th scope="col"></th>                                
+                <th scope="col"></th>
             </tr>
             <tr>
                 <th scope="col">Product ID</th>
                 <th scope="col">Image</th>
                 <th scope="col">COO</th>
                 <th scope="col">Name</th>
-                <th scope="col" colspan="1">L</th>    
+                <th scope="col" colspan="1">L</th>
                 <th scope="col" colspan="1">B</th>
                 <th scope="col" colspan="1">H</th>
                 <th scope="col" colspan="1">Unit</th>
                 <th scope="col">Finish</th>
                 <th scope="col">Material</th>
                 <th scope="col">Selling Price</th>
-                <th scope="col"> Incoterms</th>                 
+                <th scope="col"> Incoterms</th>
             </tr>
         </thead>
         <tbody>
@@ -64,7 +64,7 @@
                 <td>CIF</td>
             </tr>
             <!-- Add more table rows here -->
-        </tbody>                    
+        </tbody>
     </table>
 </div>
 

@@ -16,7 +16,7 @@
       
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="ds-none btn btn-outline-primary" id="installBtn">Install</button>
+        <button type="button" class="ds-none btn btn-outline-primary d-none" id="installBtn">Install</button>
       </div>
     </div>
   </div>

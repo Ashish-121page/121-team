@@ -1,5 +1,10 @@
 @extends('backend.layouts.main')
-@section('title', 'Product')
+
+@section('title', $title)
+
+
+
+
 @section('content')
 {{-- @dd(auth()->id()); --}}
 @php
@@ -92,18 +97,25 @@
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}">
 
     <style>
+        .addcat{
+            transition: 0.3s ease-in-out;
+        }
+        .addcat:hover{
+            background-color: #6666cc;
+            /* color: white */
+        }
         .ywqgqdya , .ywqgqdya .card , .ywqgqdya .card-body{
             padding: 1rem;
             border: none !important;
-            box-shadow: none !important;    
-        }
-        
-        .ywqgqdya{
-            outline:1px solid #eee0ee !important;
-            outline-offset:-10px; 
+            box-shadow: none !important;
         }
 
-        
+        .ywqgqdya{
+            outline:1px solid #eee0ee !important;
+            outline-offset:-10px;
+        }
+
+
         .error{
             color:red;
         }
@@ -759,6 +771,8 @@
             $("#delproduct_dummy").click(function (e) {
                 e.preventDefault();
                 let selected = $(".input-check:checked").length;
+
+                console.log(selected);
                 let delete_type_INPUT = $("#delete_type");
                 var msg = `
                 <span class="text-danger">You are about to Delete ${selected} Products</span> <br/>
@@ -766,13 +780,13 @@
                 <br><br>
                 <input type="checkbox" value="with_product" id="with_product"/>
                 <label for="with_product">Delete jpeg, video, design assets</label>
-                <input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='DELETE'>`;
+                <input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #666ccc;' placeholder='DELETE'>`;
 
                 $.confirm({
                     draggable: true,
                     title: `Delete ${selected} products`,
                     content: msg,
-                    type: 'purple',
+                    type: 'blue',
                     typeAnimated: true,
                     buttons: {
 
@@ -873,6 +887,8 @@
                         selected.push(element.dataset.record);
                     });
                     $(".selectedbtn").html(selected.length+' selected')
+                    console.log(selected)
+
                     return selected;
                 }
 

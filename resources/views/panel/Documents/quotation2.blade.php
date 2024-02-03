@@ -50,16 +50,24 @@
                                         <div class="col-12">
                                             <div class="d-flex align-items-center justify-content-between  ">
                                                 <div class="d-flex">
-                                                    <button class="btn btn-secondary mx-2" onclick="goBack()" value="Back" type="button">Back</button>
+                                                    <button class="btn btn-outline-primary mx-2" onclick="goBack()" value="Back"
+                                                        type="button">Back</button>
 
-                                                    <h5 class="mt-5"> {{ json_decode($entity_details->buyer_details)->entity_name ?? '' }} -
+                                                    <h5 class="mt-5">
+                                                        {{ json_decode($entity_details->buyer_details)->entity_name ?? '' }}
+                                                        -
                                                         {{ $nameofpage }} View</h5>
                                                 </div>
 
-                                                <div class="">
+                                                <div class="d-flex justify-content-between ">
+                                                    <select id="filterdata" class="form-control select2">
+                                                        <option value="1" @if (request()->get('sort') == '1') selected @endif>By Date</option>
+                                                        <option value="2" @if (request()->get('sort') == '2') selected @endif>By Name</option>
+                                                        <option value="3" @if (request()->get('sort') == '3') selected @endif>PI Status</option>
+                                                    </select>
                                                     <button type="button" class="btn btn-outline-primary   mx-2 "
                                                         data-toggle="modal" data-target="#uploadModal">
-                                                        Upload quotation
+                                                        Upload History
                                                     </button>
                                                 </div>
 
@@ -84,7 +92,13 @@
                                             {{-- <td class="no-export action_btn">
                                                 <input type="checkbox" id="checkallinp">
                                             </td> --}}
-                                            <th scope="col">Offer ID</th>
+
+                                            @if ($record->type_of_quote == '1')
+                                                <th scope="col">Quotation ID</th>
+                                            @else
+                                                <th scope="col">Offer ID</th>
+                                            @endif
+
                                             <th scope="col">{{ $nameofpage }} ID</th>
                                             {{-- <th scope="col">Buyer Email </th> --}}
                                             <th scope="col">Person Name </th>
@@ -102,19 +116,26 @@
                                                     $proposal_id = $recorddb->proposal_id;
                                                     $json_customer_info = json_decode($recorddb->customer_info) ?? '';
                                                     $QuotationItem = App\Models\QuotationItem::where('quotation_id', $recorddb->id)->get();
-
                                                 @endphp
-
-                                                @if ($proposal_id == '')
-                                                    <td>{{ _('Direct') }}</td>
-                                                @else
+                                                @if ($record->type_of_quote == '1')
                                                     @php
-                                                        $offer_record = getProposalRecordById($recorddb->proposal_id);
+                                                        $linked_quote = App\Models\Quotation::where('id',$recorddb->linked_quote)->first();
                                                     @endphp
                                                     <td>
-                                                        {{-- {{ $proposal_id  }} --}}
-                                                        {{ $offer_record->user_slug ?? ($offer_record->slug ?? '--') }}
+                                                        {{ $linked_quote->user_slug ?? $linked_quote->slug ?? ''}}
                                                     </td>
+                                                @else
+                                                    @if ($proposal_id == '')
+                                                        <td>{{ _('Direct') }}</td>
+                                                    @else
+                                                        @php
+                                                            $offer_record = getProposalRecordById($recorddb->proposal_id);
+                                                        @endphp
+                                                        <td>
+                                                            {{-- {{ $proposal_id  }} --}}
+                                                            {{ $offer_record->user_slug ?? ($offer_record->slug ?? '--') }}
+                                                        </td>
+                                                    @endif
                                                 @endif
 
                                                 <td>{{ $recorddb->user_slug ?? $recorddb->slug }}</td>
@@ -127,18 +148,30 @@
 
                                                 <td>
                                                     <div class="row">
-                                                        <div class="col-md-2">
-                                                            <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $recorddb->id }}"
-                                                                id="nnnbk" class="mx-1">
-                                                                <i class="far fa-save text-primary"></i>
-                                                            </a>
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <a href="{{ route('panel.Documents.create.Quotation.form') }}?typeId={{ $recorddb->id }}&action=edit"
-                                                                class="mx-1">
-                                                                <i class="far fa-edit text-primary" title="Edit"></i>
-                                                            </a>
-                                                        </div>
+                                                        <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $recorddb->id }}"
+                                                            id="nnnbk" class="mx-1">
+                                                            <i class="far fa-save text-primary"></i>
+                                                        </a>
+                                                        <a href="{{ route('panel.Documents.create.Quotation.form') }}?typeId={{ $recorddb->id }}&action=edit"
+                                                            class="mx-1">
+                                                            <i class="far fa-edit text-primary" title="Edit"></i>
+                                                        </a>
+
+
+                                                        @if ($recorddb->type_of_quote == '0')
+                                                            @php
+                                                                $chkrec = App\Models\Quotation::where('linked_quote', $recorddb->id)->get();
+                                                            @endphp
+
+                                                            @if ($chkrec->count() == 0)
+                                                                <a href="{{ route('panel.Documents.make.quote.perfoma', $recorddb->id) }}"
+                                                                    class="mx-1 btn-link" style="font-size: 13px"> Make PI
+                                                                </a>
+                                                            @else
+                                                                <h6><i class="fas fa-check text-primary "></i></h6>
+                                                            @endif
+                                                        @endif
+
                                                     </div>
                                                     {{-- <a href="{{ route('panel.Documents.quotation3') }}?typeId={{ $recorddb->id }}" id="nnnbk" class="mx-1" ><i class="far fa-save text-primary"></i></a>
 
@@ -167,10 +200,12 @@
                                     <table class="table">
                                         <thead>
                                             <th>#</th>
-                                            <th>File Name</th>
                                             <th>Quotation Id</th>
                                             <th>Person Name</th>
+                                            <th>File Name</th>
+                                            <th>Upload on</th>
                                             <th>File Download</th>
+
                                         </thead>
 
                                         <tbody>
@@ -183,19 +218,23 @@
                                                         {{ $loop->iteration }}
                                                     </td>
                                                     <td>
-                                                        {{ $quote_flle->file_name }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $misc_notes->quotation_id ?? '' }}
+                                                        {{ $misc_notes->quotation_id ?? '--' }}
                                                     </td>
                                                     <td>
                                                         {{ $misc_notes->buyerperson ?? '' }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $quote_flle->file_name }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $quote_flle->created_at }}
                                                     </td>
                                                     <td>
                                                         <a href="{{ asset($quote_flle->file_path) }}"
                                                             download="{{ $quote_flle->file_name }}"
                                                             class="btn btn-outline-primary mx-2">Download</a>
                                                     </td>
+
                                                 </tr>
                                             @empty
                                                 Nothing to show Here...
@@ -236,6 +275,13 @@
             function goBack() {
                 window.history.back()
             }
+
+            $("#filterdata").change(function (e) {
+                e.preventDefault();
+                let val = $(this).val();
+                let url = "{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}&sort=" + val;
+                window.location.href = url;
+            });
         </script>
 
     @endsection

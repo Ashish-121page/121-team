@@ -97,7 +97,6 @@
                                 </li>
                             @endif
 
-
                             {{-- <li class="nav-item ">
                                 <a data-active="page-feature" class="mr-2 active-swicher  btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "page-feature") active  @endif" id="pills-general-tab" data-toggle="pill" href="#page-feature" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('My Page')}}</a>
                             </li> --}}
@@ -109,21 +108,22 @@
                             @endif
 
 
+                            {{--` moved to settings --}}
 
-                            <li class="nav-item ">
-                                <a data-active="about-section" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "about-section") active  @endif" id="pills-general-tab" data-toggle="pill" href="#about-section" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Brief Intro')}}</a>
-                            </li>
+                                {{-- <li class="nav-item ">
+                                    <a data-active="about-section" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "about-section") active  @endif" id="pills-general-tab" data-toggle="pill" href="#about-section" role="tab" aria-controls="pills-general" aria-selected="false">{{ __('Team')}}</a>
+                                </li> --}}
 
+                                {{-- <li class="nav-item">
+                                    <a data-active="my-address" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "my-address") active  @endif" id="pills-my-address-tab" data-toggle="pill" href="#my-address-area" role="tab" aria-controls="pills-my-address" aria-selected="false">{{ __('Entities')}}</a>
+                                </li> --}}
 
-                            <li class="nav-item">
-                                <a data-active="my-address" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "my-address") active  @endif" id="pills-my-address-tab" data-toggle="pill" href="#my-address-area" role="tab" aria-controls="pills-my-address" aria-selected="false">{{ __('Entities')}}</a>
-                            </li>
+                            {{--` moved to settings till here--}}
+
 
                             <li class="nav-item ">
                                 <a data-active="shop-passcodes" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "shop-passcodes") active  @endif" id="pills-settings2-tab" data-toggle="pill" href="#pills-settings2" role="tab" aria-controls="pills-settings2" aria-selected="false">{{ __('Passcodes')}}</a>
                             </li>
-
-
 
                             <li class="nav-item">
                                 <a data-active="security" class="mr-2 active-swicher btn btn-outline-primary @if(request()->has('active') && request()->get('active') == "security") active  @endif" id="pills-features-tab" data-toggle="pill" href="#features" role="tab" aria-controls="pills-features" aria-selected="false">{{ __('Security')}}</a>
@@ -392,45 +392,8 @@
                             {{-- New Pill 1 By Ashish --}}
 
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == "about-section") active show @endif" id="about-section" role="tabpanel" aria-labelledby="pills-general-tab">
-                                <div class="row">
-                                    <div class="col-lg-8">
-                                        {{-- <h6 class="my-3">About Section</h6>
-                                        <form action="{{ route('panel.user_shops.about',$user_shop->id) }}" method="POST" enctype="multipart/form-data">
-                                            @csrf
-                                            @php
-                                                $about = json_decode($user_shop->about,true);
-                                            @endphp
-                                            <div class="row d-none">
-                                                <div class="col-md-6 col-12 d-none">
-                                                    <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-                                                        <label for="name" class="control-label">Title</label>
-                                                        <input required class="form-control" name="title" type="text" id="name"
-                                                            value="{{ $about['title'] ?? '' }}" placeholder="Enter Title" readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6 col-12">
-                                                    <div class="form-group {{ $errors->has('img') ? 'has-error' : '' }}">
-                                                        <label for="name" class="control-label">Image</label>
-                                                        <input class="form-control" name="img" type="file"
-                                                            value="{{ $about['img'] ?? '' }}">
-                                                        @if(isset($about) && isset($about['img']))
-                                                            <div>
-                                                                <img src="{{ asset($about['img']) }}" alt="" style="height: 100px;">
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12 col-12">
-                                                    <div class="form-group {{ $errors->has('img') ? 'has-error' : '' }}">
-                                                        <textarea name="content" id="" cols="30" rows="5" class="form-control">{{ $about['content'] ?? '' }}</textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <button type="submit" class="btn btn-primary">Update</button>
-                                                </div>
-                                            </div>
-                                        </form> --}}
-
+                                <div class="row d-none">
+                                    <div class="col-lg-8">                                       
                                         {{-- brief_induction --}}
                                         @if(AuthRole() == 'Admin')
                                             <div class="card-body">
@@ -949,12 +912,6 @@
                             </div>
 
 
-
-
-
-
-
-
                             <!---<div class="tab-pane fade @if(request()->has('active') && request()->get('active') == 'my-info') show active @endif" id="previous-month" role="tabpanel" aria-labelledby="pills-setting-tab">
                                 <div class="row">
                                     @if($user)
@@ -1032,86 +989,10 @@
                             </div>--->
 
 
-
-
-
-
-
-
-
-
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == 'my-address') show active @endif" id="my-address-area" role="tabpanel" aria-labelledby="pills-setting-tab">
 
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        {{-- <h6>Site Address</h6>
-                                        <form action="{{ route('panel.user_shops.address.update', $user_shop->id) }}" method="post" id="UserShopForm" class="row">
-                                            @csrf
-                                            <input type="hidden" name="status" value="1">
-                                            <input type="hidden" value="{{ $user_shop->user_id  }}" required name="user_id" id="user_id">
-
-                                            <div class="col-md-4 col-12">
-                                                <div class="form-group">
-                                                    <label for="flat_number">Flat/Office Number</label>
-                                                    <input type="number" class="form-control" name="address[flat_number]" value="{{ $shop_address['flat_number'] ?? old('flat_number') }}" placeholder="Enter Flat/Office Number">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 col-12">
-                                                <div class="form-group">
-                                                    <label for="floor">Floor</label>
-                                                    <input type="text" class="form-control" name="address[floor]" placeholder="Enter Floor" value="{{ $shop_address['floor'] ?? old('floor') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 col-12">
-                                                <div class="form-group">
-                                                    <label for="building_name">Building Name / Line 2</label>
-                                                    <input type="text" class="form-control" name="address[building_name]" placeholder="Enter Building Name / Line 2" value="{{ $shop_address['building_name'] ?? old('building_name') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 col-12 ">
-                                                <div class="form-group">
-                                                    <label for="line_3_address">Line 3 of address</label>
-                                                    <input type="text" class="form-control" name="address[line_3_address]" placeholder="Line 3 of address" value="{{ $shop_address['line_3_address'] ?? old('line_3_address') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 col-12">
-                                                <div class="form-group">
-                                                    <label for="location">Landmark, if any</label>
-                                                    <input type="text" class="form-control" name="address[location]" value="{{ $contact_info->location ?? ' ' }}" placeholder="Landmark, if any" >
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 col-12">
-                                                <div class="form-group">
-                                                    <label for="country">Country</label>
-                                                    <select name="address[country]" id="country" class="form-control select2">
-                                                        <option aria-readonly="true" value="">Select Country</option>
-                                                        @foreach (\App\Models\Country::all() as $country)
-                                                            <option value="{{ $country->id }}"
-                                                                @if(isset($shop_address['country'])&& $shop_address['country'] == $country->id) selected @endif>
-                                                                {{ $country->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 col-12">
-                                                <div class="form-group">
-                                                    <label for="">State</label>
-                                                    <select id="state" name="address[state]" class="form-control select2">
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 col-12">
-                                                <div class="form-group">
-                                                    <label for="city">City</label>
-                                                    <select id="city" name="address[city]" class="form-control select2 city">
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <button type="submit" class="btn btn-primary">Update</button>
-                                            </div>
-                                        </form> --}}
+                                <div class="row d-none">
+                                    <div class="col-lg-12">                                        
                                         <hr>
                                         <div class="d-flex justify-content-between my-3">
                                             <h6 class="mt-1">Entities</h6>
@@ -1706,7 +1587,7 @@
             });
 
     </script>
-    <script>
+    {{-- <script>
 
         $('.addAddress').click(function(){
             user_id = $(this).data('id');
@@ -2088,6 +1969,6 @@
                 $('#updateAdditionalNumber').submit();
 
             });
-    </script>
+    </script> --}}
     @endpush
 @endsection

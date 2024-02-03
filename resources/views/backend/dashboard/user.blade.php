@@ -9,14 +9,14 @@
         $contact_info = json_decode($user_shop->contact_info);
         if(isset($user_shop->payment_deatils) && $user_shop->payment_deatils != null  && $user_shop->payment_deatils != 'null'){
         $payment_deatils = json_decode($user_shop->payment_deatils,true);
-        } 
+        }
     @endphp
     @if(isset($user_shop))
         {{-- <div class="col-xl-4 col-lg-4 col-md-12 col-12">
                 <div class="card">
                     @if($user_shop->slug == auth()->user()->phone)
                         <div class="card-header d-flex justify-content-between">
-                            <h6 class="mb-0"> 
+                            <h6 class="mb-0">
                                 Choose Your Page Name
                             </h6>
                             <i class="ik ik-info fa-2x text-info" title="Please note that the change in your site name affects your QR code, avoid changing the site name after sharing the QR code with your distributors"></i>
@@ -72,13 +72,13 @@
                                                 <h6 class="mt-2">
                                                     <i class="fa fa-envelope"></i>
                                                     {{ $contact_info->email ?? '' }}</h6>
-                                               
+
                                                     <hr>
-     
+
                                                     <label for="" class="text-center text-muted">
                                                     Powered by 121.page
                                                     </label>
-                                            </div>                                             
+                                            </div>
                                         </div>
                                     </div>
 
@@ -97,7 +97,7 @@
                                 <span class="text-center mx-4 d-flex align-items-center" style="padding-top: 10px !important">
                                     <span class="ik ik-info fa-1x text-danger m-1"></span>
                                     Use Desktop For Better Export Print
-                                </span>    
+                                </span>
                             </div>
                         @else
                             <div class="card-body">
@@ -111,7 +111,7 @@
                                     </div>
                                 </div>
                             </div>
-                        @endif    
+                        @endif
                     @else
                         <div class="card-body">
                             <div class="row">
@@ -130,22 +130,23 @@
         {{-- @if(getSellerProgressStatistics(auth()->id()) != 100 || $user_shop->slug == auth()->user()->phone) --}}
         @php
             // ` Current Progress
-            $first =  (auth()->user()->ekyc_status == 1) ? true : false;
+            $first =  true;
+            // $first =  (auth()->user()->ekyc_status == 1) ? true : false;
             $second = ($first) ? ((count(App\Models\Category::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
             $third =  ($second) ? ((count(App\Models\Product::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
             $forth =  ($third) ? ((count(App\Models\Proposal::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
             $fifth =  false;
 
         @endphp
-        
-            <div class="col-xl-12 col-lg-12 col-md-12 col-12 justify-content-center">
+
+            <div class="col-xl-12 col-lg-12 col-md-12 col-12 justify-content-center  @if($first && $second && $third && $forth) d-none @endif">
                 <div class="progressmeter">
                     <div class="h4">Progress</div>
                     <div class="row">
                         {{-- Step 1  --}}
-                        <div class="col bg-white shadow m-1">
+                        <div class="col bg-white shadow m-1 d-none">
                             <a href="@if ($first) #complted @else {{ route('customer.dashboard') }}?active=account&subactive=business_profile&upload_gst=true @endif">
-                                
+
                                 <div class="circle @if ($first) bg-success @else bg-primary @endif text-white">
                                     <span>
                                         @if ($first) <i class="fas fa-check-circle"></i> @else 1 @endif
@@ -163,23 +164,23 @@
                                 @if ($first && $second) bg-success @elseif($first) bg-primary @else bg-secondary @endif
                                 ">
                                     <span>
-                                        @if ($first && $second) <i class="fas fa-check-circle"></i>  @else 2 @endif
+                                        @if ($first && $second) <i class="fas fa-check-circle"></i>  @else 1 @endif
                                     </span>
                                 </div>
                                 <div class="h6 my-2"><b>Add category</b></div>
-                                <p>Create new category best suited for your products</p>    
+                                <p>Create new category best suited for your products</p>
                             </a>
                         </div>
 
                         {{-- Step 3  --}}
                         <div class="col bg-white shadow m-1"  @if (!$third) title="Complete step 2" @endif>
-                            
+
                             <a href="@if ($first && $second && $third) #completed @elseif($first && $second ) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true @else #pending @endif" @if(!$second) style="cursor: not-allowed !important" @endif>
 
                                 <div class="circle @if ($first && $second && $third) bg-success @elseif($first && $second) bg-primary @else bg-secondary @endif text-white">
-                                    
+
                                     <span>
-                                        @if ($first && $second && $third) <i class="fas fa-check-circle"></i> @else 3 @endif
+                                        @if ($first && $second && $third) <i class="fas fa-check-circle"></i> @else 2 @endif
                                     </span>
                                 </div>
                                 <div class="h6 my-2"><b>Add Product</b></div>
@@ -192,176 +193,99 @@
                             <a href="@if ($first && $second && $third && $forth) #completed @elseif($first && $second && $third) {{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }} @else #pending @endif " @if(!$third) style="cursor: not-allowed !important" @endif>
                                 <div class="circle @if ($first && $second && $third && $forth) bg-success @elseif($first && $second && $third) bg-primary @else bg-secondary @endif text-white">
                                     <span>
-                                        @if ($first && $second && $third && $forth) <i class="fas fa-check-circle"></i> @else 4 @endif
+                                        @if ($first && $second && $third && $forth) <i class="fas fa-check-circle"></i> @else 3 @endif
                                     </span>
                                 </div>
-                                
+
                                 <div class="h6 my-2"><b>Make Offer</b></div>
-                                
+
                                 <p>Create fast offers for Buyers in any of ppt, pdf, excel formats</p>
                             </a>
                         </div>
 
-                        {{-- Step 5  --}}
-                        <div class="col bg-white shadow m-1"  @if (!$fifth) title="Complete step 4" @endif>
-                            <a href="{{ route('panel.settings.index',encrypt(auth()->id())) }}"@if ($first && $second && $third && $forth && $fifth) #completed>
-                            @elseif($first && $second && $third && $forth) 
-                                <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank">
-                            @else 
-                                <a href="{{ route('panel.settings.index',encrypt(auth()->id())) }}" @if(!$forth) style="cursor: not-allowed !important" @endif>
-                            @endif
-                                    <div class="circle @if ($first && $second && $third && $forth && $fifth) bg-success @elseif($first && $second && $third && $forth) bg-primary @else bg-secondary @endif text-white">
-                                        <span>
-                                            @if ($first && $second && $third && $forth && $fifth) <i class="fas fa-check-circle"></i> @else 5 @endif
-                                        </span>
-                                    </div>
-                                    <div class="h6 my-2"><b>Set Template</b></div>
-                                    <p>Share your templates for customising your offer</p>
-                            </a>
-                        </div>
 
                     </div>
                     <div class="bar"></div>
                 </div>
             </div>
-        {{-- @else
-            <div class="col-xl-12 col-lg-12 col-md-12 col-12 statistics_count">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Overview</h3>
+
+    @endif
+
+        {{--  three new cols for Dashboard --}}
+        @if ($third && $forth)
+            <div class="col-xl-12 col-lg-12 col-md-12 col-12 justify-content-center mt-3">
+                <div class="progressmeter">
+                    <div class="h5">
+                        Dashboard
                     </div>
-                    <div class="card-body">
-                        @php
-                            $statistics_1 = [
-                                [
-                                    'title' => 'New Customers',
-                                    'color' => 'red',
-                                    'count' => getAccessCataloguePendingCount(auth()->id(),0),
-                                    'link' =>  route('panel.seller.request.index') 
-                                ],
-                                [
-                                    'title' => 'New Site Enquiries',
-                                    'color' => 'green',
-                                    'count' => getEnqCountFromWeb(auth()->id()),
-                                    'link' => route('panel.seller.enquiry.index' ,['type' => 'contact'])
-                                ],
-                                [
-                                    'title' => 'New Product Updates',
-                                    'color' => 'yellow',
-                                    'count' => getNewProductCount(auth()->id()),
-                                    'link' => route('panel.seller.supplier.index')
-                                ],
-                            ];
-                            $statistics_2 = [
-                                [
-                                    'title' => 'Customers',
-                                    'color' => 'red',
-                                    'count' => getAccessCataloguePendingCount(auth()->id(),1),
-                                    'link' => url('panel/seller/my_reseller')
-                                ],
-                                [
-                                    'title' => 'Draft Proposal',
-                                    'color' => 'blue',
-                                    'count' => getProposalSentThisMonth(auth()->id(),0),
-                                    'link' => url('panel/proposals?status=0')
-                                ],
-                                [
-                                    'title' => 'Sent Proposal',
-                                    'color' => 'green',
-                                    'count' => getProposalSentThisMonth(auth()->id(),1),
-                                    'link' => url('panel/proposals?status=1')
-                                ],
-                            ];
-                            $statistics_3 = [
-                                [
-                                    'title' => 'Total Suppliers',
-                                    'color' => 'red',
-                                    'count' => getMyTotalSuppliers(auth()->id(),1),
-                                    'link' => route('panel.seller.my_supplier.index')
-                                ],
-                                [
-                                    'title' => 'Own Sku',
-                                    'color' => 'blue',
-                                    'count' => getTotalProducts(auth()->id(),1),
-                                    'link' => route('panel.user_shop_items.create',['type' => 'direct' ,'type_id' => auth()->id()]),
-                                ],
-                                [
-                                    'title' => 'Linked Sku',
-                                    'color' => 'green',
-                                    'count' => getSellerLinkedCount(auth()->id(),2),
-                                    'link' => route('panel.user_shop_items.create',['type' => 'direct' ,'type_id' => auth()->id()]),
-                                ],
-                            ];
-                        @endphp
+                    <div class="row">
+                        {{-- All Products  --}}
+                        <div class="col bg-white shadow m-1">
+                            <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true" style="cursor: pointer !important">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="circle bg-none">
+                                        {{-- <div class="circle   bg-primary text-white "> --}}
+                                        <span>
+                                            <svg width="72" height="72" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill="#666ccc" d="m1344 2l704 352v785l-128-64V497l-512 256v258l-128 64V753L768 497v227l-128-64V354zm0 640l177-89l-463-265l-211 106zm315-157l182-91l-497-249l-149 75zm-507 654l-128 64v-1l-384 192v455l384-193v144l-448 224L0 1735v-676l576-288l576 288zm-640 710v-455l-384-192v454zm64-566l369-184l-369-185l-369 185zm576-1l448-224l448 224v527l-448 224l-448-224zm384 576v-305l-256-128v305zm384-128v-305l-256 128v305zm-320-288l241-121l-241-120l-241 120z"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="ml-3 mt-4 mb-3">
+                                        <div class="h6 my-2"><b>All Products</b></div>
+                                        <p>Add, Edit or Delete products</p>                                    
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
 
-                        <div class="row">
-                            
-                            @foreach ($statistics_1 as $statistic_1)
-                                <a class="col-xl-3 col-md-12 p-2" href="{{ $statistic_1['link'] }}">
-                                    <div class="card proj-t-card mb-1">
-                                        <div class="card-body">
-                                            <div class="row align-items-center mb-30">
-                                                <div class="col-auto">
-                                                    <i class="far fa-calendar-check text-{{ $statistic_1['color'] }} f-30"></i>
-                                                </div>
-                                                <div class="col pl-0">
-                                                    <h6 class="mb-5">{{ $statistic_1['title'] }}</h6>
-                                                    <h6 class="mb-0 text-{{ $statistic_1['color'] }}"></h6>
-                                                </div>
-                                            </div>
-                                            <div class="row align-items-center text-center">
-                                                <div class="col">
-                                                    <h6 class="mb-0">{{ $statistic_1['count'] }}</h6>
-                                                </div>
-                                                <div class="col">
-                                                    <i class="fas fa-exchange-alt text-{{ $statistic_1['color'] }} f-18"></i>
-                                                </div>
-                                                
-                                            </div>
-                                            <h6 class="pt-badge bg-{{ $statistic_1['color'] }}"></h6>
+                        {{-- Offers --}}
+                        <div class="col bg-white shadow m-1">
+                            <a href="{{ route('panel.proposals.index') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}" style="cursor: pointer !important">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="circle text-white bg-none mr-3">
+                                        <span>
+                                            <svg width="72" height="72" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill="none" stroke="#666ccc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m7.369 28.832l30.755-5.516l5.376-9.143l-8.245-5.958L4.5 13.73z"/>
+                                                <path fill="none" stroke="#666ccc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m10.494 28.272l7.997 11.513l23.522-15.73l1.487-9.882"/>
+                                                <circle cx="39.339" cy="14.912" r=".75" fill="currentColor"/>
+                                            </svg>
+                                        </span>
+                                        
+                                    </div>                                    
+                                        <div class="ml-3 mt-4 mb-3">
+                                            <div class="h6 my-2 text-start"><b>Create Offer for a Buyer</b></div>
+                                            <p class="text-right">Select products and create Offers</p>
                                         </div>
-                                    </div>
-                                </a>
-                            @endforeach
-                            
-                            @foreach ($statistics_2 as $statistic_2)
-                                <a class="col-xl-3 col-md-6 p-2" href="{{ $statistic_2['link'] }}">
-                                    <div class="card ticket-card mb-1">
-                                        <div class="card-body">
-                                            <p class="mb-30 bg-{{ $statistic_2['color'] }} lbl-card"><i class="fas fa-folder-open"></i> {{ $statistic_2['title'] }}</p>
-                                            <div class="text-center">
-                                                <h2 class="mb-0 d-inline-block text-{{ $statistic_2['color'] }}">{{ $statistic_2['count'] }}</h2>
-                                                <p class="mb-0 d-inline-block"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            @endforeach
+                                </div>
+                            </a>
+                        </div>
 
-                            @foreach ($statistics_3 as $statistic_3)
-                                <a class="col-xl-3 col-md-6 p-2" href="{{ $statistic_3['link'] }}">
-                                    <div class="card prod-p-card card-{{ $statistic_3['color'] }}">
-                                        <div class="card-body">
-                                            <div class="row align-items-center mb-30">
-                                                <div class="col">
-                                                    <h6 class="mb-5 text-white">{{ $statistic_3['title'] }}</h6>
-                                                    <h3 class="mb-0 fw-700 text-white">{{ $statistic_3['count'] }}</h3>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <i class="fa fa-money-bill-alt text-red f-18"></i>
-                                                </div>
-                                            </div>
-                                        </div>
+                        {{--` documentation  --}}
+                        <div class="col bg-white shadow m-1">
+                            <a href="{{ route('panel.Documents.Quotation') }}" style="cursor: pointer !important">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="circle bg-none text-white mr-3">
+                                        <span>
+                                            <svg width="72" height="72" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill="#666ccc" d="M1920 512v1408H768v-256H512v-256H256V0h731l256 256h421v256zm-896-128h165l-165-165zm256 896V512H896V128H384v1152zm256 256V384h-128v1024H640v128zm257-896h-129v1024H896v128h897z"/>
+                                            </svg>
+                                        </span>
                                     </div>
-                                </a>
-                            @endforeach
-                    
+                                    <div class="ml-3 mt-4 mb-3">
+                                        <div class="h6 my-2"><b>Documentation</b></div>
+                                        <p>Create and maintain Quotation, PI and others</p>
+                                    </div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>
-            </div>  
-        @endif --}}
-    @endif
+            </div>
+        @endif
+        {{--  end of three new cols for Dashboard --}}
+
+
     <!-- project-ticket end -->
 
 
@@ -373,7 +297,7 @@
             <img src="" alt="test" id="qr4" style="max-width: 20rem;margin:5px; height: 25%;">
         </div>
     </div>
-    
+
 </div>
 
 @push('script')
@@ -383,18 +307,18 @@
          $(function () {
                     $("#txtName").keypress(function (e) {
                         var keyCode = e.keyCode || e.which;
-            
+
                         $("#lblError").html("");
-            
+
                         //Regex for Valid Characters i.e. Alphabets and Numbers.
                         var regex = /^[A-Za-z0-9]+$/;
-            
+
                         //Validate TextBox value against the Regex.
                         var isValid = regex.test(String.fromCharCode(keyCode));
                         if (!isValid) {
                             $("#lblError").html("Only Alphabets and Numbers allowed.");
                         }
-            
+
                         return isValid;
                     });
                 });
@@ -412,7 +336,7 @@
             var getCanvas; // global variable
 
             $("#download-qr").on('click', function () {
-                html2canvas(document.getElementById("html-content-holder")).then(function (canvas) {		
+                html2canvas(document.getElementById("html-content-holder")).then(function (canvas) {
                     var anchorTag = document.createElement("a");
                     document.body.appendChild(anchorTag);
                     document.getElementById("previewImg").appendChild(canvas);
@@ -427,7 +351,7 @@
 
             // create Image URL
             window.onload = function () {
-                html2canvas(document.getElementById("html-content-holder")).then(function (canvas) {		
+                html2canvas(document.getElementById("html-content-holder")).then(function (canvas) {
                     document.getElementById("previewImg").appendChild(canvas);
                     var imgurl  = canvas.toDataURL();
                     document.getElementById('qr').src = imgurl
@@ -438,7 +362,7 @@
                 });
             }
             // Export QR PDF
-            function exportpdf() { 
+            function exportpdf() {
                 var divContents = document.getElementById('expdf').innerHTML
                 var a = window.open('Export QR', 'Export QR', 'height=600, width=1000');
                 a.document.write('<html>');

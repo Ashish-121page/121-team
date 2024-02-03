@@ -41,6 +41,14 @@ class WebsiteController extends Controller
        $verify_customer = DB::table('user_shops')->where('demo_given','=',1)->get();
        return view('frontend.website.newhome',compact('verify_customer'));
     }
+    
+        // new landing page
+    public function now()
+    {
+       // Get Verified Customer Image Data
+       $verify_customer1 = DB::table('user_shops')->where('demo_given','=',1)->get();
+       return view('frontend.website.newhome-one',compact('verify_customer1'));
+    }
 
     public function demoform()
     {
@@ -232,9 +240,19 @@ class WebsiteController extends Controller
         return view('frontend.website.about'); 
     }
 
+    public function about_one()
+    {
+        return view('frontend.website.about-one'); 
+    }
+
     public function contact()
     {
         return view('frontend.website.contact.index'); 
+    }
+
+    public function contact_one()
+    {
+        return view('frontend.website.contact.index-one'); 
     }
     public function faq()
     {

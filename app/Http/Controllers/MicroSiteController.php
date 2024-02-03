@@ -706,8 +706,22 @@ class MicroSiteController extends Controller
         $share_msg = "Hey I got Something New on The Internet That Help You!! \n\n $curretpage \n\n You Can Use this To Groww Your Business";
 
 
+        $user_shop_item = getUserShopItemByProductId($slug, $product->id);
+        $image_ids = $user_shop_item->images != null ? explode(',', $user_shop_item->images) : [];
+        $price = $user_shop_item->price ?? 0;
+        if ($group_id && $group_id != 0) {
+            $price = getPriceByGroupIdProductId($group_id, $product->id, $price);
+        }
+        $record_tmp = UserCurrency::where('currency', $product->base_currency)->where('user_id', $user_shop->user_id)->first();
+        $exhangerate = Session::get('Currency_exchange') ?? 1;
+        $HomeCurrency = $record_tmp->exchange ?? 1;
 
-        $share_msg = "$product->title. \nOffer : $product->price \nMRP : $product->mrp \n\nHere's the link for more details :   \n$curretpage";
+        $currency_symbol = Session::get('currency_name') ?? ($product->base_currency ?? 'INR');
+
+        $msg_price = round(exchangerate($price, $exhangerate, $HomeCurrency), 2);
+        $msg_mrp = round(exchangerate($product->mrp, $exhangerate, $HomeCurrency), 2) ;
+
+        $share_msg = "$product->title. \nOffer : $currency_symbol $msg_price \nMRP : $currency_symbol $msg_mrp \n\nHere's the link for more details :   \n$curretpage";
 
         $shareButtons1 = \Share::page(urlencode($share_msg))
         ->facebook()

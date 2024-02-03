@@ -134,6 +134,7 @@
                                                         
                             <div class="col-md-12 ml-auto">
                                 <div class="form-group">
+                                    {{-- <button type="button" class="btn btn-primary activebtn d-none">Cancel</button> --}}
                                     <button type="submit" class="btn btn-primary activebtn d-none">Create</button>
                                 </div>
                             </div>

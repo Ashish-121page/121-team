@@ -26,6 +26,7 @@ use App\Models\UserShopItem;
 use App\Models\AccessCode;
 use App\Models\Group;
 use App\Models\GroupProduct;
+use App\Models\UserCurrency;
 use App\Models\MailSmsTemplate;
 use App\Models\ProposalItem;
 use App\User;
@@ -58,7 +59,7 @@ class UserController extends Controller
         }
         $roles = Role::whereIn('id', [3,2,6])->get()->pluck('name', 'id');
         $users = User::query();
-        $users->notRole(['Super Admin'])->where('id', '!=', auth()->id());
+        // $users->notRole(['Super Admin'])->where('id', '!=', auth()->id());
         if($request->get('role')){
             $users->role($request->get('role'));
         }
@@ -144,9 +145,11 @@ class UserController extends Controller
             return back()->with('error', 'There is already a user associated with this phone number');
         }
 
-        $chk_cat = User::where('NBD_Cat_ID',$request->nbdcatid)->get()->count();
-        if ($chk_cat != 0) {
-            return back()->with('error', 'Cat Id Already Exist With Another User.');
+        if ($request->nbdcatid != null) {
+            $chk_cat = User::where('NBD_Cat_ID',$request->nbdcatid)->get()->count();
+            if ($chk_cat != 0) {
+                return back()->with('error', 'Cat Id Already Exist With Another User.');
+            }
         }
 
         if($request->has('access_code') && $request->get('access_code') != null){
@@ -329,9 +332,29 @@ class UserController extends Controller
                             ]);
                         }
                     }
-
-
             }
+
+            $chk_UserCurrency = UserCurrency::whereUserId($user->id)->get();
+            if (count(($chk_UserCurrency)) != 0) {
+                UserCurrency::create([
+                'user_id' => $user->id,
+                    'User_shop_id' =>  0,
+                    'currency' => 'INR',
+                    'exchange' => 1,
+                    'remark' => '',
+                    'default_currency' => 1
+                ]);
+                UserCurrency::create([
+                'user_id' => $user->id,
+                    'User_shop_id' =>  0,
+                    'currency' => 'USD',
+                    'exchange' => 85,
+                    'remark' => 'Estimated',
+                    'default_currency' => 0
+                ]);
+            }
+
+
             if ($user) {
                 return redirect('panel/users/index')->with('success', 'New user created!');
             } else {
@@ -613,6 +636,18 @@ class UserController extends Controller
             $phone = $phone;
             session()->put('otp',$otp);
             session()->put('phone',$phone);
+            User::whereId(auth()->id())->update([
+                'temp_otp' => $otp
+            ]);
+
+            // ! Skip OTP Send Request In Localhost
+            if(env('WORKING_AREA','production') == 'local'){
+                return response()->json([
+                    'message' => 'OTP Sent Successfully!',
+                    'title' => 'Success',
+                    'otp' => $otp,
+                ]);
+            }
             $mailcontent_data = MailSmsTemplate::where('code','=',"otp-send")->first();
             if($mailcontent_data){
                 $arr=[
@@ -621,9 +656,6 @@ class UserController extends Controller
                  $msg = DynamicMailTemplateFormatter($mailcontent_data->body,$mailcontent_data->variables,$arr);
                  sendSms($phone,$msg,$mailcontent_data->footer);
             }
-            User::whereId(auth()->id())->update([
-                'temp_otp' => $otp
-            ]);
             return response()->json([
                 'message' => 'OTP Sent Successfully!',
                 'title' => 'Success',
@@ -853,7 +885,8 @@ class UserController extends Controller
                 return back()->with('error', 'Do not try to login as yourself.');
             } else {
                 $user   = User::find($id);
-
+                // ! Uncomment only if You Want to Udate Login Time in Login-as User
+                // event(new \App\Events\UserAuthenticated($user));
 
                 session(['admin_user_id' => auth()->id()]);
                 session(['temp_user_id' => $user->id]);

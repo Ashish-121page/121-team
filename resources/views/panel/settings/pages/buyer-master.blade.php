@@ -5,14 +5,16 @@
                 <div class="card-body">
                     <form action="#" method="POST" enctype="multipart/form-data">
 
+
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-12 d-flex justify-content-between ">
                                 <h4>
                                     <b>Buyer Master</b>
                                 </h4>
+                                <button type="button" id="export_button" class="btn btn-outline-success btn-sm">Export Excel</button>
                             </div>
                             <div class="col-12">
-                                <table class="table table-responsive ">
+                                <table class="table table-responsive " id="table" data-filename="Buyer List">
                                     <thead>
                                         <tr>
                                             <th>#</th>

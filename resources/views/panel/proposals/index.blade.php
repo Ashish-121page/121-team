@@ -14,9 +14,7 @@
             max-height: 65vh;
             overflow-y: auto;
         }
-    
-
-       
+     
 </style>
 @php
 /**

@@ -20,9 +20,9 @@
                 </div> --}}
                 <div class="shop-image position-relative overflow-hidden rounded ">
 
-                    <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank" style="height: 85vh; width: 100%; object-fit: contain; gap:2; display: inherit">
+                    <a href="{{ inject_subdomain('shop/'. $productId,$slug) }}" target="_blank" style="height: 50rem;width: 25rem;display: inherit">
                         @if( getShopProductImage($product->id,'single') != null)
-                            <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" class="" style="height:100%;">
+                            <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}" alt="" class="" style="height:100%;object-fit: contain !important;">
                         @else
                             <img src="{{ asset('backend/default/placeholder.jpg')  }}" class="img-fluid rounded" style="height:100%;">
                         @endif

@@ -2,7 +2,7 @@
 
 @section('meta_data')
 @php
-		$meta_title = 'Dashboard | '.getSetting('app_name');
+		$meta_title = 'Get Started | '.getSetting('app_name');
 		$meta_description = '' ?? getSetting('seo_meta_description');
 		$meta_keywords = '' ?? getSetting('seo_meta_keywords');
 		$meta_motto = '' ?? getSetting('site_motto');
@@ -166,14 +166,42 @@
         background-color: #fff;
     }
 
+
+    .col a .circle span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        font-size: 22px;
+    }
+
+
+    .row .col a {
+        display: flex;
+        justify-content: center !important;
+        align-items: center !important;
+        flex-direction: column;
+    }
+
+    .row .col a p {
+        text-align: center;
+    }
+
+    .shadow {
+        /* box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15) !important; */
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+
 </style>
 
 
     <section class="section">
-        <div class="container mt-5">
+        <div class="container mt-5" style="max-width: 1340px !important;">
             <div class="row">
-                <div class="col-lg-4 toggle-area">
-                    <div class="sticky-bar bg-white rounded shadow mb-0 pt-4">
+                <div class="col-lg-3 toggle-area">
+                    {{-- <div class="sticky-bar bg-white rounded  mb-0 pt-4"> --}}
+                        <div class="sticky-bar bg-white rounded shadow mb-0 pt-4">
                         <div class="mx-auto justify-content-center text-center pt-2">
                            <div style="height: 90px">
                                 @if($user->avatar != null)
@@ -181,7 +209,8 @@
                                 @else
                                     <img src="{{ asset('backend/default/default-avatar.png') }}" class="avatar avatar-md-md rounded-circle" alt="" style="object-fit: cover;">
                                 @endif
-                                <a  class="camera-icon" id="upload-Images">
+                                {{-- <a  class="camera-icon" id="upload-Images" style="margin-left: 35px;"> --}}
+                                    <a  class="camera-icon" id="upload-Images" style="margin-left: -15px;">
                                     <i class="uil uil-camera text-white"></i>
                                 </a>
                            </div>
@@ -209,7 +238,7 @@
                                     @php
                                         $pos = 'right';
                                         if(getUserProgressStatistics(auth()->id()) < 30){
-                                            $pos = 'left';
+                                            $pos = 'right';
                                         }
                                     @endphp
                                     <div class="progress">
@@ -228,7 +257,7 @@
                                 <li class="nav-item">
                                     <a data-active="dashboard" class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('active') == "dashboard") active @endif" id="dashboard" data-bs-toggle="pill" href="#dash" role="tab" aria-controls="dash" aria-selected="false">
                                         <div class="text-start py-1 px-3">
-                                            <h6 class="mb-0"><i class="uil uil-dashboard h5 align-middle me-2 mb-0"></i> Dashboard</h6>
+                                            <h6 class="mb-0"><i class="uil uil-dashboard h5 align-middle me-2 mb-0"></i> Get Started</h6>
                                         </div>
                                     </a><!--end nav link-->
                                 </li><!--end nav item-->
@@ -237,7 +266,7 @@
 
                                 @if ($acc_permissions->mycustomer == 'yes' && $acc_permissions->mysupplier == 'yes')
                                     @if ($Team_mycustomer && $Team_mysupplier)
-                                        <li class="nav-item mt-2 "  >
+                                        <li class="nav-item mt-2 d-none"  >
                                             <a data-active="my-collections" class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('active') == "my-collections") active @endif" id="collections" data-bs-toggle="pill" href="#my-collections" role="tab" aria-controls="my-collections" aria-selected="false">
                                                 <div class="text-start py-1 px-3">
                                                     <h6 class="mb-0"><i class="uil uil-bars h5 align-middle me-2 mb-0"></i> My Collections</h6>
@@ -249,7 +278,7 @@
 
                                 @if ($acc_permissions->offers == 'yes')
                                     @if ($Team_offerme || $Team_offerto)
-                                        <li class="nav-item mt-2 "  >
+                                        <li class="nav-item mt-2 d-none"  >
                                             <a data-active="my-offers-sent" class="nav-link active-swicher rounded  @if(request()->has('active') && request()->get('active') == "my-offers-sent") active @endif" id="my-offers-sent" data-bs-toggle="pill" href="#my-my-offers-sent" role="tab" aria-controls="my-my-offers-sent" aria-selected="false">
                                                 <div class="text-start py-1 px-3">
                                                     <h6 class="mb-0"><i class="uil uil-tag-alt h5 align-middle me-2 mb-0"></i> Offers </h6>
@@ -261,7 +290,7 @@
 
                                 @if ($acc_permissions->mycustomer == 'yes' && $acc_permissions->mysupplier == 'no')
                                     @if ($Team_mycustomer && !$Team_mysupplier)
-                                        <li class="nav-item mt-2" >
+                                        <li class="nav-item mt-2 d-none" >
                                             <a class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('my_customer') == "4") active @endif " id="collections" href="{{ route('customer.dashboard')."?active=my-customers&my_customer=4"}}">
                                                 <div class="text-start py-1 px-3">
                                                     <h6 class="mb-0"><i class="uil uil-bars h5 align-middle me-2 mb-0"></i> My Collections</h6>
@@ -273,7 +302,7 @@
 
                                 @if ($acc_permissions->mycustomer == 'no' && $acc_permissions->mysupplier == 'yes')
                                     @if (!$Team_mycustomer && $Team_mysupplier)
-                                        <li class="nav-item mt-2" >
+                                        <li class="nav-item mt-2 d-none" >
                                             <a class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('active') == "my-collections") active @endif" id="collections" href="{{ route('customer.dashboard')."?active=my-collections"}}">
                                                 <div class="text-start py-1 px-3">
                                                     <h6 class="mb-0"><i class="uil uil-bars h5 align-middle me-2 mb-0"></i> My Collections</h6>
@@ -287,7 +316,7 @@
 
                             @if($acc_permissions->Filemanager == "yes")
                                 @if ($Team_setting)
-                                    <li class="nav-item mt-2">
+                                    <li class="nav-item mt-2 d-none">
                                         <a data-active="settings" class="nav-link active-swicher rounded @if(request()->has('active') && request()->get('active') == "settings") active @endif" id="account-details" data-bs-toggle="pill" href="#settings" role="tab" aria-controls="settings" aria-selected="false">
                                             <div class="text-start py-1 px-3">
                                                 <h6 class="mb-0"><i class="uil uil-key-skeleton-alt h5 align-middle me-2 mb-0"></i>  Settings</h6>
@@ -299,49 +328,31 @@
 
                             {{-- @endif --}}
 
-                            <li class="nav-item mt-2">
-                                <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank" class="nav-link active-swicher rounded">
-                                    <div class="text-start py-1 px-3">
-                                        <h6 class="mb-0">
-                                            <i class="uil uil-envelope h5 align-middle me-2 mb-0"></i>
-                                             Support Ticket</h6>
-                                    </div>
-                                </a>
-                                <!--end nav link-->
-                            </li>
+                                {{-- <li class="nav-item mt-2">
+                                    <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank" class="nav-link active-swicher rounded">
+                                        <div class="text-start py-1 px-3">
+                                            <h6 class="mb-0">
+                                                <i class="uil uil-envelope h5 align-middle me-2 mb-0"></i>
+                                                Support Ticket</h6>
+                                        </div>
+                                    </a>
+                                </li> --}}
                             <!--end nav item-->
 
                         </ul><!--end nav pills-->
                         <div class="">
-                            {{-- @if (!App\Models\AccessCode::where('redeemed_user_id',auth()->id())->first()) --}}
-                                {{-- <div class="card ">
-                                   <div class="card-body">
-                                        <h4 class="text-left">Become 121 Seller!</h4>
-                                        <span class="text-muted text-left">Unlock the power of distributed selling</span>
-                                        <a type="botton" href="javascript:void(0)" class="accees-code btn mt-2 btn-primary d-block">Have Access Code</a>
-                                        <hr>
-                                        <div class="text-center">
-                                            <a href="{{ route('website.faq') }}" class=" m-0 p-0 btn btn-link text-dark">What is Access Code?</a>
-                                        </div>
-                                   </div>
-                                </div> --}}
-                            {{-- @elseif(auth()->user()->is_supplier == 0)
-                                <div class="alert alert-info">
-                                    Your Access Code has been submitted, Your profile requires admin approval.
-                                </div>
-                            @else --}}
                                 @if(auth()->user()->is_supplier == 1)
                                     @if (auth()->user()->status == 1)
                                         <a type="submit" href="{{ route('panel.dashboard') }}" class="btn btn-outline-primary d-block">Open Seller Tools </a>
                                     @endif
                                 @else
-                                    <a href="{{ url('start') }}" class="btn btn-outline-primary d-block" style="color: white;">Book 7 mins Demo</a>
+                                    {{-- <a href="{{ url('start') }}" class="btn btn-outline-primary d-block" style="color: white;">Book 7 mins Demo</a> --}}
                                 @endif
                             {{-- @endif --}}
                         </div>
                     </div>
                 </div><!--end col-->
-                <div class="col-lg-8 col-md-12 col-12">
+                <div class="col-lg-9 col-md-12 col-12">
                     @if($errors->any())
                         @foreach($errors->all() as $error)
                             <div class="alert alert-danger alert-dismissible fade show my-1" role="alert">
@@ -355,10 +366,11 @@
                     <div class="tab-content" id="pills-tabContent">
 
                         @if ($Team_dashboard)
-                            <div class="tab-pane fade bg-white shadow rounded p-4 @if(request()->has('active') && request()->get('active') == "dashboard") active show @endif" id="dash" role="tabpanel" aria-labelledby="dashboard">
+                            <div class="tab-pane fade bg-white  rounded p-4 @if(request()->has('active') && request()->get('active') == "dashboard") active show @endif" id="dash" role="tabpanel" aria-labelledby="dashboard">
+                                {{-- <div class="tab-pane fade bg-white shadow rounded p-4 @if(request()->has('active') && request()->get('active') == "dashboard") active show @endif" id="dash" role="tabpanel" aria-labelledby="dashboard"> --}}
 
                                 <div class="text-center ">
-                                    <h5 class="mt-1">Dashboard</h5>
+                                    <h5 class="mt-1">Get Started</h5>
                                 </div>
                                 @if(getUserProgressStatistics(auth()->id()) != 100)
                                     <div class="row">
@@ -371,7 +383,7 @@
                                 <div class="border-bottom"></div>
                                 <div class="row mt-3 ">
                                     <div class="col-lg-6 col-md-6 col-12 mb-lg-0 mb-md-3 mb-3 d-none">
-                                    <div class="card">
+                                        <div class="card">
                                             <div class="card-body" style="height: 212px;">
                                                 <i class="fa fa-3x text-muted fa-qrcode"></i>
                                                 <h5 class="mt-2">Scan QR to get latest catalogue</h5>
@@ -392,7 +404,7 @@
 
                                     {!! QrCode::size(300)->generate( $url ) !!} --}}
 
-                                    @if(getUserProgressStatistics(auth()->id()) != 100)
+                                    {{-- @if(getUserProgressStatistics(auth()->id()) != 100) --}}
                                         {{-- <div class="col-lg-6 col-md-6 col-12">
                                             <div class="card">
                                                 <div class="card-body">
@@ -496,21 +508,103 @@
                                                 </div>
                                             </div>
                                         </div> --}}
-                                    @endif
+                                    {{-- @endif --}}
 
-                                    <div class="col-lg-6 col-md-6 col-12">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="text-center mx-auto justify-content-center">
+                                    {{--! Get started progress meter --}}
 
-                                                <button class="btn btn-primary mt-2 mx-auto text-center" onclick="location.href='{{ route('customer.dashboard') }}?active=account&subactive=business_profile&upload_gst=true'">
-                                                    {{-- <a href="{{ inject_subdomain('proposal/create', $slug, true, false)}}" class="btn btn-primary mt-2 mx-auto text-center" @if(request()->has('active') && request()->get('active') == "business_profile") active show @endif" id=ekycform"> </a>   --}}
-                                                    Upload GST / IEC
-                                                </button>
-                                            </div>
-                                            </div>
+                                    @php
+
+                                    $count = App\Models\survey::where('user_id',auth()->id())->get()->count();
+                                        // ` Current Progress
+                                        $first_step = ($count == 1) ? true : false;
+                                        $second_step =  (auth()->user()->ekyc_status != 0   ) ? true : false;
+                                        // $third_step =  ($second) ? ((count(App\Models\Product::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
+                                        // $forth_step =  ($third) ? ((count(App\Models\Proposal::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
+                                    @endphp
+
+
+
+                                    <div class="row">
+                                        {{-- Step 1  --}}
+                                        <div class="col bg-white shadow m-1">
+                                                <a type="button" class="btn " data-toggle="modal" data-target="#surverymodal" id="rejtu">
+                                                    <div class="circle @if ($first_step) bg-success @else bg-primary @endif text-white" style=" @if ($first_step) cursor: not-allowed; @endif border-radius: 50%; position: relative;height: 75px;width: 75px;" >
+                                                    <span>
+                                                        @if ($first_step) <i class="fas fa-check-circle"></i> @else 1 @endif
+                                                    </span>
+                                                </div>
+                                                <div class="h6 my-2" style="color: black; "><b>Fill 121 Survey</b></div>
+                                                <p style="color: black; ">Where can we help you?</p>
+                                                {{-- <hr>
+                                                <p>30 Seconds</p>  --}}
+
+                                            </a>
+                                        </div>
+
+                                        {{-- Step 2  --}}
+                                        <div class="col bg-white shadow m-1">
+                                                <a href=" {{ route('customer.dashboard') }}?active=account&subactive=business_profile&upload_gst=true'" class="btn"   >
+                                                    <div class="circle @if ($second_step) bg-success @else bg-primary @endif text-white" style="border-radius: 50%; position: relative;height: 75px;width: 75px;">
+                                                    <span>
+                                                        @if ($second_step) <i class="fas fa-check-circle"></i> @else 2 @endif
+                                                    </span>
+                                                </div>
+                                                <div class="h6 my-2" style="color: black; "><b>Finish e-KYC</b></div>
+                                                <p style="color: black; ">Upload your GST/ IEC Certificate</p>
+                                                {{-- <hr>
+                                                <p>60 Seconds</p>  --}}
+
+                                            </a>
+                                        </div>
+
+
+
+
+
+
+
+                                        {{-- Step 3  --}}
+                                        <div class="col bg-white shadow m-1 d-none" >
+                                            {{-- <div class="col bg-white shadow m-1"  @if (!$third) title="Complete step 2" @endif> --}}
+
+                                          {{--  <a href="@if ($first_step && $second && $third) #completed @elseif($first_step && $second ) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true @else #pending @endif" @if(!$second) style="cursor: not-allowed !important" @endif> --}}
+                                            <a href="{{ url('start') }}" class="btn">
+
+                                                <div class="circle bg-primary text-white" style="border-radius: 50%; position: relative;height: 75px;width: 75px;">
+                                                    <span>3
+                                                  {{-- <i class="fas fa-circle"></i> 3  --}}
+                                                    </span>
+                                                </div>
+                                                <div class="h6 my-2"><b style="color: black;">e-KYC under review</b></div>
+                                                <p style="color: black;">Our Team will get back soon </p>
+
+                                            </a>
+                                            {{-- <hr>
+                                                <p>7 minutes</p> --}}
+                                        </div>
+
+                                        {{-- Step 4  --}}
+                                        <div class="col bg-white shadow m-1"  >
+                                            {{-- <a href=" {{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }} @else #pending @endif " @if(!$third) style="cursor: not-allowed !important" @endif> --}}
+
+                                            <a href="" class="btn"   >
+                                                {{-- <a href="{{ url('auth/login') }}" class="btn"   > --}}
+                                                <div class="circle bg-secondary text-white" style="border-radius: 50%; position: relative;height: 75px;width: 75px;">
+                                                    <span>3
+                                                    {{-- <i class="fas fa-circle"></i>  4  --}}
+                                                        {{-- @if ($first_step && $second && $third && $forth) <i class="fas fa-check-circle"></i> @else 4 @endif --}}
+                                                    </span>
+                                                </div>
+
+                                                <div class="h6 my-2"><b style="color: black;">Free Trial</b></div>
+                                                <p style="color: black;">Limited time Offer</p>
+                                            </a>
                                         </div>
                                     </div>
+
+
+
+
 
                                     @if(getUserProgressStatistics(auth()->id()) == 100)
                                         <div class="col-12 border border-danger mt-4">
@@ -1693,7 +1787,7 @@
                                 <div class="card shadow mb-3 border-0" style="width: 100%; overflow-x: auto; flex-wrap: nowrap;">
                                     <ul class="nav custom-pills mb-0 wrapper_pills" id="pills-tab" role="tablist">
                                         <li class="nav-item ">
-                                            <a data-subactive="my_info" class="mr-2 customer_tabs btn pills-btn @if(!request()->get('subactive')  || request()->get('subactive')  == 'my_info') active @endif" >{{ __('Account Info')}}</a>
+                                            {{-- <a data-subactive="my_info" class="mr-2 customer_tabs btn pills-btn @if(!request()->get('subactive')  || request()->get('subactive')  == 'my_info') active @endif" >{{ __('Account Info')}}</a> --}}
                                         </li>
 
                                         {{-- <li class="nav-item">
@@ -2019,22 +2113,25 @@
                                     <div style="font-size: 16px;" class="alert alert-light" role="alert">
 
                                         <div>
-                                            <h4>Register and Start Selling</h4>
-                                                <p>Please have the following ready before you begin:</p>
-                                                <ul>
-                                                    <li>Keep Your GST certificate & Brand certificate (if applicable) ready for upload in pdf/jpeg format</li>
-                                                </ul>
-                                                <p>Please ensure that all the information you submit is accurate</p>
-                                                <button class="ekyc btn btn-outline-danger btn-md  text-right">Fill Now</button>
+
+                                            <p>Kindly upload your GST/ IEC certificate - in pdf or image format</p>
+                                            <br>
+                                            <b>Why ?</b> <br>
+                                            <li style="margin-top:10px !important;">121.Page is a platform only  for Manufacturers and Suppliers</li>
+                                            <li style="margin-top:10px !important;">Each entity is allowed only one registration.</li>
+                                            <li style="margin-top: 10px;">You confirm that your are the legal owner of the entity and the information provided is true and accurate.</li>
+
                                         </div>
-                                    {{--to make brief intro visible visible --}}
+
+                                        <button class="ekyc btn btn-outline-primary btn-md  text-right mt-3">Fill Now</button>
+                                        {{--to make brief intro visible visible --}}
 
                                         @if($ekyc && isset($ekyc->admin_remark))
                                             <div class="alert alert-info">
                                             Admin Remark: {{$ekyc->admin_remark}}
                                             </div>
                                         @endif
-                                        </div>
+                                    </div>
                                         {{-- @dump($ekyc) --}}
                                     @elseif (auth()->user()->ekyc_status == 2)
                                         <div style="font-size: 16px;" class="alert alert-danger d-flex justify-content-between" role="alert"><span class="m-0 p-0" style="line-height: 40px;">Your KYC Verification Application has been rejected</span>
@@ -2046,7 +2143,7 @@
                                     {{-- Submitted --}}
                                     @elseif (auth()->user()->ekyc_status == 3)
                                         <div style="font-size: 16px;" class="alert alert-warning d-flex justify-content-between" role="alert">
-                                            <span class="m-0 p-0" style="line-height: 40px;">KYC request submitted successfully. Our team will revert within 24 hours.</span>
+                                            <span class="m-0 p-0" style="line-height: 40px;">KYC request submitted successfully.</span>
                                         </div>
                                     @endif
                                     <div class="card-body">
@@ -2533,7 +2630,7 @@
     <input type="hidden" name="sortoffer" value="" id="shorid">
 </form>
 
-<button type="button" class="btn btn-sm btn-outline-primary animate__animated " id="installBtn" style="position: absolute;top: 82%;left: 50%;">Install App</button>
+{{-- <button type="button" class="btn btn-sm btn-outline-primary animate__animated d-none" id="installBtn" style="position: absolute;top: 82%;left: 50%;">Install App</button> --}}
 
 @include('frontend.customer.dashboard.includes.modal.ekyc')
 @include('frontend.customer.dashboard.includes.modal.raise-ticket')
@@ -2576,11 +2673,20 @@
 
 @if ($count == 0 )
     <script>
-        $(document).ready(function () {
-            $('#surverymodal').modal('show');
-        });
+
+            $('#rejtu').click(function(){
+                $('#surverymodal').modal('show');
+            });
+
+            $('#btn-close-modal').onclick(function(){
+                $('#surverymodal').modal('hide');
+            });
+
+
     </script>
 @endif
+
+
 
 
 @if (request()->has('upload_gst') && request()->get('upload_gst') == 'true')

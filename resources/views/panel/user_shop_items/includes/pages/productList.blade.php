@@ -41,7 +41,7 @@
             @if(!$product_exists)
                 <label class="custom-chk prdct-checked" data-select-all="boards">
                     <input type="checkbox" name="products[]" class="input-check d-none" value="{{ $scoped_product->id }}" >
-                    <span class="checkmark"></span>
+                    <span class="checkmark" ></span>
                 </label>
             @endif
                 {{-- @if($scoped_product->user_id == auth()->id())
@@ -129,7 +129,7 @@
 
                         <label class="custom-chk prdct-checked" data-select-all="boards">
                             <input type="checkbox" name="delproducts[]" class="input-check invisible buddy" value="{{ $scoped_product->sku }}" data-record="{{ $scoped_product->id }}">
-                            <span class="checkmark mr-5 mt-5"></span>
+                            <span class="checkmark mr-5 mt-5" style="top: 20px !important; height: 24px !important; width: 25px !important;"></span>
                         </label>
                     @endif
                 </div>
@@ -164,7 +164,7 @@
                         @if ($scoped_product->varient_products()->count() > 1)
                             <a href="{{ route('panel.products.edit',$scoped_product->id) }}?type={{ encrypt('editmainksku') }}" class="btn-link text-primary">Edit</a>
                         @else
-                            <a href="{{ route('panel.products.edit',$scoped_product->id) }}" class="btn-link text-primary">Edit</a>
+                            <a href="{{ route('panel.products.edit',$scoped_product->id) }}" class="btn-link text-primary" >Edit</a>
                         @endif
 
                     </span>

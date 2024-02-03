@@ -5,6 +5,7 @@
             <td class="col-2">Quoation ID</td>
             <td class="col-2">Offer ID</td>
             <td class="col-2">Buyer Company </td>
+            <td class="col-2"></td>
             <td class="col-2">Person Name</td>
             <td class="col-2">Created On</td>
             <td class="col-4"></td>
@@ -49,6 +50,12 @@
                     {{ $jsonData->companyName ?? '-' }}
                 </td>
                 <td>
+                    <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}" class="btn-link  text-primary">
+                        <i class="fas fa-eye"></i>
+                        <span>({{ $record['record_count'] ?? 1 }})</span>
+                    </a>
+                </td>
+                <td>
                     {{ $jsonData->buyerName ?? ($jsonData->person_name ?? '') }}
                 </td>
                 <td>
@@ -59,10 +66,11 @@
                         class="btn btn-outline-primary">
                         Edit
                     </a> --}}
-                    <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}" class="mx-1" style="font-size:18px">
-                        <i class="far fa-save text-primary"></i>
-                    </a>
-                    <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}" class="mx-1" style="font-size:18px">
+                        <a href="{{ route('panel.Documents.quotation2') }}?typeId={{ $record->id }}" class="mx-1" style="font-size:18px">
+                            <i class="far fa-save text-primary"></i>
+                        </a>
+
+                    <a href="{{ route('panel.Documents.create.Quotation.form') }}?typeId={{ $record->id }}&action=edit" class="mx-1" style="font-size:18px">
                         <i class="far fa-edit text-primary" title="Edit"></i>
                     </a>
                 </td>

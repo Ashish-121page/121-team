@@ -831,7 +831,7 @@
                         </div>
 
 
-                        <div class="myassetsbox d-none">
+                        <div class="myassetsbox ">
 
                         </div>
 
@@ -1232,6 +1232,20 @@
                                             </div>
 
                                             <div class="col-md-6 col-12">
+                                                <label class="">{{ __('Actual Weight Unit ') }}</label>
+                                                <div class="form-group">
+                                                    <select name="carton_weight_unit" id="carton_weight_unit"
+                                                        class="form-control select2">
+                                                        @foreach ($weight_uom as $item)
+                                                            <option value="{{ $item }}"
+                                                                @if (($carton_details->carton_weight_unit ?? 'Kg') == $item) selected @endif>
+                                                                {{ $item }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 col-12">
                                                 <label class="">{{ __('Carton Length')}}</label>
                                                 <div class="form-group">
                                                     <input class="form-control" name="carton_length" type="number" id="carton_length"  value="{{ $carton_details->carton_length ??  old('carton_length') }}" >
@@ -1310,7 +1324,15 @@
                                         <div class="col-md-4 col-4">
                                             <div class="form-group ">
                                                 <label for="product_cost_unit" class="control-label">Product Cost Unit</label>
-                                                <input  class="form-control" name="product_cost_unit" type="text" id="product_cost_unit" value="{{$prodextra->product_cost_unit ?? '' }}" >
+                                                {{-- <input  class="form-control" name="product_cost_unit" type="text" id="product_cost_unit" value="{{$prodextra->product_cost_unit ?? '' }}" > --}}
+
+                                                <select class="form-control select2" name="product_cost_unit" id="product_cost_unit">
+                                                        <option value="" selected>Select </option>
+                                                        @foreach ($weight_uom as $item)
+                                                            <option value="{{$item}}" @if ($prodextra->product_cost_unit ?? '' == $item) selected @endif>{{ $item }}</option>
+                                                        @endforeach
+                                                </select>
+
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-4">
@@ -1668,8 +1690,8 @@
         let weight_unit = $("#all_units").html()
 
         $.each(custcols, function (indexInArray, valueOfElement) {
-            console.log(indexInArray);
-            console.log(valueOfElement);
+            // console.log(indexInArray);
+            // console.log(valueOfElement);
 
 
             if (valueOfElement == 'uom') {

@@ -391,6 +391,7 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::post('/Quotation/create', ['uses' => 'invoiceController@createQuotation', 'as' => 'create.Quotation']);
 
         Route::post('/Quotation/create/consignee', ['uses' => 'ConsigneeController@store', 'as' => 'create.Quotation.consignee']);
+        Route::post('/Quotation/update/consignee', ['uses' => 'ConsigneeController@update', 'as' => 'update.Quotation.consignee']);
         Route::get('/Quotation/item/packingList', ['uses' => 'invoiceController@packinglist', 'as' => 'Quotation.item.packingList']);
         Route::any('/Quotation/save/packingList', ['uses' => 'invoiceController@packingliststore', 'as' => 'Quotation.item.packingList.save']);
 
@@ -420,6 +421,7 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
         Route::get('/quotationpdf', ['uses' => 'invoiceController@quotationpdf', 'as' => 'quotationpdf']);
         Route::get('/printexcelqt1', ['uses' => 'invoiceController@printexcelqt1', 'as' => 'printexcelqt1']);
         Route::post('/printexcelqt1', ['uses' => 'invoiceController@exportexcel', 'as' => 'printexcelqt1.print']);
+        Route::get('/packinglistpdf', ['uses' => 'invoiceController@packinglistpdf', 'as' => 'packinglistpdf']);
 
 
     });

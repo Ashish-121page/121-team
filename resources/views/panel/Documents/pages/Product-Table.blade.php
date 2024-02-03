@@ -1,11 +1,12 @@
-<table class="table" id="sdhfidsj">
+<table class="table mt-5" id="sdhfidsj">
     <thead>
         <tr>
             {{-- <th><input type="checkbox" aria-label="Checkbox for following text input"></th> --}}
             <!-- Checkbox header -->
-            <th>Packing List</th>
+
+
             <th class="sdeds">ID</th>
-            <th>image</th>
+            <th>Image</th>
             <th>Title</th>
             <th>Model Code</th>
             {{-- <th>Variant ID</th> --}}
@@ -16,22 +17,29 @@
             </th>
             <th>Quantity</th>
             <th>Unit</th>
-            <th>Total</th>
+            <th style="background-color:#f3f3f3">Total</th>
+            <th style="background-color:#f3f3f3" class="Change-description_col d-none">Description</th>
+            <th style="background-color:#f3f3f3" class="Change-pnotes_col d-none">Notes</th>
             @foreach (json_decode($user->custom_attriute_columns) as $item)
                 @php
-                    $tmp_name = str_replace(' ', '_', $item);
+                    $tmp_name = preg_replace('/[\s\[\]().]/', '', str_replace('.', '-', $item));
                     $tmp_ID = str_replace(',', '', $tmp_name);
+
                 @endphp
                 <th class="Change-{{ $tmp_ID }} d-none">{{ $item }}</th>
             @endforeach
 
             @foreach ($custom_inputs as $item)
                 @php
-                    $tmp_name = str_replace(' ', '_', $item->id);
+                    $tmp_name = preg_replace('/[\s\[\]().]/', '', str_replace('.', '-', $item->id));
                     $tmp_ID = str_replace(',', '', $tmp_name);
                 @endphp
                 <th class="Change-{{ $tmp_ID }} d-none">{{ $item->text }}</th>
             @endforeach
+
+            @if ($QuotationRecord->type_of_quote == 1 && $QuotationRecord->status == 1 && $consignee_details->count() > 0)
+                <th class="efddsgs">Packing List</th>
+            @endif
         </tr>
 
     </thead>
@@ -54,24 +62,22 @@
                         {{ $loop->iteration }}
                     </span>
                 </td> --}}
-                <td>
-                    <a href="{{ route('panel.Documents.Quotation.item.packingList', ['item_id' => $QuotationItem->id]) }}"
-                        class="btn btn-outline-primary ">Packing List</a>
-                </td>
+
                 <td class="sdeds">
                     {{ $QuotationItem->id }}
                 </td>
-                <td class="sticky-col second-col">
+                <td class="second-col">
                     <img src="{{ asset(getShopProductImage($product->id)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
                         alt="" style="height: 85px; width: 85px;object-fit: contain">
                 </td>
-                <td class="sticky-col third-col openconsginee" style="width: 250px;text-wrap: wrap;text-align: left;"
+                <td class="third-col openconsginee"
+                    style="width: 250px;text-wrap: wrap;text-align: left;"
                     data-toggleId="{{ $toggle_id }}">
                     {{ $product->title }}
                     {{-- {{ Str::limit($product->title, 20, '...') }} --}}
                 </td>
 
-                <td class="sticky-col">
+                <td>
                     {{ $product->model_code }}
                 </td>
                 {{-- <td>
@@ -88,7 +94,7 @@
                         @endforeach
                     </select>
                 </td>
-                <td class="currencySelect">
+                <td class="currencySelect" >
                     @if (isset($QuotationRecord->additional_notes) && $QuotationRecord->additional_notes != null)
                         {{ json_decode($QuotationRecord->additional_notes)->currency ?? 'INR' }}
                         @php
@@ -103,18 +109,19 @@
 
                 </td>
                 <td class="priceEdit">
-                    @if ($curr != $product->base_currency)
+                    {{-- @if ($curr != $product->base_currency)
                         @php
                             $exchange = App\Models\UserCurrency::where('user_id', $user->id)
                                 ->where('currency', $curr)
                                 ->first();
                         @endphp
-                        <input type="number" value="{{ round($QuotationItem->Price / ($exchange->exchange ?? 1),4) ?? '0' }}"
+                        <input type="number"
+                            value="{{ round($QuotationItem->Price / ($exchange->exchange ?? 1), 4) ?? '0' }}"
                             class="form-control pricenum" id="pricenum_{{ $index }}">
-                    @else
+                    @else --}}
                         <input type="number" value="{{ $QuotationItem->Price ?? '0' }}" class="form-control pricenum"
                             id="pricenum_{{ $index }}">
-                    @endif
+                    {{-- @endif --}}
 
                 </td>
                 {{-- <td>
@@ -139,13 +146,34 @@
                     </select>
                 </td>
 
-                <td class="totalnum" id="totalnum_{{ $index }}">
+                <td class="totalnum" id="totalnum_{{ $index }}"
+                    style="font-size: 13px; background-color:#f3f3f3;">
                     {{ '0' }}
+                </td>
+
+                <td class="Change-description_col d-none" style="text-wrap: balance;">
+                    {!! Str::limit($product->description, 250, '...') ?? '' !!}
+                </td>
+
+                <td class="Change-pnotes_col d-none" style="text-wrap: balance;">
+
+                    @php
+                        $offerrec = App\Models\Proposal::where('id',$QuotationRecord->proposal_id)->first();
+                        $notes = '--';
+                        if ($offerrec != null) {
+                            $offer_item = App\Models\ProposalItem::where('proposal_id',$offerrec->id)->where('product_id',$QuotationItem->product_id)->first();
+                            if ($offer_item != null) {
+                                $notes = json_decode($offer_item->note)->remarks_offer ?? '';
+                            }
+                        }
+                    @endphp
+
+                    {{ Str::limit($notes, 250, '...') }}
                 </td>
 
                 @foreach (json_decode($user->custom_attriute_columns) as $item)
                     @php
-                        $tmp_name = str_replace(' ', '_', $item);
+                        $tmp_name = preg_replace('/[\s\[\]().]/', '', str_replace('.', '-', $item));
                         $tmp_ID = str_replace(',', '', $tmp_name);
                         $varientDetails = App\Models\ProductAttribute::where('name', $item)->first();
                         $ProductVarient = App\Models\ProductExtraInfo::where('product_id', $product->id)
@@ -165,7 +193,7 @@
 
                 @foreach ($custom_inputs as $item)
                     @php
-                        $tmp_name = str_replace(' ', '_', $item->id);
+                        $tmp_name = preg_replace('/[\s\[\]().]/', '', str_replace('.', '-', $item->id));
                         $tmp_ID = str_replace(',', '', $tmp_name);
                     @endphp
                     <td class="Change-{{ $tmp_ID }} d-none">
@@ -186,7 +214,14 @@
                         @endif
                     </td>
                 @endforeach
-
+                @if ($QuotationRecord->type_of_quote == 1 && $QuotationRecord->status == 1 && $consignee_details->count() > 0)
+                    <td class="efddsgs">
+                        <a href="{{ route('panel.Documents.Quotation.item.packingList', ['item_id' => $QuotationItem->id]) }}"
+                            class="btn btn-link">
+                            Add <i class="fas fa-plus"></i>
+                        </a>
+                    </td>
+                @endif
             </tr>
 
         @empty
@@ -209,10 +244,31 @@
         });
 
 
+
+        function getQuantityCount() {
+            let total = 0;
+            $.each($('input.qunatitynum'), function(indexInArray, valueOfElement) {
+                total += parseInt($(valueOfElement).val());
+            });
+            $("#itenQuantitycount").html(total);
+
+            return total;
+        }
+
+
         $(".qunatitynum").keyup(function(e) {
             // e.preventDefault();
+            getQuantityCount()
+            makeTotalAmt()
+            countTotal()
             let toggleId = $(this).attr('data-matchwith');
             $('.' + toggleId).trigger('keyup');
+        });
+
+        $("input.pricenum").keyup(function(e) {
+            makeTotalAmt()
+            countTotal()
+            console.log(makeTotalAmt());
         });
 
 
@@ -256,8 +312,6 @@
 
             let formattedTotal = total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-
-
             makeTotalAmt()
 
             $("#totalnum_" + $(this).attr('id').split('_')[1]).html(formattedTotal);
@@ -271,7 +325,7 @@
             let total = newquan * price;
             let formattedTotal = total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             makeTotalAmt()
-
+            getQuantityCount()
             $("#totalnum_" + $(this).attr('id').split('_')[1]).html(formattedTotal);
         });
 

@@ -96,7 +96,7 @@
 
     .checkmark {
         position: absolute;
-        top: 10px;
+        bottom: 10px;
         right: 5px;
         height: 25px;
         width: 25px;
@@ -1040,6 +1040,7 @@
                         $("#itcont").html(res['count']);
                         console.table(res);
                         console.log(url);
+                        $('.ashu').css('background-color', 'red');
                     },error: function (res) {
                         console.log(res);
                     }

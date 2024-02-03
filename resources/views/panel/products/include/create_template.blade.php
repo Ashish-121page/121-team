@@ -1,10 +1,10 @@
-<div id="animatedModal">
+<div id="animatedModal" class="modal-fullscreen">
     <div id="btn-close-modal" class="close-animatedModal custom-spacing"
     style="color:black; background-color:#ffff;font-size: x-large;margin: 10px;display: flex;justify-content: space-between;">
         <h5>Select Properties You Wish to Export</h5>
         {{-- <i class="far fa-times-circle fa-rotate-270 fa-lg "></i> --}}
     </div>
-    <div class="modal-content custom-spacing" style="background-color:#ffff">
+    <div class="modal-content custom-spacing modal-fullscreen" style="background-color:#ffff">
 
         <form action="{{ route('panel.bulk.product.custom.bulk-sheet-export',auth()->id()) }}" method="POST">
             <div class="row m-2">
@@ -35,10 +35,11 @@
                                 </button>
                             </h2>
                             <div id="collapseallattribute" class="accordion-collapse show" data-bs-parent="#accordionExample">
-                                <div class="accordion-body" style="max-height:80%; overflow:hidden;overflow-y:auto;">
+                                <div class="accordion-body" >
+                                    {{-- <div class="accordion-body" style="max-height:80%; overflow:hidden;overflow-y:auto;"> --}}
 
 
-                                    <div class="table-responsive" style="max-height:40vh; overflow:hidden;overflow-y:auto;">
+                                    <div class="table-responsive" style="max-height:70%; overflow:hidden;overflow-y:auto;">
                                         <div class="form-group w-100" style="margin-bottom:0rem">
                                             <input type="checkbox" id="check_all" class=" m-2">
                                             <label for="check_all"  style="font-size: 14px; font-family:Nunito Sans, sans-serif;font-weight:700;user-select: none;">Select All</label>
@@ -51,7 +52,7 @@
                                                             <th scope="row" style="padding:0px! important">
                                                                 <div class="form-group h-100" style="cursor: pointer; margin-bottom:0rem!important; ">
                                                                     <input type="checkbox" value="{{$item}}"  id="attri_{{$item}}" class="my_attribute d-none mx-1" name="myfields[]" data-index="{{ $key }}">
-                                                                    <label for="attri_{{$item}}" class="form-label w-100 h-100" style="font-size: 12.8px;font-family:Nunito Sans, sans-serif; user-select: none; ">{{$item}}</label>
+                                                                    <label for="attri_{{$item}}" class="form-label w-100 h-100" style="font-size: 16px;font-family:Nunito Sans, sans-serif; user-select: none; ">{{$item}}</label>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -66,7 +67,6 @@
                                                     </tr>
                                                 @endforelse
 
-=
 
                                             </tbody>
                                         </table>
@@ -85,7 +85,7 @@
 
                     {{-- 2nd column --}}
 
-                        <div class="col-md-6 col-12 h-100 invisible" style="overflow: auto; max-height: 80vh" id="tableselected">
+                        <di v class="col-md-6 col-12 h-100 invisible" style="overflow: auto; max-height: 80vh" id="tableselected">
 
                             <div class="d-flex flex-column gap-3 align-items-start justify-content-start">
 
@@ -109,7 +109,7 @@
                                                             <tr class="">
                                                                 <td scope="row" style="padding:0px! important">
                                                                     <div class="form-group h-100" style="margin-bottom: 0rem!important;">
-                                                                        <label for="attri_{{$item}}" class="form-label " style="font-size: 12.8px; font-family:Nunito Sans, sans-serif;user-select: none;">{{$item}}</label>
+                                                                        <label for="attri_{{$item}}" class="form-label " style="font-size: 16px; font-family:Nunito Sans, sans-serif;user-select: none;">{{$item}}</label>
                                                                         <input type="checkbox" value="{{$item}}" id="attri_{{$item}}" class="sys_attribute m-2 invisible" checked name="systemfiels[]">
                                                                     </div>
                                                                 </td>

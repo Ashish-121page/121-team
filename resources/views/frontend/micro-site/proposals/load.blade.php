@@ -1,4 +1,6 @@
 <div class="row gx-3 flex-wrap dfjrgd">
+
+    
     @forelse ($items as $products)
         @php
             // $image_ids = App\Models\UserShopItem::where('product_id',$products->id)->images != null ? explode(',',$products->images) : [];
@@ -100,6 +102,7 @@
                     </p> --}}
                 </div>
             </div>
+            
             <div class="col-9 send">
                 <a href="{{ route('pages.shop-show',$productId)."?pg=".request()->get('pg') }}" >
                     <div class="h4">{{ \Str::limit($products->title,30) }}</div>

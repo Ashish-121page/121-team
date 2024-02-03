@@ -1,12 +1,3 @@
-{{-- @push('head')
-<style>
-
-.main-content bg-white{
-    margin-top: 0px !important;
-}
-</style>
-
-@endpush --}}
 
 <div class="container-fluid p-0 m-0">
     {{-- <iframe src="{{ url('/laravel-filemanager') }}" style="width: 100%; height: 85vh; overflow: hidden; border: none;"></iframe> --}}
@@ -17,8 +8,8 @@
 @push('script')
 <script src="{{ asset('backend/js/index-page.js') }}"></script>
 <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
-    
-<script src="https://cdn.ckeditor.com/4.14.1/full/ckeditor.js"></script> 
+
+<script src="https://cdn.ckeditor.com/4.14.1/full/ckeditor.js"></script>
 
     {{-- for embeded filemanager --}}
     <script>
@@ -29,7 +20,7 @@
                 var route_prefix = (options && options.prefix) ? options.prefix : "{{ url('/laravel-filemanager') }}";
                 var target_input = document.getElementById(button.getAttribute('data-input'));
                 var target_preview = document.getElementById(button.getAttribute('data-preview'));
-               
+
                 window.open(route_prefix + '?type=' + options.type || 'file', 'FileManager', 'width=900,height=600');
                 window.SetUrl = function (items) {
                 var file_path = items.map(function (item) {

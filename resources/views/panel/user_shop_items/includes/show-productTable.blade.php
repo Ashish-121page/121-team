@@ -1,3 +1,5 @@
+
+
 <div class="card-body">
     @if (request()->get('type_id') == auth()->id())
         <form action="{{ route('panel.user_shop_items.removebulk') }}" method="post" id="removebulkform" >
@@ -16,7 +18,7 @@
                 <div class="d-flex">
                     <div class="d-flex">
                         @if (request()->get('type_id') == auth()->id())
-                            <button type="submit" name="delproduct" id="delproduct" class="btn btn-sm btn-danger mr-2  d-none validateMargin">Delete Products/button>
+                            <button type="submit" name="delproduct" id="delproduct" class="btn btn-sm btn-danger mr-2  d-none validateMargin">Delete Products</button>
                             {{-- Delete All Button --}}
                             <input type="submit" name="delete_all" id="delete_all" value="Delete All Products" class="btn btn-outline-primary d-none">
                         @endif
@@ -31,6 +33,7 @@
                     @endif
                 </div>
             </div>
+
             @if(request()->get('type_id') != auth()->id())
                 <div class="d-flex justify-content-end">
                     <div class="input-group border-0">
@@ -322,7 +325,7 @@
 
                                         <td class="no-export action_btn">
                                             @if($scoped_product->user_id == auth()->id())
-                                                <input type="checkbox" name="exportproduct" id="exportproduct" class="input-check">
+                                                <input type="checkbox" name="delproducts[]" id="exportproduct" class="input-check" value="{{ $scoped_product->sku }}" data-record="{{ $scoped_product->id }}">
                                             @endif
                                         </td>
 
@@ -413,6 +416,7 @@
 <div>
     {{ $scoped_products->appends(request()->query())->links() }}
 </div>
+
 <form method="get" action="{{ route('panel.bulk.product.bulk-export',auth()->id()) }}" id="products_exportform">
     <input type="hidden" name="products" id="products_export" value="">
 </form>

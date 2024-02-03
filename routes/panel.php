@@ -247,6 +247,11 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::get('/{user}', [settingController::class,'index'])->name('index');
         Route::get('makedefaultTemplate/{user}{template}', [settingController::class,'makedefaultTemplate'])->name('make.default.Template');
         Route::post('offer/banner', [settingController::class,'uploadbanner'])->name('upload.banner');
+
+        Route::post('manage/logo', [settingController::class,'uploadlogo'])->name('upload.logo');
+
+
+
         Route::get('edit/Template/{template}', [settingController::class,'EditTemplate'])->name('edit.Template');
         Route::post('custom/fields', [settingController::class,'customfields'])->name('custom.fields');
         Route::get('/add-details', [settingController::class,'addDetails'])->name('add-details');
@@ -539,7 +544,6 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         // ` Update Bulk Excel For Users Upload Admin End
 
     });
-
 
 
     Route::group(['middleware' => 'auth', 'prefix' => '/invoice', 'as' => 'invoice.'], function () {

@@ -8,16 +8,16 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLongTitle">Update Address</h5>
-                    <button type="button" class="btn close" data-bs-dismiss="modal" aria-label="Close"
+                    {{-- <button type="button" class="btn close" data-bs-dismiss="modal" aria-label="Close"
                         style="padding: 0px 20px;font-size: 20px;">
                         <span aria-hidden="true">&times;</span>
-                    </button>
+                    </button> --}}
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-lg-6" style="border-right: 1px solid #6666cccc;">
 
-                            <div class="col-12 mb-3">                               
+                            <div class="col-12 mb-3">
                                 <div class="row" style="background-color:#f3f3f3; padding: 7px;">
                                     <div class="col-6">
                                         <div class="form-check">
@@ -79,7 +79,7 @@
 
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <label for="country" class="form-label">Country</label>                                        
+                                        <label for="country" class="form-label">Country</label>
                                         <select class="form-select form-control select2insidemodaledit" id="countryEdit" required name="country">
                                             @foreach (\App\Models\Country::all() as $country)
                                                 <option value="{{ $country->id }}"
@@ -137,37 +137,37 @@
                                         <label for="bank_name" class="form-label">Bank Name <span class="text-danger">*</span> </label>
                                         <input type="text" class="form-control" name="bank_name[]" >
                                     </div>
-                                        
+
                                     <div class="col-md-6 mt-3">
                                         <label for="bank_address" class="form-label">Bank Address <span class="text-danger">*</span> </label>
                                         <input type="text" class="form-control" name="bank_address[]" >
                                     </div>
-                
+
                                     <div class="col-md-6 mt-3">
                                         <label for="swift_code" class="form-label">Swift Code</label>
                                         <input type="text" class="form-control" name="swift_code[]" >
                                     </div>
-                
+
                                     <div class="col-md-6 mt-3">
                                         <label for="account_number" class="form-label">Account Number <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="account_number[]">
                                     </div>
-                
+
                                     <div class="col-md-6 mt-3">
                                         <label for="account_holder_name" class="form-label">Account Holder Name <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="account_holder_name[]" >
                                     </div>
-                
+
                                     <div class="col-md-6 mt-3">
                                         <label for="account_type" class="form-label">Account Type <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="account_type[]" >
                                     </div>
-                
+
                                     <div class="col-md-6 mt-3">
                                         <label for="ifsc_code_neft" class="form-label">IFSC Code/NEFT <span class="text-danger">*</span> </label>
                                         <input type="text" class="form-control" name="ifsc_code_neft[]">
                                     </div>
-                
+
                                     <div class="col-md-6 mt-3">
                                         <label for="default" class="form-label">Default</label>
                                         <br>
@@ -176,7 +176,7 @@
                                     </div>
                                 </div>
                                 <div id="bank-details-container_1" class="row">
-                                    
+
                                 </div>
 
                                 <div id="bank-details-container_3" class="row">
@@ -187,7 +187,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-outline-secondary " data-bs-dismiss="modal" >Close</button>
+                    <button type="submit" class="btn btn-outline-primary">Save Changes</button>
                 </div>
             </div>
         </form>

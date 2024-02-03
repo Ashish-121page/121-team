@@ -47,30 +47,45 @@
                 background-color: #6666cc;
             }
 
-           .card-body::-webkit-scrollbar{
+            .card-body::-webkit-scrollbar {
                 width: 4px
             }
 
-            .card-body::-webkit-scrollbar-track{
+            .card-body::-webkit-scrollbar-track {
                 background: #f1f1f1;
             }
-            .card-body::-webkit-scrollbar-thumb{
+
+            .card-body::-webkit-scrollbar-thumb {
                 background: #6666CC;
             }
 
+            .nav-link.active {
+                color: #6666cc !important;
+            }
+
+            .sticky {
+                position: fixed;
+                top: 56px;
+                width: 100%;
+                z-index: 99999;
+                background-color: #fff;
+                padding: 19px 0;
+                left: 15px;
+            }
         </style>
     @endpush
 
     <div class="container" style="max-width:1350px !important;">
 
         <div class="col-12 mb-3">
-            <div class="row">
+            <div class="row" id="jekfuiewbfejq">
 
                 <div class="col-8">
                     <div class="row">
                         <div class="col-lg-6 col-md-8">
                             <div class="d-flex align-items-center">
-                                <button class="btn btn-secondary" value="Back" onclick="goBack()" type="button">Back</button>
+                                <button class="btn btn-outline-primary" value="Back" onclick="goBack()"
+                                    type="button">Back</button>
                                 <h5 class="ms-3 mt-5 mb-0 quotation_number_sync" style="margin-left: 2rem !important;">
                                     {{ $QuotationRecord->user_slug ?? ($QuotationRecord->slug ?? '--') }}
                                 </h5>
@@ -81,48 +96,42 @@
 
                 <div class="col-lg-4  col-md-4 d-flex justify-content-end align-items-center">
                     <a id="createvariant" href="#animatedModal12" role="button" class="btn btn-outline-primary mx-2"> Add
-                        Product </a>
+                        New Product </a>
 
                     <a href="{{ route('panel.Documents.quotation4') }}?typeId={{ request()->get('typeId') }}"
                         class="btn btn-outline-primary">
                         Next
                     </a>
                 </div>
+
+                <div class="col-12">
+                    <div class="container-fluid mt-5 mb-3">
+                        <div class="row bg-light">
+                            <div class="col-12 d-flex gap-3 justify-content-center ">
+                                <a class="nav-link {{ activeClassIfRoutes(['panel.Documents.create.Quotation.form'], 'active') }}"
+                                    href="{{ route('panel.Documents.create.Quotation.form', ['typeId' => request()->get('typeId'), 'action' => request()->get('action')]) }}">
+                                    1. Add Details </a>
+
+                                <a class="nav-link {{ activeClassIfRoutes(['panel.Documents.quotation3'], 'active') }}"
+                                    href="{{ route('panel.Documents.quotation3', ['typeId' => request()->get('typeId')]) }}">
+                                    2. Select
+                                    Items </a>
+
+                                <a class="nav-link {{ activeClassIfRoutes(['panel.Documents.quotation4'], 'active') }} "
+                                    href="{{ route('panel.Documents.quotation4', ['typeId' => request()->get('typeId')]) }}">
+                                    3.
+                                    Generate </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
             </div>
         </div>
 
 
-        <div class="container-fluid mt-5 mb-3">
-            <div class="row bg-light">
-                <div class="col-4">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <ul class="navbar-nav">
-                            <li class="nav-item mx-3">
-                                <a class="nav-link" href="#">1. Add Details</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-                <div class="col-4">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <ul class="navbar-nav">
-                            <li class="nav-item mx-3">
-                                <a class="nav-link active" href="#">2. Select Items</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-                <div class="col-4">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <ul class="navbar-nav">
-                            <li class="nav-item mx-3">
-                                <a class="nav-link" href="#">Generate</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
 
         <div class="col lg-6 col-md-5 d-flex justify-content-between align-items-center mt-5">
             <div class=" mx-1">
@@ -133,9 +142,7 @@
             </div>
 
             @if (!$showAll)
-
-                {{-- <a href="?typeId={{ request()->get('typeId') }}&show_all=true&page={{request()->get('page',1)}}" class="btn btn-outline-danger mb-3 mx-1 @if(request()->get('show_all',false) == true) active @endif" >Show All</a> --}}
-
+                {{-- <a href="?typeId={{ request()->get('typeId') }}&show_all=true&page={{request()->get('page',1)}}" class="btn btn-outline-danger mb-3 mx-1 @if (request()->get('show_all', false) == true) active @endif" >Show All</a> --}}
             @endif
 
 
@@ -152,7 +159,6 @@
     @include('panel.Documents.pages.addProduct')
 
     <script>
-
         $(document).ready(function() {
             $(".custom-chk").click(function(e) {
                 e.preventDefault();
@@ -168,7 +174,7 @@
                         'precord': precord,
                         'pid': pvalue,
                         'quotation_id': "{{ $QuotationRecord->id }}",
-                        'currency': "{{ json_decode($QuotationRecord->additional_notes)->currency ?? 'INR'}}"
+                        'currency': "{{ json_decode($QuotationRecord->additional_notes)->currency ?? 'INR' }}"
                     },
                     dataType: "json",
                     success: function(response) {
@@ -221,7 +227,7 @@
                                         'precord': precord,
                                         'pid': pvalue,
                                         'quotation_id': "{{ $QuotationRecord->id }}",
-                                        'currency': "{{ json_decode($QuotationRecord->additional_notes)->currency ?? 'INR'}}"
+                                        'currency': "{{ json_decode($QuotationRecord->additional_notes)->currency ?? 'INR' }}"
                                     },
                                     dataType: "json",
                                     success: function(response) {
@@ -243,7 +249,8 @@
                                     // $(this).children('input').attr('checked', false);
                                     $(this).children('input').removeAttr('Checked');
                                 } else {
-                                    $(this).children('input').attr('checked', 'Checked');
+                                    $(this).children('input').attr('checked',
+                                        'Checked');
 
                                 }
 
@@ -265,6 +272,21 @@
 
         function goBack() {
             window.history.back()
+        }
+    </script>
+
+    <script>
+        window.onscroll = function() {
+            fixmynav()
+        };
+        var tablehead = document.getElementById("jekfuiewbfejq");
+
+        function fixmynav() {
+            if (window.pageYOffset >= 80) {
+                tablehead.classList.add("sticky")
+            } else {
+                tablehead.classList.remove("sticky");
+            }
         }
     </script>
 

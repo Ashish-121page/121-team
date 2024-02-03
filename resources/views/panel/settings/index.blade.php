@@ -2,62 +2,60 @@
 @section('title', 'Settings')
 @section('content')
 
-        <link rel="stylesheet" href="{{ asset('backend/plugins/select2/dist/css/select2.min.css') }}">
-        <link href="{{ asset('frontend/assets/css/simplebar.css') }}" rel="stylesheet">
-        <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/plugins/select2/dist/css/select2.min.css') }}">
+    <link href="{{ asset('frontend/assets/css/simplebar.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('backend/plugins/mohithg-switchery/dist/switchery.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
 
     <!-- push external head elements to head -->
     @push('head')
+        <style>
+            .page-item.active {
+                background-color: transparent;
+            }
 
-    <style>
-        .page-item.active{
-            background-color: transparent;
-        }
 
+            .bootstrap-tagsinput .tag {
+                text-transform: none !important;
+            }
 
-        .bootstrap-tagsinput .tag{
-            text-transform: none !important;
-        }
-        .bootstrap-tagsinput{
-            width: 100% !important;
-        }
+            .bootstrap-tagsinput {
+                width: 100% !important;
+            }
 
-        .cust_input label {
-            height: 75px;
-            width: 95px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 8px;
-            margin: 10px;
-            transition: 0.3s;
-            cursor: pointer;
-            gap: 10px;
-        }
+            .cust_input label {
+                height: 75px;
+                width: 95px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 8px;
+                margin: 10px;
+                transition: 0.3s;
+                cursor: pointer;
+                gap: 10px;
+            }
 
-        .active{
-            background-color: #6666cc;
-            color: white;
-        }
+            .active {
+                background-color: #6666cc;
+                color: white;
+            }
 
-        .cust_input input {
-            display: none;
-        }
+            .cust_input input {
+                display: none;
+            }
 
-        .cust_input label:hover {
-            background-color: #6666cc;
-            color: white;
-            fill: white;
-        }
+            .cust_input label:hover {
+                background-color: #6666cc;
+                color: white;
+                fill: white;
+            }
 
-        .cust_input label:active {
-            transform: scale(0.8);
-        }
-
-    </style>
-
+            .cust_input label:active {
+                transform: scale(0.8);
+            }
+        </style>
     @endpush
 
     <div class="container-fluid">
@@ -66,26 +64,23 @@
             <div class="col-md-6 col-12 my-2">
                 <div class="one" style="display: flex;align-items: center;justify-content: flex-start;">
 
-                    <a href="{{ request()->url() }}" class="btn btn-outline-primary @if (!request()->has('open')) active @endif mx-1">
-                        Templates
+                    <a href="{{ request()->url() }}?open=acc_info&active=shop-details"
+                        class="btn btn-outline-primary @if (request()->get('open') == 'acc_info') active @endif mx-1">
+                        Account Info
                     </a>
-                    <a href="{{ request()->url() }}?open=offers" class="btn btn-outline-primary @if (request()->get('open') == 'offers') active @endif mx-1">
-                        Currency
+                    <a href="{{ request()->url() }}?open=entities"
+                        class="btn btn-outline-primary @if (request()->get('open') == 'entities') active @endif mx-1">
+                        Entity
                     </a>
-                    <a href="{{ request()->url() }}?open=team" class="btn btn-outline-primary @if (request()->get('open') == 'team') active @endif mx-1">
+
+                    <a href="{{ request()->url() }}?open=custinp"
+                        class="btn btn-outline-primary @if (request()->get('open') == 'custinp') active @endif mx-1">
+                        Custom
+                    </a>
+
+                    <a href="{{ request()->url() }}?open=team"
+                        class="btn btn-outline-primary @if (request()->get('open') == 'team') active @endif mx-1">
                         Team
-                    </a>
-                    <a href="{{ request()->url() }}?open=category" class="btn btn-outline-primary @if (request()->get('open') == 'category') active @endif mx-1">
-                        Category
-                    </a>
-                    <a href="{{ request()->url() }}?open=custinp" class="btn btn-outline-primary @if (request()->get('open') == 'custinp') active @endif mx-1">
-                        Custom Input
-                    </a>
-                    <a href="{{ request()->url() }}?open=quotation" class="btn btn-outline-primary @if (request()->get('open') == 'quotation') active @endif mx-1">
-                        Documentation
-                    </a>
-                    <a href="{{ request()->url() }}?open=buyermaster" class="btn btn-outline-primary @if (request()->get('open') == 'buyermaster') active @endif mx-1">
-                        Buyer Master
                     </a>
                 </div>
             </div>
@@ -110,16 +105,19 @@
 
             @if (request()->has('open') && request()->get('open') == 'offers')
                 @include('panel.settings.pages.Offers')
+
+            @elseif (request()->has('open') && request()->get('open') == 'acc_info')
+                @include('panel.settings.pages.acc_info')
+
             @elseif (request()->has('open') && request()->get('open') == 'team')
                 @include('panel.settings.pages.Team')
-            @elseif (request()->has('open') && request()->get('open') == 'category')
-                @include('backend.constant-management.category.view.user-view')
+
+
             @elseif (request()->has('open') && request()->get('open') == 'custinp')
                 @include('panel.settings.pages.CustomField')
-            @elseif (request()->has('open') && request()->get('open') == 'quotation')
-                @include('panel.settings.pages.Quotation')
-            @elseif (request()->has('open') && request()->get('open') == 'buyermaster')
-                @include('panel.settings.pages.buyer-master')
+
+            @elseif (request()->has('open') && request()->get('open') == 'entities')
+                @include('panel.settings.pages.Entity')
             @else
                 @include('panel.settings.pages.Template')
             @endif
@@ -128,21 +126,58 @@
     </div>
 
 
-@include('frontend.customer.dashboard.includes.modal.add-currencies')
-@include('frontend.customer.dashboard.includes.modal.update-currency')
-@include('frontend.customer.dashboard.includes.modal.update-currency')
-@include('panel.settings.pages.Edit-customField')
+    @include('frontend.customer.dashboard.includes.modal.add-currencies')
+    @include('frontend.customer.dashboard.includes.modal.update-currency')
+    @include('frontend.customer.dashboard.includes.modal.update-currency')
+    @include('panel.settings.pages.Edit-customField')
 
 
     <!-- push external js -->
     @push('script')
+        <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
 
         <script src="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
-        <script src="{{asset('backend/js/form-advanced.js') }}"></script>
+        <script src="{{ asset('backend/js/form-advanced.js') }}"></script>
 
         <script>
-            $(document).ready(function () {
-                $(".updatecurrencybtn").click(function (e) {
+            function html_table_to_excel(type) {
+                var table_core = $("#table").clone();
+                var clonedTable = $("#table").clone();
+                clonedTable.find('[class*="no-export"]').remove();
+                clonedTable.find('[class*="d-none"]').remove();
+                $("#table").html(clonedTable.html());
+                var data = document.getElementById('table');
+
+                var file = XLSX.utils.table_to_book(data, {
+                    sheet: "sheet1"
+                });
+                XLSX.write(file, {
+                    bookType: type,
+                    bookSST: true,
+                    type: 'base64'
+                });
+                XLSX.writeFile(file, 'Excel_export.' + type);
+                $("#table").html(table_core.html());
+
+            }
+
+            $(document).on('click', '#export_button', function() {
+                html_table_to_excel('xlsx');
+            })
+
+
+            $('#reset').click(function() {
+                var url = $(this).data('url');
+                getData(url);
+                window.history.pushState("", "", url);
+                $('#TableForm').trigger("reset");
+                //   $('#fieldId').select2('val',"");               // if you use any select2 in filtering uncomment this code
+                // $('#fieldId').trigger('change');                  // if you use any select2 in filtering uncomment this code
+            });
+        </script>
+        <script>
+            $(document).ready(function() {
+                $(".updatecurrencybtn").click(function(e) {
                     e.preventDefault();
 
                     let crrname = $(this).data('crrname');
@@ -158,11 +193,11 @@
                     $("#updatecurrency").modal('show')
                 });
 
-                $("#addcurrencyopen").click(function (e) {
+                $("#addcurrencyopen").click(function(e) {
                     e.preventDefault();
                     $('#addcurrency').modal('show');
                 });
-                $("#addmember").click(function (e) {
+                $("#addmember").click(function(e) {
                     e.preventDefault();
                     $("#addTeam").modal("show");
                 });
@@ -171,8 +206,8 @@
                     dropdownParent: $("#addTeam")
                 });
 
-                $('#otpButtonteam').on('click',function(e){
-                e.preventDefault();
+                $('#otpButtonteam').on('click', function(e) {
+                    e.preventDefault();
                     var number = $('#contact_number').val();
                     if (number != '' && number != null) {
                         $.ajax({
@@ -182,7 +217,7 @@
                                 phone_no: number
                             },
                             success: function(response) {
-                                if(response.title == 'Error'){
+                                if (response.title == 'Error') {
                                     $.toast({
                                         heading: response.title,
                                         text: response.message,
@@ -191,7 +226,7 @@
                                         loaderBg: '#f2a654',
                                         position: 'top-right'
                                     });
-                                }else{
+                                } else {
                                     $.toast({
                                         heading: response.title,
                                         text: response.message,
@@ -203,11 +238,12 @@
                                 }
                                 $('.otpaction1').removeClass('d-none');
                                 $('.otpaction2').removeClass('d-none');
-                                $('.additionalNumber').attr('readonly',true);1
+                                $('.additionalNumber').attr('readonly', true);
+                                1
                                 $('#OTP').html(response.otp)
                             }
                         });
-                    }else{
+                    } else {
                         $.toast({
                             heading: "Error",
                             text: "The number is required",
@@ -219,84 +255,84 @@
                     }
                 });
 
-            $('#verifyOTP').on('click',function(e){
-                e.preventDefault();
-                $('#saveBtn').attr('disabled',false);
-                $('.check-icon').removeClass('d-none');
-                var verifyOTP = $('#otp_num').val();
-                $.ajax({
-                    url: "{{ route('panel.user.verify-otp') }}",
-                    method: 'GET',
-                    data: {
-                        "otp": verifyOTP
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        if(response.title == 'Error'){
-                            $.toast({
-                                heading: response.title,
-                                text: response.message,
-                                showHideTransition: 'slide',
-                                icon: 'error',
-                                loaderBg: '#f2a654',
-                                position: 'top-right'
-                            });
-                        }else{
-                            $.toast({
-                                heading: response.title,
-                                text: response.message,
-                                showHideTransition: 'slide',
-                                icon: 'success',
-                                loaderBg: '#f96868',
-                                position: 'top-right'
-                            });
-                            $(this).addClass('d-none');
+                $('#verifyOTP').on('click', function(e) {
+                    e.preventDefault();
+                    $('#saveBtn').attr('disabled', false);
+                    $('.check-icon').removeClass('d-none');
+                    var verifyOTP = $('#otp_num').val();
+                    $.ajax({
+                        url: "{{ route('panel.user.verify-otp') }}",
+                        method: 'GET',
+                        data: {
+                            "otp": verifyOTP
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            if (response.title == 'Error') {
+                                $.toast({
+                                    heading: response.title,
+                                    text: response.message,
+                                    showHideTransition: 'slide',
+                                    icon: 'error',
+                                    loaderBg: '#f2a654',
+                                    position: 'top-right'
+                                });
+                            } else {
+                                $.toast({
+                                    heading: response.title,
+                                    text: response.message,
+                                    showHideTransition: 'slide',
+                                    icon: 'success',
+                                    loaderBg: '#f96868',
+                                    position: 'top-right'
+                                });
+                                $(this).addClass('d-none');
 
-                            $("#TeamForm").submit();
+                                $("#TeamForm").submit();
+                            }
                         }
-                    }
+                    })
                 })
-            })
             });
         </script>
 
         <script>
-            $(".editchange").click(function (e) {
+            $(".editchange").click(function(e) {
                 e.preventDefault();
                 // Enabling Input Value
                 let box_parent = $(this).data('box-parent');
                 let box_edit = $(this).data('box-edit');
                 // Hide text
-                $("#"+box_parent).addClass('d-none');
-                $("#"+box_parent).removeClass('d-flex');
+                $("#" + box_parent).addClass('d-none');
+                $("#" + box_parent).removeClass('d-flex');
                 // Enable Input
-                $("#"+box_edit).removeClass('d-none');
-                $("#"+box_edit).addClass('d-flex');
+                $("#" + box_edit).removeClass('d-none');
+                $("#" + box_edit).addClass('d-flex');
             });
 
-            $(".discardchange").click(function (e) {
+            $(".discardchange").click(function(e) {
                 e.preventDefault();
                 // Enabling Input Value
                 let box_parent = $(this).data('box-parent');
                 let box_text = $(this).data('box-text');
 
                 // Hide text
-                $("#"+box_parent).addClass('d-none');
-                $("#"+box_parent).removeClass('d-flex');
+                $("#" + box_parent).addClass('d-none');
+                $("#" + box_parent).removeClass('d-flex');
                 // Enable Input
-                $("#"+box_text).removeClass('d-none');
-                $("#"+box_text).addClass('d-flex');
+                $("#" + box_text).removeClass('d-none');
+                $("#" + box_text).addClass('d-flex');
             });
 
-            $(".updatechange").click(function (e) {
+            $(".updatechange").click(function(e) {
                 e.preventDefault();
                 // {{-- ` Input Value  --}}
                 let input_parent = $(this).data('input-parent');
 
                 // {{-- ` Id Of The Category --}}
                 let typevalue = $(this).data('typevalue');
-                let text = $("#text-represent-"+input_parent.split('_')[2]);
-                let value = $("#"+input_parent).val();
+                let text = $("#text-represent-" + input_parent.split('_')[2]);
+                let value = $("#" + input_parent).val();
 
                 $.ajax({
                     type: "GET",
@@ -305,10 +341,10 @@
                         'task': 'update_name',
                         'value': value,
                         'id': typevalue,
-                        'user_id': '{{ auth()->id()}} '
+                        'user_id': '{{ auth()->id() }} '
                     },
                     dataType: "json",
-                    success: function (response) {
+                    success: function(response) {
                         console.log(response);
                         text.html(value)
                         $(".discardchange").click();
@@ -318,7 +354,7 @@
             });
 
             // Add Items
-            $(".additems").click(function (e) {
+            $(".additems").click(function(e) {
                 e.preventDefault();
                 let parent = $(this).data('parentdata');
                 let item = `<div class="col-3 my-2">
@@ -327,28 +363,30 @@
                 </div>`;
                 $(`.savebtn[data-parentdata='${parent}']`).removeClass('d-none')
 
-                $("#"+parent).append(item);
+                $("#" + parent).append(item);
 
-                $("input").keypress(function (e) {
+                $("input").keypress(function(e) {
                     console.log(e.target.value);
                     var keyCode = e.which;
                     var keyChar = String.fromCharCode(keyCode);
-                    var specialChars = ["#",'$','=','{','}','|','\\',';','"',"'",'?','/','~','`','!']; // Array of special characters
+                    var specialChars = ["#", '$', '=', '{', '}', '|', '\\', ';', '"', "'", '?', '/', '~', '`',
+                '!'
+            ]; // Array of special characters
 
-                    if (specialChars.includes(keyChar)) {
-                        e.preventDefault(); // Prevent entering special characters
-                    }
-                });
+            if (specialChars.includes(keyChar)) {
+                e.preventDefault(); // Prevent entering special characters
+            }
+        });
 
-            });
+    });
 
-            $(".savebtn").click(function (e) {
-                e.preventDefault();
-                let parent = $(this).data('parentdata');
-                let valuearr = [];
+    $(".savebtn").click(function(e) {
+        e.preventDefault();
+        let parent = $(this).data('parentdata');
+        let valuearr = [];
 
 
-                let items = document.querySelectorAll(`.added_item-${parent}`);
+        let items = document.querySelectorAll(`.added_item-${parent}`);
 
                 items.forEach(element => {
                     valuearr.push(element.value);
@@ -365,17 +403,17 @@
                         'task': 'add_new',
                         'value': valuearr,
                         'id': typevalue,
-                        'user_id': '{{ auth()->id()}} '
+                        'user_id': '{{ auth()->id() }} '
                     },
                     dataType: "json",
-                    success: function (response) {
+                    success: function(response) {
                         // console.log(response);
                         window.location.reload();
                     }
                 });
             });
 
-            $(".collapseicon").click(function (e) {
+            $(".collapseicon").click(function(e) {
 
                 $(this).toggleClass('btn-primary');
                 $(this).toggleClass('bg-none');
@@ -383,18 +421,17 @@
                 $(this).find('i').toggleClass('fa-angle-down')
 
             });
-
         </script>
 
         <script>
-            $(document).ready(function () {
+            $(document).ready(function() {
 
                 $('#custtags').tagsinput('items');
 
-                var hideitif = ['text','interger','dimension','uom'];
+                var hideitif = ['text', 'interger', 'dimension', 'uom'];
 
 
-                $(".editCust").click(function (e) {
+                $(".editCust").click(function(e) {
                     e.preventDefault();
                     let values = $(this).data('values');
                     let custname = $(this).data('custname');
@@ -412,7 +449,7 @@
 
                     if (hideitif.includes(data_type)) {
                         $("#modalitevaluie").addClass('d-none');
-                    }else{
+                    } else {
                         $("#modalitevaluie").removeClass('d-none');
                     }
 
@@ -465,7 +502,7 @@
 
 
 
-            $("#attr_section").change(function (e) {
+            $("#attr_section").change(function(e) {
                 e.preventDefault();
                 let ref = $(this).val();
 
@@ -479,7 +516,7 @@
                     // $("input[name='data_type'][value='price']").parent().addClass('d-none');
                     // $("input[name='data_type'][value='uom']").parent().addClass('d-none');
                     // $("input[name='data_type'][value='url']").parent().addClass('d-none');
-                }else{
+                } else {
                     $("input[name='data_type'][value='diamension']").parent().removeClass('d-none');
                     $("input[name='data_type'][value='multi_select']").parent().removeClass('d-none');
                     $("input[name='data_type'][value='interger']").parent().removeClass('d-none');
@@ -491,12 +528,6 @@
                     // $("input[name='data_type'][value='url']").parent().removeClass('d-none');
                 }
             });
-
-
-
         </script>
-
-
-
     @endpush
 @endsection

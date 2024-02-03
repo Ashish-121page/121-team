@@ -32,12 +32,12 @@ class UserShopItemController extends Controller
 
         if ($request->has('type_ide')) {
             $request['type_id'] = decrypt($request->type_ide);
-    
+
         }
-        
+
         // return;
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -45,7 +45,7 @@ class UserShopItemController extends Controller
      */
      public function index(Request $request)
      {
-        
+
          $length = 12;
          if(request()->get('length')){
              $length = $request->get('length');
@@ -75,23 +75,23 @@ class UserShopItemController extends Controller
                 $user_shop_items->where('user_id',$request->get('user_id'));
             }
             $user_shop_items = $user_shop_items->latest()->paginate($length);
-            
+
             if ($request->ajax()) {
-                return view('panel.user_shop_items.load', ['user_shop_items' => $user_shop_items])->render();  
+                return view('panel.user_shop_items.load', ['user_shop_items' => $user_shop_items])->render();
             }
- 
+
         return view('panel.user_shop_items.index', compact('user_shop_items'));
     }
 
-    
+
         public function print(Request $request){
             $user_shop_items = collect($request->records['data']);
-                return view('panel.user_shop_items.print', ['user_shop_items' => $user_shop_items])->render();  
-           
+                return view('panel.user_shop_items.print', ['user_shop_items' => $user_shop_items])->render();
+
         }
     public function create(Request $request)
     {
-        try{  
+        try{
             if(request()->get('length')){
                 $length = $request->get('length');
             }else{
@@ -112,7 +112,7 @@ class UserShopItemController extends Controller
                     $chk = BrandUser::whereUserId(auth()->id())->whereStatus(1)->first();
                     // Parent Node
                     $parent_shop = 0;
-                    
+
                     if($request->has('search') && $request->get('search') != null){
                         $product->where('title','like', '%' . $request->get('search') . '%')
                                 ->orWhere('model_code','like', '%' . $request->get('search') . '%')
@@ -120,7 +120,7 @@ class UserShopItemController extends Controller
                                 ->orWhere('id','like', '%' . $request->get('search') . '%')
                                 ->orWhereHas('product_items',function($q) use($request){
                                     $q->where('id','like', '%' . $request->get('search') . '%');
-                                });   
+                                });
                     }
                     if($request->has('category_id') && $request->get('category_id') != null){
                         $product->where('category_id',$request->get('category_id'));
@@ -128,7 +128,7 @@ class UserShopItemController extends Controller
                     if($request->has('sub_category_id') && $request->get('sub_category_id') != null){
                         $product->where('sub_category',$request->get('sub_category_id'));
                     }
-                    
+
                     $scoped_products = $product->whereBrandId($type_id)->groupBy('sku')->latest()->get();
                     $qr_products = $product->whereBrandId($type_id)->latest()->get();
                     $categories = Category::whereIn('id',$scoped_products->pluck('category_id'))->groupBy('name')->get();
@@ -151,20 +151,20 @@ class UserShopItemController extends Controller
                     if($request->has('search') && $request->get('search') != null){
                         $product->where('title','like', '%' . $request->get('search') . '%')
                                 ->orWhere('model_code','like', '%' . $request->get('search') . '%')
-                                ->orWhere('search_keywords','like', '%' . $request->get('search') . '%')    
-                                ->orWhere('id','like', '%' . $request->get('search') . '%') 
+                                ->orWhere('search_keywords','like', '%' . $request->get('search') . '%')
+                                ->orWhere('id','like', '%' . $request->get('search') . '%')
                                 ->orWhereHas('product_items',function($q) use($request){
                                     $q->where('id','like', '%' . $request->get('search') . '%');
-                                });   
+                                });
                     }
-                    
+
                     if($request->has('category_id') && $request->get('category_id') != null){
                         $product->where('category_id',$request->get('category_id'));
                     }
                     if($request->has('sub_category_id') && $request->get('sub_category_id') != null){
                         $product->where('sub_category',$request->get('sub_category_id'));
                     }
-                    
+
                     if($request->type_id != auth()->id()){
                         $product->where('is_publish',1);
                     }
@@ -179,9 +179,9 @@ class UserShopItemController extends Controller
                     // $scoped_products = $product->whereIn('id', $scoped_items->pluck('product_id'))->groupBy('sku')->orderBy('pinned','desc')->paginate($length);
 
                     $qr_products = $product->whereIn('id', $scoped_items->pluck('product_id'))->latest()->paginate($length);
-                    
+
                     $categories = Category::whereIn('id',$scoped_items->pluck('category_id'))->orderBy('name','ASC')->get();
-                   
+
                     $parent_shop = getShopDataByUserId(@$supplier->id);
                     $title = $supplier->name ?? '';
 
@@ -200,9 +200,9 @@ class UserShopItemController extends Controller
             $brand_record = [];
             $products = Product::query();
             $products = $products->select('*', \DB::raw('count(*) as total'))->groupBy('sku')->latest()->paginate($length);
-            
+
             if ($request->get('workload') == 'AjaxSearch' ) {
-                
+
                 if(AuthRole() == "User"){
                     $user_id = auth()->id();
                     $user = auth()->user();
@@ -211,25 +211,40 @@ class UserShopItemController extends Controller
                     $user_id = request()->get('user_id');
                 }
                 $user_shop = UserShop::whereUserId($user_id)->first();
-                
+
                 return view('panel.user_shop_items.includes.pages.productList',compact('scoped_products','pinned_items','parent_shop','title','categories','access_data','access_id','products','qr_products','type_id','price_group','user_id','user_shop'));
-                
+
             }
-            
-            
-            return view('panel.user_shop_items.create',compact('scoped_products','pinned_items','parent_shop','title','categories','access_data','access_id','products','qr_products','type_id','price_group'));
 
-            
 
-        }catch(\Exception $e){            
+            $title = '';
+            if (request()->has('products')) {
+                $title = 'Product';
+            } elseif (request()->has('assetsafe')) {
+                $title = 'Asset safe';
+            } elseif (request()->has('productsgrid')) {
+                $title = 'Product';
+            } elseif (request()->has('properties')) {
+                $title = 'Properties';
+            } else {
+                $title = 'Categories';
+            }
+
+
+
+            return view('panel.user_shop_items.create',compact('scoped_products','pinned_items','parent_shop','title','categories','access_data','access_id','products','qr_products','type_id','price_group','title'));
+
+
+
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
 
-    
+
     public function addpin(Request $request)
     {
-        
+
         try{
 
             $proposal_item =  Product::whereUserId($request->user_id)->where('id',$request->product_id)->first();
@@ -239,18 +254,18 @@ class UserShopItemController extends Controller
                  $proposal_item->save();
                  if($request->ajax()) {
                      return response(['message'=>"Item Pinned Successfully!"],200);
-                 }     
+                 }
                  return back()->with('success','Item Pinned Successfully!');
              }else{
                  if($request->ajax()) {
                      return response(['message'=>"This Item is not added by you!"],200);
-                 }     
+                 }
                  return back()->with('success','This Item is not added by you!');
              }
-         }catch(Exception $e){  
+         }catch(Exception $e){
              if($request->ajax()) {
                  return response(['msg'=>"something went wrong"],500);
-             }     
+             }
              return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
          }
 
@@ -269,22 +284,22 @@ class UserShopItemController extends Controller
                  $proposal_item->save();
                  if($request->ajax()) {
                      return response(['message'=>"Item Pinned Removed Successfully!"],200);
-                 }     
+                 }
                  return back()->with('success','Item Pinned Removed Successfully!');
              }else{
                  if($request->ajax()) {
                      return response(['message'=>"This Item is not added by you!"],200);
-                 }     
+                 }
                  return back()->with('success','This Item is not added by you!');
              }
-         }catch(Exception $e){  
+         }catch(Exception $e){
              if($request->ajax()) {
                  return response(['msg'=>"something went wrong"],500);
-             }     
+             }
              return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
          }
 
-        
+
 
         print_r($request->all());
 
@@ -312,7 +327,7 @@ class UserShopItemController extends Controller
             'price_groups'     => 'sometimes',
             'is_published'     => 'sometimes',
         ]);
-        
+
         try{
             if(!$request->has('is_published')){
                 $request['is_published'] = 0;
@@ -332,13 +347,13 @@ class UserShopItemController extends Controller
                     $my_pro_ids = Product::where('user_id',auth()->id())->pluck('id');
                     // $my_site_pro_count = UserShopItem::whereUserId($request->type_id)->whereNotIn('product_id',$my_pro_ids)->get()->count();
                     $my_site_pro_count = UserShopItem::whereUserId(auth()->id())->whereNotIn('product_id',$my_pro_ids)->get()->count();
-                   
+
                 }
 
             // Checking Permissions
             foreach($products as $product){
                 if(AuthRole() == "User"){
-                     
+
                  $chk_child = UserShopItem::whereUserId(auth()->id())->whereParentShopId($request->parent_shop_id)->first();
                     // Already Supplier
                     if($chk_child){
@@ -383,7 +398,7 @@ class UserShopItemController extends Controller
                     $request['price'] = $request->price;
                     $user_shop_item = UserShopItem::create($request->all());
                 }
-               
+
             if (AuthRole() != 'Admin') {
                  return back()->with('success','User Shop Item Created Successfully!');
             }elseif ($request->user_id) {
@@ -391,8 +406,8 @@ class UserShopItemController extends Controller
             } else {
                 return redirect()->route('panel.user_shop_items.index')->with('success','Item added to shop  Successfully!');
             }
-            
-        }catch(Exception $e){            
+
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -407,7 +422,7 @@ class UserShopItemController extends Controller
             $totalProductCount =  (count($request->get('products')));
 
         }
-        
+
         if(!$request->has('products')){
             return back()->with('error', 'please select at least one product');
         }
@@ -416,9 +431,9 @@ class UserShopItemController extends Controller
             'user_shop_id'     => 'required',
             'parent_shop_id'     => 'required',
         ]);
-        
+
         try{
-            
+
             // if(!$request->has('is_published')){
                 $request['is_published'] = 1;
                 // }
@@ -431,29 +446,29 @@ class UserShopItemController extends Controller
                     $limits = json_decode($package->limit,true);
                     $productUploads = $limits['product_uploads'];
                     $my_pro_ids = Product::where('user_id',auth()->id())->pluck('id');
-                    
-                    // $my_site_pro_data = UserShopItem::whereUserId($request->type_id)->whereNotIn('product_id',$my_pro_ids)->groupBy('user_shop_id')->get(); 
+
+                    // $my_site_pro_data = UserShopItem::whereUserId($request->type_id)->whereNotIn('product_id',$my_pro_ids)->groupBy('user_shop_id')->get();
                     $my_site_pro_data = UserShopItem::whereUserId(auth()->id())->whereNotIn('product_id',$my_pro_ids)->groupBy('user_shop_id')->get();
-                    
+
                     $my_site_pro_count = $my_site_pro_data->count();
-                    
+
                     $added_products = Product::whereIn('id', $proIds)->groupBy('sku')->get();
                 }
-                
+
                 if(+$limits['add_to_site'] <= $my_site_pro_count){
                     return back()->with('error','Your Add to my Site Limit exceed!');
                 }elseif((+$limits['add_to_site'] - $my_site_pro_count) < $products->count()){
                     $rem = +$limits['add_to_site'] - $my_site_pro_count;
                     return back()->with('error',"Your subscription plan does'nt allow you to add more than $productUploads Total products including variants:".$products->count()." You can add only ".$rem.' products ');
                 }
-                
+
                 $supplier =  User::whereId($request->type_id)->first();
-                
+
                 foreach($products as $product){
                 $user_shop_item = UserShopItem::whereProductId($product->id)
                     ->whereUserId($request->type_id)
                     ->latest()->first();
-                     
+
                 $request['images'] = null;
                 $request['category_id'] = null;
                 $request['sub_category_id'] = null;
@@ -462,7 +477,7 @@ class UserShopItemController extends Controller
 
                 if($request->type == "direct"){
                     $supplier_item =  UserShopItem::whereUserId($request->type_id)->where('product_id', $product->id)->first();
-                    
+
                     $price = $supplier_item->price ?? 0;
 
                     // Price Grouping
@@ -482,26 +497,26 @@ class UserShopItemController extends Controller
                     $price = $product->price;
                 }
 
-               
+
                  $request['images'] = $product->medias->pluck('id')->count() > 0 ? implode(',',$product->medias->pluck('id')->toArray()) : null;
 
                 // check if product already exists
                 $chk = UserShopItem::whereUserId($request->user_id)->whereUserShopId($request->user_shop_id)->whereParentShopId($request->parent_shop_id)->whereProductId($product->id)->first();
 
                 if(!$chk){
-                    $request['category_id'] = $product->category_id; 
-                    $request['sub_category_id'] = $product->sub_category; 
+                    $request['category_id'] = $product->category_id;
+                    $request['sub_category_id'] = $product->sub_category;
                     $price = $user_shop_item->price ?? '0';
                     if($request->bulk_hike < 100){
                         $margin = (100 - ($request->bulk_hike)) / 100;
                         $request['price'] =  round($price / $margin);
                     }elseif($request->bulk_hike > 100){
-                        $request['price'] =  round((2*$request->bulk_hike*$price)/100); 
+                        $request['price'] =  round((2*$request->bulk_hike*$price)/100);
                     }elseif($request->bulk_hike == 100){
                         $margin = ($request->bulk_hike) / 100;
-                        $request['price'] =  round($price * 2);   
+                        $request['price'] =  round($price * 2);
                     }
-                    // $request['price'] = round(($price/(100-$request->hike))*100); 
+                    // $request['price'] = round(($price/(100-$request->hike))*100);
 
                     $request['product_id'] = $product->id;
                     $user_shop_item = UserShopItem::create($request->all());
@@ -514,16 +529,14 @@ class UserShopItemController extends Controller
             } else {
                 return redirect()->route('panel.user_shop_items.index')->with('success',$totalProductCount.' Items added to shop  Successfully!');
             }
-            
-        }catch(\Exception $e){            
+
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
-    
+
 
     public function linkedasset(Request $request) {
-        
-
         magicstring($request->all());
         return;
     }
@@ -532,10 +545,6 @@ class UserShopItemController extends Controller
     public function removebulk(Request $request)
     {
         try {
-
-            // magicstring($request->all());
-            // return;            
-            
             $delete_request = $request->delproducts;
             $action = $request->delete_all;
             $count = 0;
@@ -546,37 +555,37 @@ class UserShopItemController extends Controller
                 // Starting Loop for Getting All Product Details
                 foreach ($result_product as $key => $allpro) {
                     // Getting Item LIsts from User Shop Item Table
-                    $usi = DB::table('user_shop_items')->where('product_id',$allpro->id)->where('parent_shop_id',0)->get();    
+                    $usi = DB::table('user_shop_items')->where('product_id',$allpro->id)->where('parent_shop_id',0)->get();
                     foreach($usi as $user_items){
                         $media = $user_items->images;
                         $media_arr = explode(',',$media);
                         foreach ($media_arr as $value) {
                             $media_dir = DB::table('medias')->where('id',$value)->first();
-                            
+
                             if ($request->delete_type == 'with_asset') {
                                 // Deleting File
                                 $del_path = str_replace('storage','public',$media_dir->path);
                                 Storage::delete($del_path);
                             }
-                            
+
                             DB::table('medias')->where('id',$media_dir->id)->delete();
                         }
                         // ! Deleting User SHop Item Entry
                         DB::table('user_shop_items')->where('id',$user_items->id)->delete();
                     }
-                    
+
                     // ! Deleting From Inventory
                     DB::table('inventory')->where('product_id',$allpro->id)->delete();
                     // ! Deleting From Proposal_item
                     DB::table('proposal_items')->where('product_id',$allpro->id)->delete();
-                    // ! Deleting From Time and Action                     
+                    // ! Deleting From Time and Action
                     DB::table('time_and_action')->where('product_id',$allpro->id)->delete();
                     // ! Deleting From Product Entry
                     DB::table('products')->where('id',$allpro->id)->delete();
-                    // ! Deleting From Product extra info 
+                    // ! Deleting From Product extra info
                     ProductExtraInfo::where('product_id',$allpro->id)->delete();
-                }    
-                return back()->with('success',count($result_product).' All Items of shop are Deleted Successfully!');                
+                }
+                return back()->with('success',count($result_product).' All Items of shop are Deleted Successfully!');
 
             }else{
                 echo "Deleting Selected Products !! <br>";
@@ -589,25 +598,25 @@ class UserShopItemController extends Controller
                         if ($product->user_id != auth()->id()) {
                             return back()->with('error','These Products are not Owned by You!!');
                         }
-                        
-                        $usi = DB::table('user_shop_items')->where('product_id',$product->id)->get();    
+
+                        $usi = DB::table('user_shop_items')->where('product_id',$product->id)->get();
                         foreach($usi as $user_items){
                             // Getting Image Path From User Shop Items
                             $media = $user_items->images;
                             // Makking rray of Media in Product
                             $media_arr = explode(',',$media);
-                            
+
                             // Starting Loop for Deleting Medias
                             foreach ($media_arr as $value) {
                                 // Getting File Path
                                 $media_dir = DB::table('medias')->where('id',$value)->first();
-                                
+
                                 if ($request->delete_type == 'with_asset') {
                                     // Deleting File
                                     $del_path = str_replace('storage','public',$media_dir->path);
                                     Storage::delete($del_path);
                                 }
-                                
+
                                 // Deleting Media Entry
                                 DB::table('medias')->where('id',$media_dir->id)->delete();
                             }
@@ -615,7 +624,7 @@ class UserShopItemController extends Controller
                             DB::table('user_shop_items')->where('id',$user_items->id)->delete();
                         }
                         DB::table('products')->where('id',$product->id)->delete();
-                        // Deleting Product extra info 
+                        // Deleting Product extra info
                         ProductExtraInfo::where('product_id',$product->id)->delete();
                         $count++;
                     }
@@ -639,12 +648,12 @@ class UserShopItemController extends Controller
     {
         try{
             return view('panel.user_shop_items.show',compact('user_shop_item'));
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
     public function uploadBulkImage(Request $request)
-    {   
+    {
         try{
             if($request->has('category_id') && $request->has('sub_category_id')){
                 $product_ids = Product::whereCategoryId($request->category_id)->whereSubCategory($request->sub_category_id)->pluck('id');
@@ -658,7 +667,7 @@ class UserShopItemController extends Controller
             }
 
             return response()->json(['images' => $medias], 200);
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -670,18 +679,18 @@ class UserShopItemController extends Controller
      * @return  \Illuminate\Http\Response
      */
     public function edit(UserShopItem $user_shop_item)
-    {   
+    {
         try{
             $product_id = $user_shop_item->product_id;
             $changes121 = changeby121::where('prodcut_id','=',$product_id)->first();
-            
+
             return view('panel.user_shop_items.edit',compact('user_shop_item','changes121'));
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
     public function updateMedia(Request $request)
-    {  
+    {
         try{
             foreach($request->medias as $tempImg){
                 $media = Media::whereId($tempImg)->first();
@@ -701,12 +710,12 @@ class UserShopItemController extends Controller
                 }
             }
             return back()->with('success','Image Updated Successfully!');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
     public function getSubcategory(Request $request)
-    {   
+    {
         try{
             $html = "<option value='' readonly> Select Sub Category</option>";
             if (AuthRole() != 'Admin') {
@@ -730,7 +739,7 @@ class UserShopItemController extends Controller
                 return response($html,200);
             }
             return response(404);
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -744,7 +753,7 @@ class UserShopItemController extends Controller
      */
     public function update(Request $request,UserShopItem $user_shop_item)
     {
-        
+
         $this->validate($request, [
             'user_id'     => 'required',
             'user_shop_id'     => 'required',
@@ -753,14 +762,14 @@ class UserShopItemController extends Controller
             'price_group'     => 'sometimes',
             'is_published'     => 'sometimes',
         ]);
-                
+
         try{
-                            
+
             if(!$request->has('is_published')){
                 $request['is_published'] = 0;
             }
 
-            
+
             $parent_shop = UserShop::whereId($user_shop_item->parent_shop_id)->first()->user_id;
             $parent_shop_status = User::whereId($parent_shop)->first()->status;
 
@@ -769,7 +778,7 @@ class UserShopItemController extends Controller
                 return back()->with('error',"Couldn't Publish Because Supplier Unpublished the Product!")->withInput($request->all());
             }
            }
-                    
+
             $parent_shop_status = User::whereId($user_shop_item->parent_shop_id)->first()->status;
             if ($parent_shop_status == 0) {
                 return back()->with('error',"Couldn't Publish Because Supplier Unpublished the Product!")->withInput($request->all());
@@ -789,15 +798,15 @@ class UserShopItemController extends Controller
 
             $product = getProductDataById($user_shop_item->product_id);
             if($product->user_id == $user_shop_item->user_id){
-                
+
                 $otherShops = UserShopItem::where('user_id','!=',$user_shop_item->user_id)->where('product_id',$user_shop_item->product_id)->get();
-    
+
                 foreach($otherShops as $other){
-                        
+
                     // Unpublish all sellers who has this product
                     $other->is_published = 0;
                     $other->save();
-    
+
                     $user_record =  getUserRecordByUserId($other->user_id);
                     // $product_record =  getProductRecordById($other->product_id);
                     $mailContentData = MailSmsTemplate::where('code','=',"product-unpublished")->first();
@@ -806,7 +815,7 @@ class UserShopItemController extends Controller
                                 '{name}'=>$user_record->name,
                                 '{product_name}'=>$product->title,
                             ];
-                        
+
                         TemplateMail($user_record->name,$mailContentData,$user_record->email,$mailContentData->type, $arr, $mailContentData, $chk_data = null ,$mail_footer = null, $action_button = null);
                     }
                     $onsite_notification['user_id'] =  $other->user_id;
@@ -817,7 +826,7 @@ class UserShopItemController extends Controller
                 }
             }
             return back()->with('success','Record Updated!')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -827,7 +836,7 @@ class UserShopItemController extends Controller
 
     public function update121(Request $request,UserShopItem $user_shop_item)
     {
-        
+
         // echo "<pre>";
         // // print_r($request->all());
         // print_r($user_shop_item);
@@ -843,11 +852,11 @@ class UserShopItemController extends Controller
         //     'price_group'     => 'sometimes',
         //     'is_published'     => 'sometimes',
         // ]);
-                
+
 
 
         try{
-                                                  
+
             if($user_shop_item){
                 if($request->has('medias') && count($request->get('medias')) > 0){
                         $request['images'] = implode(',',$request->get('medias'));
@@ -873,15 +882,15 @@ class UserShopItemController extends Controller
 
             $product = getProductDataById($user_shop_item->product_id);
             if($product->user_id == $user_shop_item->user_id){
-                
+
                 $otherShops = UserShopItem::where('user_id','!=',$user_shop_item->user_id)->where('product_id',$user_shop_item->product_id)->get();
-    
+
                 foreach($otherShops as $other){
-                        
+
                     // Unpublish all sellers who has this product
                     $other->is_published = 0;
                     $other->save();
-    
+
                     $user_record =  getUserRecordByUserId($other->user_id);
                     // $product_record =  getProductRecordById($other->product_id);
                     $mailContentData = MailSmsTemplate::where('code','=',"product-unpublished")->first();
@@ -890,7 +899,7 @@ class UserShopItemController extends Controller
                                 '{name}'=>$user_record->name,
                                 '{product_name}'=>$product->title,
                             ];
-                        
+
                         TemplateMail($user_record->name,$mailContentData,$user_record->email,$mailContentData->type, $arr, $mailContentData, $chk_data = null ,$mail_footer = null, $action_button = null);
                     }
                     $onsite_notification['user_id'] =  $other->user_id;
@@ -901,7 +910,7 @@ class UserShopItemController extends Controller
                 }
             }
             return back()->with('success','Record Updated!')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -911,7 +920,7 @@ class UserShopItemController extends Controller
 
 
     public function remove($pid,$uid)
-    {   
+    {
         try{
             $sku = Product::whereId($pid)->first()->sku ??null;
             if($sku != null){
@@ -955,7 +964,7 @@ class UserShopItemController extends Controller
         $user_shop_item->images = implode(',', $arr_images);
         $user_shop_item->save();
         return back()->with('success',"Images Uploaded Successfully!");
-    }   
+    }
 
 
 
@@ -964,10 +973,10 @@ class UserShopItemController extends Controller
         try{
             $users = User::get();
             return view('panel.user_shop_items.update_product', compact('users'));
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
-        
+
     }
 
     /**
@@ -993,13 +1002,13 @@ class UserShopItemController extends Controller
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
-    
+
     public function checkdisplay(Request $reqest) {
         $user_shop = getShopDataByUserId(auth()->id());
-        
+
         return view('panel.display.index',compact('user_shop'));
     }
-    
+
     public function checkproductdisplay(Request $reqest,$id) {
 
         $user_shop = getShopDataByUserId(auth()->id());
@@ -1010,9 +1019,9 @@ class UserShopItemController extends Controller
         $encid = $id;
         return view('panel.user_shop_items.includes.view-product',compact('user_shop','encid'));
     }
-    
-    
 
 
-    
+
+
+
 }

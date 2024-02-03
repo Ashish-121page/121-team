@@ -68,7 +68,7 @@
                                 class="ik ik ik-arrow-down desc" data-val="status"></i></div>
                     </th>
                     <th class="col_5">
-                        Items 
+                        Items
                     </th>
                     <th class="col_6">
                         Created At <div class="table-div"><i class="ik ik-arrow-up  asc  " data-val="slug"></i><i
@@ -97,16 +97,16 @@
                                                 title="Show Proposal" class="dropdown-item">
                                                 <li class=" p-0">Show</li>
                                             </a>
-                                        @else  
+                                        @else
                                             <a href="{{ route('panel.proposals.destroy', $proposal->id) }}"
                                                 title="Delete Proposal" class="dropdown-item  delete-item">
                                                 <li class=" p-0">Delete</li>
                                             </a>
-                                        @endif  
+                                        @endif
                                     </ul>
                                 </div>
                             </td>
-                            <td class="text-center no-export"> 
+                            <td class="text-center no-export">
                                 <a href="{{ route('panel.proposals.edit', $proposal->id).$direct }}"
                                     class="btn-link" title="Edit Proposal"> #PROID{{ $proposal->id }}</a>
                             </td>
@@ -115,8 +115,10 @@
                              @if(AuthRole() == "Admin")
                             <td class="col_3">
                                 {{ fetchFirst('App\Models\UserShop', $proposal->user_shop_id, 'name', '--') }}</td>
-                            @endif    
+                            @endif
+
                             <td class="col_4"><div class="badge badge-{{ getProposalStatus($proposal->status)['color']}}">{{ getProposalStatus($proposal->status)['name']}}</div></td>
+
                             <td class="col_5"><span class="badge badge-pill badge-secondary">{{ $proposal->items_count }}</span></td>
                             <td class="col_6">{{ getFormattedDate($proposal->created_at) }}</td>
                         </tr>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  *
 
@@ -52,64 +52,39 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $this->validateLogin($request);
-        
+
         if ($this->hasTooManyLoginAttempts($request)) {
             $this->fireLockoutEvent($request);
-            
             return $this->sendLockoutResponse($request);
         }
 
         if ($this->guard()->validate($this->credentials($request))) {
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'status' => 0])) {
-                // return response()->json([
-                //     'error' => 'This account is not activated.'
-                // ], 401);
-                // $this->guard()->logout();
-                // $request->session()->invalidate();
-                // $request->session()->regenerateToken();
-
-                   // return redirect()->intended('dashboard');
-                   $this->guard()->logout();
-                   $this->incrementLoginAttempts($request);
-                   // return response()->json([
-                   //     'error' => 'This account is not activated.'
-                   // ], 401);
-                   return redirect()->back()->with('error', 'This account is not activated. ');
+                $this->guard()->logout();
+                $this->incrementLoginAttempts($request);
+                return redirect()->back()->with('error', 'This account is not activated. ');
 
             } elseif (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'status' => 1])) {
-                if(AuthRole() == 'User'){
-                    // return redirect('/customer/dashboard');
-                    return redirect('/panel/dashboard');
+                $user = Auth::user();
+                $user->update(['last_login_at' => now()]);
+                return redirect('/panel/dashboard');
 
-                }else{
-                    return redirect('/panel/dashboard');
-                }
             } elseif(Auth::attempt([ 'phone' => $request->email, 'password' => $request->password,'status' => 1 ])){
-                 if(AuthRole() == 'User'){
-                    // return redirect('/customer/dashboard');
-                    return redirect('/panel/dashboard');
+                $user = Auth::user();
+                $user->update(['last_login_at' => now()]);
+                return redirect('/panel/dashboard');
 
-                }else{
-                    return redirect('/panel/dashboard');
-                }
             }elseif (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'status' => 2])) {
-                 if(AuthRole() == 'User'){
-                    // return redirect('/customer/dashboard');
-                    return redirect('/panel/dashboard');
-                }else{
-                    return redirect('/panel/dashboard');
-                }
+                $user = Auth::user();
+                $user->update(['last_login_at' => now()]);
+                return redirect('/panel/dashboard');
             }
         } else {
-           
             $this->incrementLoginAttempts($request);
             return redirect()->back()->with('error','Credentials do not match our database.')->withInput($request->all());
-            // return response()->json([
-            //     'error' => 'Credentials do not match our database.'
-            // ], 401);
         }
-        
-            
+
+
     }
 
     protected function validateLogin(Request $request)
@@ -134,7 +109,7 @@ class LoginController extends Controller
         if (authRole() == 'Admin') {
             $redirect = '/auth/login';
         } else {
-            $redirect = '/';
+            $redirect = '/auth/login';
         }
         $this->guard()->logout();
 
@@ -151,7 +126,7 @@ class LoginController extends Controller
             : redirect($redirect);
     }
 
-    
+
     protected function credentials(Request $request)
     {
         if(is_numeric($request->get('email'))){

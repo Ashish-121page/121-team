@@ -33,18 +33,30 @@
         </div>
     </div> --}}
 
-    <div class="container">
+    <div class="">
+        {{-- <div class="container"> --}}
         <div class="row">
-            <div class="col-12">
+            <div class="col-lg-12 col-md-12 col-12">
                 <div class="mb-3 footer-border">
-                    <div class="container text-center">
+                    <div class="text-center">
                         <div class="row align-items-center">
-                            <div class="col-md-4">
-                                <div class="text-sm-start">
-                                    <p class="mb-0">Copyright © <script>document.write(new Date().getFullYear())</script> All Right Reserved</p>
+                            <div class="col-lg-6 col-md-6 col-12 d-none d-lg-block">
+                                <div class="text-sm-start" style="margin-left: 3rem;">
+                                    <p class="mb-0">Copyright © <script>document.write(new Date().getFullYear())</script> All Rights Reserved</p>
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            {{-- for mobile --}}
+                            <div class="col-lg-6 col-md-6 col-12 d-lg-none d-block">
+                                <div class="text-sm-start">
+                                    <p class="mb-0">Copyright © <script>document.write(new Date().getFullYear())</script> All Rights Reserved</p>
+                                </div>
+                            </div>
+
+                            <div class=" col-lg-6 col-md-6 col-12 d-none d-lg-block">
+                                <p class="mb-0 text-start">{{ getSetting('app_name') }}</p>
+                            </div>
+
+                            <div class=" col-lg-6 col-md-6 col-12 d-lg-none d-block">
                                 <p class="mb-0 text-center">{{ getSetting('app_name') }}</p>
                             </div>
                             {{-- <div class="col-md-4">

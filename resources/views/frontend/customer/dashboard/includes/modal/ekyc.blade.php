@@ -1,9 +1,23 @@
+<style>
+  .dropdown-icon {
+    position: absolute;
+    top: 68%;
+    right: 27px;
+    transform: translateY(-50%);
+    pointer-events: none; /* Ensure the icon does not interfere with the select box */
+    color: #000; /* Adjust the color as needed */
+}
+
+
+</style>
+
+
 <div class="modal fade" id="ekycVerification" role="dialog" aria-labelledby="ekycVerificationTitle" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="ekycVerificationTitle">e-KYC Verification Form</h5>
-         <button type="button" class="btn close" data-bs-dismiss="modal" aria-label="Close" style="padding: 0px 20px;font-size: 20px;">
+         <button type="button" class="btn close d-none" data-bs-dismiss="modal" aria-label="Close" style="padding: 0px 20px;font-size: 20px;">
             <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -58,15 +72,26 @@
                       <input class="form-control" name="document_back_attachment" type="file" accept="image/*">
                     </div>
                 </div>
+
+
+                
                 <div class="col-md-12 col-12 mt-3">
                   <div class="form-group">
-                    <label class="mt-2" for="acc_type">Based on your nature of business, you are:</label>
-                    <select name="acc_type" id="acc_type" class="form-control">
-                      <option {{ $chk = ($user->account_type == 'customer') ?  "selected" : "" ; }} value="customer">Customer</option>
+                    <label class="mt-2" for="acc_type">
+                      Based on your nature of business, you are:
+                      
+                    </label>
+                    {{-- <label class="mt-2" for="acc_type">Based on your nature of business, you are:</label> --}}
+                    <select name="acc_type" id="acc_type" class="form-control">                      
+                      <option {{ $chk = ($user->account_type == 'customer') ?  "selected" : "" ; }} value="customer" >Customer <i class="fa fa-angle-down"> </option>
                       <option {{ $chk = ($user->account_type == 'exporter') ?  "selected" : "" ; }} value="exporter">Exporter</option>
                       <option {{ $chk = ($user->account_type == 'supplier') ?  "selected" : "" ; }} value="supplier">Manufacturer / Stockist</option>
                       <option {{ $chk = ($user->account_type == 'reseller') ?  "selected" : "" ; }} value="reseller">Reseller</option>
                     </select>
+
+                    <div class="dropdown-icon">
+                      <i class="fa fa-angle-down"></i>
+                    </div>
 
 
                   </div>
@@ -85,13 +110,17 @@
 
                 <div class="col-md-12 col-12 mt-3">
                   <div class="form-group">
-                    <label class="mt-2" for="remarks">Remark:</label>
+                    <label class="mt-2" for="remarks">Any additional info for e-KYC:</label>
                     <input class="form-control mb-2" name="remarks" id="remarks" type="text" placeholder="">
                   </div>
                 </div>
-                <div class="col-12 text-center mt-4">
-                  <button type="submit" class="btn btn-primary">Verify</button>
-                </div>
+                <div class="col-12 col-md-12 col-lg-12 text-center mt-4">
+                  <div class="d-flex justify-content-between">
+                      <button type="button" class="btn close btn btn-primary mr-2" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                      <button type="submit" class="btn btn-primary">Verify</button>
+                  </div>
+              </div>
+              
               </div>
           </form>
         </div>

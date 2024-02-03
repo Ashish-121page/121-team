@@ -1,4 +1,22 @@
 {{-- @ Old Style Product View --}}
+<style>
+
+    #maincontentbxProductLIst .product-card{
+        font-size: 1rem !important;
+    }
+
+    #maincontentbxProductLIst.product-card.checkmark {
+        position: absolute;
+        top: 20px !important;
+        left: 0;
+        height: 25px;
+        width: 25px;
+        background-color: #eee;
+        border-radius: 50%
+    }
+</style>
+
+
 
 <div class="card-body1">
     @if (request()->get('type_id') == auth()->id())

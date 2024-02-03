@@ -26,6 +26,7 @@
                     <li class="dropdown-item p-0 col-btn" data-val="col_7"><a href="javascript:void(0);"  class="btn btn-sm">Join At</a></li>
                     <li class="dropdown-item p-0 col-btn" data-val="col_8"><a href="javascript:void(0);"  class="btn btn-sm">NBD Cat ID#</a></li>
                     <li class="dropdown-item p-0 col-btn" data-val="col_9"><a href="javascript:void(0);"  class="btn btn-sm">User Type</a></li>
+                    <li class="dropdown-item p-0 col-btn" data-val="col_10"><a href="javascript:void(0);"  class="btn btn-sm">Last Login</a></li>
                 </ul>
             </div>
             <input type="text" name="search" class="form-control" placeholder="Search" id="search" value="{{ request()->get('search') }}" style="width:unset;">
@@ -38,6 +39,7 @@
                         <th class="col_2 no-export">{{ __('Action')}}</th>
                         <th class="col_3">{{ __('Customer')}}</th>
                         <th class="col_8">{{ __('NBD Cat ID#')}}</th>
+                        <th class="col_10">{{ __('Last Login')}}</th>
                         <th class="col_4">{{ __('Role')}}</th>
                         <th class="col_5">{{ __('eKyc')}}</th>
                         <th class="col_6">{{ __('Email')}}</th>
@@ -52,7 +54,7 @@
                         @foreach ($users as $item)
                         <tr>
                             <td class="col_1 text-center no-export">{{ $loop->iteration }}</td>
-                            <td class="col_2 no-export"> 
+                            <td class="col_2 no-export">
                                 @if(Auth::user()->can('manage_user') && $item->name != 'Super Admin')
                                 <div class="dropdown">
                                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -94,27 +96,47 @@
                                 $user_rec = App\User::whereId($item->id)->first();
                                 $user_shop = App\Models\UserShop::whereUserId($item->id)->first();
                             @endphp
-                            <td class="col_3"> 
-                               <a class="@if($user_role->name == 'User') btn btn-link m-0 p-1 @endif" @if($user_role->name == 'User')  href="{{ route('panel.user_shops.edit', $user_shop->id) }}?active=shop-details" @else href="#" @endif>{{ $item->name}} 
-                                @if ($item->ekyc_status == 1) <i class="fa fa-check-circle text-success fa-sm"></i> @endif 
+                            <td class="col_3">
+                               <a class="@if($user_role->name == 'User') btn btn-link m-0 p-1 @endif" @if($user_role->name == 'User')  href="{{ route('panel.user_shops.edit', $user_shop->id) }}?active=shop-details" @else href="#" @endif>{{ $item->name}}
+                                @if ($item->ekyc_status == 1) <i class="fa fa-check-circle text-success fa-sm"></i> @endif
                                 @if ($item->is_supplier == 1) <i class="fas fa-store-alt text-danger fa-sm"></i> @endif</a>
                             </td>
-                            <td class="col_3"> 
+
+                            <td class="col_3">
                                 <span>{{ __($item->NBD_Cat_ID) ?? "-" }}</span>
-                             </td>
+                            </td>
+
+                            <td class="col_10">
+                                <span class="d-flex flex-wrap justify-content-center ">
+                                    {{-- {{ $item->last_login_at ? getFormattedDate($item->last_login_at) : "Not Logged In Yet" }} --}}
+
+                                    @if ($item->last_login_at)
+                                        {{ getFormattedDate($item->last_login_at) }}
+                                        <button class="btn btn-outline-info" type="button">
+                                            {{ $item->last_login_at ? \Carbon\Carbon::parse($item->last_login_at)->diffForHumans() : "" }}
+                                        </button>
+                                    @else
+                                        <button class="btn btn-outline-danger" type="button">
+                                            Not Logged In Yet
+                                        </button>
+                                    @endif
+
+                                </span>
+                            </td>
+
                             <td class="col_4">{{ implode(' , ', $item->getRoleNames()->toArray()) }}</td>
                             <td class="col_5">
-                                
+
                                 <span class="badge badge-{{ getEkycStatus($item->ekyc_status)['color'] }} m-1">
                                    {{ getEkycStatus($item->ekyc_status)['name'] }}
-                                </span> 
+                                </span>
                             </td>
                             <td class="col_6">{{ $item->email }}</td>
                             <td class="col_6">{{ $item->phone }}</td>
                             <td class="col_7">
                                 <span class="badge badge-{{ getStatus($item->status)['color']}} m-1">
                                     {{ getStatus($item->status)['name']}}
-                                </span> 
+                                </span>
                             </td>
                             <td class="col_8">{{ getFormattedDate($item->created_at) }}</td>
                             <td class="col_8">{{ $item->account_type ?? "--" }}</td>
@@ -135,7 +157,7 @@
         </div>
         <div>
             @if($users->lastPage() > 1)
-                <label for="">Jump To: 
+                <label for="">Jump To:
                     <select name="page" style="width:60px;height:30px;border: 1px solid #eaeaea;"  id="jumpTo">
                         @for ($i = 1; $i <= $users->lastPage(); $i++)
                             <option value="{{ $i }}" {{ $users->currentPage() == $i ? 'selected' : '' }}>{{ $i }}</option>
