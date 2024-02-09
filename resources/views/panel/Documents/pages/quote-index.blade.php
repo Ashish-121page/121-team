@@ -75,6 +75,8 @@
                         $chkrec = App\Models\Quotation::where('linked_quote', $record->id)->get();
                     @endphp
 
+
+
                     @if ($chkrec->count() == 0)
                         <a href="{{ route('panel.Documents.make.quote.perfoma', $record->id) }}"
                             class="btn btn-link text-primary " target="_blank">Make PI</a>

@@ -382,7 +382,7 @@ class CategoryController extends Controller
 
 
             if ($category->type == 1) {
-                return back()->with('error','You cannot Delete This Category, It Is System Category');
+                return back()->with('error','Unable to delete system category. Contact 121 Support');
             }
 
 
@@ -393,10 +393,10 @@ class CategoryController extends Controller
             $chk_subcategory_in_usi = UserShopItem::where('sub_category_id',$id)->get();
 
             if (count($chk_category_in_products) != 0 || count($chk_subcategory_in_products) != 0) {
-                return back()->with('error','You cannot Delete This Category, It Is Linked With Products');
+                return back()->with('error','Move Products to other category first before Deleting this Category.');
             }
             if (count($chk_category_in_usi) != 0 || count($chk_subcategory_in_usi) != 0) {
-                return back()->with('error','You cannot Delete This Category, It Is Linked With User Shop Items');
+                return back()->with('error','Move Products to other category first before Deleting this Category.');
             }
 
             $get_sub_cat = Category::where('parent_id',$id)->get();
@@ -405,12 +405,16 @@ class CategoryController extends Controller
                 $sub_cat->delete();
                 $count_sub++;
             }
-
             $category->delete();
-            return back()->with('success', 'Category deleted successfully.');
+
+            return true;
+            // return back()->with('success', 'Category deleted successfully.');
         } catch (\Throwable $th) {
-            return back()->with('error', 'Error: ' . $th->getMessage());
+            // return back()->with('error', 'Error: ' . $th->getMessage());
+            return  $th->getMessage();
+
             // throw $th;
+
         }
 
 
@@ -542,38 +546,47 @@ class CategoryController extends Controller
             $countcategoy = 0;
             $countSubcategoy = 0;
             $ids = explode(",",$request->delete_ids);
-
-
-
             // ! Validating ....
             foreach ($ids as $key => $value) {
-                $chk = Product::where('category_id',$value)->get();
-                if (count($chk) != 0) {
-                    $name = $chk[0]->name;
-                    // echo "You Cannot Delete $name Because it is linked with Products".newline();
-                    return back()->with('error',"You Cannot Delete $name Because it is linked with Products");
+                $id = $value;
+                echo "Received Param is ".$id.newline();
+                $category = Category::whereId($id)->first();
+                echo "Category Name Is ' ".$category->name." '".newline();
+
+                if ($category->type == 1) {
+                    return back()->with('error','Unable to delete system category. Contact 121 Support');
                 }
-            }
 
+                $chk_category_in_products = Product::where('category_id',$id)->get();
+                $chk_subcategory_in_products = Product::where('sub_category',$id)->get();
 
-            // Deleting Sub Categories
-            foreach ($ids as $key => $value) {
-                $record = Category::where('parent_id',$value)->get();
-                foreach ($record as $key => $item) {
-                    $item->delete();
-                    $countSubcategoy++;
+                $chk_category_in_usi = UserShopItem::where('category_id',$id)->get();
+                $chk_subcategory_in_usi = UserShopItem::where('sub_category_id',$id)->get();
+
+                if (count($chk_category_in_products) != 0 || count($chk_subcategory_in_products) != 0) {
+                    return back()->with('error','Move Products to other category first before Deleting this Category.');
                 }
-                // $record->delete();
-                Category::whereId($value)->delete();
+                if (count($chk_category_in_usi) != 0 || count($chk_subcategory_in_usi) != 0) {
+                    return back()->with('error','Move Products to other category first before Deleting this Category.');
+                }
 
+                $get_sub_cat = Category::where('parent_id',$id)->get();
+                $count_sub = 0;
+                foreach($get_sub_cat as $sub_cat_index => $sub_cat) {
+                    $sub_cat->delete();
+                    $count_sub++;
+                }
+                $category->delete();
                 $countcategoy++;
             }
 
 
 
-            return back()->with('success',"$countcategoy category, and $countSubcategoy are deleted Successfully.");
+
+            return back()->with('success',"$countcategoy category Deleted Successfully");
         } catch (\Throwable $th) {
             throw $th;
+
         }
 
 

@@ -21,6 +21,30 @@
         left: -4px;
     }
 
+    .nav-item a i {
+        display: none;
+    }
+
+    .mobile-menu .nav-item {
+        font-size: 2rem;
+    }
+    .mobile-menu .nav-item.active a span {
+        font-size: 2rem !important;
+    }
+
+    .mobile-menu .nav-item a {
+        margin-left: 10%;
+    }
+
+    .mobile-menu .nav-item a i{
+        display: contents !important;
+        font-size: 22px;
+    }
+
+    .mobile-menu .nav-item a span {
+        margin: 0 16px;
+    }
+
     .mobile-menu {
         height: 100vh;
         width: 100vw;
@@ -54,7 +78,7 @@
         content: '';
         background-color: #8484f8;
         height: 3px;
-        width: 20%;
+        width: 50%;
         position: absolute;
         bottom: -7px;
         left: -4px;
@@ -150,26 +174,25 @@
                     <ul class="nav nav-underline">
                         <div class="d-flex justify-content-start invisible  ml-4 align-items-center w-100 ">
                             <button class="btn p-0  toggle-menubtn m-3" style="background-color: transparent;">
-                                <svg width="24" height="24" viewBox="0 0 32 32"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill="currentColor"
-                                        d="M7.219 5.781L5.78 7.22L14.563 16L5.78 24.781l1.44 1.439L16 17.437l8.781 8.782l1.438-1.438L17.437 16l8.782-8.781L24.78 5.78L16 14.563z" />
-                                </svg>
+                                <i class="fas fa-home"></i>
                             </button>
 
                         </div>
                         <li class="nav-item {{ activeClassIfRoutes(['panel.dashboard'], 'active') }}">
                             <a href="{{ route('panel.dashboard') }}"
                                 class="a-item px-lg-3 {{ activeClassIfRoutes(['panel.dashboard'], 'active') }}"
-                                style="color:#ccd3e4; "><i
-                                    class="ik ik-bar-chart-4"></i><span>{{ __('Home') }}</span></a>
+                                style="color:#ccd3e4; ">
+                                <i class="fas fa-home"></i>
+                                <span>{{ __('Home') }}</span>
+                            </a>
                         </li>
 
                         @if ($permi->maya == 'yes')
-                            <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.image.designer'], 'active') }}">
+                            <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.image.designer'], 'active') }} d-none">
                                 <a href="{{ route('panel.image.designer') }}" class="a-item px-lg-3"
                                     style="color:#ccd3e4;  ">
                                     {{-- AI GENERATE IMAGE --}}
+                                    <i class="fas fa-image"></i>
                                     <span>{{ 'Maya' }}</span>
                                 </a>
                             </div>
@@ -179,15 +202,24 @@
                             class="nav-item ml-4 {{ activeClassIfRoutes(['panel.user_shop_items.create'], 'active') }}">
                             <a href="{{ route('panel.user_shop_items.create') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}"
                                 class="a-item px-lg-3" style="color:#ccd3e4;  ">
-                                {{-- <i class="ik ik-shopping-bag"></i> --}}
+                                <i class="ik ik-shopping-bag"></i>
                                 <span>{{ 'Manage' }}</span>
                                 {{-- Products --}}
                             </a>
                         </div>
+
+                        <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.search.index'], 'active') }}">
+                            <a href="{{ route('panel.search.index') }}" class="a-item px-lg-3"
+                                style="color:#ccd3e4;  ">
+                                <i class="ik ik-shopping-bag"></i>
+                                <span>{{ 'Search' }}</span>
+                            </a>
+                        </div>
+
                         <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.check.display'], 'active') }}">
                             <a href="{{ route('panel.check.display') }}" class="a-item px-lg-3"
                                 style="color:#ccd3e4; ">
-                                {{-- <i class="ik ik-upload"></i> --}}
+                                <i class="ik ik-upload"></i>
                                 <span>{{ 'Display' }}</span>
                             </a>
                         </div>
@@ -196,7 +228,7 @@
                             class="nav-item ml-4 {{ activeClassIfRoutes(['panel.proposals.index', 'pages.proposal.picked'], 'active') }}">
                             <a href="{{ route('panel.proposals.index') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}"
                                 class="a-item px-lg-3" style="color:#ccd3e4; ">
-                                {{-- <i class="ik ik-tag"></i> --}}
+                                <i class="ik ik-tag"></i>
                                 <span>{{ 'Offer' }}</span>
                             </a>
                         </div>
@@ -206,7 +238,7 @@
                                 class="nav-item ml-4 {{ activeClassIfRoutes(['panel.Documents.Quotation'], 'active') }}">
                                 <a href="{{ route('panel.Documents.Quotation') }}" class="a-item px-lg-3"
                                     style="color:#ccd3e4; ">
-                                    {{-- <i class="ik ik-archive"></i> --}}
+                                    <i class="ik ik-archive"></i>
                                     <span>{{ 'Documentation' }}</span>
                                 </a>
                             </div>

@@ -27,6 +27,9 @@
                                     <img src="{{ asset('backend/default/placeholder.jpg')  }}" class="img-fluid rounded" style="height:245px;">
                                 @endif
 
+                                <div class="additonal_images d-none" > {{ implode(",", $newimag[$key] ) }} </div>
+
+
                                 {{-- <div class="sampleenquiry">
                                     <label for="" data-contain="contain-{{ $product->id }}" class="deleteitem">
                                         <i class="fas fa-trash" style="color: #ff0c0c;"></i>

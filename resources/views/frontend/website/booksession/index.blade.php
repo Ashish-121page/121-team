@@ -73,8 +73,8 @@
         }
 
         .img-1 {
-            padding: 7rem 1rem;
-            margin-left: 19.5rem;
+            /* padding: 7rem 1rem;
+            margin-left: 19.5rem; */
 
         }
 
@@ -189,6 +189,42 @@
 
         }
 
+       
+        @media screen and (min-width: 750px) {
+            .cols {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .cols .inpbx {
+                margin-left: 0;
+                margin-right: 10px;
+                width: 50%;
+            }
+
+            .cols img {
+                height: auto;
+                width: 60%;
+            }
+
+            /* .img-1 {
+                margin-left: 10rem;
+                margin-top: 5rem;
+                height: 88vh;
+            } */
+
+            .img {
+                height: 88vh;
+                width: 50%;
+                padding: 0 !important;
+                margin-top: 0 !important;
+            
+            }
+        }
+             
+
+
 
         @media only screen and (max-width: 600px) {
             .hero form .cols {
@@ -284,7 +320,6 @@
                 method="post">
 
                 <!-- Hidden Section -->
-
                 <div class="hidden_content">
                     <input type="hidden" name="entry.974318119_hour" id="oghour">
                     <input type="hidden" name="entry.974318119_minute" id="ogmin">
@@ -300,27 +335,22 @@
                 </div>
                 <!-- Hidden Section -->
 
-
-
                 <!-- Section 1 -->
-
                 <div class="cols p1 active">
                     <div class="inpbx">
                         <label for="gname">Your Name <span class="text-red">*</span></label>
                         <small>Mr./Mrs.</small>
                         <input type="text" placeholder=". . . ." name="gname" class="my-2 form-control" id="gname"
-                            required>
-                        <button type="button" class="btn btn-primary" onclick="next()">Ok <i
-                                class="uil-check fs-5"></i></button>
-
-
+                            required style="width:250px" >
+                        <button type="button" class="btn btn-primary" onclick="next()">Ok 
+                            <i class="uil-check fs-5"></i>
+                        </button>
                     </div>
                     <img src="{{ asset('storage/backend/booksession/name_1.svg') }}" class="img-1">
                 </div>
 
 
                 <!-- Section 2 -->
-
                 <div class="cols p2">
                     <div class="inpbx">
                         <label for="gphone">Your Phone <span class="text-red">*</span></label>
@@ -336,7 +366,6 @@
 
 
                 <!-- Section 3 -->
-
                 <div class="cols p3">
 
                     <div class="inpbx">
@@ -354,9 +383,7 @@
                 </div>
 
 
-
                 <!-- Section 4 -->
-
                 <div class="cols p4">
                     <div class="inpbx">
                         <label for="gdate">Select Session Time <span class="text-red">*</span></label>

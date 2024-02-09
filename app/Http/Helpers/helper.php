@@ -1002,7 +1002,7 @@ if(!function_exists('getUserProgressStatistics')){
 
 
         $ekyc_progress = 0;
-        if($user->ekyc_status == 1){
+        if($user->ekyc_status == 3 || $user->ekyc_status == 1){
             $ekyc_progress = 60;
         }
 

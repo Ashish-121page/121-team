@@ -107,7 +107,7 @@ class invoiceController extends Controller
                     // $avl_pi = Quotation::where('type_of_quote',1)->where('user_id',auth()->id())->orderBy('id','DESC')->pluck('id')->toArray();
                     $avl_pi = Quotation::where('type_of_quote', 1)
                         ->where('user_id', auth()->id())
-                        ->orderBy('id', 'ASC')
+                        ->orderBy('id', 'DESC')
                         ->get()
                         ->groupBy(function ($item) {
                             return data_get(json_decode($item->customer_info, true), 'companyName');
@@ -155,7 +155,29 @@ class invoiceController extends Controller
                             return $firstItem;
                         });
 
-                        $Quotation = $Quotation_with->merge($Quotation_without);
+                        // $Quotation = $Quotation_with->merge($Quotation_without);
+                        $Quotation = $Quotation_without->merge($Quotation_with);
+
+
+                        // writing extra code to check if sort works
+
+
+                        // $Quotation = collect([]);
+
+                        // // Iterate through $Quotation_with
+                        // foreach ($Quotation_with as $record) {
+
+                        //     $chkrec1 = Quotation::where('linked_quote', $record->id)->get();
+                        //     if ($chkrec1->count() == 0) {
+
+                        //         $Quotation->push($record);
+                        //     }
+                        // }
+
+
+                        // $Quotation = $Quotation->merge($Quotation_without);
+
+
 
                     break;
 
@@ -1085,6 +1107,13 @@ class invoiceController extends Controller
             }
         }
 
+        $tableheader = request()->get('tableheader');
+        $Custom_Array_headers  =  [[]];
+        foreach (json_decode($tableheader) as $key => $value) {
+            foreach ($value as $index => $element) {
+                $Custom_Array_headers[$key][$index] = $element;
+            }
+        }
 
         $url = ENV('EXCEL_EXPORT_URL') ?? 'https://gb.giftingbazaar.com/excel/upload';
 
@@ -1097,6 +1126,7 @@ class invoiceController extends Controller
             $data = [
                 'data' => $Array_values,
                 'fileName' => $File_name,
+                'header' => $Custom_Array_headers,
             ];
         }
 

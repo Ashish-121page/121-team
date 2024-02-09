@@ -18,15 +18,14 @@
                                 Internal Collection Details
                             </button>
                         </h2>
-                        <div id="collapseInternalCollection" class="accordion-collapse collapse show"
-                            data-bs-parent="">
+                        <div id="collapseInternalCollection" class="accordion-collapse collapse show" data-bs-parent="">
                             <div class="accordion-body">
 
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <table class="table table-striped" style="width: 100%;">
-                                                <tbody>
-                                                    {{-- <tr>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <table class="table table-striped" style="width: 100%;">
+                                            <tbody>
+                                                {{-- <tr>
                                                         <th>Allow Resellers</th>
                                                         <td>{{ $productExtraInfo->allow_resellers ?? '' }}</td>
                                                     </tr>
@@ -34,30 +33,30 @@
                                                         <th>Live / Active</th>
                                                         <td>{{ ($product->is_publish == 1) ? "Yes" : "No"}}</td>
                                                     </tr> --}}
-                                                    <tr>
-                                                        <th>Copyright/ Exclusive item</th>
-                                                        <td>{{ ($product->exclusive == 1) ? "Yes" : "No" }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Exclusive Buyer Name</th>
-                                                        <td>{{ $productExtraInfo->exclusive_buyer_name ?? '--' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Theme / Collection Name</th>
-                                                        <td>{{ $productExtraInfo->collection_name ?? '--' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Season / Month</th>
-                                                        <td>{{ $productExtraInfo->season_month ?? '--' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Theme / Collection Year</th>
-                                                        <td>{{ $productExtraInfo->season_year ?? '--' }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                <tr>
+                                                    <th>Copyright/ Exclusive item</th>
+                                                    <td>{{ $product->exclusive == 1 ? 'Yes' : 'No' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Exclusive Buyer Name</th>
+                                                    <td>{{ $productExtraInfo->exclusive_buyer_name ?? '--' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Theme / Collection Name</th>
+                                                    <td>{{ $productExtraInfo->collection_name ?? '--' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Season / Month</th>
+                                                    <td>{{ $productExtraInfo->season_month ?? '--' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Theme / Collection Year</th>
+                                                    <td>{{ $productExtraInfo->season_year ?? '--' }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -70,38 +69,37 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseSample" aria-expanded="false"
-                                aria-controls="collapseSample">
+                                data-bs-target="#collapseSample" aria-expanded="false" aria-controls="collapseSample">
                                 Sample
                             </button>
                         </h2>
                         <div id="collapseSample" class="accordion-collapse collapse show" data-bs-parent="">
                             <div class="accordion-body">
 
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <table class="table table-striped">
-                                                <tbody>
-                                                    <tr>
-                                                        <th>Sample / Stock available</th>
-                                                        <td>{{ ($product->manage_inventory == 1) ? "Yes" : "No" }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Sample Year</th>
-                                                        <td>{{ ($product->manage_inventory == 1) ? "Yes" : "No" }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Sample Month</th>
-                                                        <td>{{ $productExtraInfo->sample_month ?? '--' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Sampling time </th>
-                                                        <td>{{ $productExtraInfo->sampling_time ?? '--' }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <table class="table table-striped">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Sample / Stock available</th>
+                                                    <td>{{ $product->manage_inventory == 1 ? 'Yes' : 'No' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Sample Year</th>
+                                                    <td>{{ $product->manage_inventory == 1 ? 'Yes' : 'No' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Sample Month</th>
+                                                    <td>{{ $productExtraInfo->sample_month ?? '--' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Sampling time </th>
+                                                    <td>{{ $productExtraInfo->sampling_time ?? '--' }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
+                                </div>
 
                             </div>
                         </div>
@@ -123,11 +121,11 @@
                         <div id="collapseProduction" class="accordion-collapse collapse show" data-bs-parent="">
                             <div class="accordion-body">
 
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <table class="table table-striped" style="width: 100%;">
-                                                <tbody>
-                                                    {{-- <tr>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <table class="table table-striped" style="width: 100%;">
+                                            <tbody>
+                                                {{-- <tr>
                                                         <th>CBM</th>
                                                         <td>{{ $productExtraInfo->CBM ?? '--' }}</td>
                                                     </tr>
@@ -143,38 +141,38 @@
                                                         <th>MBQ_units</th>
                                                         <td>{{ $productExtraInfo->MBQ_unit ?? '--' }}</td>
                                                     </tr> --}}
-                                                    <tr>
-                                                        <th>Remarks</th>
-                                                        <td>{{ $productExtraInfo->remarks ?? '--' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Vendor Sourced from</th>
-                                                        <td>{{ $productExtraInfo->vendor_sourced_from ?? '--' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Vendor price</th>
-                                                        <td>{{ $productExtraInfo->vendor_price ?? '--' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Product Cost_Unit</th>
-                                                        <td>{{ $productExtraInfo->product_cost_unit ?? '--' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Vendor currency</th>
-                                                        <td>{{ $productExtraInfo->vendor_currency ?? '--' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Sourcing Year</th>
-                                                        <td>{{ $productExtraInfo->sourcing_year ?? '--' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Sourcing month</th>
-                                                        <td>{{ $productExtraInfo->sourcing_month ?? '--' }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                <tr>
+                                                    <th>Remarks</th>
+                                                    <td>{{ $productExtraInfo->remarks ?? '--' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Vendor Sourced from</th>
+                                                    <td>{{ $productExtraInfo->vendor_sourced_from ?? '--' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Vendor price</th>
+                                                    <td>{{ $productExtraInfo->vendor_price ?? '--' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Product Cost_Unit</th>
+                                                    <td>{{ $productExtraInfo->product_cost_unit ?? '--' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Vendor currency</th>
+                                                    <td>{{ $productExtraInfo->vendor_currency ?? '--' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Sourcing Year</th>
+                                                    <td>{{ $productExtraInfo->sourcing_year ?? '--' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Sourcing month</th>
+                                                    <td>{{ $productExtraInfo->sourcing_month ?? '--' }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
+                                </div>
 
                             </div>
                         </div>
@@ -188,8 +186,7 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseColumns" aria-expanded="false"
-                                aria-controls="collapseColumns">
+                                data-bs-target="#collapseColumns" aria-expanded="false" aria-controls="collapseColumns">
                                 Custom Columns
                             </button>
                         </h2>
@@ -208,23 +205,19 @@
                                                 @foreach ($custom_columns as $item)
                                                     <tr>
                                                         <td>
-                                                            {{ getFieldNameById($user_shop->user_id,$item->relatation_name) }}
+                                                            {{ getFieldNameById($user_shop->user_id, $item->relatation_name) }}
                                                         </td>
                                                         <td>
-
-                                                            {{-- {{ $item->value }}
-                                                            {{ is_numeric($item->value) }}
-                                                            {{ Str::contains($item->value, '==')}} --}}
-
-
-                                                            @if (is_base64_encoded($item->value) && !is_numeric($item->value) || Str::contains($item->value, '=='))
+                                                            @if ((is_base64_encoded($item->value) && !is_numeric($item->value)) || Str::contains($item->value, '=='))
                                                                 @if (json_decode(base64_decode($item->value)) != null)
-                                                                    @foreach (json_decode(base64_decode($item->value)) as $key => $item)
-                                                                        {{ $key.":".$item }}
-                                                                    @endforeach
+                                                                    @forelse ((array)json_decode(base64_decode($item->value)) ?? []  as $key => $item)
+                                                                        {{ $key . ':' . $item }}
+                                                                    @empty
+                                                                        @continue
+                                                                    @endforelse
                                                                 @endif
                                                             @else
-                                                                {{$item->value}}
+                                                                {{ $item->value }}
                                                             @endif
                                                         </td>
                                                     </tr>
@@ -243,4 +236,3 @@
         </div>
     </div>
 </div>
-

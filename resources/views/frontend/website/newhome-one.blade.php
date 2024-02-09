@@ -2,7 +2,7 @@
 
 @section('meta_data')
     @php
-        $meta_title = 'Searchify all Catalogues | ' . getSetting('app_name');
+        $meta_title = 'Now | ' . getSetting('app_name');
         $meta_description = '' ?? getSetting('seo_meta_description');
         $meta_keywords = '' ?? getSetting('seo_meta_keywords');
         $meta_motto = '' ?? getSetting('site_motto');
@@ -66,10 +66,12 @@
             .title-heading .heading {
                 margin-left: 50px;
             }
-            li{
+
+            li {
                 margin-left: 30px;
             }
-            .footer li{
+
+            .footer li {
                 margin-left: 0px;
             }
         }
@@ -79,10 +81,6 @@
             height: 40px !important;
         }
 
-        .feature-primary {
-            display: flex !important;
-            align-items: center !important;
-        }
     </style>
 @endsection
 
@@ -99,7 +97,9 @@
                             <span class="text-primary">All Catalogues
                             </span> <br>
                             <span> <span class="invisible ">h</span>
-                                <span class="typer text-primary " id="main" data-words="Searchified, On 1 Page, Simplified" data-delay="100" data-deleteDelay="500"></span>
+                                <span class="typer text-primary " id="main"
+                                    data-words="Searchified, On 1 Page, Simplified" data-delay="100"
+                                    data-deleteDelay="500"></span>
                                 <span class="cursor text-primary " data-owner="main"></span>
 
                             </span>
@@ -159,10 +159,11 @@
                         <div class="h4">
                             <ul>
                                 <li style="list-style: disc">
-                                    Catalogue <span class="text-primary">folders pile up</span> in WhatsApp, Laptop-PC and emails.
+                                    Catalogue <span class="text-primary">folders pile up</span> in WhatsApp, Laptop-PC and
+                                    emails.
                                 </li>
                                 <li style="list-style: disc">
-                                    Dealing  <span class="text-primary"> with </span> a
+                                    Dealing <span class="text-primary"> with </span> a
                                     chaotic mix of <span class="text-primary">multiple vendors </span> and <span
                                         class="text-primary"> PDFs, JPEGs, Excel, CDR catalogue formats</span>
                                 </li>
@@ -438,29 +439,7 @@
                             </div>
                         </div><!--end col-->
 
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
-                                    <i class="fas fa-headset fa-lg"></i>
-                                    {{-- <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor" d="M5 18h6.325q.175.55.4 1.05t.55.95H3V2h18v7.65q-.475-.225-.975-.363T19 9.075V4H5v9h4.2q.225.675.75 1.175t1.175.7q-.075.5-.1 1.012t.05 1.013q-.9-.175-1.687-.663T8 15H5v3Zm0 0h6.325H5Zm12.025 3l-.3-1.5q-.3-.125-.563-.263t-.537-.337l-1.45.45l-1-1.7l1.15-1q-.05-.3-.05-.65t.05-.65l-1.15-1l1-1.7l1.45.45q.275-.2.537-.337t.563-.263l.3-1.5h2l.3 1.5q.3.125.563.263t.537.337l1.45-.45l1 1.7l-1.15 1q.05.3.05.65t-.05.65l1.15 1l-1 1.7l-1.45-.45q-.275.2-.537.338t-.563.262l-.3 1.5h-2Zm1-3q.825 0 1.413-.588T20.024 16q0-.825-.587-1.413T18.025 14q-.825 0-1.412.588T16.024 16q0 .825.588 1.413t1.412.587Z"/>
-                                    </svg> --}}
-                                    {{-- <svg width="24" height="24" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor" d="M18.33 3.57s.27-.8-.31-1.36c-.53-.52-1.22-.24-1.22-.24c-.61.3-5.76 3.47-7.67 5.57c-.86.96-2.06 3.79-1.09 4.82c.92.98 3.96-.17 4.79-1c2.06-2.06 5.21-7.17 5.5-7.79zM1.4 17.65c2.37-1.56 1.46-3.41 3.23-4.64c.93-.65 2.22-.62 3.08.29c.63.67.8 2.57-.16 3.46c-1.57 1.45-4 1.55-6.15.89z"/>
-                                    </svg> --}}
-                                    {{-- <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor" d="M2 6c0-1.505.78-3.08 2-4c0 .845.69 2 2 2a3 3 0 0 1 3 3c0 .386-.079.752-.212 1.091a74.515 74.515 0 0 1 2.191 1.808l-2.08 2.08a75.852 75.852 0 0 1-1.808-2.191A2.977 2.977 0 0 1 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.341-1.341A4.446 4.446 0 0 0 17.5 12A4.5 4.5 0 0 0 22 7.5c0-.725-.188-1.401-.493-2.007L18 9l-2-2l3.507-3.507A4.446 4.446 0 0 0 17.5 3A4.5 4.5 0 0 0 13 7.5c0 .725.188 1.401.493 2.007L3 20l2 2l6.848-6.848a68.562 68.562 0 0 0 5.977 5.449l1.425 1.149l1.5-1.5l-1.149-1.425a68.562 68.562 0 0 0-5.449-5.977z"/>
-                                    </svg> --}}
-                                </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">121 Support</h4>
-                                    <p class="text-muted para mb-0">
 
-
-                                    </p>
-                                </div>
-                            </div>
-                        </div><!--end col-->
 
                         <div class="col-12 mt-4 pt-2">
                             <div class="d-flex features feature-primary">
@@ -472,6 +451,28 @@
                                 </div>
                             </div>
                         </div><!--end col-->
+
+                        <div class="col-12 mt-4 pt-2">
+                            <div class="d-flex features feature-primary">
+                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
+                                    {{-- <i data-feather="smartphone" class="fea icon-ex-md"></i> --}}
+                                    <svg width="24" height="24" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill="currentColor"
+                                            d="M1 2h22v4h-2V4H3v13h9v2H1V2Zm13 6h10v14H14V8Zm2 2v10h6V10h-6Zm1.998 6.998h2.004v2.004h-2.004v-2.004ZM5 20h7v2H5v-2Z" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1 mt-4">
+                                    <h4 class="title">Access on any device
+                                    </h4>
+                                    <!-- <p class="text-muted para mb-0">MEGA protects your data from online attacks with
+                                                                zero-knowledge encryption, Simply put - your data
+                                                                is encrypted and only you hold the keys.
+                                                            </p> -->
+                                </div>
+                            </div>
+                        </div><!--end col-->
+
 
                         <div class="col-12 mt-4 pt-2">
                             <div class="d-flex features feature-primary">
@@ -532,29 +533,8 @@
                         </div>
 
                         <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
-                                    {{-- <i data-feather="smartphone" class="fea icon-ex-md"></i> --}}
-                                    <svg width="24" height="24" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor"
-                                            d="M1 2h22v4h-2V4H3v13h9v2H1V2Zm13 6h10v14H14V8Zm2 2v10h6V10h-6Zm1.998 6.998h2.004v2.004h-2.004v-2.004ZM5 20h7v2H5v-2Z" />
-                                    </svg>
-                                </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">Access on any device
-                                    </h4>
-                                    <!-- <p class="text-muted para mb-0">MEGA protects your data from online attacks with
-                                                            zero-knowledge encryption, Simply put - your data
-                                                            is encrypted and only you hold the keys.
-                                                        </p> -->
-                                </div>
-                            </div>
-                        </div><!--end col-->
-
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
+                            <div class="d-flex features feature-primary" style="align-items:center;">
+                                <div class="icon text-center rounded-circle text-primary me-3 mt-2 mb-2">
                                     <svg width="24" height="24" viewBox="0 0 14 14"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g fill="none" stroke="currentColor" stroke-linecap="round"
@@ -571,231 +551,265 @@
                                 </div>
                             </div>
                         </div><!--end col-->
+
+
+
+
+
+
+                        <div class="col-12 mt-4 pt-2">
+                            <div class="d-flex features feature-primary">
+                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
+                                    <i class="fas fa-headset fa-lg"></i>
+                                    {{-- <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill="currentColor" d="M5 18h6.325q.175.55.4 1.05t.55.95H3V2h18v7.65q-.475-.225-.975-.363T19 9.075V4H5v9h4.2q.225.675.75 1.175t1.175.7q-.075.5-.1 1.012t.05 1.013q-.9-.175-1.687-.663T8 15H5v3Zm0 0h6.325H5Zm12.025 3l-.3-1.5q-.3-.125-.563-.263t-.537-.337l-1.45.45l-1-1.7l1.15-1q-.05-.3-.05-.65t.05-.65l-1.15-1l1-1.7l1.45.45q.275-.2.537-.337t.563-.263l.3-1.5h2l.3 1.5q.3.125.563.263t.537.337l1.45-.45l1 1.7l-1.15 1q.05.3.05.65t-.05.65l1.15 1l-1 1.7l-1.45-.45q-.275.2-.537.338t-.563.262l-.3 1.5h-2Zm1-3q.825 0 1.413-.588T20.024 16q0-.825-.587-1.413T18.025 14q-.825 0-1.412.588T16.024 16q0 .825.588 1.413t1.412.587Z"/>
+                                    </svg> --}}
+                                    {{-- <svg width="24" height="24" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill="currentColor" d="M18.33 3.57s.27-.8-.31-1.36c-.53-.52-1.22-.24-1.22-.24c-.61.3-5.76 3.47-7.67 5.57c-.86.96-2.06 3.79-1.09 4.82c.92.98 3.96-.17 4.79-1c2.06-2.06 5.21-7.17 5.5-7.79zM1.4 17.65c2.37-1.56 1.46-3.41 3.23-4.64c.93-.65 2.22-.62 3.08.29c.63.67.8 2.57-.16 3.46c-1.57 1.45-4 1.55-6.15.89z"/>
+                                    </svg> --}}
+                                    {{-- <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill="currentColor" d="M2 6c0-1.505.78-3.08 2-4c0 .845.69 2 2 2a3 3 0 0 1 3 3c0 .386-.079.752-.212 1.091a74.515 74.515 0 0 1 2.191 1.808l-2.08 2.08a75.852 75.852 0 0 1-1.808-2.191A2.977 2.977 0 0 1 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.341-1.341A4.446 4.446 0 0 0 17.5 12A4.5 4.5 0 0 0 22 7.5c0-.725-.188-1.401-.493-2.007L18 9l-2-2l3.507-3.507A4.446 4.446 0 0 0 17.5 3A4.5 4.5 0 0 0 13 7.5c0 .725.188 1.401.493 2.007L3 20l2 2l6.848-6.848a68.562 68.562 0 0 0 5.977 5.449l1.425 1.149l1.5-1.5l-1.149-1.425a68.562 68.562 0 0 0-5.449-5.977z"/>
+                                    </svg> --}}
+                                </div>
+                                <div class="flex-1 mt-4">
+                                    <h4 class="title">121 Support</h4>
+                                    <p class="text-muted para mb-0">
+
+
+                                    </p>
+                                </div>
+                            </div>
+                        </div><!--end col-->
+
 
                     </div><!--end row-->
                 </div><!--end col-->
 
 
                 {{-- for mobile view --}}
+                <div class="row">
 
-                <div class="col-6 d-lg-none d-block">
-                    <div class="row">
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary" style="align-items:center;">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2 ">
-                                    <svg width="24" height="24" style="line-height: 55px !important;"
-                                        viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor"
-                                            d="M21.053 20.8c-1.132-.453-1.584-1.698-1.584-1.698s-.51.282-.51-.51s.51.51 1.02-2.548c0 0 1.413-.397 1.13-3.68h-.34s.85-3.51 0-4.7c-.85-1.188-1.188-1.98-3.057-2.547s-1.188-.454-2.547-.396c-1.36.058-2.492.793-2.492 1.19c0 0-.85.056-1.188.396c-.34.34-.906 1.924-.906 2.32s.283 3.06.566 3.625l-.337.114c-.284 3.283 1.13 3.68 1.13 3.68c.51 3.058 1.02 1.756 1.02 2.548s-.51.51-.51.51s-.452 1.245-1.584 1.698c-1.132.452-7.416 2.886-7.927 3.396c-.512.51-.454 2.888-.454 2.888H29.43s.06-2.377-.452-2.888c-.51-.51-6.795-2.944-7.927-3.396zm-12.47-.172c-.1-.18-.148-.31-.148-.31s-.432.24-.432-.432s.432.432.864-2.16c0 0 1.2-.335.96-3.118h-.29s.144-.59.238-1.334a10.01 10.01 0 0 1 .037-.996l.038-.426c-.02-.492-.107-.94-.312-1.226c-.72-1.007-1.008-1.68-2.59-2.16c-1.584-.48-1.01-.384-2.16-.335c-1.152.05-2.112.672-2.112 1.01c0 0-.72.047-1.008.335c-.27.27-.705 1.462-.757 1.885v.28c.048.654.26 2.45.47 2.873l-.286.096c-.24 2.782.96 3.118.96 3.118c.43 2.59.863 1.488.863 2.16s-.432.43-.432.43s-.383 1.058-1.343 1.44l-.232.092v5.234h.575c-.03-1.278.077-2.927.746-3.594c.357-.355 1.524-.94 6.353-2.862zm22.33-9.056c-.04-.378-.127-.715-.292-.946c-.718-1.008-1.007-1.68-2.59-2.16c-1.583-.48-1.007-.384-2.16-.335c-1.15.05-2.11.672-2.11 1.01c0 0-.72.047-1.008.335c-.27.272-.71 1.472-.758 1.89h.033l.08.914c.02.23.022.435.027.644c.09.666.21 1.35.33 1.59l-.286.095c-.24 2.782.96 3.118.96 3.118c.432 2.59.863 1.488.863 2.16s-.43.43-.43.43s-.054.143-.164.34c4.77 1.9 5.927 2.48 6.28 2.833c.67.668.774 2.316.745 3.595h.48V21.78l-.05-.022c-.96-.383-1.344-1.44-1.344-1.44s-.433.24-.433-.43s.433.43.864-2.16c0 0 .804-.23.963-1.84V14.66c0-.018 0-.033-.003-.05h-.29s.216-.89.293-1.862v-1.176z" />
-                                    </svg>
+                    <div class="col-6 d-lg-none d-block">
+                        <div class="row">
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary" style="align-items:center;">
+                                    <div class="icon text-center rounded-circle text-primary me-3 mt-2 ">
+                                        <svg width="24" height="24" style="line-height: 55px !important;"
+                                            viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill="currentColor"
+                                                d="M21.053 20.8c-1.132-.453-1.584-1.698-1.584-1.698s-.51.282-.51-.51s.51.51 1.02-2.548c0 0 1.413-.397 1.13-3.68h-.34s.85-3.51 0-4.7c-.85-1.188-1.188-1.98-3.057-2.547s-1.188-.454-2.547-.396c-1.36.058-2.492.793-2.492 1.19c0 0-.85.056-1.188.396c-.34.34-.906 1.924-.906 2.32s.283 3.06.566 3.625l-.337.114c-.284 3.283 1.13 3.68 1.13 3.68c.51 3.058 1.02 1.756 1.02 2.548s-.51.51-.51.51s-.452 1.245-1.584 1.698c-1.132.452-7.416 2.886-7.927 3.396c-.512.51-.454 2.888-.454 2.888H29.43s.06-2.377-.452-2.888c-.51-.51-6.795-2.944-7.927-3.396zm-12.47-.172c-.1-.18-.148-.31-.148-.31s-.432.24-.432-.432s.432.432.864-2.16c0 0 1.2-.335.96-3.118h-.29s.144-.59.238-1.334a10.01 10.01 0 0 1 .037-.996l.038-.426c-.02-.492-.107-.94-.312-1.226c-.72-1.007-1.008-1.68-2.59-2.16c-1.584-.48-1.01-.384-2.16-.335c-1.152.05-2.112.672-2.112 1.01c0 0-.72.047-1.008.335c-.27.27-.705 1.462-.757 1.885v.28c.048.654.26 2.45.47 2.873l-.286.096c-.24 2.782.96 3.118.96 3.118c.43 2.59.863 1.488.863 2.16s-.432.43-.432.43s-.383 1.058-1.343 1.44l-.232.092v5.234h.575c-.03-1.278.077-2.927.746-3.594c.357-.355 1.524-.94 6.353-2.862zm22.33-9.056c-.04-.378-.127-.715-.292-.946c-.718-1.008-1.007-1.68-2.59-2.16c-1.583-.48-1.007-.384-2.16-.335c-1.15.05-2.11.672-2.11 1.01c0 0-.72.047-1.008.335c-.27.272-.71 1.472-.758 1.89h.033l.08.914c.02.23.022.435.027.644c.09.666.21 1.35.33 1.59l-.286.095c-.24 2.782.96 3.118.96 3.118c.432 2.59.863 1.488.863 2.16s-.43.43-.43.43s-.054.143-.164.34c4.77 1.9 5.927 2.48 6.28 2.833c.67.668.774 2.316.745 3.595h.48V21.78l-.05-.022c-.96-.383-1.344-1.44-1.344-1.44s-.433.24-.433-.43s.433.43.864-2.16c0 0 .804-.23.963-1.84V14.66c0-.018 0-.033-.003-.05h-.29s.216-.89.293-1.862v-1.176z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 mt-4">
+                                        <h4 class="title">No data feeding</h4>
+                                    </div>
                                 </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">No data feeding</h4>
+                            </div><!--end col-->
+
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary" style="align-items:center;">
+                                    <div class="icon text-center rounded-circle text-primary me-3 mt-2">
+                                        {{-- <i data-feather="monitor" class="fea icon-ex-md"></i> --}}
+                                        <svg width="24" height="24" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill="currentColor"
+                                                d="M5 18h6.325q.175.55.4 1.05t.55.95H3V2h18v7.65q-.475-.225-.975-.363T19 9.075V4H5v9h4.2q.225.675.75 1.175t1.175.7q-.075.5-.1 1.012t.05 1.013q-.9-.175-1.687-.663T8 15H5v3Zm0 0h6.325H5Zm12.025 3l-.3-1.5q-.3-.125-.563-.263t-.537-.337l-1.45.45l-1-1.7l1.15-1q-.05-.3-.05-.65t.05-.65l-1.15-1l1-1.7l1.45.45q.275-.2.537-.337t.563-.263l.3-1.5h2l.3 1.5q.3.125.563.263t.537.337l1.45-.45l1 1.7l-1.15 1q.05.3.05.65t-.05.65l1.15 1l-1 1.7l-1.45-.45q-.275.2-.537.338t-.563.262l-.3 1.5h-2Zm1-3q.825 0 1.413-.588T20.024 16q0-.825-.587-1.413T18.025 14q-.825 0-1.412.588T16.024 16q0 .825.588 1.413t1.412.587Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 mt-4">
+                                        <h4 class="title">Place Logos on Products
+                                        </h4>
+                                        <p class="text-muted para mb-0">
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div><!--end col-->
 
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary" style="align-items:center;">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
-                                    {{-- <i data-feather="monitor" class="fea icon-ex-md"></i> --}}
-                                    <svg width="24" height="24" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor"
-                                            d="M5 18h6.325q.175.55.4 1.05t.55.95H3V2h18v7.65q-.475-.225-.975-.363T19 9.075V4H5v9h4.2q.225.675.75 1.175t1.175.7q-.075.5-.1 1.012t.05 1.013q-.9-.175-1.687-.663T8 15H5v3Zm0 0h6.325H5Zm12.025 3l-.3-1.5q-.3-.125-.563-.263t-.537-.337l-1.45.45l-1-1.7l1.15-1q-.05-.3-.05-.65t.05-.65l-1.15-1l1-1.7l1.45.45q.275-.2.537-.337t.563-.263l.3-1.5h2l.3 1.5q.3.125.563.263t.537.337l1.45-.45l1 1.7l-1.15 1q.05.3.05.65t-.05.65l1.15 1l-1 1.7l-1.45-.45q-.275.2-.537.338t-.563.262l-.3 1.5h-2Zm1-3q.825 0 1.413-.588T20.024 16q0-.825-.587-1.413T18.025 14q-.825 0-1.412.588T16.024 16q0 .825.588 1.413t1.412.587Z" />
-                                    </svg>
+
+
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary" style="align-items:center;">
+                                    <div class="icon text-center rounded-circle text-primary me-3 mt-2 mb-2">
+                                        <i class="fas fa-users-cog fa-lg"></i>
+                                    </div>
+                                    <div class="flex-1 mt-4">
+                                        <h4 class="title">Team access controls</h4>
+                                    </div>
                                 </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">Place Logos on Products
-                                    </h4>
-                                    <p class="text-muted para mb-0">
-                                    </p>
+                            </div><!--end col-->
+
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary" style="align-items:center;">
+                                    <div class="icon text-center rounded-circle text-primary me-3 mt-2">
+                                        <i class="fab fa-opera fa-lg"></i>
+                                    </div>
+                                    <div class="flex-1 mt-4">
+                                        <h4 class="title">No app install</h4>
+                                        <p class="text-muted para mb-0">
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            </div><!--end col-->
 
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary" style="align-items:center;">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
-                                    <i class="fab fa-opera fa-lg"></i>
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary">
+                                    <div class="icon text-center rounded-circle text-primary me-3 mt-2">
+                                        <svg width="24" height="24" viewBox="0 0 14 14"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <g fill="none" stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path
+                                                    d="M7.36 13.43h0a1 1 0 0 1-.72 0h0a9.67 9.67 0 0 1-6.14-9V1.5a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v2.92a9.67 9.67 0 0 1-6.14 9.01Z" />
+                                                <rect width="5" height="4" x="4.5" y="5.5" rx="1" />
+                                                <path d="M8.5 5.5v-1a1.5 1.5 0 1 0-3 0v1" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 mt-4">
+                                        <h4 class="title">Data is secure</h4>
+                                    </div>
                                 </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">No app install</h4>
-                                    <p class="text-muted para mb-0">
-                                    </p>
+                            </div><!--end col-->
+
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary mt-3" style="align-items:center;">
+                                    <div class="icon text-center rounded-circle text-primary me-3 mt-2 mb-2">
+                                        <i class="fab fa-android fa-lg"></i>
+                                    </div>
+                                    <div class="flex-1 mt-4">
+                                        <h4 class="title">121 AI Assistant</h4>
+                                    </div>
                                 </div>
-                            </div>
-                        </div><!--end col-->
+                            </div><!--end col-->
+
+                        </div><!--end row-->
+                    </div><!--end col-->
 
 
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary" style="align-items:center;">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
-                                    <svg width="24" height="24" viewBox="0 0 32 32"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor"
-                                            d="M20 20v-3a4 4 0 0 0-8 0v3a2.002 2.002 0 0 0-2 2v6a2.002 2.002 0 0 0 2 2h8a2.002 2.002 0 0 0 2-2v-6a2.002 2.002 0 0 0-2-2Zm-6-3a2 2 0 0 1 4 0v3h-4Zm-2 11v-6h8l.001 6Z" />
-                                        <path fill="currentColor"
-                                            d="M25.829 10.115a10.007 10.007 0 0 0-7.939-7.933a10.002 10.002 0 0 0-11.72 7.933A7.502 7.502 0 0 0 7.491 25H8v-2h-.505a5.502 5.502 0 0 1-.97-10.916l1.35-.245l.259-1.345a8.01 8.01 0 0 1 15.731 0l.259 1.345l1.349.245A5.502 5.502 0 0 1 24.508 23H24v2h.508a7.502 7.502 0 0 0 1.32-14.885Z" />
-                                    </svg>
+                    <div class="col-6 d-lg-none d-block">
+                        <div class="row">
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary" style="align-items:center;">
+                                    <div class="icon text-center rounded-circle text-primary me-3 mt-2">
+                                        <svg width="24" height="24" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="5" cy="19" r="1" fill="currentColor" />
+                                            <path fill="currentColor" d="M4 4h2v9H4z" />
+                                            <path fill="currentColor"
+                                                d="M7 2H3a1 1 0 0 0-1 1v18a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Zm0 19H3V3h4Zm7-18v7h-3V3h3m1-1h-5v9h5V2Zm6 1v7h-3V3h3m1-1h-5v9h5V2Zm-8 12v7h-3v-7h3m1-1h-5v9h5v-9Zm6 1v7h-3v-7h3m1-1h-5v9h5v-9Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 mt-4">
+                                        <h4 class="title">Unlimited products</h4>
+
+                                    </div>
                                 </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">Data is private</h4>
-                                    <p class="text-muted para mb-0">
+                            </div><!--end col-->
 
 
-                                    </p>
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary" style="align-items:center;">
+                                    <div class="icon text-center rounded-circle text-primary me-3 mt-2">
+                                        {{-- <i data-feather="monitor" class="fea icon-ex-md"></i> --}}
+                                        <svg width="24" height="24" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="5" cy="19" r="1" fill="currentColor" />
+                                            <path fill="currentColor" d="M4 4h2v9H4z" />
+                                            <path fill="currentColor"
+                                                d="M7 2H3a1 1 0 0 0-1 1v18a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Zm0 19H3V3h4Zm7-18v7h-3V3h3m1-1h-5v9h5V2Zm6 1v7h-3V3h3m1-1h-5v9h5V2Zm-8 12v7h-3v-7h3m1-1h-5v9h5v-9Zm6 1v7h-3v-7h3m1-1h-5v9h5v-9Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 mt-4">
+                                        <h4 class="title">Searchable PDF, JPEG</h4>
+                                        <p class="text-muted para mb-4">
+
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        </div><!--end col-->
+                            </div><!--end col-->
 
-
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary" style="align-items:center;">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
-                                    <svg width="24" height="24" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="5" cy="19" r="1" fill="currentColor" />
-                                        <path fill="currentColor" d="M4 4h2v9H4z" />
-                                        <path fill="currentColor"
-                                            d="M7 2H3a1 1 0 0 0-1 1v18a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Zm0 19H3V3h4Zm7-18v7h-3V3h3m1-1h-5v9h5V2Zm6 1v7h-3V3h3m1-1h-5v9h5V2Zm-8 12v7h-3v-7h3m1-1h-5v9h5v-9Zm6 1v7h-3v-7h3m1-1h-5v9h5v-9Z" />
-                                    </svg>
-                                </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">Unlimited products</h4>
-
-                                </div>
-                            </div>
-                        </div><!--end col-->
-
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary mt-3" style="align-items:center;">
-                                <div
-                                    class="icon text-center rounded-circle text-primary justify-content-center me-3 mt-2 mb-2">
-                                    <i class="fas fa-headset fa-lg"></i>
-                                </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">121 Support</h4>
-
-                                </div>
-                            </div>
-                        </div><!--end col-->
-
-                    </div><!--end row-->
-                </div><!--end col-->
-
-
-                <div class="col-6 d-lg-none d-block">
-                    <div class="row">
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary" style="align-items:center;">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
-                                    {{-- <i data-feather="monitor" class="fea icon-ex-md"></i> --}}
-                                    <svg width="24" height="24" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="5" cy="19" r="1" fill="currentColor" />
-                                        <path fill="currentColor" d="M4 4h2v9H4z" />
-                                        <path fill="currentColor"
-                                            d="M7 2H3a1 1 0 0 0-1 1v18a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Zm0 19H3V3h4Zm7-18v7h-3V3h3m1-1h-5v9h5V2Zm6 1v7h-3V3h3m1-1h-5v9h5V2Zm-8 12v7h-3v-7h3m1-1h-5v9h5v-9Zm6 1v7h-3v-7h3m1-1h-5v9h5v-9Z" />
-                                    </svg>
-                                </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">Searchable PDF, JPEG</h4>
-                                    <p class="text-muted para mb-0">
-
-                                    </p>
-                                </div>
-                            </div>
-                        </div><!--end col-->
-
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary" style="align-items:center;">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
-                                    <svg width="24" height="24" viewBox="0 0 48 48"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <rect width="30.766" height="30.766" x="11.991" y="4.626" fill="none"
-                                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            rx="3" ry="3" />
-                                        <path fill="none" stroke="currentColor" stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            d="M5.757 12.082v26.544a3 3 0 0 0 3 3h26.544m3.307-32.851h-9.081v15.749l4.541-2.811l4.54 2.811V8.775z" />
-                                    </svg>
-                                </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">Manage samples
-                                    </h4>
-                                    <p class="text-muted para mb-0">
-                                    </p>
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary" style="align-items:center;">
+                                    <div class="icon text-center rounded-circle text-primary me-3 mt-2">
+                                        <svg width="24" height="24" viewBox="0 0 48 48"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="30.766" height="30.766" x="11.991" y="4.626" fill="none"
+                                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                rx="3" ry="3" />
+                                            <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M5.757 12.082v26.544a3 3 0 0 0 3 3h26.544m3.307-32.851h-9.081v15.749l4.541-2.811l4.54 2.811V8.775z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 mt-4">
+                                        <h4 class="title">Manage samples
+                                        </h4>
+                                        <p class="text-muted para mb-0">
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary" style="align-items:center;">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2">
-                                    {{-- <i data-feather="smartphone" class="fea icon-ex-md"></i> --}}
-                                    <svg width="24" height="24" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill="currentColor"
-                                            d="M1 2h22v4h-2V4H3v13h9v2H1V2Zm13 6h10v14H14V8Zm2 2v10h6V10h-6Zm1.998 6.998h2.004v2.004h-2.004v-2.004ZM5 20h7v2H5v-2Z" />
-                                    </svg>
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary" style="align-items:center;">
+                                    <div class="icon text-center rounded-circle text-primary me-3 mt-4  ">
+                                        {{-- <i data-feather="smartphone" class="fea icon-ex-md"></i> --}}
+                                        <svg width="24" height="24" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill="currentColor"
+                                                d="M1 2h22v4h-2V4H3v13h9v2H1V2Zm13 6h10v14H14V8Zm2 2v10h6V10h-6Zm1.998 6.998h2.004v2.004h-2.004v-2.004ZM5 20h7v2H5v-2Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 mt-4 text-justify">
+                                        <h4 class="title">Access on any device
+                                        </h4>
+                                        <!-- <p class="text-muted para mb-0">MEGA protects your data from online attacks with
+                                                                    zero-knowledge encryption, Simply put - your data
+                                                                    is encrypted and only you hold the keys.
+                                                                </p> -->
+                                    </div>
                                 </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">Access on any device
-                                    </h4>
-                                    <!-- <p class="text-muted para mb-0">MEGA protects your data from online attacks with
-                                                            zero-knowledge encryption, Simply put - your data
-                                                            is encrypted and only you hold the keys.
-                                                        </p> -->
-                                </div>
-                            </div>
-                        </div><!--end col-->
-
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary" style="align-items:center;">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2 mb-2">
-                                    <svg width="24" height="24" viewBox="0 0 14 14"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <g fill="none" stroke="currentColor" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path
-                                                d="M7.36 13.43h0a1 1 0 0 1-.72 0h0a9.67 9.67 0 0 1-6.14-9V1.5a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v2.92a9.67 9.67 0 0 1-6.14 9.01Z" />
-                                            <rect width="5" height="4" x="4.5" y="5.5" rx="1" />
-                                            <path d="M8.5 5.5v-1a1.5 1.5 0 1 0-3 0v1" />
-                                        </g>
-                                    </svg>
-                                </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">Data is secure</h4>
-                                </div>
-                            </div>
-                        </div><!--end col-->
+                            </div><!--end col-->
 
 
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary" style="align-items:center;">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2 mb-2">
-                                    <i class="fas fa-users-cog fa-lg"></i>
-                                </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">Team access controls</h4>
-                                </div>
-                            </div>
-                        </div><!--end col-->
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary" style="align-items:center;">
+                                    <div class="icon text-center rounded-circle text-primary me-3 mt-2">
+                                        <svg width="24" height="24" viewBox="0 0 32 32"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill="currentColor"
+                                                d="M20 20v-3a4 4 0 0 0-8 0v3a2.002 2.002 0 0 0-2 2v6a2.002 2.002 0 0 0 2 2h8a2.002 2.002 0 0 0 2-2v-6a2.002 2.002 0 0 0-2-2Zm-6-3a2 2 0 0 1 4 0v3h-4Zm-2 11v-6h8l.001 6Z" />
+                                            <path fill="currentColor"
+                                                d="M25.829 10.115a10.007 10.007 0 0 0-7.939-7.933a10.002 10.002 0 0 0-11.72 7.933A7.502 7.502 0 0 0 7.491 25H8v-2h-.505a5.502 5.502 0 0 1-.97-10.916l1.35-.245l.259-1.345a8.01 8.01 0 0 1 15.731 0l.259 1.345l1.349.245A5.502 5.502 0 0 1 24.508 23H24v2h.508a7.502 7.502 0 0 0 1.32-14.885Z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 mt-4">
+                                        <h4 class="title">Data is private</h4>
+                                        <p class="text-muted para mb-0">
 
-                        <div class="col-12 mt-4 pt-2">
-                            <div class="d-flex features feature-primary mt-3" style="align-items:center;">
-                                <div class="icon text-center rounded-circle text-primary me-3 mt-2 mb-2">
-                                    <i class="fab fa-android fa-lg"></i>
-                                </div>
-                                <div class="flex-1 mt-4">
-                                    <h4 class="title">121 AI Assistant</h4>
-                                </div>
-                            </div>
-                        </div><!--end col-->
 
-                    </div><!--end row-->
-                </div><!--end col-->
+                                        </p>
+                                    </div>
+                                </div>
+                            </div><!--end col-->
+
+                            <div class="col-12 mt-4 pt-2">
+                                <div class="d-flex features feature-primary mt-3" style="align-items:center;">
+                                    <div
+                                        class="icon text-center rounded-circle text-primary justify-content-center me-3 mt-2 mb-2">
+                                        <i class="fas fa-headset fa-lg"></i>
+                                    </div>
+                                    <div class="flex-1 mt-4">
+                                        <h4 class="title">121 Support</h4>
+
+                                    </div>
+                                </div>
+                            </div><!--end col-->
+
+
+                        </div><!--end row-->
+                    </div><!--end col-->
+                </div>
             </div><!--end row-->
 
         </div><!--end container-->
@@ -839,7 +853,6 @@
                                 aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
                                     <p>No need for installations on your mobile, laptop, or PC</p>
-
                                     <p>121 still supports Windows, Apple iOS and Android.</p>
 
                                 </div>
@@ -860,9 +873,16 @@
                             <div id="collapseTwo" class="accordion-collapse border-0 collapse"
                                 aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
-                                    Not at all!
-                                    Using 121-AI Support all your pdf-jpg catalogues are digitised at single
-                                    click.
+                                    <p>Not at all. Using 121-AI Support all your pdf-jpg catalogues are digitised at single click.
+
+                                    </p>
+
+                                    {{-- <p>Just upload your product images - old and new products when developed. </p>
+
+                                    <p>Then, find products easily with image search. </p>
+                                    <p>With Asset Vault, store and searchify all your assets including images, pdf, design
+                                        files.</p> --}}
+
 
                                 </div>
                             </div>
@@ -881,19 +901,21 @@
                             <div id="collapseThree" class="accordion-collapse border-0 collapse"
                                 aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
-                                    <p>Nope, not at all!</p>
+                                    <p>Nope, not at all!                                        
+                                    </p>
 
-                                <p> You can use the platform without sharing any specifics. </p>
+                                    <p> You can use the platform without sharing any specifics.                                         
+                                    </p>
 
-                                <p> 121 is all about giving you additional control – your designated team member only gets
-                                    access to the info you're comfortable sharing with them.</p>
-
+                                    <p> 121 is all about giving you additional control – your designated team member only
+                                        gets access to the info you're comfortable sharing with them.
+                                    </p>
                                 </div>
                             </div>
                         </div>
                         <hr class="" style="color:#666ccc; border: 2px">
 
-                        {{-- <div class="accordion-item rounded shadow mt-3 wow animate__animated animate__fadeInUp"
+                        <div class="accordion-item rounded shadow mt-3 wow animate__animated animate__fadeInUp"
                             data-wow-delay=".9s">
                             <h2 class="accordion-header" id="headingFour">
                                 <button class="accordion-button border-0 bg-light collapsed" type="button"
@@ -905,12 +927,19 @@
                             <div id="collapseFour" class="accordion-collapse border-0 collapse"
                                 aria-labelledby="headingFour" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
-
+                                    <p><b>121</b> helps you distribute product information anywhere online using
+                                        one of two main methods:</p>
+                                       <p>1. <b>Custom Offers :</b>  create and update PDF , Power point or Excel
+                                        catalogs with accurate product data straight from your 121 account -
+                                        no more copying and pasting.</p> 
+                                      <p>2. <b>Supplier Portal :</b> share always up-to-date online catalogs with
+                                        anyone.</p>
 
                                 </div>
                             </div>
-                        </div> --}}
-
+                        </div>
+                        <hr class="" style="color:#666ccc; border: 2px">
+                        
                         <div class="accordion-item rounded shadow mt-3 wow animate__animated animate__fadeInUp"
                             data-wow-delay="1.1s">
                             <h2 class="accordion-header" id="headingFive">
@@ -924,12 +953,12 @@
                             <div id="collapseFive" class="accordion-collapse border-0 collapse"
                                 aria-labelledby="headingFive" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
-                                <p> Whether you're managing data on the cloud or a pen drive - dealing with catalogues in
-                                    different formats across various mediums can be challenging and prone to errors.</p>
+                                    <p> Whether you're managing data on the cloud or a pen drive - dealing with catalogues
+                                        in
+                                        different formats across various mediums can be challenging and prone to errors.</p>
 
                                     With 121, we simplify this process by keeping all your catalogues searchable and ready
                                     for use, eliminating the need for manual data entry.
-
 
                                 </div>
                             </div>
@@ -948,11 +977,12 @@
                             <div id="collapseSix" class="accordion-collapse border-0 collapse"
                                 aria-labelledby="headingSix" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
-                                    <p>Absolutely! If you work with more than 5 vendors, handling over 100 products, 121 is
-                                    tailored to assist you.</p>
-                                    <p>121 is the ideal solution for your team of 1-5 members.</p>
-                                    <p>121 is the only tool specially made (and priced ! ) for small to medium-sized
-                                        entrepreneurs.</p>
+                                    <p>Absolutely! If you work with more than 5 vendors, handling over 100 products, 121 is tailored to assist you. 
+                                    </p>
+                                    <p>121 is the ideal solution for your team of 1-5 members.
+                                    </p>
+                                    <p>121 is the only tool specially made (and priced ! ) for small to medium-sized entrepreneurs.
+                                    </p>                                    
                                 </div>
                             </div>
                         </div>
@@ -965,15 +995,13 @@
                                     data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false"
                                     aria-controls="collapseSeven">
                                     Can 121 assist in finding new products or provide branding-printing services?
-
                                 </button>
                             </h2>
                             <div id="collapseSeven" class="accordion-collapse border-0 collapse"
                                 aria-labelledby="headingSeven" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
-                                <p> 121 is a SAAS tool - Software as a service.</p>
-
-                                <p>  We don't handle the execution of orders.</p>
+                                    <p> 121 is a SAAS tool - Software as a service.</p>
+                                    <p> We don't handle the execution of orders.</p>
 
                                 </div>
                             </div>
@@ -987,16 +1015,19 @@
                                     data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false"
                                     aria-controls="collapseEight">
                                     Will 121 sell or share my business data?
-
                                 </button>
                             </h2>
                             <div id="collapseEight" class="accordion-collapse border-0 collapse"
                                 aria-labelledby="headingEight" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
-                                <p> Your data's privacy is super important to us! (be it products, vendors, pricing or any
-                                    other information you save on 121). </p>
-                                <p>  Just so you know, we're a SAAS tool (Software as a Service), not a business directory.</p>
-                                    <p> We won't ever sell or share your precious info with marketers or anyone else.</p>
+                                    <p> Your data's privacy is super important to us! (be it products, vendors, pricing or
+                                        any other information you save on 121). 
+                                    </p>
+                                    <p> Just so you know, we're a SAAS tool (Software as a Service), not a business
+                                        directory.
+                                    </p>
+                                    <p> We won't ever sell or share your precious info with marketers or anyone else.                                        
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -1013,9 +1044,12 @@
                             <div id="collapseNine" class="accordion-collapse border-0 collapse"
                                 aria-labelledby="headingNine" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
-                                <p>  Not at all ! You can use all of the features available on 121 without a technical team.</p>
+                                    <p> Not at all ! You can use all of the features available on 121 without a technical
+                                        team.
+                                    </p>
                                     <p>Our platform is easy to use so you don’t have to hire any specialized help to do
-                                    everything you want. </p>
+                                        everything you want. 
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -1032,11 +1066,13 @@
                             <div id="collapseTen" class="accordion-collapse border-0 collapse"
                                 aria-labelledby="headingTen" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
-                                <p>All files are stored in Tier 3 Data Center in Noida, Delhi-NCR. This is the cloud
-                                    service with the highest security available, and allows the system to run fast in all
-                                    parts of the world.</p>
+                                    <p>All files are stored in Tier 3 Data Center in Noida, Delhi-NCR. This is the cloud
+                                        service with the highest security available, and allows the system to run fast in
+                                        all parts of the world.
+                                    </p>
                                     <p>121 is built with MySQL database, used to store all product information and account
-                                    data.</p>
+                                        data.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -1053,14 +1089,15 @@
                             <div id="collapseEleven" class="accordion-collapse border-0 collapse"
                                 aria-labelledby="headingEleven" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
-                                <p>  121 is the only tool specially made (and priced ! ) for small to medium-sized
-                                    businesses.</p>
-                                    <p> 121 service is at a fraction of the cost compared to training your a team of data entry
-                                    operators or designers and without the hassle of expenses involved in building, hosting
-                                    and maintaining a backend tool.</p>
-                                <p> You focus on what you do best – core sales – while we take care of the nitty-gritty of
-                                    catalogue backend.</p>
-
+                                    <p> 121 is the only tool specially made (and priced ! ) for small to medium-sized
+                                        businesses.
+                                    </p>
+                                    <p> 121 service is at a fraction of the cost compared to training your a team of data
+                                        entry operators or designers and without the hassle of expenses involved in building,
+                                        hosting and maintaining a backend tool.</p>
+                                    <p> You focus on what you do best – core sales – while we take care of the nitty-gritty
+                                        of catalogue backend.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -1077,7 +1114,7 @@
                             <div id="collapseTwelve" class="accordion-collapse border-0 collapse"
                                 aria-labelledby="headingTwelve" data-bs-parent="#accordionExample">
                                 <div class="accordion-body text-muted">
-                                <p> 121 offers a user-friendly and intuitive interface from mobile.</p>
+                                    <p> 121 offers a user-friendly and intuitive interface from mobile.</p>
                                     <p>Sign-up and know more on how to get started for Free.</p>
                                     <p class="mt-2" style="text-decoration:underline;">
                                         <a href="{{ url('login') }}" class="btn-link"><b>Get Started - for Free</b></a>.

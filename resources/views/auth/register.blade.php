@@ -40,7 +40,7 @@ input[type=number] {
                             class="digit-group" data-group-name="digits" data-autosubmit="false" autocomplete="off" style="height: 230px;">
                                 @csrf
 
-                                <h5 class="mb-5 text-center">Sign Up</h5>
+                                <h5 class="mb-5 text-center">Register</h5>
                                 <div class="form-icon position-relative {{ $errors->has('phone') ? 'has-error' : ''}}">
                                     <!-- <div class="form-floating text-center mx-2 phone-input-box" style=""> -->
                                     <div class="form-floating text-center mx-3" style="">
@@ -77,7 +77,7 @@ input[type=number] {
                 </div>
                 <div class="col-12 d-flex align-items-center justify-content-center mt-1">
                     <div>
-                        <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank" class="btn-link">Trouble signing in?</a>
+                        {{-- <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank" class="btn-link">Trouble signing in?</a> --}}
                     </div>
                 </div>
                 <div class="col-12 d-flex align-items-center justify-content-center mt-4">

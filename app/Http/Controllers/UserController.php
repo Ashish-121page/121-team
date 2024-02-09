@@ -335,7 +335,7 @@ class UserController extends Controller
             }
 
             $chk_UserCurrency = UserCurrency::whereUserId($user->id)->get();
-            if (count(($chk_UserCurrency)) != 0) {
+            if (count(($chk_UserCurrency)) == 0) {
                 UserCurrency::create([
                 'user_id' => $user->id,
                     'User_shop_id' =>  0,

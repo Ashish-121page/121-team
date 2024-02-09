@@ -43,60 +43,61 @@ use App\Http\Controllers\settingController;
 
 Route::group(['middleware' => 'subdomain'],  function () {
     Route::group(['namespace' => '/microsite', 'prefix' => '/', 'as' => 'pages.'], function () {
-            Route::get('/home', [MicroSiteController::class,'index'])->name('index');
-            Route::get('/social', [PageController::class, 'index']);
-            Route::get('/about-us', [MicroSiteController::class,'aboutIndex'])->name('about-index');
-            Route::get('/contact', [MicroSiteController::class,'contactIndex'])->name('contact-index');
-            Route::post('/contact/store', [MicroSiteController::class,'contactStore'])->name('contact.store');
-            Route::get('/shop/proposal/{proposal_slug}', [ProposalController::class,'shopProposalIndex'])->name('proposal.shop-index');
-            Route::get('/shop', [MicroSiteController::class,'shopIndex'])->name('shop-index');
+        Route::get('/home', [MicroSiteController::class,'index'])->name('index');
+        Route::get('/social', [PageController::class, 'index']);
+        Route::get('/about-us', [MicroSiteController::class,'aboutIndex'])->name('about-index');
+        Route::get('/contact', [MicroSiteController::class,'contactIndex'])->name('contact-index');
+        Route::post('/contact/store', [MicroSiteController::class,'contactStore'])->name('contact.store');
+        Route::get('/shop/proposal/{proposal_slug}', [ProposalController::class,'shopProposalIndex'])->name('proposal.shop-index');
+        Route::get('/shop', [MicroSiteController::class,'shopIndex'])->name('shop-index');
 
-            // Making Propsals in
-            Route::get('/proposal/create', [Microproposals::class,'create'])->name('proposal.create');
-            Route::get('/proposal/edit/{proposal}/{user_key}', [Microproposals::class,'edit'])->name('proposal.edit');
+        // Making Propsals in
+        Route::get('/proposal/create', [Microproposals::class,'create'])->name('proposal.create');
+        Route::get('/proposal/edit/{proposal}/{user_key}', [Microproposals::class,'edit'])->name('proposal.edit');
+        Route::any('/proposal/export/{proposal}/{user_key}', [Microproposals::class,'exportview'])->name('proposal.exportview');
 
-            Route::any('/proposal/export/excel', [Microproposals::class,'exportexcel'])->name('proposal.excel');
+        Route::any('/proposal/export/excel', [Microproposals::class,'exportexcel'])->name('proposal.excel');
 
-            Route::get('api-store', [Microproposals::class,'apiStore'])->name('api.store');
-            Route::get('api-remove', [Microproposals::class,'apiRemove'])->name('api.remove');
-            Route::get('/proposal/picked/{proposal}/{user_key}', [Microproposals::class,'picked'])->name('proposal.picked');
-            Route::post('/update/{proposal}/price', [Microproposals::class,'updatePrice'])->name('proposal.update-price');
-            Route::post('/update/{proposal}', [Microproposals::class,'update'])->name('proposal.update');
-            Route::post('/getdata/{proposalid}', [Microproposals::class,'getdata'])->name('proposal.getdata');
-            Route::get('/validate/', [Microproposals::class,'validatepass'])->name('proposal.validatepass');
-            Route::post('/samplecheckout/', [Microproposals::class,'samplecheckout'])->name('proposal.samplecheckout');
-            Route::get('/marginupdate', [Microproposals::class,'marginupdate'])->name('proposals.updatemargin');
-            Route::get('/destroy/{proposal_item}', [Microproposals::class,'destroy'])->name('proposals.destroy');
-            Route::post('/update/sequence/{proposal_id}', [Microproposals::class,'updateSequence'])->name('proposals.updateSequence');
+        Route::get('api-store', [Microproposals::class,'apiStore'])->name('api.store');
+        Route::get('api-remove', [Microproposals::class,'apiRemove'])->name('api.remove');
+        Route::get('/proposal/picked/{proposal}/{user_key}', [Microproposals::class,'picked'])->name('proposal.picked');
+        Route::post('/update/{proposal}/price', [Microproposals::class,'updatePrice'])->name('proposal.update-price');
+        Route::post('/update/{proposal}', [Microproposals::class,'update'])->name('proposal.update');
+        Route::post('/getdata/{proposalid}', [Microproposals::class,'getdata'])->name('proposal.getdata');
+        Route::get('/validate/', [Microproposals::class,'validatepass'])->name('proposal.validatepass');
+        Route::post('/samplecheckout/', [Microproposals::class,'samplecheckout'])->name('proposal.samplecheckout');
+        Route::get('/marginupdate', [Microproposals::class,'marginupdate'])->name('proposals.updatemargin');
+        Route::get('/destroy/{proposal_item}', [Microproposals::class,'destroy'])->name('proposals.destroy');
+        Route::post('/update/sequence/{proposal_id}', [Microproposals::class,'updateSequence'])->name('proposals.updateSequence');
 
-            Route::get('/microashish', [Microproposals::class,'ashish'])->name('proposals.checkashish');
+        Route::get('/microashish', [Microproposals::class,'ashish'])->name('proposals.checkashish');
 
-            Route::get('/update/download/{proposal}', [Microproposals::class,'updateDownload'])->name('proposals.update.download');
+        Route::get('/update/download/{proposal}', [Microproposals::class,'updateDownload'])->name('proposals.update.download');
 
-            // Adding Proposal Item Via Scanner
-            Route::post('/addpropitem', [MicroSiteController::class,'addpropitem'])->name('proposals.addpropitem');
-            Route::get('/make-copy/{Proposal}', [Microproposals::class,'copyoffer'])->name('proposals.makecopy');
+        // Adding Proposal Item Via Scanner
+        Route::post('/addpropitem', [MicroSiteController::class,'addpropitem'])->name('proposals.addpropitem');
+        Route::get('/make-copy/{Proposal}', [Microproposals::class,'copyoffer'])->name('proposals.makecopy');
 
 
 
-            Route::get('/categories', [MicroSiteController::class,'shopCategories'])->name('categories');
-            Route::get('/shop-cart', [MicroSiteController::class,'shopCart'])->name('shop-cart');
-            Route::post('/add-cart', [MicroSiteController::class,'addCart'])->name('add-cart');
-            Route::get('/update-cart-qty', [MicroSiteController::class,'updateCart'])->name('update-cart');
-            Route::get('/remove-cart/{cart_id}', [MicroSiteController::class,'removeCart'])->name('remove-cart');
-            Route::get('/wishlist', [MicroSiteController::class,'wishList'])->name('wishlist-index');
-            Route::get('/pre-checkout', [MicroSiteController::class,'shopPreCheckout'])->name('shop-pre-checkout');
-            Route::post('/pre-checkout', [MicroSiteController::class,'storePreCheckout'])->name('store.shop-pre-checkout');
-            Route::get('/post-checkout', [MicroSiteController::class,'shopPostCheckout'])->name('shop-post-checkout');
-            Route::post('/order/address', [MicroSiteController::class,'updateOrderAddress'])->name('order.update.address');
-            Route::post('/store-checkout', [MicroSiteController::class,'storeShopCheckout'])->name('store.shop-checkout');
-            Route::get('/shop-category', [MicroSiteController::class,'shopCategory'])->name('shop-category');
-            Route::get('/shop/{id}', [MicroSiteController::class,'shopShow'])->name('shop-show');
-            Route::post('/enquiry', [MicroSiteController::class,'storeEnquiry'])->name('store-enquiry');
-            Route::get('/thank-you', [MicroSiteController::class,'thankYou'])->name('thank-you');
-            Route::get('/change-currency',[MicroSiteController::class,'chagecurrency'])->name('change.currency');
+        Route::get('/categories', [MicroSiteController::class,'shopCategories'])->name('categories');
+        Route::get('/shop-cart', [MicroSiteController::class,'shopCart'])->name('shop-cart');
+        Route::post('/add-cart', [MicroSiteController::class,'addCart'])->name('add-cart');
+        Route::get('/update-cart-qty', [MicroSiteController::class,'updateCart'])->name('update-cart');
+        Route::get('/remove-cart/{cart_id}', [MicroSiteController::class,'removeCart'])->name('remove-cart');
+        Route::get('/wishlist', [MicroSiteController::class,'wishList'])->name('wishlist-index');
+        Route::get('/pre-checkout', [MicroSiteController::class,'shopPreCheckout'])->name('shop-pre-checkout');
+        Route::post('/pre-checkout', [MicroSiteController::class,'storePreCheckout'])->name('store.shop-pre-checkout');
+        Route::get('/post-checkout', [MicroSiteController::class,'shopPostCheckout'])->name('shop-post-checkout');
+        Route::post('/order/address', [MicroSiteController::class,'updateOrderAddress'])->name('order.update.address');
+        Route::post('/store-checkout', [MicroSiteController::class,'storeShopCheckout'])->name('store.shop-checkout');
+        Route::get('/shop-category', [MicroSiteController::class,'shopCategory'])->name('shop-category');
+        Route::get('/shop/{id}', [MicroSiteController::class,'shopShow'])->name('shop-show');
+        Route::post('/enquiry', [MicroSiteController::class,'storeEnquiry'])->name('store-enquiry');
+        Route::get('/thank-you', [MicroSiteController::class,'thankYou'])->name('thank-you');
+        Route::get('/change-currency',[MicroSiteController::class,'chagecurrency'])->name('change.currency');
 
-        });
+    });
 });
 
 
@@ -199,7 +200,7 @@ Route::get('/user-shop-cs-filler', function () {
            Route::get('/lockEnquiry/{proposal}', [CustomerController::class,'lockEnquiry'])->name('lock.enquiry');
            Route::post('/lockEnquiry', [CustomerController::class,'lockEnquirystore'])->name('lock.enquiry.store');
            Route::post('/survey', [CustomerController::class,'survey'])->name('survey');
-           Route::get('/verify-mail', [CustomerController::class,'VerifyMail'])->name('verify.mail');
+           Route::get('/verify-mail/{user_id}', [CustomerController::class,'VerifyMail'])->name('verify.mail');
            Route::get('/support-ticket/{id}', [CustomerController::class,'supportTicketShow'])->name('ticket.show');
            Route::get('/support-ticket/{id}/{status}', [CustomerController::class,'ticketStatusClose'])->name('ticket.status.update');
            Route::post('/ticket/chat/store', [CustomerController::class,'ticketChatStore'])->name('ticket.chat.store');

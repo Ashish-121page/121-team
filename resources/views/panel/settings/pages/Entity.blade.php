@@ -280,7 +280,25 @@
                                         @endphp
 
 
-                                        <div class="col-12 col-md-6 col-lg-3"
+                                        <div class="col-12 col-md-6 col-lg-3 d-none d-lg-block"
+                                            style="border-right: 1px solid #eaeaea;">
+                                            <div class="form-group mx-2">
+                                                <label for="entity_name" class="text-danger " style="height:38.38px;">Entity</label>
+                                                <select class="form-control select2" id="entity_name"
+                                                    name="entity_name" {{ $isDisabled }}>
+                                                    @foreach ($address as $item)
+                                                        <option>
+                                                            {{ json_decode($item->details ?? '')->entity_name ?? '' }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+                                        {{-- mobile view --}}
+
+                                        <div class="col-12 col-md-6 col-lg-3 d-lg-none"
                                             style="border-right: 1px solid #eaeaea;">
                                             <div class="form-group mx-2">
                                                 <label for="entity_name" class="text-danger ">Entity</label>
@@ -294,6 +312,8 @@
                                                 </select>
                                             </div>
                                         </div>
+
+                                        {{-- mobile view end --}}
                                         {{-- Quoation Entity DropDown Start --}}
 
                                         {{-- Quoation Section Start --}}
@@ -355,7 +375,41 @@
 
 
                                         {{-- PI Section Start --}}
-                                        <div class="col-12 col-md-6 col-lg-2"
+                                    
+
+                                 
+
+                                        <div class="col-12 col-md-6 col-lg-2 d-none d-lg-block"
+                                            style="border-right: 1px solid #eaeaea;">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group mx-1">
+                                                        <label for="performa_mark" style="height:38.38px;">PI ID Prefix <span
+                                                                class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control"
+                                                            name="performa_mark" id="performa_mark"
+                                                            placeholder="PI Mark"
+                                                            value="{{ $quot->performa_mark ?? '' }}">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-6">
+                                                    <div class="form-group mx-2">
+                                                        <label for="performa_index" style="height:38.38px;">PI ID Start <span
+                                                                class="text-danger">*</span></label>
+                                                        <input type="number" min="1" class="form-control"
+                                                            name="performa_index" id="performa_index"
+                                                            placeholder="PI index"
+                                                            value="{{ $quot->performa_index ?? '1' }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- PI Section End --}}
+
+                                        {{-- mobile View --}}
+
+                                        <div class="col-12 col-md-6 col-lg-2 d-lg-none"
                                             style="border-right: 1px solid #eaeaea;">
                                             <div class="row">
                                                 <div class="col-6">
@@ -381,7 +435,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        {{-- PI Section End --}}
 
                                         {{-- Invoice Section Start --}}
                                         <div class="col-12 col-md-6 col-lg-2">

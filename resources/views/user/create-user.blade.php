@@ -144,13 +144,13 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <div class="d-grid my-3">
-                                                    <button class="btn btn-primary" id="openop" type="button">Panel
-                                                        Access</button>
-                                                    <button class="btn btn-warning" type="button"
+                                                    {{-- <button class="btn btn-outline-primary" id="openop" type="button">Panel Access</button> --}}
+                                                    <button class="btn btn-outline-primary" type="button"
                                                         id="usersupplier">Supplier Access</button>
-                                                    <button class="btn btn-danger" type="button" id="userdealer">Dealer
+                                                    <button class="btn btn-outline-primary" type="button"
+                                                        id="userdealer">Dealer
                                                         Access</button>
-                                                    <button class="btn btn-info" type="button"
+                                                    <button class="btn btn-outline-primary " type="button"
                                                         id="userexporter">Exporter Access</button>
                                                 </div>
 
@@ -166,7 +166,7 @@
                                                     $permi->maya = $permi->maya ?? 'no';
                                                 @endphp
 
-                                                <table class="table align-middle d-none">
+                                                <table class="table align-middle d-ndone">
                                                     <thead>
                                                         <tr>
                                                             <th scope="col">#</th>
@@ -532,7 +532,9 @@
                                                 <input required id="phone" type="number" class="form-control"
                                                     name="phone" placeholder="Enter Contact Number" min=""
                                                     value="{{ old('phone') }}">
-                                                <div class="help-block with-errors"></div>
+                                                <div class="help-block with-errors" id="phone-error"></div>
+                                                <a href="#" class="btn-link" id="getdummynum">Generate Number for test</a>
+
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -582,22 +584,64 @@
                 $('.isSeller').click(function() {
                     $('.seller_option').toggle();
                 });
+
+                $("#userexporter").click()
+            });
+
+            $(document).on('input', "#phone", function() {
+                if ($(this).val().length < 10) {
+                    $(this).addClass('is-invalid');
+                } else if ($(this).val().length > 10) {
+                    $(this).addClass('is-invalid');
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+                let msg = $(this).val().length < 10 ? 'Phone number must be 10 digit' : '';
+                $("#phone-error").text(msg);
             });
 
 
-            $("#openop").click(function() {
-                $('table').toggleClass('d-none')
+            $(document).on('click', '#getdummynum', function(e) {
+                e.preventDefault();
+                $('#phone').val(generateRandomNumber());
             });
 
-            // change if Check Box not Cliked
-            $("#is_seller").change(function() {
-                $('table').toggleClass('d-none')
-            });
 
-            //  Check If Seller Panel is On Or Not
-            if ($("#is_seller").attr('checked')) {
-                $('table').toggleClass('d-none')
-            };
+
+            function generateRandomNumber() {
+                // Generate a random digit between 1 and 4 for the first position
+                const firstDigit = Math.floor(Math.random() * 4) + 1;
+
+                // Generate the remaining 9 digits randomly
+                const remainingDigits = Array.from({
+                    length: 9
+                }, () => Math.floor(Math.random() * 10)).join('');
+
+                // Concatenate the first digit and the remaining digits
+                const randomNumber = `${firstDigit}${remainingDigits}`;
+
+                return randomNumber;
+            }
+
+            // Example usage
+            const random10DigitNumber = generateRandomNumber();
+            console.log(random10DigitNumber);
+
+
+
+            // $("#openop").click(function() {
+            //     $('table').toggleClass('d-none')
+            // });
+
+            // // change if Check Box not Cliked
+            // $("#is_seller").change(function() {
+            //     $('table').toggleClass('d-none')
+            // });
+
+            // //  Check If Seller Panel is On Or Not
+            // if ($("#is_seller").attr('checked')) {
+            //     $('table').toggleClass('d-none')
+            // };
 
 
             // function checkall() {
@@ -610,6 +654,8 @@
             //         }
             //     }
             // }
+
+
 
 
 
@@ -641,6 +687,8 @@
 
             $("#usersupplier").click(function(e) {
                 e.preventDefault();
+                $(".btn").removeClass('active');
+                $(this).toggleClass('active');
                 var arr_supplier = ['Filemanageryes', 'offersyes', 'bulkuploadyes', 'managegroupyes'];
                 var arr_dealer = ['mysupplierno', 'manangebrandsno', 'pricegroupno', 'mycustomerno', 'addandeditno',
                     'documentationno', 'mayano'
@@ -663,6 +711,8 @@
             $("#userdealer").click(function(e) {
                 e.preventDefault();
 
+                $(".btn").removeClass('active');
+                $(this).toggleClass('active');
                 var arr_supplier = ['Filemanageryes', 'offersyes', 'managegroupyes', 'addandedityes'];
                 var arr_dealer = ['mysupplierno', 'manangebrandsno', 'pricegroupno', 'mycustomerno', 'documentationno',
                     'mayano', 'bulkuploadno'
@@ -684,6 +734,8 @@
 
             $("#userexporter").click(function(e) {
                 e.preventDefault();
+                $(".btn").removeClass('active');
+                $(this).toggleClass('active');
 
                 var arr_supplier = ['Filemanageryes', 'offersyes', 'managegroupyes', 'bulkuploadyes'];
                 var arr_dealer = ['mysupplierno', 'manangebrandsno', 'pricegroupno', 'mycustomerno', 'documentationno',

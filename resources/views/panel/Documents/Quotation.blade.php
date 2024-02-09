@@ -1,5 +1,5 @@
 @extends('backend.layouts.main')
-@section('title', 'Quotation')
+@section('title', 'Documentations')
 @section('content')
 
     <!-- push external head elements to head -->
