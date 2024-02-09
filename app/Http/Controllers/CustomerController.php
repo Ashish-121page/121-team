@@ -312,11 +312,12 @@ class CustomerController extends Controller
     }
      public function VerifyMail($user_id)
     {
-        $user = App\User::whereId($user_id)->first();
+        $user = User::whereId($user_id)->first();
         if($user){
             $user->update([
                 'email_verified_at' => now()
             ]);
+            return redirect(route('customer.dashboard'))->with('success','Email Verified Successfully');
         }else{
             abort(404);
         }

@@ -20,7 +20,7 @@
 @endphp
 
 @extends('backend.layouts.main')
-@section('title', 'secondview')
+@section('title', 'Quotation Edit')
 @section('content')
 
     <!-- push external head elements to head -->

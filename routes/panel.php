@@ -40,6 +40,7 @@ use App\Http\Controllers\Panel\ProposalController;
 use App\Http\Controllers\Panel\UserShopItemController;
 use App\Http\Controllers\Panel\ImageController;
 use App\Http\Controllers\settingController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserAddressController;
 use App\Models\UserShopItem;
 
@@ -545,6 +546,10 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
 
     });
 
+    Route::group(['middleware' => 'auth', 'prefix' => '/search', 'as' => 'search.'], function () {
+        Route::get('/',[SearchController::class,'index'])->name('index');
+        Route::post('/result',[SearchController::class,'result'])->name('search.result');
+    });
 
     Route::group(['middleware' => 'auth', 'prefix' => '/invoice', 'as' => 'invoice.'], function () {
         Route::get('/',[invoiceController::class,'index'])->name('index');

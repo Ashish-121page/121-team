@@ -1,7 +1,7 @@
 @extends('frontend.layouts.main')
 @section('meta_data')
     @php
-        $meta_title = 'Shop | ' . getSetting('app_name');
+        $meta_title = $pagetitle.   " | ". getSetting('app_name');
         $meta_description = '' ?? getSetting('seo_meta_description');
         $meta_keywords = '' ?? getSetting('seo_meta_keywords');
         $meta_motto = '' ?? getSetting('site_motto');
@@ -44,92 +44,96 @@
 
     @endphp
 @endsection
-{{-- Animated modal --}}
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.css">
-<meta name="csrf-token" content="{{ csrf_token() }}">
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+@section('styling')
+    {{-- Animated modal --}}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 
-<style>
-    @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css");
+    <style>
+        @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css");
 
-    body {
-        /* text-align: center !important; */
-    }
-
-    #topnav {
-        display: none !important;
-    }
-
-    #ndfjkvnrs {
-        padding: 0 !important;
-    }
-
-    .checkmark {
-        height: 30px;
-        width: 30px;
-        background-color: #d4d4d4;
-        font-weight: bolder;
-        z-index: 99;
-    }
-
-    .checkmark::before {
-        padding: 3px;
-        font-size: large;
-        content: '\F633'
-    }
-
-    input:checked+label {
-        background-color: #6666cc;
-        color: white;
-        border: 1px solid
-    }
-
-    input[type=checkbox] {
-        display: none;
-    }
-
-
-    .headbx {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-    }
-
-    .headbx .h6 {
-        background-color: red;
-        width: fit-content;
-        height: max-content;
-        padding: 8px;
-        text-align: center;
-        color: white;
-    }
-
-    .deleteitem {
-        position: absolute;
-        bottom: 5%;
-        right: 0%;
-        cursor: pointer;
-        z-index: 1 !important;
-    }
-
-    .deleteitem i {
-        font-size: 3vh
-    }
-
-    .hdfhj {
-        width: 10.6vw !important;
-    }
-
-    @media only screen and (max-width: 600px) {
-        .hdfhj {
-            width: 140px !important;
+        body {
+            /* text-align: center !important; */
         }
-    }
-</style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+        #topnav {
+            display: none !important;
+        }
+
+        #ndfjkvnrs {
+            padding: 0 !important;
+        }
+
+        .checkmark {
+            height: 30px;
+            width: 30px;
+            background-color: #d4d4d4;
+            font-weight: bolder;
+            z-index: 99;
+        }
+
+        .checkmark::before {
+            padding: 3px;
+            font-size: large;
+            content: '\F633'
+        }
+
+        input:checked+label {
+            background-color: #6666cc;
+            color: white;
+            border: 1px solid
+        }
+
+        input[type=checkbox] {
+            display: none;
+        }
+
+
+        .headbx {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .headbx .h6 {
+            background-color: red;
+            width: fit-content;
+            height: max-content;
+            padding: 8px;
+            text-align: center;
+            color: white;
+        }
+
+        .deleteitem {
+            position: absolute;
+            bottom: 5%;
+            right: 0%;
+            cursor: pointer;
+            z-index: 1 !important;
+        }
+
+        .deleteitem i {
+            font-size: 3vh
+        }
+
+        .hdfhj {
+            width: 10.6vw !important;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .hdfhj {
+                width: 140px !important;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+@endsection
+
 @section('content')
     <section class="section mt-5 mt-md-0 mt-sm-0" id="ndfjkvnrs">
 
@@ -292,7 +296,6 @@
                 {{-- @if (request()->has('download') && request()->get('download') != 'excel') --}}
                 <div class="row justify-content-start mt-5 " style="margin-bottom: 180px">
                     {{-- <div class="col-12"> --}}
-
                     @if (request()->has('view') && request()->get('view') == 'firstview')
                         @include('frontend.micro-site.shop.proposal.include.firstview')
                     @elseif(request()->has('view') && request()->get('view') == 'secondView')
@@ -367,26 +370,6 @@
     <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
 
     <script src="{{ asset('backend/plugins/select2/dist/js/select2.min.js') }}"></script>
-
-    <script>
-        function getTableData(tabelId) {
-            var array = [];
-            var headers = [];
-            $('#' + tabelId + ' th').each(function(index, item) {
-                headers[index] = $(item).html().replace(/^\s+|\s+$/gm, '');
-            });
-
-            $('#' + tabelId + ' tr').has('td').each(function() {
-                var arrayItem = {};
-                $('td', $(this)).each(function(index, item) {
-                    arrayItem[headers[index]] = $(item).html().replace(/^\s+|\s+$/gm, '');
-                });
-                array.push(arrayItem);
-
-            });
-            return array;
-        }
-    </script>
 
     <script>
         $("#jaya1").animatedModal({
@@ -699,6 +682,11 @@
                 let extraImageArray = [];
 
 
+                document.querySelectorAll(".additonal_images").forEach((element, index) => {
+                    let img = element.innerHTML.replace(/^\s+|\s+$/gm, '');
+                    extraImageArray[index] = img.split(',')
+                });
+
                 // ` Making Array Of Price
             document.querySelectorAll(".product_price").forEach(element => {
                 let price = element.innerHTML.replace(/^\s+|\s+$/gm, '');
@@ -768,12 +756,11 @@
                     data: {
                         update: 2,
                     },
-                    // success: function(response) {
-                    //     console.log(response);
-                    // }
                 });
 
                 {!! $pptTesmplate[0]->data !!}
+
+
             });
         });
     </script>
@@ -798,7 +785,7 @@
             // Loop through the table rows starting from the third row
             $('#' + tableId + ' tr:gt(1)').each(function() {
                 var arrayItem = {};
-                $('td', $(this)).each(function(index, item) {
+                $('td', $(this)).not('.shouldnotexport').each(function(index, item) {
                     // Check if the cell contains an image
                     if ($(item).find('img').length > 0) {
                         // Extract the src of the image
@@ -824,7 +811,9 @@
         // {{-- ` Script for Excel Export --}}
         $(document).on('click', '#export_button', function() {
             // html_table_to_excel('xlsx');
+            let tableHeader = getTableData('edfdsfarfqwe');
             let tabledata = getTableData('printproposals');
+
             let filename =
                 "{{ $cust_details['customer_name'] ?? 'Excel_export' }}_{{ Carbon\Carbon::now() }}.xlsx";
             filename = filename.replace(/ /g, "_");
@@ -835,6 +824,7 @@
                 data: {
                     'tabelcontent': JSON.stringify(tabledata),
                     'filename': filename,
+                    'tableheader': JSON.stringify(tableHeader),
                 },
                 success: function(result) {
                     let response = JSON.parse(result);

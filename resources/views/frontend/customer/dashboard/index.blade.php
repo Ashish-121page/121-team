@@ -238,7 +238,7 @@
                                     @php
                                         $pos = 'right';
                                         if(getUserProgressStatistics(auth()->id()) < 30){
-                                            $pos = 'right';
+                                            $pos = 'left';
                                         }
                                     @endphp
                                     <div class="progress">
@@ -587,7 +587,7 @@
                                         <div class="col bg-white shadow m-1"  >
                                             {{-- <a href=" {{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }} @else #pending @endif " @if(!$third) style="cursor: not-allowed !important" @endif> --}}
 
-                                            <a href="" class="btn"   >
+                                            <a href="" class="btn" style="cursor: not-allowed !important"  >
                                                 {{-- <a href="{{ url('auth/login') }}" class="btn"   > --}}
                                                 <div class="circle bg-secondary text-white" style="border-radius: 50%; position: relative;height: 75px;width: 75px;">
                                                     <span>3

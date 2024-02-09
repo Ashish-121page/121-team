@@ -2855,7 +2855,7 @@
 
                                     if (element.is('select')) {
                                         // Assuming valu[key] is an array of values for the multi-select
-                                        console.log("Setting value for a SELECT element with an array.");
+                                        // console.log("Setting value for a SELECT element with an array.");
                                         element.val(valu[key]).trigger(
                                             'change'); // Set value and trigg?er change for Select2
                                         element.select2();

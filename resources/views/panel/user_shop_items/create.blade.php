@@ -1,6 +1,7 @@
 @extends('backend.layouts.main')
 
 @section('title', $title)
+{{-- @section('title', Products) --}}
 
 
 
@@ -97,6 +98,22 @@
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}">
 
     <style>
+        .closeanimate{
+            transition: 0.3s ease-in-out;
+        }
+
+        .bootstrap-tagsinput .tag {
+            text-transform: none !important;
+        }
+
+        .bootstrap-tagsinput {
+            width: 100% !important;
+        }
+
+        .closeanimate:hover {
+            transform: rotate(180deg);
+            cursor: pointer;
+        }
         .addcat{
             transition: 0.3s ease-in-out;
         }
@@ -261,9 +278,17 @@
                     <div class="row">
                         <div class="col-lg-6 col-md-12  col-12 my-2">
                             <div class="one" style="display: flex; align-items: center; justify-content: flex-start;">
+
+                                <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&assetvault=true"
+                                    class="btn btn-outline-primary mx-1
+                                    @if (request()->has('assetvault')) active @endif
+                                    ">
+                                    Asset Vault
+                                </a>
+
                                 <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}"
                                     class="btn btn-outline-primary mx-1
-                                    @if (!request()->has('products') && !request()->has('assetsafe') && !request()->has('properties') && !request()->has('productsgrid')) active @endif
+                                    @if (!request()->has('products') && !request()->has('assetvault') && !request()->has('assetsafe') && !request()->has('properties') && !request()->has('productsgrid')) active @endif
                                     ">
                                     Categories
                                 </a>
@@ -275,6 +300,8 @@
                                     class="btn btn-outline-primary mx-1 @if (request()->has('properties')) active @endif">
                                     Properties
                                 </a> --}}
+
+                                {{-- ` UNHIDE IF REQURE ASSETS SAFE ... --}}
                                 <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&assetsafe=true"
                                     class="btn btn-outline-primary mx-1 @if (request()->has('assetsafe')) active @endif">
                                     Assets Safe
@@ -304,6 +331,8 @@
                             @include('panel.user_shop_items.includes.show-productTable')
                         @elseif(request()->has('assetsafe'))
                             @include('panel.user_shop_items.includes.Filemanager')
+                        @elseif(request()->has('assetvault'))
+                            @include('panel.user_shop_items.includes.asset-vault')
                         @elseif(request()->has('productsgrid'))
                             @include('panel.user_shop_items.includes.show-product')
                         @elseif(request()->has('properties'))
@@ -407,7 +436,15 @@
 
         <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
         <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+        <script src="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
+
         <script>
+
+            //  Modal for Vault
+            $("#addvault").animatedModal({
+                color: 'FFFFFF',
+            });
+
 
             $("#addcategory").animatedModal({
                 animatedIn: 'lightSpeedIn',

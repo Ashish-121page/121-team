@@ -1,5 +1,5 @@
 @extends('backend.layouts.empty')
-<title>QR | {{ getSetting('app_name') }}</title>
+<title>QR Code | {{ getSetting('app_name') }}</title>
 {{-- <header>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">

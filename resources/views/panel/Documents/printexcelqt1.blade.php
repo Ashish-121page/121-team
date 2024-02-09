@@ -46,9 +46,29 @@
                     $count = 0;
                 @endphp
 
+                <table class="table" id="edfdsfarfqwe">
+                    <thead class="d-none">
+                        <tr>
+                            <th>image</th>
+                            <th>Title</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr></tr>
+                        <tr>
+                            <td>
+                                <img src="{{ asset(getShopLogo($usershop->slug) ?? asset('frontend/assets/img/placeholder.png')) }}"
+                                    alt="company logo"
+                                    style="border-radius: 10px;height: 250px;width: 300px;align-items: center; padding:2px;">
+                            </td>
+                            <td>{{ $Userinfo->companyName ?? '' }}</td>
+                        </tr>
+                    </tbody>
+
+                </table>
                 <table class="table table-bordered" id="printquotations">
                     <thead>
-                        <tr class="myspecial">
+                        {{-- <tr class="myspecial">
                             <th scope="col" colspan="2">
                                 <img src="{{ asset(getShopLogo($usershop->slug) ?? asset('frontend/assets/img/placeholder.png')) }}"
                                     alt="company logo"
@@ -57,7 +77,7 @@
                             <th scope="col" colspan="5"{{ '' }}</th>
                             <th scope="col" colspan="1">{{ $Userinfo->companyName ?? '' }}</th>
                             <th scope="col">{{ $Userinfo->person_name ?? '' }}</th>
-                        </tr>
+                        </tr> --}}
 
                         <tr>
                             @foreach ($quotationitems as $quotationitem)
@@ -72,72 +92,29 @@
                             @break
                         @endforeach
                     </tr>
-
-
-
-
-            </thead>
-            <tbody>
-                <tr>
-                    @if ($quotationitem->additional_notes != null)
-                        @php
-                            $col = 0;
-                            $should_skip = false;
-                            $should_skip_col = $col;
-                        @endphp
-                        @foreach (json_decode($quotationitem->additional_notes) as $columns => $value)
-                            @if (in_array($columns, $no_required_cols))
-                                @continue
-                            @endif
-                            @if ($columns == 'image' || $columns == 'Image')
-                                <td>
-                                    <img src="{{ asset(getShopLogo($usershop->slug) ?? asset('frontend/assets/img/placeholder.png')) }}"
-                                        alt="" style="height: 85px; width: 85px;object-fit: contain">
-                                </td>
-                                <td>
-                                    Quotation
-                                </td>
-                                @continue
-                            @endif
-
-                            @php
-                                $col++;
-                            @endphp
-                        @endforeach
-                    @else
-                        @for ($i = 0; $i < $col; $i++)
-                            <td></td>
-                        @endfor
-                    @endif
-
-                    @foreach (array_keys((array)json_decode($quotationitem->additional_notes)) as $keys => $item)
-                        @if ($keys > 1 && count(array_keys((array)json_decode($quotationitem->additional_notes))) != $keys + 2)
-                            <td></td>
-                        @endif
-                    @endforeach
-
-
-                </tr>
-                @foreach ($quotationitems as $quotationitem)
-                    @php
-                        $col = 0;
-                    @endphp
+                </thead>
+                <tbody>
                     <tr>
                         @if ($quotationitem->additional_notes != null)
+                            @php
+                                $col = 0;
+                                $should_skip = false;
+                                $should_skip_col = $col;
+                            @endphp
                             @foreach (json_decode($quotationitem->additional_notes) as $columns => $value)
                                 @if (in_array($columns, $no_required_cols))
                                     @continue
                                 @endif
                                 @if ($columns == 'image' || $columns == 'Image')
                                     <td>
-                                        <img src="{{ asset(getShopProductImage($quotationitem->product_id)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
+                                        <img src="{{ asset(getShopLogo($usershop->slug) ?? asset('frontend/assets/img/placeholder.png')) }}"
                                             alt="" style="height: 85px; width: 85px;object-fit: contain">
+                                    </td>
+                                    <td>
+                                        Quotation
                                     </td>
                                     @continue
                                 @endif
-                                <td>
-                                    {{ $value }}
-                                </td>
 
                                 @php
                                     $col++;
@@ -148,13 +125,52 @@
                                 <td></td>
                             @endfor
                         @endif
-                    </tr>
-                @endforeach
 
-            </tbody>
-        </table>
+                        @foreach (array_keys((array) json_decode($quotationitem->additional_notes)) as $keys => $item)
+                            @if ($keys > 1 && count(array_keys((array) json_decode($quotationitem->additional_notes))) != $keys + 2)
+                                <td></td>
+                            @endif
+                        @endforeach
+
+
+                    </tr>
+                    @foreach ($quotationitems as $quotationitem)
+                        @php
+                            $col = 0;
+                        @endphp
+                        <tr>
+                            @if ($quotationitem->additional_notes != null)
+                                @foreach (json_decode($quotationitem->additional_notes) as $columns => $value)
+                                    @if (in_array($columns, $no_required_cols))
+                                        @continue
+                                    @endif
+                                    @if ($columns == 'image' || $columns == 'Image')
+                                        <td>
+                                            <img src="{{ asset(getShopProductImage($quotationitem->product_id)->path ?? asset('frontend/assets/img/placeholder.png')) }}"
+                                                alt="" style="height: 85px; width: 85px;object-fit: contain">
+                                        </td>
+                                        @continue
+                                    @endif
+                                    <td>
+                                        {{ $value }}
+                                    </td>
+
+                                    @php
+                                        $col++;
+                                    @endphp
+                                @endforeach
+                            @else
+                                @for ($i = 0; $i < $col; $i++)
+                                    <td></td>
+                                @endfor
+                            @endif
+                        </tr>
+                    @endforeach
+
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 </div>
 
 <script src="{{ asset('backend/js/index-page.js') }}"></script>
@@ -217,12 +233,16 @@
         // let filename = "{{ 'Excel_export' }}_{{ Carbon\Carbon::now() }}.xlsx";
         let filename = "{{ $type }}-{{ $Userrecord->companyName }}-{{ Carbon\Carbon::now() }}.xlsx";
 
+        let tableHeader = getTableData('edfdsfarfqwe');
+
+
         $.ajax({
             type: "POST",
             url: "{{ route('panel.Documents.printexcelqt1') }}",
             data: {
                 'tabelcontent': JSON.stringify(tabledata),
-                'filename': filename.replace(/\s+/g, '_')
+                'filename': filename.replace(/\s+/g, '_'),
+            'tableheader': JSON.stringify(tableHeader),
             },
             success: function(result) {
                 let response = JSON.parse(result);

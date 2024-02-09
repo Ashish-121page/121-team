@@ -1,7 +1,7 @@
 
-<div class="col-12">
+<div class="col-lg-12 col-12">
     <div class="row">
-        <div class="col-12">
+        <div class="col-lg-12 col-12">
             <div class="card">
                 <div class="card-body">
                     <form action="{{ route('panel.settings.quot.setting') }}" method="POST" enctype="multipart/form-data">
@@ -11,9 +11,7 @@
                             $quot = json_decode(auth()->user()->settings);
                         @endphp
                         <div class="d-flex flex-wrap justify-content-between text-center ">
-
                             <div class="row my-2">
-
                                 {{-- Quoation Entity DropDown Start --}}
                                 @php
                                     if (($quot->quotaion_mark ?? '') && ($quot->quotaion_index ?? '') && ($quot->offer_mark ?? '') && ($quot->offer_index ?? '') && ($quot->performa_mark ?? '') && ($quot->performa_index ?? '') && ($quot->invoice_mark ?? '') && ($quot->invoice_index ?? '') ) {
@@ -22,8 +20,6 @@
                                         $isDisabled = '';
                                     }
                                 @endphp
-
-
                                 <div class="col-12 col-md-6 col-lg-3" style="border-right: 1px solid #eaeaea;">
                                     <div class="form-group mx-2">
                                         <label for="entity_name" class="text-danger ">Entity</label>
@@ -103,6 +99,7 @@
                                                     value="{{ $quot->performa_mark ?? '' }}">
                                             </div>
                                         </div>
+                                        
 
                                         <div class="col-6">
                                             <div class="form-group mx-2">
@@ -117,6 +114,7 @@
                                 </div>
                                 {{-- PI Section End --}}
 
+    
                                 {{-- Invoice Section Start --}}
                                 <div class="col-12 col-md-6 col-lg-2" >
                                     <div class="row">

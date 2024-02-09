@@ -42,7 +42,7 @@
 <!-- Include Date Range Picker -->
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
         @include('backend.include.world')
-        
+
 {{-- @include('backend.modal.speech-to-text')
 <script src="{{ asset('backend/js/speechRecognition.js') }}"></script> --}}
 <script type="text/javascript">
@@ -90,7 +90,7 @@
 </script>
 {{-- Date Range Filter JS Code End --}}
 
-<script>    
+<script>
     function menuSearch(){
         var filter, item;
         filter = $("#menu-search").val().trim().toLowerCase();
@@ -116,7 +116,7 @@
             $("#main-menu-navigation").removeClass('d-none');
             $("#search-menu-navigation").html('')
         }
-    }  
+    }
 
     $('.sidebar-content').animate({
         scrollTop: $('.active').offset().top - 70
@@ -205,23 +205,23 @@
 </script>
 <script>
     // $(document).ready(function () {
-        // $(window).resize(function (e) { 
+        // $(window).resize(function (e) {
         //     e.preventDefault();
         //     width = $(this).innerWidth();
         //     if (width< 550) {
         //         console.log("Please Open in Desktop");
-                
+
         //         $.toast({
-        //             text: "Seller Tools : Best optimized for Laptop/Desktop", 
+        //             text: "Seller Tools : Best optimized for Laptop/Desktop",
         //             heading: 'Note',
-        //             icon: 'success', 
-        //             showHideTransition: 'slide', 
+        //             icon: 'success',
+        //             showHideTransition: 'slide',
         //             allowToastClose: true,
-        //             hideAfter: 3000, 
-        //             stack: 1, 
-        //             position: 'top-right', 
+        //             hideAfter: 3000,
+        //             stack: 1,
+        //             position: 'top-right',
         //             textAlign: 'left',
-        //             loader: true,  
+        //             loader: true,
         //             loaderBg: '#9EC600',
         //         });
         //     }
@@ -230,18 +230,18 @@
     //     width = $(this).innerWidth();
     //         if (width< 550) {
     //             console.log("Please Open in Desktop");
-                
+
     //             $.toast({
-    //                 text: "Seller Tools : Best optimized for Laptop/Desktop", 
+    //                 text: "Seller Tools : Best optimized for Laptop/Desktop",
     //                 heading: 'Note',
-    //                 icon: 'success', 
-    //                 showHideTransition: 'slide', 
+    //                 icon: 'success',
+    //                 showHideTransition: 'slide',
     //                 allowToastClose: true,
-    //                 hideAfter: 3000, 
-    //                 stack: 1, 
-    //                 position: 'top-right', 
+    //                 hideAfter: 3000,
+    //                 stack: 1,
+    //                 position: 'top-right',
     //                 textAlign: 'left',
-    //                 loader: true,  
+    //                 loader: true,
     //                 loaderBg: '#9EC600',
     //             });
     //         }

@@ -219,9 +219,9 @@ class UserShopItemController extends Controller
 
             $title = '';
             if (request()->has('products')) {
-                $title = 'Product';
+                $title = 'Products';
             } elseif (request()->has('assetsafe')) {
-                $title = 'Asset safe';
+                $title = 'Assets safe';
             } elseif (request()->has('productsgrid')) {
                 $title = 'Product';
             } elseif (request()->has('properties')) {

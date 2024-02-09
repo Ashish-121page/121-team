@@ -160,6 +160,7 @@
         .justify-content-between {
             justify-content: space-between;
         }
+
         .justify-content-center {
             justify-content: center;
         }
@@ -411,16 +412,13 @@
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                     <tr>
                                         <td>
-                                            <hr
-                                                style="font-size: 15px; color: rgb(68, 68, 68); font-weight: normal; border-top: 4px solid {{ getSetting('website_base_color') }};">
                                             <div style="text-align: center !important;">
                                                 <img style="margin: 0 auto !important;display: block !important;"
-                                                    src="{{ getBackendLogo(getSetting('app_logo')) }}"
-                                                    alt="{{ getSetting('app_name') }} logo">
-
+                                                src="{{ getBackendLogo(getSetting('app_logo')) }}"
+                                                alt="{{ getSetting('app_name') }} logo">
                                                 {{-- <span style="color: {{ getSetting('website_base_color') }};margin: 0 auto !important;display: block !important;">{{ getSetting('app_name') }}</span> --}}
                                             </div>
-
+                                            <hr style="font-size: 15px; color: rgb(68, 68, 68); font-weight: normal; border-top: 4px solid {{ getSetting('website_base_color') }};">
 
                                             {{-- Body Data --}}
                                             {!! $t_data !!}
@@ -458,6 +456,8 @@
 
                         <!-- END MAIN CONTENT AREA -->
                     </table>
+                    <hr
+                        style="font-size: 15px; color: rgb(68, 68, 68); font-weight: normal; border-top: 4px solid {{ getSetting('website_base_color') }};">
                     <!-- END CENTERED WHITE CONTAINER -->
 
                     <!-- START FOOTER -->

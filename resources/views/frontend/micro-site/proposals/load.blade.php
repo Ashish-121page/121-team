@@ -1,6 +1,6 @@
 <div class="row gx-3 flex-wrap dfjrgd">
 
-    
+
     @forelse ($items as $products)
         @php
             // $image_ids = App\Models\UserShopItem::where('product_id',$products->id)->images != null ? explode(',',$products->images) : [];
@@ -28,10 +28,10 @@
             $currency_symbol = Session::get('currency_name') ?? $product->base_currency ?? 'INR';
             $price = exchangerate($price,$exhangerate,$HomeCurrency);
 
-            
+
         @endphp
 
-            <div class="col-3">
+            <div class="col-12 col-md-6 col-lg-4 col-xl-3" >
                 <div class="shop-image position-relative overflow-hidden rounded">
                     {{-- <a href="{{ route('pages.shop-show',$productId)."?pg=".request()->get('pg') }}"> --}}
                         <img src="{{ ( (getShopProductImage($products->id,'single') != null)  ? asset(getShopProductImage($products->id,'single')->path) : asset('frontend/assets/img/placeholder.png')) }}" class="img-fluid " style="height: 250px;width: 100%;object-fit: contain;" alt="">
@@ -53,18 +53,18 @@
                         </a>
                     </div>
                     @if ($request->has('quantity') && $request->get('quantity') != null && $request->get('quantity') != 0)
-                            <p class="mb-0"> 
+                            <p class="mb-0">
                             <b>In Stock </b>
-                            <span> 
+                            <span>
                                @if (getinventoryByproductId($products->id) != null)
                                     @if (getinventoryByproductId($products->id)->total_stock != null && getinventoryByproductId($products->id)->total_stock != 0 )
-                                            <i class="fa fa-check-circle fa-sm text-success"></i>    
+                                            <i class="fa fa-check-circle fa-sm text-success"></i>
                                         @else
                                             <i class="fa fa-times-circle fa-sm text-danger"></i>
                                         @endif
                                @endif
                             </span>
-                            {{-- <br> --}}, 
+                            {{-- <br> --}},
                             @php
                                 $sku = [$products->sku];
                                 $avalable_stock = (getinventoryByproductId($products->id) != null) ? getinventoryByproductId($products->id)->total_stock : 0 ?? 0;
@@ -84,7 +84,7 @@
                         </p>
                     @endif
                     {{-- <div class="h5">{{ \Str::limit($products->title,30) }}</div> --}}
-             
+
                     <div class="">
                         {{ $currency_symbol }}
                         @if($price == 0)
@@ -102,8 +102,8 @@
                     </p> --}}
                 </div>
             </div>
-            
-            <div class="col-9 send">
+
+            <div class="col-12 col-md-6 col-lg-8 col-xl-9 send">
                 <a href="{{ route('pages.shop-show',$productId)."?pg=".request()->get('pg') }}" >
                     <div class="h4">{{ \Str::limit($products->title,30) }}</div>
                 </a>
@@ -113,14 +113,14 @@
                     </a>
                     <div class="ashu1">
                         @if ($request->has('quantity') && $request->get('quantity') != null && $request->get('quantity') != 0)
-                                In Stock 
-                                <span> 
+                                In Stock
+                                <span>
                                     @if (getinventoryByproductId($products->id)->total_stock != null && getinventoryByproductId($products->id)->total_stock != 0)
-                                        <i class="fa fa-check-circle fa-sm text-success"></i>    
+                                        <i class="fa fa-check-circle fa-sm text-success"></i>
                                     @else
                                         <i class="fa fa-times-circle fa-sm text-danger"></i>
                                     @endif
-                                </span>, 
+                                </span>,
                                 @php
                                     $sku = [$products->sku];
                                     // $avalable_stock = getinventoryByproductId($products->id)->total_stock;
@@ -181,6 +181,6 @@
                     </div>
                 </div>
             </div>
-            
+
     @endforelse
 </div>

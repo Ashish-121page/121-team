@@ -1,4 +1,8 @@
 @extends('frontend.layouts.main-white')
+
+<head>
+    <title>Login</title>
+</head>
 <style>
     .alert-danger {
         color: #842029 !important;
@@ -114,9 +118,9 @@ input[type=number] {
 
                 </div>
                 <div class="col-12 d-flex align-items-center justify-content-center mt-1">
-                    <div>
+                    {{-- <div>
                         <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank" class="btn-link">Trouble signing in?</a>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="col-12 d-flex align-items-center justify-content-center mt-4">
                     <div>

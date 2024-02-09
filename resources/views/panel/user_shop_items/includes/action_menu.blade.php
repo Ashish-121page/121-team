@@ -13,10 +13,10 @@
             </a>
 
         </div>
-        <a href="{{ route('panel.products.create') }}?action=nonbranded"
+        {{-- <a href="{{ route('panel.products.create') }}?action=nonbranded"
             class="btn btn-outline-primary  mx-1">
             Update Products
-        </a>
+        </a> --}}
         @if($acc_permissions->addandedit == "yes")
             @if ($Team_proadd)
                 {{-- <a href="{{ route('panel.products.create') }}?action=nonbranded"
@@ -36,7 +36,7 @@
                             <a class="dropdown-item" href="{{ route('panel.products.create') }}?action=nonbranded&bulk_product">Bulk - by Excel</a>
                         </li>
                     </ul>
-                    
+
                 </div>
             @endif
         @endif
@@ -44,22 +44,22 @@
         @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id"))
             <button id="delete_all_dummy"class="btn btn-outline-primary">Delete All Products</button>
         @endif
-    
 
 
-    
+
+
     @elseif(request()->has('assetsafe'))
         {{-- Show Action Menu of FileManage Tab --}}
-        
+
     @elseif(request()->has('properties'))
         {{-- Show Action Menu of Properties Tab --}}
         <a href="{{ route('panel.product_attributes.create') }}" class="btn btn-outline-primary">Add Property</a>
-    
+
     @else
         {{-- Show Action Menu of Category Tab --}}
-        
+
     @endif
-    
+
 </div>
 
 
@@ -70,7 +70,7 @@
             var selectedValue = $(this).val();
 
             if(selectedValue !== "0") {
-                window.location.href = selectedValue; 
+                window.location.href = selectedValue;
             }
         });
     });

@@ -117,6 +117,15 @@
             </div>
         </div>
 
+        <ul class="buy-button list-inline mb-0">
+            <li>
+                <button type="submit" class="btn btn-pills btn-primary sub-menu-item" id="khkop"
+                    style="margin-top:15px; margin-left: 10rem;">
+                    <a href="{{ route('register') }}" class="" style="color: white;">Get Started</a>
+                </button>
+            </li>
+        </ul>
+
         <div id="navigation" class="d-lg-block d-flex justify-content-center " style="margin-left: 0px !important;">
             <!-- Navigation Menu-->
             @if (request()->routeIs('plan.checkout.store') == false)
@@ -125,12 +134,7 @@
                     <li><a href="#why-121" class="sub-menu-item">why 121 ?</a></li>
                     <li><a href="#benefits" class="sub-menu-item">Benefits</a></li>
                     <li><a href="#faq" class="sub-menu-item">FAQ</a></li>
-                    <li>
-                        <button type="submit" class="btn btn-pills btn-primary sub-menu-item" id="khkop"
-                            style="margin-top:15px; margin-left: 10rem;">
-                            <a href="{{ route('register') }}" class="" style="color: white;">Get Started</a>
-                        </button>
-                    </li>
+                    
 
                     {{-- <li><a href="{{ url('/now') }}" class="sub-menu-item">Home</a></li> --}}
                     {{-- <li><a href="{{ url('/') }}" class="sub-menu-item">why 121 ?</a></li> --}}

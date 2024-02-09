@@ -20,7 +20,7 @@ use App\Models\UserShopItem;
 use App\Models\UserShop;
 class ProposalController extends Controller
 {
-    
+
 
     /**
      * Display a listing of the resource.
@@ -36,13 +36,13 @@ class ProposalController extends Controller
              $length = $request->get('length');
          }
          $proposals = Proposal::query();
-         
+
             if($request->get('search')){
                 $proposals->where('id','like','%'.$request->search.'%')
-                                ->orWhere('customer_details','like','%'.$request->search.'%')    
+                                ->orWhere('customer_details','like','%'.$request->search.'%')
                 ;
             }
-            
+
             if($request->get('from') && $request->get('to')) {
                 $proposals->whereBetween('created_at', [\Carbon\carbon::parse($request->from)->format('Y-m-d'),\Carbon\Carbon::parse($request->to)->format('Y-m-d')]);
             }
@@ -54,7 +54,7 @@ class ProposalController extends Controller
                 $proposals->orderBy($request->get('desc'),'desc');
             }
             if($request->has('status') && $request->get('status') != null){
-                
+
                 $proposals->where('status',$request->get('status'));
             }
             if(AuthRole() == "User" && auth()->user()->is_supplier == 1){
@@ -76,28 +76,28 @@ class ProposalController extends Controller
                 }
             }
             if ($request->has('Buyer_name') && $request->get('Buyer_name')) {
-                $proposals->where('customer_details','LIKE',"%".$request->get('Buyer_name')."%");                
+                $proposals->where('customer_details','LIKE',"%".$request->get('Buyer_name')."%");
             }
 
-            $proposals = $proposals->withCount('items')->orderBy('id','DESC')->paginate($length);            
-        
-            
+            $proposals = $proposals->withCount('items')->orderBy('id','DESC')->paginate($length);
+
+
 
 
             if ($request->ajax()) {
-                return view('panel.proposals.load', ['proposals' => $proposals])->render();  
+                return view('panel.proposals.load', ['proposals' => $proposals])->render();
             }
- 
+
         return view('panel.proposals.index', compact('proposals'));
     }
 
-    
+
     public function print(Request $request){
         $proposals = collect($request->records['data']);
-        return view('panel.proposals.print', ['proposals' => $proposals])->render();  
+        return view('panel.proposals.print', ['proposals' => $proposals])->render();
     }
     public function sent(Request $request,Proposal $proposal){
-        $cust_details = json_decode($proposal->customer_details);  
+        $cust_details = json_decode($proposal->customer_details);
         $mailcontent_data = MailSmsTemplate::where('code','=',"send-proposal")->first();
         if($mailcontent_data){
             $arr=[
@@ -115,7 +115,6 @@ class ProposalController extends Controller
     public function shopProposalIndex(Request $request, $proposal_slug)
     {
 
-        
         $slug = $request->subdomain;
         $user_shop = UserShop::whereSlug($slug)->first();
         $proposal = Proposal::where('slug',$proposal_slug)->first();
@@ -132,8 +131,6 @@ class ProposalController extends Controller
         ->orderByRaw('FIELD(id, '.implode(", " , $product_ids).')')
         ->get();
 
-        // $proposals = Product::join('proposals'); 
-
         // Check Proposal Is Expired of Not
         $today = \Carbon\Carbon::now();
         if ($proposal->valid_upto != null) {
@@ -144,30 +141,28 @@ class ProposalController extends Controller
         }
 
         if ($proposal->user_shop_id != UserShopIdByUserId(auth()->id())) {
-            $proposal->view_count = $proposal->view_count + 1;       
+            $proposal->view_count = $proposal->view_count + 1;
             $proposal->last_opened = $today;
             $proposal->save();
         }
-        
-        // magicstring(json_encode($product_ids));
-
 
         $newimag = [];
-        
-        for ($i=0; $i < count($product_ids); $i++) { 
+        for ($i=0; $i < count($product_ids); $i++) {
             $image_path = getShopProductImage($product_ids[$i],'multi');
             $tmp_img = [];
-            for ($j=0; $j < 4; $j++) { 
+            for ($j=0; $j < 4; $j++) {
                 if (isset($image_path[$j]) && $image_path[$j] != "") {
-                    array_push($tmp_img,$image_path[$j]->path);
+                    array_push($tmp_img,asset($image_path[$j]->path));
                 }else{
-                    $nullpoint = "frontend/assets/img/placeholder.png";
+                    // $nullpoint = asset("frontend/assets/img/placeholder.png");
+                    $nullpoint = '';
+
                     array_push($tmp_img,$nullpoint);
                 }
             }
             array_push($newimag,$tmp_img);
         }
-        
+
         $product_title = Product::whereIn('id',$product_ids)->get()->pluck('title')->toArray();
         $product_model = Product::whereIn('id',$product_ids)->get()->pluck('model_code')->toArray();
         $product_color = Product::whereIn('id',$product_ids)->get()->pluck('color')->toArray();
@@ -187,8 +182,6 @@ class ProposalController extends Controller
 
         $cust_details = json_decode($proposal->customer_details,true);
 
-        // $selectedoption = $request->input('chooseprop');
-
         if ($request->has('optionsforoffer') && $request->get('optionsforoffer') != null) {
             $selectedProp = [];
             $selectedProp = $request->get('optionsforoffer');
@@ -196,14 +189,30 @@ class ProposalController extends Controller
             $selectedProp = [];
         }
 
-        // magicstring($pptTesmplate);
-        
+
+        $pagetitle = '';
+        if (request()->has('download') && request()->get('download') == 'ppt'){
+            $pagetitle = 'PPT Preview';
+        } elseif (!request()->has('download') || request()->get('download') == null) {
+            $pagetitle = 'PDF Preview';
+        } elseif (request()->has('download') && request()->get('download') == 'excel'){
+            $pagetitle = 'Excel Preview';                        
+        } else {
+            $pagetitle = 'Shop';
+        }
+
+
+
+
+        // magicstring($newimag);
         // return;
 
-        return view('frontend.micro-site.shop.proposal.index',compact('slug','products','user_shop','cust_details','proposal','proposal_slug','product_ids','product_title','product_model','product_color','product_size','product_desc','newimag','pptTesmplate','selectedProp'));
+
+
+        return view('frontend.micro-site.shop.proposal.index',compact('slug','products','user_shop','cust_details','proposal','proposal_slug','product_ids','product_title','product_model','product_color','product_size','product_desc','newimag','pptTesmplate','selectedProp','pagetitle'));
     }
 
-    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -220,14 +229,14 @@ class ProposalController extends Controller
                 // return Proposal::whereUserId(auth()->id())->get()->count();
                 $limits = json_decode($package->limit,true);
                 $current_proposals = Proposal::whereUserId(auth()->id())->get()->count();
-                
+
                 if($limits['custom_proposals'] <= $current_proposals ){
                     return  back()->with('error','Your Custom Proposals limit exceed!');
                 }
             }
             $arr = [
                 'customer_name'=> '',
-                'customer_mob_no'=> '', 
+                'customer_mob_no'=> '',
             ];
             $proposal = new Proposal();
             $proposal->customer_details = json_encode($arr);
@@ -237,7 +246,7 @@ class ProposalController extends Controller
              $proposal->save();
             return redirect(route('panel.proposals.edit',$proposal->id));
             // return view('panel.proposals.create');
-        }catch(\Exception $e){            
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -250,13 +259,13 @@ class ProposalController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         $this->validate($request, [
             'customer_name'     => 'required',
             'user_shop_id'     => 'required',
         ]);
-        
-        try{ 
+
+        try{
             $arr = [
                 'customer_f'=> '',
                 'customer_mob_no'=> '',
@@ -266,7 +275,7 @@ class ProposalController extends Controller
             $proposal = Proposal::create($request->all());
 
             return redirect()->route('panel.proposals.edit',$proposal->id)->with('success','Proposal Created Successfully!');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -281,7 +290,7 @@ class ProposalController extends Controller
     {
         try{
             return view('panel.proposals.show',compact('proposal'));
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -293,7 +302,7 @@ class ProposalController extends Controller
      * @return  \Illuminate\Http\Response
      */
     public function edit(Request $request, Proposal $proposal)
-    { 
+    {
 
         // return $request->all();
         if($request->has('direct')){
@@ -338,7 +347,7 @@ class ProposalController extends Controller
 
         $master_products_categories = $master_products->where('is_publish',1)->get()->pluck('category_id');
         $categories = Category::whereIn('id',$master_products_categories)->groupBy('id')->get();
-        
+
         if($request->has('name') && $request->get('name') != null){
             $product_ids = $master_products->where('title','LIKE',"%".$request->get('name')."%")->pluck('id');
             $user_shop_item =  UserShopItem::whereIn('product_id',$product_ids)->pluck('product_id');
@@ -380,7 +389,7 @@ class ProposalController extends Controller
             $supplier_shop_products = UserShopItem::whereIn('user_id',$request->get('suppliers'))->where('is_published',1)->pluck('product_id');
             $master_products->whereIn('id',$supplier_shop_products);
         }
-        
+
         if($request->has('brands') && $request->get('brands') != null){
             $master_products->whereIn('brand_id',$request->get('brands'));
         }
@@ -388,17 +397,17 @@ class ProposalController extends Controller
         $master_products = $master_products->where('is_publish',1)->orderBy('pinned','DESC')->orderBy('price', 'ASC')->groupBy('id')->paginate(45);
         $added_products = ProposalItem::whereProposalId($proposal->id)->orderBy('pinned','DESC')->get();
         $excape_items = $added_products->pluck('product_id')->toArray();
-        
+
         $pinned_products = ProposalItem::whereProposalId($proposal->id)->where('pinned',1)->orderBy('sequence','ASC')->get();
         $pinned_items = $pinned_products->pluck('product_id')->toArray();
-        
+
         $main_products = $master_products;
         $hike = $request->hike;
-        
+
 
         return view('panel.proposals.edit',compact('proposal','suppliers','brands','excape_items','colors','sizes','main_products','added_products','supplier_shop_products_list','categories','hike','pinned_items','material'));
     }
-  
+
 
     /**
      * Update the specified resource in storage.
@@ -426,7 +435,7 @@ class ProposalController extends Controller
                 return back()->with('error',"Slug Must be unique.")->withInput();
             }
         try{
-                              
+
             if($proposal){
                 $arr = [
                 'customer_name'=> $request->customer_name,
@@ -438,13 +447,13 @@ class ProposalController extends Controller
                 } else {
                     $request['client_logo'] = null;
                 }
-                          
+
                 $proposal = $proposal->update($request->all());
-              
+
                 return back()->with('success','Proposal Updated!');
             }
             return back()->with('error','Proposal not found')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -456,17 +465,17 @@ class ProposalController extends Controller
         ]);
             $proposal_item = ProposalItem::where('proposal_id',$proposal->id)->whereProductId($request->product_id)->first();
         try{
-                              
+
             if($proposal_item){
-                          
+
                 $proposal_item->update([
                     'price' => $request->price
                 ]);
-              
+
                 return back()->with('success','Proposal Updated!');
             }
             return back()->with('error','Proposal not found')->withInput($request->all());
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -482,9 +491,9 @@ class ProposalController extends Controller
         try{
             if($proposal){
 
-                $ProposalItem = ProposalItem::where('proposal_id','=',$proposal->id)->delete();                                    
+                $ProposalItem = ProposalItem::where('proposal_id','=',$proposal->id)->delete();
                 $proposal->delete();
-                
+
                 return back()->with('success','Proposal deleted successfully');
             }else{
                 return back()->with('error','Proposal not found');
@@ -503,7 +512,7 @@ class ProposalController extends Controller
                     $proposal->update([
                         'client_logo' => null
                     ]);
-                }                           
+                }
                 return back()->with('success','Client Logo deleted successfully');
             }else{
                 return back()->with('error','Client Logo not found');
@@ -516,15 +525,15 @@ class ProposalController extends Controller
 
     public function adminView(Request $request){
         // echo "This is Porposal Function";
-        
+
             $length = 50;
-            
+
             if(request()->get('length')){
                 $length = $request->get('length');
             }
             $article = ProposalItem::query();
             //   return $request->all();
-            
+
              if($request->get('from') && $request->get('to'))
              {
             //  return explode(' - ', $request->get('date')) ;
@@ -538,7 +547,7 @@ class ProposalController extends Controller
 
             $article= $article->paginate($length);
             if ($request->ajax()) {
-                return view('backend.constant-management.proposals.load', ['article' => $article])->render();  
+                return view('backend.constant-management.proposals.load', ['article' => $article])->render();
             }
 
         return view('backend.constant-management.proposals.index', compact('request','article'));
@@ -546,14 +555,14 @@ class ProposalController extends Controller
 
 
     public function deleteDrafts(Request $request, $userId){
-        
+
         if (AuthRole() != 'Admin') {
             return back()->with('error',"You Don't Have Permission to Access this Page");
         }
-        
+
         $count = 0;
-        
-        try {    
+
+        try {
             $draft_offers = Proposal::where('user_id',$userId)->where('status',0)->pluck('id');
             $blank_offers = [];
             foreach ($draft_offers as $key => $value) {
@@ -581,15 +590,15 @@ class ProposalController extends Controller
 
             $msg =  "$count Offer Deleted Succesfully";
             return back()->with('success',$msg);
-            
+
         } catch (\Throwable $th) {
             //throw $th;
             return back()->with('error',"There was an Error While Deleteing Offer $th");
         }
     }
 
-    
-    
-    
-    
+
+
+
+
 }

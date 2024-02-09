@@ -25,7 +25,7 @@ input[type=number] {
                                 <p class="text-muted text-center">
                                     Please enter your 4-digit OTP which has been sent to your mobile number 
                                     <span class="text-primary"> {{ $phone }} 
-                                        <a class="text-muted" title="Change Mobile Number?" href="{{ url('/auth/login') }}">
+                                        <a class="text-muted" title="Change Mobile Number?" href="{{ url('/register') }}">
                                             <small class="text-primary" style="text-decoration:underline;color: #000 !important;
                                             font-weight: 600;">change</small>
                                         </a> 

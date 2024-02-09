@@ -20,6 +20,7 @@ use App\Models\Media;
 use App\Models\ProductExtraInfo;
 use App\Models\Proposalenquiry;
 use App\Models\TimeandActionModal;
+use App\Models\Country;
 use App\Models\UserCurrency;
 use Carbon\Carbon;
 use Carbon\Doctrine\CarbonDoctrineType;
@@ -49,9 +50,9 @@ class Microproposals extends Controller
     {
         try {
             sessionManager($request,'*');
-            // if (Auth::check() != 1) {
-            //     auth()->loginUsingId(155);
-            // }
+            if (Auth::check() != 1) {
+                auth()->loginUsingId(193);
+            }
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -140,6 +141,25 @@ class Microproposals extends Controller
         }
     }
 
+    function exportview(Proposal $proposal,$user_key) {
+        $user_id = decrypt($user_key);
+        $user = User::whereId($user_id)->first();
+        $added_products = ProposalItem::whereProposalId($proposal->id)->orderBy('pinned','DESC')->get();
+        $countries = Country::get();
+        $custom_inputs = $user->custom_fields ?? null;
+
+        if ($custom_inputs != null) {
+            $custom_inputs = json_decode($custom_inputs);
+        }
+
+
+        // magicstring($user);
+        // return;
+
+        return view('frontend.micro-site.proposals.export',compact('proposal','user','added_products','user_key','countries','custom_inputs'));
+    }
+
+
 
    /**
      * Show the form for editing the specified resource.
@@ -148,7 +168,6 @@ class Microproposals extends Controller
      * @return  \Illuminate\Http\Response
      */
     function edit(Request $request, Proposal $proposal, $user_key) {
-
 
         if (!Auth::check()) {
             auth()->loginUsingId(155);
@@ -1012,10 +1031,20 @@ class Microproposals extends Controller
     function exportexcel(Request $request){
 
         $tabelcontent = request()->get('tabelcontent');
+        $tableheader = request()->get('tableheader');
         $File_name = request()->get('filename',null);
 
         $Array_headers = array_keys((array) json_decode($tabelcontent)[0]);
         $Array_values = [[]];
+
+
+
+        $Custom_Array_headers  =  [[]];
+        foreach (json_decode($tableheader) as $key => $value) {
+            foreach ($value as $index => $element) {
+                $Custom_Array_headers[$key][$index] = $element;
+            }
+        }
 
         foreach (json_decode($tabelcontent) as $key => $value) {
             foreach ($value as $index => $element) {
@@ -1023,8 +1052,13 @@ class Microproposals extends Controller
             }
         }
 
-        $url = ENV('EXCEL_EXPORT_URL') ?? 'https://gb.giftingbazaar.com/excel/upload';
+    // // magicstring($Custom_Array_headers);
+    // magicstring(request()->all());
+    //     return;
 
+
+
+        $url = ENV('EXCEL_EXPORT_URL') ?? 'https://gb.giftingbazaar.com/excel/upload';
         if ($File_name == null) {
             $data = [
                 'data' => $Array_values,
@@ -1034,11 +1068,15 @@ class Microproposals extends Controller
             $data = [
                 'data' => $Array_values,
                 'fileName' => $File_name,
+                'header' => $Custom_Array_headers,
             ];
         }
 
         $response = Http::post($url, $data);
         $result = json_decode($response->body());
+
+        // echo ($response->body());
+
 
         if ($request->ajax()) {
             return $response;

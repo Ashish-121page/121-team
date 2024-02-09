@@ -1,4 +1,27 @@
 <div class="d-none table-responsive ">
+    <table class="table" id="edfdsfarfqwe">
+        <thead>
+            <tr>
+                <th>image</th>
+                <th>Title</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr></tr>
+            <tr>
+                <td>
+                    <img src="{{ asset('frontend/assets/img/placeholder.png') }}" alt="Product Image" style="height: 250px; width: 250px; object-fit: contain;" class="img-fluid">
+                </td>
+                <td>
+                    Offer Id
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+
+
+
     <table class="table" id="printproposals">
         <thead>
             <tr>
@@ -12,11 +35,11 @@
                     @endforeach
                 @endif
                 <th scope="col">Price</th>
-                
+
             </tr>
         </thead>
         <tbody>
-
+            <tr></tr>
             @if ($products->count() > 0)
                 @foreach ($products as $key => $product)
                     <tr class="">
@@ -88,7 +111,7 @@
                             {{ $currency_symbol }}
                             {{ number_format(round(exchangerate($price, $exhangerate, $HomeCurrency)), 2) }}
                         </td>
-                        
+
                     </tr>
                 @endforeach
             @else

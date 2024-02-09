@@ -249,13 +249,9 @@ class FileManager extends Controller
 
     function store(Request $request) {
         $file = $request->file('file');
-
         $user_id = auth()->id();
-
         $folderPath = "public/files/$user_id";
-
         $existingFile = Storage::exists("$folderPath/{$file->getClientOriginalName()}");
-
         $fileName = $file->getClientOriginalName() ?? Str::random(10);
 
         if ($existingFile) {

@@ -121,7 +121,8 @@
             <li class="list-inline-item">
                 <button type="submit" class="btn btn-pills btn-primary sub-menu-item" id="khkop"
                     style=" margin-left: 10rem;">
-                    <a href="{{ url('auth/login') }}" class="" style="color: white;">Login</a>
+                    {{-- /auth/login --}}
+                    <a href="{{ url('auth/login ') }}" class="" style="color: white;">Login</a>
                 </button>
             </li>
 
@@ -161,6 +162,7 @@
         </a>
 
         <div class="my-auto ml-auto">
+            {{-- login --}}
             <a href="{{ route('login') }}" class="btn btn-primary btn-pills mx-3">Login</a>
         </div>
 
@@ -228,6 +230,7 @@
 
                     <div class="col-12 d-flex justify-content-center align-items-center "
                         style="position: absolute;bottom: 90px;">
+                        {{-- login --}}
                         <a href="{{ route('login') }}" class="btn btn-primary  btn-pills">Login</a>
                     </div>
                 @endif
