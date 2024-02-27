@@ -356,11 +356,11 @@ class settingController extends Controller
                     $extra = '';
                 }
 
-                if ($request->has('must_field')) {
-                    $must_field = 'required';
-                } else {
+                // if ($request->has('must_field') && $request->get('must_field') == 1){
+                //     $must_field = 'required';
+                // } else {
                     $must_field = '';
-                }
+                // }
 
                 $value = array_filter($request->get('value'),function($value) {
                     return $value !== null && $value !== '';

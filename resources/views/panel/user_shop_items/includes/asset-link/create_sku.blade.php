@@ -126,7 +126,37 @@
                                         </div>
                                     </div>
                                     <div class="col-12 mb-3">
-                                        <div class="owl-carousel owl-theme">
+                                        <div class="swiper">
+                                            <!-- Additional required wrapper -->
+                                            <div class="swiper-wrapper">
+                                                @foreach ($File_data as $i => $files)
+                                                    @php
+                                                        $sku = explode($delimiter, pathinfo($files->FileName, PATHINFO_FILENAME))[$delimeter_directiom];
+                                                        $sku = trim($sku);
+                                                    @endphp
+                                                    @if (!in_array($sku, $all_products_modelCodes))
+                                                        @continue
+                                                    @endif
+                                                    @if ($available_sku != $sku)
+                                                        @continue
+                                                    @endif
+                                                    <div class="item text-center ">
+                                                        <img src="{{ $files->FilePath ?? '' }}"
+                                                            alt="{{ $files->FileName ?? '' }}" class="img-fluid mb-1">
+                                                        <span>
+                                                            {{ Str::limit($files->FileName, 15, '...') ?? '----' }}
+                                                        </span>
+                                                    </div>
+                                                    @php
+                                                        $form_available_sku[] = $available_sku;
+                                                        $form_available_sku_files[] = $files;
+                                                    @endphp
+                                                @endforeach
+                                            </div>
+                                            <div class="swiper-pagination"></div>
+                                            <div class="swiper-scrollbar"></div>
+                                        </div>
+                                        {{-- <div class="owl-carousel owl-theme">
                                             @foreach ($File_data as $i => $files)
                                                 @php
                                                     $sku = explode($delimiter, pathinfo($files->FileName, PATHINFO_FILENAME))[$delimeter_directiom];
@@ -150,7 +180,7 @@
                                                     $form_available_sku_files[] = $files;
                                                 @endphp
                                             @endforeach
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 @endforeach
                             </div>
@@ -188,7 +218,7 @@
                                                 <!-- Slides -->
                                                 @foreach ($File_data as $i => $files)
                                                     @php
-                                                        $sku = explode($delimiter, pathinfo($files->FileName, PATHINFO_FILENAME))[$delimeter_directiom];
+                                                        $sku = explode($delimiter, pathinfo($files->FileName, PATHINFO_FILENAME))[$delimeter_directiom] ?? '';
                                                         $sku = trim($sku);
                                                     @endphp
                                                     @if ($Notavailable_sku != $sku)
@@ -395,7 +425,7 @@
 
 
         $('.owl-carousel').owlCarousel({
-            loop: true,
+            // loop: true,
             nav: true,
             margin: 10,
             responsiveClass: true,
@@ -413,7 +443,7 @@
         });
         // Ensure the class name here matches your intended target for the second carousel
         $('.slider2').owlCarousel({
-            loop: true,
+            // loop: true,
             margin: 10,
             responsiveClass: true,
             responsive: {

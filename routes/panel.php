@@ -170,6 +170,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::post('fill/now',[AssetLinkConroller::class,'fillnow'])->name('fill.now');
 
         // -- For FIlename Is a Model Code ...
+        Route::post('split/model_code/preview',[AssetLinkConroller::class,'previewPage'])->name('model.filename.preview');
         Route::post('split/model_code',[AssetLinkConroller::class,'modelCodeIsFilename'])->name('model.filename');
 
 
