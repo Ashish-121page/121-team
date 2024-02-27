@@ -2,20 +2,20 @@
 @section('meta_data')
     @php
         $categoryName = fetchFirst('App\Models\Category',request()->get('category_id'),'name') ?? 'All';
-		$meta_title = $user_shop->name .' - '.$categoryName  ?? '' .' | '.getSetting('app_name');		
+		$meta_title = $user_shop->name .' - '.$categoryName  ?? '' .' | '.getSetting('app_name');
 		$meta_description = $user_shop->description ?? getSetting('seo_meta_description');
 		$meta_keywords = '' ?? getSetting('seo_meta_keywords');
-		$meta_motto = '' ?? getSetting('site_motto');		
-		$meta_abstract = '' ?? getSetting('site_motto');		
-		$meta_author_name = '' ?? 'GRPL';		
-		$meta_author_email = '' ?? 'Hello@121.page';		
-		$meta_reply_to = '' ?? getSetting('frontend_footer_email');		
-		$meta_img = ' ';		
-		$microsite = 1;		
+		$meta_motto = '' ?? getSetting('site_motto');
+		$meta_abstract = '' ?? getSetting('site_motto');
+		$meta_author_name = '' ?? 'GRPL';
+		$meta_author_email = '' ?? 'Hello@121.page';
+		$meta_reply_to = '' ?? getSetting('frontend_footer_email');
+		$meta_img = ' ';
+		$microsite = 1;
 
-        $team = json_decode($user_shop->team);        
-        $manage_offer_verified = $team->manage_offer_verified ?? 0; 
-        $manage_offer_guest = $team->manage_offer_guest ?? 0; 
+        $team = json_decode($user_shop->team);
+        $manage_offer_verified = $team->manage_offer_verified ?? 0;
+        $manage_offer_guest = $team->manage_offer_guest ?? 0;
 
         $defaultCurrecy = App\Models\UserCurrency::where('User_shop_id',$user_shop->id)->where('default_currency',1)->first();
 	@endphp
@@ -24,8 +24,8 @@
 <style>
 
     #selector select option {
-    color: #333;        
-    position: relative;  
+    color: #333;
+    position: relative;
     top: 5px;
     }
 
@@ -42,7 +42,7 @@
     margin: 5px 10%;
     width: 100%;
     } */
-    
+
     @media(max-width: 760px){
         #selector {
         margin: auto;
@@ -112,9 +112,9 @@
     }
     .ashish{
         overflow: hidden;
-        overflow-y: auto; 
+        overflow-y: auto;
         max-height: 50vh;
-    } 
+    }
     .ashish::-webkit-scrollbar{
         width: 5px;
     }
@@ -171,7 +171,7 @@
                                                 <span class="remove-tag" data-color="{{ $Color }}" title="click to Remove {{$name}}">x</span>
                                             </span>
                                         @endforeach
-                                    @endif                                     
+                                    @endif
                                 @endforeach
                             </div>
                             {{-- Scooboo Tags filter End --}}
@@ -210,7 +210,7 @@
                                                 <h5 class="form-check">
                                                     <input class="form-check-input filterCategory" type="radio" value="{{ $item->id }}" id="category{{ $item->id }}" name="category_id" @if((request()->has('category_id') && request()->get('category_id') ==  $item->id )) checked @endif>
                                                     <label for="category{{ $item->id }}" class="form-check-label fltr-lbl   ">
-                                                        {{$item->name}} 
+                                                        {{$item->name}}
                                                         {{--  Category Count --}}
                                                         <span style="font-size: 11px">({{ getProductCountViaCategoryId($item->id,$user_shop->user_id) }})</span>
                                                     </label>
@@ -219,11 +219,11 @@
                                             @if(request()->has('category_id') && request()->get('category_id') ==  $item->id )
                                                 @php
                                                     $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
-                                                @endphp 
+                                                @endphp
                                                 <div style="padding-left: 25px">
                                                     <ul class="list-unstyled custom-scrollbar">
                                                         @foreach ($subcategories as $subcategorie)
-                                                            <li>        
+                                                            <li>
                                                                 <h6 class="form-check">
                                                                     <input class="form-check-input filterSubCategory" type="radio" value="{{ $subcategorie->id }}" id="category{{ $subcategorie->id }}" name="sub_category_id" @if(request()->has('sub_category_id') && request()->get('sub_category_id') ==  $subcategorie->id) checked @endif>
                                                                     <label for="category{{ $subcategorie->id }}" class="form-check-label fltr-lbl">
@@ -238,7 +238,7 @@
                                                         @endforeach
                                                     </ul>
                                                 </div>
-                                            @endif    
+                                            @endif
                                         @endforeach
                                     @endif
                                 </ul>
@@ -257,7 +257,7 @@
                                             </li>
                                         @endforeach
                                     </ul>
-                                @endif  
+                                @endif
                                     <h6 class="widget-title mt-2">Price</h6>
                                     <div class="d-flex">
                                         <input  style="width: 70px;height: 35px;" @if(request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif type="text" name="from" class="form-control" placeholder=" ₹ Min">
@@ -278,7 +278,7 @@
                                             <li>
                                                 <h5 class="form-check">
                                                     <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal[]"
-                                                    @if(request()->has("searchVal"))  
+                                                    @if(request()->has("searchVal"))
                                                         @if(isset($mater) && in_array($mater,request()->get("searchVal")))
                                                             checked
                                                         @endif
@@ -293,7 +293,7 @@
                                     </ul>
                                     @endforeach
                                 @endif --}}
-                                
+
                                 {{--` Make Filter As per SB  --}}
                                 {{-- @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
                                     @foreach ($additional_attribute as $key => $item)
@@ -308,7 +308,7 @@
                                                 <li id="inputlist_{{$key}}">
                                                     <h5 class="form-check">
                                                         <input class="form-check-input" type="checkbox" value="{{ $mater }}" id="searchId{{ $mater }}"  name="searchVal_{{ $key }}[]"
-                                                        @if(request()->has("searchVal_$key"))  
+                                                        @if(request()->has("searchVal_$key"))
                                                             @if(isset($mater) && in_array($mater,request()->get("searchVal_$key")))
                                                                 checked
                                                             @endif
@@ -333,7 +333,7 @@
                                                     <!-- Collapsible Button -->
                                                     <h6 class="collapsible" data-bs-toggle="collapse" data-bs-target="#AttributeList_{{$key}}" aria-expanded="false" aria-controls="AttributeList_{{$key}}">
                                                         {{ getAttruibuteById($item)->name }}
-                                                        
+
                                                     <i class="fas fa-chevron-down fa-xs"></i>
                                                     </h6>
                                                     @php
@@ -378,31 +378,31 @@
                                     <input type="checkbox" class="form-check-input visually-hidden" name="exclusive" id="exclusive" @if (request()->get('exclusive')) checked @endif>
                                     <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
                                     @if (request()->get('exclusive') == 'on')
-                                        <div class="text-success" style="font-weight: bolder"> 
+                                        <div class="text-success" style="font-weight: bolder">
                                             <i class="uil-check-circle" style="font-size: 20px"></i>
                                         </div>
                                     @else
                                         <div class="text-danger" style="font-weight: bolder"> OFF </div>
                                     @endif
-                                    
+
                                 </div>
-                                
+
                                 {{-- Exclusive Products --}}
-                               
-                            
 
 
-                            </div>                           
+
+
+                            </div>
 
                             <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn" form="searchform">Filter</button>
                             <a class="btn mt-2 d-block btn-primary w-100" href="{{route('pages.shop-index')}}" id="resetButton">Reset</a>
-                            
+
                         </form>
                     </div>
                 </div><!--end col-->
                 <div class="col-lg-9 col-md-8 col-12 pt-2 mt-sm-0 pt-sm-0">
                     <div class="row align-items-center">
-                        
+
                         <div class="col-lg-8 col-md-8">
                             {{-- <div class="section-title">
                                 <h5 class="mb-0">Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} Result</h5>
@@ -426,9 +426,9 @@
                                                 Make Offer
                                             </a>
                                         </div>
-                                    @endif                                    
+                                    @endif
                                 @endif
-                                
+
                                 <div class="col-7 col-sm-9 col-md-7">
                                     <div class="container" id="selector" style="width: max-content !important;">
                                         <select class="form-control input-lg select_box" id="productSort" name="sort">
@@ -446,12 +446,12 @@
                     </div>
                 {{-- Side Bar End --}}
                 <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
-                    
+
                     <div class="input-group mb-3 border rounded w-md-25">
                         <input type="text" id="quicktitle" value="{{ request()->get('title') }}" name="title" class="form-control border-0"  placeholder="Quick Search : Name or Model Code">
                         <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit"><i class="uil uil-search"></i></button>
-                    </div>  
-                
+                    </div>
+
                     <div class="d-flex mb-2">
                         <div class="container" id="selector" style="width: max-content !important;">
                             <select class="form-control select_box  w-auto" id="productSort" name="sort">
@@ -471,7 +471,7 @@
                         }else{
                             $curr = $defaultCurrecy->currency;
                         }
-                    @endphp                    
+                    @endphp
 
                     <div class="d-flex mb-2">
                         <div class="container" id="selector" style="width: max-content !important;">
@@ -507,7 +507,7 @@
 
 
                 </div>
-                
+
                 @include('frontend.micro-site.shop.loadIndex')
 
                 <div class="col-8">
@@ -529,7 +529,7 @@
         var active_category = "{{request()->get('category_id') }}";
         var active_sub_category = "{{request()->get('sub_category_id') }}";
             $('.down_arrow').addClass('d-none');
-        
+
             $('.filterCategory').on('click', function(){
                 if(active_category == $(this).val()){
                     $(this).val(null);
@@ -540,9 +540,9 @@
                 $('.applyFilter').submit();
         });
 
-        
 
-            $('.filterSubCategory').on('click', function(){ 
+
+            $('.filterSubCategory').on('click', function(){
                 if(active_sub_category == $(this).val()){
                     $(this).val(null);
                 }
@@ -572,8 +572,8 @@
     </script>
 
     <script>
-        
-        $(".makeoffer").click(function (e) { 
+
+        $(".makeoffer").click(function (e) {
             e.preventDefault();
             var url = $(this).attr('href');
             var msg = "<input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Name'> <br> <input type='text' id='offeremail' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Email (Optional)'> <br> <input type='number' maxlength='10' id='offerphone' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Phone (Optional)'>";
@@ -598,7 +598,7 @@
                                     return false;
                                 }
                                 url = url+"&offerfor="+margin+"&offerphone="+offerphone+"&offeremail="+offeremail;
-                                window.location.href = url;               
+                                window.location.href = url;
                                 // console.log(url);
                         }
                     },
@@ -623,14 +623,14 @@
                 if (viewportWidth < 768) {
                     $("#select2_{{$key}}").addClass('form-control')
                 }
-                
+
                 if(viewportWidth > 790){
                     $("#select2_{{$key}}").select2({
                         placeholder : "Select",
                     })
                 }
             @endforeach
-            
+
 
               //  Add a click event handler to all the remove-tag elements
             $(".remove-tag").click(function () {
@@ -693,7 +693,7 @@
         var contianer = $("#dfjrgd");
         var qsearch = false;
 
-        $(".nextpage").click(function (e) { 
+        $(".nextpage").click(function (e) {
             e.preventDefault();
             if (qsearch === false) {
                 if (total_page >= crr_page+1) {
@@ -704,7 +704,7 @@
             }
         });
 
-        function getData(pages) { 
+        function getData(pages) {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
 
@@ -737,10 +737,10 @@
                         $("#gridview").click();
                     }
                 }
-            });        
+            });
         }
         // ! OnKey Up Load Ajax...
-        $("#quicktitle").keyup(function (e) { 
+        $("#quicktitle").keyup(function (e) {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
             let thisval = this.value;
@@ -771,7 +771,7 @@
                             'searchVal_{{$key}}' : urlParams.getAll("searchVal_{{$key}}[]"),
                         @endforeach
                     @endif
-                    
+
                 },
                 success: function (response) {
                     $(".dfjrgd").empty().html(response);
@@ -781,14 +781,14 @@
                         $("#gridview").click();
                     }
                 }
-            });   
+            });
 
 
         });
 
-        
+
     </script>
-    
+
     <script>
         $(document).on('click','#excl',function(e){
             $(this).attr('checked',false);
@@ -824,12 +824,12 @@
                                         $("#filterBtn").click();
                                     }else{
                                         $("#exclusive").attr('checked',false);
-                                        $.alert("Wrong Password");    
+                                        $.alert("Wrong Password");
                                         $("#resetButton").click();
                                     }
                                     // console.log(response['status']);
                                 },
-                                // error: function (e) { 
+                                // error: function (e) {
                                 //     console.log(e);
                                 // }
                             });
@@ -848,8 +848,8 @@
                         jc.$$formSubmit.trigger('click'); // reference the button and click it
                     });
                 }
-            });                             
+            });
         });
-    
+
     </script>
 @endsection

@@ -129,16 +129,16 @@
                                         <!-- Crop Button -->
                                     </div>
 
-                                    <div class="col-12">
-                                        <span>Effects</span>
-                                    </div>
-                                    <div class="col-12">
-                                        @for ($i = 1; $i < 25; $i++)
-                                            <img src="{{ asset('/frontend/assets/effect/effect_1 (' . $i . ').png') }}"
-                                                alt="Image" style="height: 75px;width: 75px;object-fit: contain"
-                                                class="img-fluid chnageeffect">
-                                        @endfor
-                                    </div>
+                                        {{-- <div class="col-12">
+                                            <span>Effects</span>
+                                        </div>
+                                        <div class="col-12">
+                                            @for ($i = 1; $i < 25; $i++)
+                                                <img src="{{ asset('/frontend/assets/effect/effect_1 (' . $i . ').png') }}"
+                                                    alt="Image" style="height: 75px;width: 75px;object-fit: contain"
+                                                    class="img-fluid chnageeffect">
+                                            @endfor
+                                        </div> --}}
 
 
                                 </div>

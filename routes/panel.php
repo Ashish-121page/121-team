@@ -42,6 +42,7 @@ use App\Http\Controllers\Panel\ImageController;
 use App\Http\Controllers\settingController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserAddressController;
+use App\Http\Controllers\AssetLinkConroller;
 use App\Models\UserShopItem;
 
 /*
@@ -154,6 +155,31 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::post('/permission/create', [PermissionController::class,'create']);
         Route::get('/permission/update', [PermissionController::class,'update']);
         Route::get('/permission/delete/{id}', [PermissionController::class,'delete']);
+    });
+
+
+
+    Route::prefix('/asset-link')->name('asset-link.')->group(function () {
+        Route::get('/', [AssetLinkConroller::class,'index'])->name('index');
+        Route::post('/store', [AssetLinkConroller::class,'storefile'])->name('store.file');
+        Route::any('get/record',[AssetLinkConroller::class,'vaultrec'])->name('vault.rec');
+
+        // -- For Split FIlename with Delimiter
+        Route::post('split/files',[AssetLinkConroller::class,'splitfiles'])->name('split.files');
+        Route::post('fill/later',[AssetLinkConroller::class,'filllater'])->name('fill.later');
+        Route::post('fill/now',[AssetLinkConroller::class,'fillnow'])->name('fill.now');
+
+        // -- For FIlename Is a Model Code ...
+        Route::post('split/model_code',[AssetLinkConroller::class,'modelCodeIsFilename'])->name('model.filename');
+
+
+        // -- For FIlename Is Irrelevant ...
+        Route::post('split/irrelevant',[AssetLinkConroller::class,'irrelevantFilename'])->name('irrelevant.filename');
+        Route::any('split/final',[AssetLinkConroller::class,'finalview'])->name('final');
+
+
+
+
     });
 
 
@@ -549,6 +575,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
     Route::group(['middleware' => 'auth', 'prefix' => '/search', 'as' => 'search.'], function () {
         Route::get('/',[SearchController::class,'index'])->name('index');
         Route::post('/result',[SearchController::class,'result'])->name('search.result');
+        Route::get('/result1',[SearchController::class,'result1'])->name('search.result1');
     });
 
     Route::group(['middleware' => 'auth', 'prefix' => '/invoice', 'as' => 'invoice.'], function () {

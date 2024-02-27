@@ -16,6 +16,7 @@ use App\Models\UserAddress;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Group;
+use App\Models\ResponseForm;
 
 use App\Models\shorturl;
 use App\Models\shorturlvisitor;
@@ -41,7 +42,7 @@ class WebsiteController extends Controller
        $verify_customer = DB::table('user_shops')->where('demo_given','=',1)->get();
        return view('frontend.website.newhome',compact('verify_customer'));
     }
-    
+
         // new landing page
     public function now()
     {
@@ -59,29 +60,29 @@ class WebsiteController extends Controller
     {
         return view('frontend.website.booksession.jayaform23');
     }
-    
+
      public function feedbackform()
     {
         return view('frontend.website.feedback.index');
     }
-    
-    
+
+
     public function microSiteProxy(Request $request)
     {
-        
+
         $subdomain = $request->shop;
         $path = $request->page;
-        
+
         $accessToken = "";
 
         if($request->is_scan == 1){
             $isScan = 1;
         }else{
             $isScan = 0;
-        }       
+        }
 
         if(auth()->check()){
-         
+
           $userId =  UserShopUserIdBySlug($request->shop);
           if($userId == auth()->id()){
             return back()->with('error','You can not scan your own scanner');
@@ -91,17 +92,17 @@ class WebsiteController extends Controller
                 $accessToken = "&at=".encrypt(auth()->id())."&scan=$isScan";
             }else{
                 $accessToken = "?at=".encrypt(auth()->id())."&scan=$isScan";
-            } 
+            }
         }
 
         if($request->has('g_id') && $request->get('g_id') != null){
             $g_id = $request->get('g_id');
-            
+
         }else{
             $g_id = 0;
         }
 
-        if (str_contains($accessToken, '&')) { 
+        if (str_contains($accessToken, '&')) {
             $accessToken .= "&g_id=".$g_id;
         }else{
             $accessToken .= "?g_id=".$g_id;
@@ -109,16 +110,16 @@ class WebsiteController extends Controller
 
         $domain = env('APP_DOMAIN');
         $channel = env('APP_CHANNEL');
-        
+
         $url = $channel.$subdomain.'.'.$domain.'/'.$path."$accessToken";
         if(auth()->check()){
-            
+
           // Update Price Group
             $supplier_id = UserShopUserIdBySlug($request->shop);
             $supplier_record = User::whereId($supplier_id)->first();
             $acr_exists = AccessCatalogueRequest::where('user_id',auth()->id())->where('number',$supplier_record->phone)->exists();
             if(!$acr_exists){
-                
+
                 if($supplier_record){
                  $acr =  AccessCatalogueRequest::create([
                         'user_id' => auth()->id() ?? '0',
@@ -126,29 +127,29 @@ class WebsiteController extends Controller
                         'price_group_id' => $g_id,
                         'status' => 1,
                         'supplier_name' => $supplier_record->name,
-                    ]); 
+                    ]);
                     $acr->save();
-        
+
                     // notification sent to Supplier
                     $onsite_notification['user_id'] =  $supplier_id;
                     $onsite_notification['title'] = "There is a new seller in your collection. Default price is assigned. To assign a price group, click here. ";
                     $onsite_notification['link'] = route('panel.seller.my_reseller.index');
                     pushOnSiteNotification($onsite_notification);
-        
+
                     // notification sent to Seller
                     $onsite_notification['user_id'] =  auth()->id();
                     $onsite_notification['title'] = "Great! A New Supplier added to My Collections ";
                     $onsite_notification['link'] = route('panel.seller.my_supplier.index');
                     pushOnSiteNotification($onsite_notification);
-        
+
                 }
                 // return $url;
                 return redirect($url);
             }else{
-                return back()->with('error','Request is already Sent!'); 
+                return back()->with('error','Request is already Sent!');
             }
         }else{
-           return redirect($url)->with('error','Please login to add site to my collections!'); 
+           return redirect($url)->with('error','Please login to add site to my collections!');
         }
 
     }
@@ -177,7 +178,7 @@ class WebsiteController extends Controller
     }
 
 
-    
+
     public function checkoutStore(Request $request, $id)
     {
         // return $id;
@@ -190,7 +191,7 @@ class WebsiteController extends Controller
         // if(auth()->user()->is_supplier != 1){
         //     return back()->with('error','You must have an seller account to purchase this package');
         // }
-        
+
         // if(!UserAddress::whereUserId(auth()->id())->first()){
         //     return redirect(route('customer.dashboard').'?active=account&subactive=my_address')->with('error','Please add your address first!');
         // }
@@ -199,7 +200,7 @@ class WebsiteController extends Controller
         $full_name = explode(' ',$user->name);
         $firstname = array_shift($full_name);
         $lastname = implode(" ", $full_name);
-  
+
         $package = Package::whereId($id)->first();
         if(!$package){
             return back()->with('error','Invalid Package');
@@ -231,28 +232,28 @@ class WebsiteController extends Controller
         $order_item->qty = 1;
         $order_item->price = $package->price;
         $order_item->save();
-            
+
        return view('frontend.website.plan.checkout',compact('package','firstname','lastname','user', 'order'));
     }
 
     public function about()
     {
-        return view('frontend.website.about'); 
+        return view('frontend.website.about');
     }
 
     public function about_one()
     {
-        return view('frontend.website.about-one'); 
+        return view('frontend.website.about-one');
     }
 
     public function contact()
     {
-        return view('frontend.website.contact.index'); 
+        return view('frontend.website.contact.index');
     }
 
     public function contact_one()
     {
-        return view('frontend.website.contact.index-one'); 
+        return view('frontend.website.contact.index-one');
     }
     public function faq()
     {
@@ -322,7 +323,7 @@ class WebsiteController extends Controller
         }
         try {
             $questions = getJoiningQuestions();
-            $message = ""; 
+            $message = "";
             if($request->has('q1')){
                 $message .= $questions[0]['question']." - ".$request->q1."\r\n";
             }
@@ -347,7 +348,7 @@ class WebsiteController extends Controller
             $data->code=$request->code;
             $data->subject='New Poll Submission';
             $data->description= $message;
-            $data->save();  
+            $data->save();
             // $mailcontent_data = MailSmsTemplate::where('code','=',"book-demo")->first();
             // if($mailcontent_data){
             //     $arr=[
@@ -361,7 +362,7 @@ class WebsiteController extends Controller
             $message = array('message' => 'Success!', 'title' => 'Thank you for your response');
             return response()->json($message);
 
-           
+
         } catch (\Exception $e) {
             return response(['error', 'Error: ' . $e->getMessage()],200);
         }
@@ -380,7 +381,7 @@ class WebsiteController extends Controller
             // Setting Dynamic Session Domain for logging in
 
             auth()->loginUsingId($user->id);
-            
+
             // if(AuthRole() == "User"){
             //     return redirect()->route('customer.dashboard');
             // }else{
@@ -409,7 +410,7 @@ class WebsiteController extends Controller
             if(!$address){
                 return back()->with('error','Invalid Address, Please choose a new address');
             }
-            
+
             // Static Order Data Creation
             $customer_details = [
                 'name' => auth()->user()->name,
@@ -461,7 +462,7 @@ class WebsiteController extends Controller
     public function joinIndex()
     {
         $otp = session()->put('start_otp',rand(1000,9999));
-        return view('frontend.website.join.index'); 
+        return view('frontend.website.join.index');
     }
     */
 
@@ -607,32 +608,32 @@ class WebsiteController extends Controller
         // check Id Url Is already Exist
         $chk = shorturl::where('url_key',$unique_key)->count();
         if ($chk != 0) {
-            return "The Unique Id Already Exists With Another URL";    
+            return "The Unique Id Already Exists With Another URL";
         }
 
         return shrinkurl($url,$unique_key);
     }
-    
-    
+
+
 
     function editurl($id) {
-        
+
         $short_url = shorturl::find($id);
 
         return view('panel.short_url.edit',compact('short_url'));
     }
 
     function updateurl(Request $request, $id) {
-        try {            
+        try {
             $short_url = shorturl::find($id);
             $short_url->destination_url = $request->get('newurl');
             $short_url->save();
             return back()->with('success','Url Updated Successfully');
-            
+
         } catch (\Throwable $th) {
             return back()->with('error','Error While Updating, '.$th);
         }
-        
+
 
 
     }
@@ -653,27 +654,27 @@ class WebsiteController extends Controller
             // Redirect.
             // return redirect(route('panel.dashboard'));
             // return back()->with('success',"Please Reopen Link");
-            
+
             return redirect(inject_subdomain('home', getShopSlugByUserId($id) , true, true));
 
-        
+
         } catch (\Exception $e) {
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
 
     function deleteurl(Request $request, $id){
-        try {    
+        try {
             $item  = shorturl::find($id);
             $item->delete();
             return back()->with('success','URL Deleted Successfully');
         } catch (\Throwable $th) {
             return back()->with('error','Error While Deleting, '.$th);
-        }        
+        }
     }
 
     function searchon121(Request $request) {
-        
+
         // magicstring($request->all());
 
         // Getting All Records
@@ -706,7 +707,7 @@ class WebsiteController extends Controller
                 latest()->paginate(20);
 
 
-        return view('frontend.website.search.index',compact('request','searchQuery','data'));        
+        return view('frontend.website.search.index',compact('request','searchQuery','data'));
     }
     // Sending Request from 121 Search
 
@@ -774,8 +775,8 @@ class WebsiteController extends Controller
                         "code" => $response_code ?? "" ,
                         "alert" => $alert ?? "",
                         "color" => $color ?? "",
-                    );  
-            
+                    );
+
                     return $response;
 
                 }
@@ -799,14 +800,14 @@ class WebsiteController extends Controller
                             "code" => $response_code ?? "" ,
                             "alert" => $alert ?? "",
                             "color" => $color ?? "",
-                        );  
-                
+                        );
+
                         return $response;
 
-                  } 
-                }     
+                  }
+                }
             }
-            
+
             // Plan Check
             $package = getUserActivePackage(auth()->id());
             $limits = json_decode($package->limit,true);
@@ -823,18 +824,18 @@ class WebsiteController extends Controller
                     "code" => $response_code ?? "" ,
                     "alert" => $alert ?? "",
                     "color" => $color ?? "",
-                );  
-        
+                );
+
                 return $response;
 
             }
 
-            
+
             $data = AccessCatalogueRequest::whereNumber($number)->where('user_id',auth()->id())->first();
             if(!$data){
                 $data = new AccessCatalogueRequest();
             }
-            
+
             $data->user_id=auth()->id();
             $data->status=0;
             // return dd($user);
@@ -859,7 +860,7 @@ class WebsiteController extends Controller
                 $onsite_notification['title'] = $requested_seller->name. " has sent you a connection request." ;
                 $onsite_notification['link'] = route('panel.seller.supplier.index');
                 pushOnSiteNotification($onsite_notification);
-                
+
             }else{
                 $status = "PASS";
                 $alert = "success";
@@ -872,11 +873,11 @@ class WebsiteController extends Controller
                     "code" => $response_code ?? "" ,
                     "alert" => $alert ?? "",
                     "color" => $color ?? "",
-                );  
-        
+                );
+
                 return $response;
             }
-            
+
             $status = "SENT";
             $alert = "success";
             $message = "Catalogue request sent. Added in your Collection.";
@@ -888,8 +889,8 @@ class WebsiteController extends Controller
                 "code" => $response_code ?? "" ,
                 "alert" => $alert ?? "",
                 "color" => $color ?? "",
-            );  
-    
+            );
+
             return $response;
 
         }else{
@@ -904,7 +905,7 @@ class WebsiteController extends Controller
                 "code" => $response_code ?? "" ,
                 "alert" => $alert ?? "",
                 "color" => $color ?? "",
-            );  
+            );
             return $response;
         }
 
@@ -913,11 +914,68 @@ class WebsiteController extends Controller
 
 
     function expired(Request $request) {
-        
+
         return view('expired');
     }
-    
-    
-    
+
+
+    function bookdemoStore(Request $request) {
+
+        $response = [
+            'name' => $request->gname,
+            'phone'=>  $request->gphone,
+            'email' => $request->email,
+            'demo_date' => $request->gdate,
+            'demo_time' => $request->gtime
+        ];
+
+        $db_rec = [
+            'form_type' => 'bookdemo',
+            'data' => json_encode($response),
+        ];
+
+        $state = ResponseForm::create($db_rec);
+
+        return redirect('/')->with('success','Your Demo Request has been sent successfully!');
+
+
+    }
+
+
+    function feedbackformstore(Request $request) {
+
+        $QuickResult = [
+            'Value_anticipated' => $request->get('entry_1400368396'),
+            'Video_clarity' => $request->get('entry_1552551473'),
+            'Audio_clarity' => $request->get('entry_254315716'),
+        ];
+        $duration = [
+            'Introduction' => $request->get('entry_904323925'),
+            'Demo' => $request->get('entry_1181307444'),
+            'FAQ' => $request->get('entry_1854430268'),
+            'Offers_and_Packages' => $request->get('entry_972276528'),
+        ];
+        $response = [
+            'name' => $request->get('entry_1134233759'),
+            'suggestions' => $request->get('entry_962971201'),
+            'question_missed' => $request->get('entry_2138732357'),
+            'demo_overview' => json_encode($QuickResult),
+            'demo_duration' => json_encode($duration),
+
+        ];
+        $db_rec = [
+            'form_type' => 'feedback',
+            'data' => json_encode($response),
+        ];
+        $state = ResponseForm::create($db_rec);
+        return redirect('/')->with('success','Your Feedback has been sent successfully!');
+
+
+
+
+    }
+
+
+
+
 }
- 

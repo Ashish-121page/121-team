@@ -23,7 +23,7 @@
                     <div class="two col-2 d-flex flex-column justify-content-start align-items-start">
                         @if (auth()->id() == $item->user_id)
                             <a href="#edit" class="btn text-primary border border-primary btn-icon btn-sm opencateedit" data-catidchange="{{ $item->id }}" data-catname="{{ $item->name }}">
-                                <i class="fas fa-pencil-alt" style="line-height: 2 !important;"></i>
+                                <i class="fas fa-pencil-alt"></i>
                             </a>
                         @endif
                         <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&productsgrid=true&category_id={{ $item->id }}" class="btn text-primary btn-sm">
@@ -69,7 +69,7 @@
                         </a> --}}
                         @if (auth()->id() == $item->user_id)
                             <a href="#edit" class="btn text-primary border border-primary btn-icon btn-sm opencateedit" data-catidchange="{{ $item->id }}"  data-catname="{{ $item->name }}">
-                                <i class="fas fa-pencil-alt" style="line-height: 2 !important;"></i>
+                                <i class="fas fa-pencil-alt"></i>
                             </a>
                         @endif
                         <a href="?type={{ request()->get('type') }}&type_ide={{ request()->get('type_ide') }}&products=true&category_id={{ $item->id }}" class="btn text-primary btn-sm">

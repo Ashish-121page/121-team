@@ -394,7 +394,7 @@
 
     </div>
     </div>
-    z
+    
     {{-- Including Modal --}}
     @include('panel.Documents.modals.SelectAttribute')
     @include('panel.Documents.modals.add-consign')

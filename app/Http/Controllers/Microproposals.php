@@ -50,9 +50,9 @@ class Microproposals extends Controller
     {
         try {
             sessionManager($request,'*');
-            if (Auth::check() != 1) {
-                auth()->loginUsingId(193);
-            }
+            // if (Auth::check() != 1) {
+            //     auth()->loginUsingId(193);
+            // }
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -147,16 +147,24 @@ class Microproposals extends Controller
         $added_products = ProposalItem::whereProposalId($proposal->id)->orderBy('pinned','DESC')->get();
         $countries = Country::get();
         $custom_inputs = $user->custom_fields ?? null;
+        $ProposalItems = ProposalItem::where('proposal_id',($proposal->id))->get();
 
         if ($custom_inputs != null) {
             $custom_inputs = json_decode($custom_inputs);
         }
 
+        try {
+            $selected_cols = array_keys((array) json_decode($ProposalItems[0]->note)) ?? [];
+        } catch (\Throwable $th) {
+            // throw $th;
+            $selected_cols = [];
+        }
 
-        // magicstring($user);
+
+        // magicstring($selected_cols);
         // return;
 
-        return view('frontend.micro-site.proposals.export',compact('proposal','user','added_products','user_key','countries','custom_inputs'));
+        return view('frontend.micro-site.proposals.export',compact('proposal','user','added_products','user_key','countries','custom_inputs','selected_cols'));
     }
 
 
@@ -429,7 +437,10 @@ class Microproposals extends Controller
         try{
 
             $user_shop_item_id = 0;
-            $proposal_item = ProposalItem::whereProductId($request->product_id)->whereProposalId($request->proposal_id)->exists();
+            $Rproduct_id = $request->product_id;
+            $Rproposal_id = $request->proposal_id;
+
+            $proposal_item = ProposalItem::whereProductId($Rproduct_id)->whereProposalId($Rproposal_id)->exists();
             if(!$proposal_item){
                 $product = Product::whereId($request->product_id)->first();
                 $price = $product->price ?? '0';
@@ -505,6 +516,36 @@ class Microproposals extends Controller
     }
 
 
+    public function qraction(Request $request) {
+        try {
+            $result = $request->get('result');
+            $slug = $request->subdomain;
+            $product_id = explode('/',$result);
+            $product_id = explode('?',end($product_id))[0];
+            // echo decrypt($product_id);
+
+            $product = Product::whereId(decrypt($product_id))->first();
+            if ($product == null) {
+                $model_code = '';
+            }else{
+                $model_code = $product->model_code;
+            }
+            $response = [
+                'title' => 'success',
+                'message' => 'Product Added to Proposal',
+                'model_code' => $model_code,
+            ];
+            return $response;
+
+        } catch (\Throwable $th) {
+            // throw $th;
+            return $response = [
+                'title' => 'error',
+                'message' => 'something Went Wrong',
+                'code' => 400,
+            ];
+        }
+    }
 
     function picked(Request $request,Proposal $proposal, $user_key ){
 
@@ -637,6 +678,7 @@ class Microproposals extends Controller
             if($proposal){
 
                 $arr = [
+                    'offer_name'=> $request->offer_name ?? json_decode($proposal->customer_details)->offer_name ?? "Offer",
                     'customer_name'=> $request->customer_name ?? json_decode($proposal->customer_details)->customer_mob_no ?? "Offer",
                     'customer_mob_no'=> $request->customer_mob_no ?? json_decode($proposal->customer_details)->customer_mob_no ?? "",
                     'customer_email'=> $request->customer_email ?? json_decode($proposal->customer_details)->customer_email ?? "",

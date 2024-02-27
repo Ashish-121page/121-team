@@ -33,8 +33,15 @@
                         </div>
                         <div class="form-group">
                             <label for="message">Message:</label>
-                            <textarea name="message" required class="form-control" id="message" rows="5" placeholder="Enter Message"></textarea>
+                            <textarea name="message" required class="form-control" id="message" rows="5" placeholder="Enter Message" minlength="25"></textarea>
+                            @error('message')
+                                <div class="text-danger">Describe in minimum 25 characters</div>
+                            @enderror
                         </div>
+                        {{-- <div class="form-group">
+                            <label for="message">Message:</label>
+                            <textarea name="message" required class="form-control" id="message" rows="5" placeholder="Enter Message"></textarea>
+                        </div> --}}
                         <div class="form-group">
                             <label for="message" class="form-label">Add Attachment:</label>
                             <input type="file" class="form-control" name="attachment" id="">

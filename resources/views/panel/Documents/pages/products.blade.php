@@ -289,7 +289,7 @@
                         @else
                             <br>
                         @endif
-                        @if ($ashus->remarks_offer != null)
+                        @if ($ashus->remarks_offer ?? null != null)
                             <div class="accordion" id="accordionExample">
                                 <div class="accordion-item">
 

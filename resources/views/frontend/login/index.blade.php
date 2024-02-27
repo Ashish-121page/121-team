@@ -1,7 +1,7 @@
 @extends('frontend.layouts.main-white')
 
 <head>
-    <title>Login</title>
+    <title>Start | 121.page</title>
 </head>
 <style>
     .alert-danger {

@@ -491,7 +491,7 @@ Route::group(['middleware' => 'auth','namespace' => 'Panel', 'prefix' => 'panel/
     });
 
 Route::group(['middleware' => 'check_access_code','namespace' => 'Panel', 'prefix' => 'panel/filemanager','as' =>'panel.filemanager.'], function () {
-    // Route::get('', ['uses' => 'FileManager@index', 'as' => 'index']);
+    Route::get('/old', ['uses' => 'FileManager@index', 'as' => 'index']);
     Route::get('', ['uses' => 'FileManager@newview', 'as' => 'index']);
     Route::get('/new', ['uses' => 'FileManager@newview', 'as' => 'new.view']);
     Route::any('/rename', ['uses' => 'FileManager@renamefile', 'as' => 'rename']);

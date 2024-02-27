@@ -22,19 +22,41 @@
     }
     .logo-light-mode{
         margin-top: 16px;
+
+        
+    }
+    @media (max-width: 992px) {
+        .section {
+            max-height: 992px !important;
+
+            .footer{
+                position: relative;
+               
+            }
+        }
+    }
+    @media (min-width: 992px) {
+        .section {
+            height: 680px !important;
+           
+        }
+        .footer{
+            max-height: 72px !important;
+            }
     }
 </style>
 @section('content')
 
         <!-- Start -->
     <section class="section">
-        <div class="container">
+        <div class="container mt-5" >
             <div class="row">
                 <div class="col-lg-8 col-12">
                     <div class="card chat chat-person border-0 shadow rounded mb-3">
                         <div class="d-lg-flex justify-content-between border-bottom p-4">
                             <div class="d-flex">
-                                <a href="{{ route('customer.dashboard') }}?active=support-ticket" ><i class="uil uil-arrow-left text-primary" style="font-size:35px;"></i></a>
+                                {{-- <a href="{{ route('customer.dashboard') }}?active=support-ticket" ><i class="uil uil-arrow-left text-primary" style="font-size:35px;"></i></a> --}}
+                                <a href="{{ route('panel.support_ticket.index') }}?active=support-ticket" ><i class="uil uil-arrow-left text-primary" style="font-size:35px;"></i></a>
                                 <div class="overflow-hidden ms-3">
                                     <a href="#" class="text-dark mb-0 h6 d-block text-truncate">{{ $ticket->subject }}</a>
                                     <small class="text-muted">
@@ -154,7 +176,7 @@
                     @if ($ticket->status != 2)
                     <div class="car border-0 shadow rounded mt-4">
                         <div class="card-body" style="padding: 1.5rem;">
-                            <h5>Does your problem appear to be resolved?</h5>
+                            <h5>Support Ticket resolved?</h5>
                             <a href="{{ route('customer.ticket.status.update',[$ticket->id,2]) }}" class="btn btn-outline-danger btn-md confirm-btn mx-auto d-block" style="padding: 5px 12px;">Mark the discussion as closed</a>
                         </div>
                    </div>
@@ -180,28 +202,28 @@
         );
     });
 
-    $(document).on('click','.confirm-btn',function(e){
-        e.preventDefault();
-        var url = $(this).attr('href');
-        var msg = $(this).data('msg') ?? "You won't be able to revert back!";
-        $.confirm({
-            draggable: true,
-            title: 'Are You Sure!',
-            content: msg,
-            type: 'red',
-            typeAnimated: true,
-            buttons: {
-                tryAgain: {
-                    text: 'yes',
-                    btnClass: 'btn-red',
-                    action: function(){
-                            window.location.href = url;
-                    }
-                },
-                close: function () {
-                }
-            }
-        });
-    });
+    // $(document).on('click','.confirm-btn',function(e){
+    //     e.preventDefault();
+    //     var url = $(this).attr('href');
+    //     var msg = $(this).data('msg') ?? "You won't be able to revert back!";
+    //     $.confirm({
+    //         draggable: true,
+    //         title: 'Are You Sure!',
+    //         content: msg,
+    //         type: 'red',
+    //         typeAnimated: true,
+    //         buttons: {
+    //             tryAgain: {
+    //                 text: 'yes',
+    //                 btnClass: 'btn-red',
+    //                 action: function(){
+    //                         window.location.href = url;
+    //                 }
+    //             },
+    //             close: function () {
+    //             }
+    //         }
+    //     });
+    // });
     </script>
 @endsection

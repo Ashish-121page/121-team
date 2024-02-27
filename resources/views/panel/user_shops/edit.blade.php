@@ -393,7 +393,7 @@
 
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == "about-section") active show @endif" id="about-section" role="tabpanel" aria-labelledby="pills-general-tab">
                                 <div class="row d-none">
-                                    <div class="col-lg-8">                                       
+                                    <div class="col-lg-8">
                                         {{-- brief_induction --}}
                                         @if(AuthRole() == 'Admin')
                                             <div class="card-body">
@@ -992,11 +992,11 @@
                             <div class="tab-pane fade @if(request()->has('active') && request()->get('active') == 'my-address') show active @endif" id="my-address-area" role="tabpanel" aria-labelledby="pills-setting-tab">
 
                                 <div class="row d-none">
-                                    <div class="col-lg-12">                                        
+                                    <div class="col-lg-12">
                                         <hr>
                                         <div class="d-flex justify-content-between my-3">
                                             <h6 class="mt-1">Entities</h6>
-                                            <a href="javascript:void(0);" class="btn btn-primary addAddress" data-id="{{ auth()->id() }}">Add Entity</a>
+                                            <a href="javascript:void(0);" class="btn btn-primary addAddress" data-id="{{ auth()->id() }}">  ity</a>
                                         </div>
 
                                         <div class="row">

@@ -106,24 +106,16 @@
             font-size: 2rem;
             color: white;
         }
-/* 
+        /*
 
         .page-5 {
-
             background: url(/storage/backend/feedback/img2.jpg);
-
             background-attachment: fixed;
-
             background-position: center;
-
             background-size: cover;
-
             background-repeat: no-repeat;
-
             backdrop-filter: grayscale(100%);
-
         } */
-
 
         .page-5 input[type=text] {
             background-color: transparent;
@@ -134,7 +126,6 @@
             border-bottom: 1px solid white;
             color: white;
         }
-        
         .page-5 input[type=text]::placeholder {
             font-size: 2rem;
             color: white;
@@ -147,21 +138,15 @@
             border-bottom: 1px solid white;
             color: white;
         }
-        
         .page-5 input[type=text]::placeholder {
             font-size: 2rem;
             color: white;
         }
 
-
         .navigation {
-
             position: fixed;
-
             bottom: 2%;
-
             right: 2%;
-
             z-index: 9999;
         }
         .navigation button {
@@ -184,243 +169,140 @@
             height:1rem;
             width: 1rem;
         }
-
         .table input[type="radio"]:checked+label i {
             /* background-color: #6666CC !important; */
             border-radius: 50%;
             color: #6666CC !important;
         }
-
         input[type="text"]{
             border-bottom: 1px solid #111 !important;
             color: black !important;
         }
-
         input[type="text"]::placeholder{
             color: black !important;
         }
 
+        @media only screen and (max-width: 600px) {
 
-    @media only screen and (max-width: 600px) {
+            .page-1 .row {
+                overflow: hidden;
+            }
+
+            .page-1 .fb {
+                background-color: #fff;
+                position: relative;
+                height: 100%;
+                align-items: start;
+            }
+
+            .page-1 input[type=text] {
+                background-color: transparent;
+                border: none;
+                outline: none;
+                height: 8rem;
+                width: 20rem;
+                font-size: 1.5rem;
+                border-bottom: 1px solid black;
+            }
+
+            .page-1 input[type=text]::placeholder {
+                font-size: 1.3rem;
+            }
+
+            .page-2 .row .bg {
+                margin-left: 0rem;
+                width: 100%;
+                text-align: left;
+            }
+
+            .page-2 .matrix-response {
+                width: 90vw;
+            }
+
+            .page-3{
+                overflow: hidden;
+            }
+            .page-3 .fb {
+                background-color: #fff;
+                position: relative;
+                height: 100%;
+                align-items: start;
+                margin-top: -80px;
+            }
+
+
+            .page-3 .matrix-response {
+                width: 90vw;
+                margin-left: 9rem;
+            }
+            .dn{
+                margin-left: 9rem;
+                width: 25rem;
+            }
+
+
+            .page-4 .row .bg {
+                margin-left: 0rem;
+                width: 100%;
+                text-align: left;
+                color: white;
+            }
+
+            .page-4 input[type=text] {
+                background-color: transparent;
+                border: none;
+                outline: none;
+                height: 8rem;
+                width: 20rem;
+                font-size: 1.5rem;
+                border-bottom: 1px solid black;
+            }
 
 
 
-        .page-1 .row {
+            .page-5 .row .bg {
+                margin-left: 0rem;
+                width: 100%;
+                text-align: left;
+                color: white;
+            }
 
-            overflow: hidden;
+            .page-5 input[type=text] {
+                background-color: transparent;
+                border: none;
+                outline: none;
+                height: 8rem;
+                width: 20rem;
+                font-size: 1.5rem;
+                border-bottom: 1px solid black;
+            }
 
+            .desc {
+                width: 20rem;
+            }
+
+            .navigation {
+                top: 90%;
+                left: 75%;
+                z-index: 9999;
+            }
+            .watermark {
+                position: fixed;
+                z-index: 9999;
+                bottom: 2.5%;
+                left: 0.5rem;
+            }
+            .hfhds{
+                margin-left: -10%;
+            }
         }
-
-
-
-        .page-1 .fb {
-            background-color: #fff;
-            position: relative;
-            height: 100%;
-            align-items: start;
-        }
-
-
-
-        .page-1 input[type=text] {
-
-            background-color: transparent;
-
-            border: none;
-
-            outline: none;
-
-            height: 8rem;
-
-            width: 20rem;
-
-            font-size: 1.5rem;
-
-            border-bottom: 1px solid black;
-
-        }
-
-
-
-        .page-1 input[type=text]::placeholder {
-
-            font-size: 1.3rem;
-
-        }
-
-        
-
-        .page-2 .row .bg {
-
-            margin-left: 0rem;
-
-            width: 100%;
-
-            text-align: left;
-
-        }
-
-
-
-        .page-2 .matrix-response {
-
-            width: 90vw;
-
-        }
-
-
-
-        .page-3{
-
-            overflow: hidden;
-
-        }
-        .page-3 .fb {
-
-            background-color: #fff;
-
-            position: relative;
-
-            height: 100%;
-
-            align-items: start;
-
-            margin-top: -80px;
-
-        }
-
-
-
-
-
-        .page-3 .matrix-response {
-
-            width: 90vw;
-
-            margin-left: 9rem;
-
-        }
-
-        .dn{
-
-            margin-left: 9rem;
-
-            width: 25rem;
-
-        }
-
-
-
-
-
-        .page-4 .row .bg {
-
-            margin-left: 0rem;
-
-            width: 100%;
-
-            text-align: left;
-
-            color: white;
-
-        }
-
-
-
-        .page-4 input[type=text] {
-
-            background-color: transparent;
-
-            border: none;
-
-            outline: none;
-
-            height: 8rem;
-
-            width: 20rem;
-
-            font-size: 1.5rem;
-
-            border-bottom: 1px solid black;
-
-        }
-
-
-
-
-
-
-
-        .page-5 .row .bg {
-
-            margin-left: 0rem;
-
-            width: 100%;
-
-            text-align: left;
-
-            color: white;
-
-        }
-
-
-
-        .page-5 input[type=text] {
-
-            background-color: transparent;
-
-            border: none;
-
-            outline: none;
-
-            height: 8rem;
-
-            width: 20rem;
-
-            font-size: 1.5rem;
-
-            border-bottom: 1px solid black;
-
-        }
-
-
-
-        .desc {
-
-            width: 20rem;
-
-        }
-
-
-
-        .navigation {
-
-            top: 90%;
-
-            left: 75%;
-
-            z-index: 9999;
-
-        }
-        .watermark {
-            position: fixed;
-            z-index: 9999;
-            bottom: 2.5%;
-            left: 0.5rem;
-        }
-        .hfhds{
-            margin-left: -10%;
-        }
-    }
     </style>
 </head>
 <body>
-
     <div class="hero">
         <div class="progress-container">
             <div class="progress-bar" id="myBar"></div>
         </div>
-
 
         <div class="navigation">
             <button class="btn  btn-primary" id="prev" type="button">
@@ -428,19 +310,18 @@
             </button>
             <button class="btn  btn-primary mx-1" id="next" type="button">
                 <i class="bi bi-caret-down"></i>
-            </button>            
+            </button>
         </div>
 
-
-
-<form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSeYQfJsm1ik6W-DwQN0HqRcfFxTNW6V9LPG5w80kVMI610C3w/formResponse" method="POST">
+{{-- <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSeYQfJsm1ik6W-DwQN0HqRcfFxTNW6V9LPG5w80kVMI610C3w/formResponse" method="POST"> --}}
+<form action="{{ route('feedbackform.store') }}" method="POST">
         <div class="container-fluid">
             <section class="page-1">
                 <div class="row d-flex">
-                    <div class="col-md-6 p-2">
-                        <img src="/storage/backend/feedback/welcome.svg" class="img-fluid rounded ash" alt="Image 1" width="80%">
+                    <div class="col-md-6">
+                        <img src="{{ asset('/storage/backend/feedback/welcome.svg') }}" class="img-fluid rounded ash" alt="Image 1" width="80%">
                     </div>
-                    <div class="col-md-6 d-flex pt-5 fb">
+                    <div class="col-md-6 d-flex align-items-center ">
                         <div class="form-bx px-3">
                             <label for="entry.1134233759" class="form-label h4"> <span class="text-info">1 -> </span> Your Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control my-3 shadow-none" placeholder="Typer here …" name="entry.1134233759" autocomplete="off" id="entry.1134233759" style=" height: 3.5rem;" required>
@@ -450,11 +331,10 @@
                 </div>
             </section>
             <section class="page-2 mb-5">
-                <div class="row">                    
+                <div class="row">
                     <div class="col-md-6 p-2">
-                        <img src="/storage/backend/feedback/img2.svg" class="img-fluid rounded ash" alt="Image 1" width="80%">
+                        <img src="{{asset('storage/backend/feedback/img2.svg')}}" class="img-fluid rounded ash" alt="Image 1" width="80%">
                     </div>
-                    
                     <div class="col-md-6 d-flex justify-content-center flex-column  bg">
                         <div class="form-bx px-3">
                             <label for="name" class="form-label h3 "> <span class="text-info">2 -> </span> How was the demo ? <span class="text-danger">*</span></label>
@@ -478,7 +358,7 @@
                                     <tbody>
                                         <tr class="mybox">
                                             <td scope="row" class="w-50 bro">
-                                            Value anticipated from 121.page 
+                                            Value anticipated from 121.page
                                             </td>
                                             <td>
                                                 <div class="form-bx">
@@ -523,7 +403,7 @@
                                                     <input type="radio" class="form-check d-none" name="entry.1552551473" id="Greatq2" value="Great" required>
                                                     <label for="Greatq2">
                                                         <i class="bi bi-emoji-smile fs-3"></i>
-                                                    </label>            
+                                                    </label>
                                                 </div>
                                             </td>
                                             <td>
@@ -532,7 +412,6 @@
                                                     <label for="Goodq2">
                                                         <i class="bi bi-emoji-laughing fs-3"></i>
                                                     </label>
-
                                                 </div>
                                             </td>
                                             <td>
@@ -541,7 +420,6 @@
                                                     <label for="Satisfactoryq2">
                                                         <i class="bi bi-emoji-wink fs-3"></i>
                                                     </label>
-
                                                 </div>
                                             </td>
                                             <td>
@@ -563,7 +441,7 @@
                                                     <input type="radio" class="form-check d-none" name="entry.254315716" id="Greatq3" value="Great" required>
                                                     <label for="Greatq3">
                                                         <i class="bi bi-emoji-smile fs-3"></i>
-                                                    </label>       
+                                                    </label>
                                                 </div>
                                             </td>
                                             <td>
@@ -597,20 +475,19 @@
                             <button class="btn btn-sm btn-primary my-2"  onclick="next()" type="button">Next</button>
                         </div>
                     </div>
-
                 </div>
             </section>
             <section class="page-3">
                 <div class="row">
                     <div class="col-md-6 p-2 mt-5">
-                        <img src="/storage/backend/feedback/img3.svg" class="img-fluid rounded ash" alt="Image 1" width="60%">
+                        <img src="{{ asset('/storage/backend/feedback/img3.svg') }}" class="img-fluid rounded ash" alt="Image 1" width="60%">
                     </div>
                     <div class="col-md-6 d-flex align-items-center justify-content-center flex-column ">
                         <div class="form-bx px-3 mt-3 fb">
-                            <label for="name" class="form-label dn h4"> <span class="text-info">3 -> </span> 
+                            <label for="name" class="form-label dn h4"> <span class="text-info">3 -> </span>
                             <!-- Tell Something About our Duration of demo  -->
-                            Duration of Demo <span class="text-danger">*</span>  
-                            </label>    
+                            Duration of Demo <span class="text-danger">*</span>
+                            </label>
                             <div class="matrix-response">
                                     <div class="table-responsive">
                                     <table class="table ">
@@ -646,7 +523,7 @@
                                                         <input type="radio" class="form-check d-none" name="entry.904323925" id="q3c" value="Too long" required>
                                                         <label for="q3c">
                                                             <i class="bi bi-emoji-angry fs-3"></i>
-                                                        </label> 
+                                                        </label>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -693,7 +570,6 @@
                                                         <label for="q4b">
                                                         <i class="bi bi-emoji-laughing fs-3"></i>
                                                         </label>
-
                                                     </div>
                                                 </td>
                                                 <td>
@@ -702,7 +578,6 @@
                                                         <label for="q4c">
                                                         <i class="bi bi-emoji-angry fs-3"></i>
                                                         </label>
-
                                                     </div>
                                                 </td>
                                             </tr>
@@ -714,7 +589,6 @@
                                                         <label for="q54a">
                                                         <i class="bi bi-emoji-smile fs-3"></i>
                                                         </label>
-
                                                     </div>
                                                 </td>
                                                 <td>
@@ -723,7 +597,6 @@
                                                         <label for="q54as">
                                                         <i class="bi bi-emoji-laughing fs-3"></i>
                                                         </label>
-
                                                     </div>
                                                 </td>
                                                 <td>
@@ -732,7 +605,6 @@
                                                         <label for="q54sa">
                                                         <i class="bi bi-emoji-angry fs-3"></i>
                                                         </label>
-
                                                     </div>
                                                 </td>
                                             </tr>
@@ -745,15 +617,12 @@
                     </div>
                 </div>
             </section>
-
             <section class="page-4">
                 <div class="row ash">
 
-                    
                     <div class="col-md-6">
-                        <img src="/storage/backend/feedback/img-4.svg" class="img-fluid rounded ash" alt="Image 1" width="65%">
+                        <img src="{{ asset('/storage/backend/feedback/img-4.svg') }}" class="img-fluid rounded ash" alt="Image 1" width="65%">
                     </div>
-
                     <div class="col-md-6 d-flex justify-content-center flex-column">
                         <div class="form-bx hfhds">
                             <label for="name" class="form-label h3"> <span class="text-info">4 -> </span>
@@ -763,9 +632,9 @@
                             <br>
                             <div class="desc fs-5">
                                 <small>
-                                    <!-- We welcome your suggestions & feedback. 
+                                    <!-- We welcome your suggestions & feedback.
                                     <br> -->
-                                    - Any features that can help your business 
+                                    - Any features that can help your business
                                     <!-- - related to cataloguing  -->
                                     <br>
                                     - Any additional tips based on your demo / using 121.page
@@ -776,17 +645,14 @@
                         </div>
                     </div>
 
-
                 </div>
-            </section>           
-
+            </section>
             <section class="page-5">
                 <div class="row">
-             
-                    
+
                     <div class="col-md-6 d-flex align-items-center justify-content-center flex-column bg ">
                         <div class="form-bx px-3 w-100">
-                            <label for="name" class="form-label h3"> <span class="text-info">5 -> </span> 
+                            <label for="name" class="form-label h3"> <span class="text-info">5 -> </span>
                             <!-- Any questions that we can further answer? -->
                             Any questions we missed?
                         </label>
@@ -800,15 +666,14 @@
                         </div>
                     </div>
 
-
                     <div class="col-md-6">
-                        <img src="/storage/backend/feedback/img-5.svg" class="img-fluid ash rounded" alt="Image 1" width="80%">
+                        <img src="{{ asset('/storage/backend/feedback/img-5.svg') }}" class="img-fluid ash rounded" alt="Image 1" width="80%">
                     </div>
                 </div>
             </section>
         </div>
     </form>
-    <span class="watermark text-muted">Powerd By 121.page</span>       
+    <span class="watermark text-muted">Powerd By 121.page</span>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -831,7 +696,6 @@
                     scrollTop: $(`.page-${currSlide}`).offset().top
                 },'slow');
         });
-
         $("#prev").click(function () {
             $('html,body').animate({
                     scrollTop: $(`.page-${currSlide}`).offset().top - $(`.page-${currSlide}`).outerHeight()
@@ -845,17 +709,14 @@
                 },'slow');
         }
 
-
         document.addEventListener("keydown", function(event) {
             if(event.which == 13){
                 event.preventDefault()
                 next();
             }
         })
-        
-        
-        
-        
+
+
     </script>
 </body>
 </html>

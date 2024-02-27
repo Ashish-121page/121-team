@@ -1,5 +1,5 @@
-@extends('backend.layouts.main') 
-@section('title', 'Manage Offers')
+@extends('backend.layouts.main')
+@section('title', 'Offers List')
 @section('content')
 <style>
     .remove-ik-class{
@@ -14,11 +14,11 @@
             max-height: 65vh;
             overflow-y: auto;
         }
-     
+
 </style>
 @php
 /**
- * Proposal 
+ * Proposal
  *
  * @category  zStarter
  *
@@ -58,7 +58,7 @@
                 </div>
             </div>
         </div>
-        
+
         <form action="{{ route('panel.proposals.index') }}" method="GET" id="TableForm">
             <div class="row">
                 <!-- start message area-->
@@ -76,40 +76,40 @@
                                         <span>From</span>
                                     <label for=""><input type="date" name="from" class="form-control" value="{{request()->get('from')}}"></label>
                                     </div>
-                                    <div class="form-group mb-0 mr-2"> 
+                                    <div class="form-group mb-0 mr-2">
                                         <span>To</span>
-                                            <label for=""><input type="date" name="to" class="form-control" value="{{request()->get('to')}}"></label> 
+                                            <label for=""><input type="date" name="to" class="form-control" value="{{request()->get('to')}}"></label>
                                     </div>
                                     <button type="submit" class="btn btn-icon btn-sm mr-2 btn-outline-warning" title="Filter"><i class="fa fa-filter" aria-hidden="true"></i></button>
                                     <a href="javascript:void(0);" id="reset" data-url="{{ route('panel.proposals.index') }}" class="btn btn-icon btn-sm btn-outline-danger mr-2" title="Reset"><i class="fa fa-redo" aria-hidden="true"></i></a>
                                 @else
                                 {{-- // else --}}
-                                @endif  
+                                @endif
                             </div>
                         </div>
                         {{--` Quick action menu --}}
-                <div class="row d-none" id="quickaction">
-                    <div class="col-12 d-flex justify-content-center" style="margin-left:50px">
-                        {{-- @include('panel.user_shop_items.includes.QuickActionMenu') --}}
-                       
+                    <div class="row d-none" id="quickaction">
+                        <div class="col-12 d-flex justify-content-center" style="margin-left:50px">
+                            {{-- @include('panel.user_shop_items.includes.QuickActionMenu') --}}
 
-                            {{-- For Category --}}
-                                                                                                            
-                                                                                                                                   
-                                      
-                            <div class="top-menu d-flex align-items-center " id="product-action">
-                                {{-- <button class="btn btn-sm btn-outline-primary mx-1" id="export-categrory">Export</button> --}}
-                                {{-- <button class="btn btn-sm btn-outline-primary mx-1" id="delcat_dummy">Delete</button> --}}
-                            
-                                <button class="btn btn-sm btn-outline-primary mx-1" id="deleteproposal">
-                                    Delete
-                                </button>
-                                {{-- <a href="{{ route('panel.constant_management.category.delete', $item->id)  }}" title="Delete Category" class="btn btn-sm delete-item dropdown-item">Delete</a> --}}
-                            </div>
-                            
-                        {{-- @endif --}}
+
+                                {{-- For Category --}}
+
+
+
+                                <div class="top-menu d-flex align-items-center " id="product-action">
+                                    {{-- <button class="btn btn-sm btn-outline-primary mx-1" id="export-categrory">Export</button> --}}
+                                    {{-- <button class="btn btn-sm btn-outline-primary mx-1" id="delcat_dummy">Delete</button> --}}
+
+                                    <button class="btn btn-sm btn-outline-primary mx-1" id="deleteproposal">
+                                        Delete
+                                    </button>
+                                    {{-- <a href="{{ route('panel.constant_management.category.delete', $item->id)  }}" title="Delete Category" class="btn btn-sm delete-item dropdown-item">Delete</a> --}}
+                                </div>
+
+                            {{-- @endif --}}
+                        </div>
                     </div>
-                </div>
                         {{-- @if(AuthRole() != 'User')
                             <div id="ajax-container">
                                 @include('panel.proposals.load')
@@ -122,7 +122,7 @@
                         @if (request()->has('view') && request()->get('view') == 'listview')
                             @include('panel.proposals.pages.table')
                         @elseif(request()->has('view') && request()->get('view') == 'gridview')
-                            @include('panel.proposals.pages.grid')                    
+                            @include('panel.proposals.pages.grid')
                         @else
                             @include('panel.proposals.pages.table')
                         @endif
@@ -139,7 +139,7 @@
                     <div class="col-lg-6 col-md-12  col-12 my-2">
                         <div class="one" style="display: flex; align-items: center; justify-content: flex-start;">
                             <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}"
-                                class="btn btn-outline-primary mx-1 
+                                class="btn btn-outline-primary mx-1
                                 @if (!request()->has('products') && !request()->has('assetsafe') && !request()->has('properties') && !request()->has('productsgrid')) active @endif
                                 ">
                                 Categories
@@ -158,26 +158,27 @@
                             </a>
                         </div>
                     </div> --}}
-                
+
                     {{--` This Menu is Always Visible --}}
-                    {{-- <div class="col-lg-6 col-md-12 col-12 my-2">        
+                    {{-- <div class="col-lg-6 col-md-12 col-12 my-2">
                         <div class="two" style="display: flex; align-items: center; justify-content: flex-end;">
                             @include('panel.user_shop_items.includes.action_menu')
                         </div>
                     </div> --}}
                 {{-- </div> --}}
-                
-            
+
+
             </div>
-        <form>
+        </form>
             <form action="{{ route('panel.proposals.index') }}" method="GET">
                 <input type="hidden" name="Sent" id="status_sent">
                 <input type="hidden"  id="buyer" name="Buyer_name">
 
                 <button type="submit" class="d-none" id="jhgfdsare"></button>
-            
+
             </form>
     </div>
+    @include('frontend.micro-site.og_proposals.modal.offerexpo')
     <!-- push external js -->
     @push('script')
     <script src="{{ asset('backend/js/index-page.js') }}"></script>
@@ -188,8 +189,14 @@
         <script src="{{asset('backend/plugins/mohithg-switchery/dist/switchery.min.js') }}"></script>
         <script src="{{asset('backend/js/form-advanced.js') }}"></script>
         <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
+
     <script>
-           
+        // $(document).ready(function() {
+        //     $("#staticBackdrop").modal('show');
+        // });
+    </script>
+    <script>
+
         function html_table_to_excel(type)
         {
             var table_core = $("#table").clone();
@@ -203,13 +210,13 @@
             XLSX.write(file, { bookType: type, bookSST: true, type: 'base64' });
             XLSX.writeFile(file, 'ProposalFile.' + type);
             $("#table").html(table_core.html());
-            
+
         }
 
         $(document).on('click','#export_button',function(){
             html_table_to_excel('xlsx');
         })
-       
+
 
         $('#reset').click(function(){
             var url = $(this).data('url');
@@ -220,9 +227,9 @@
     </script>
 
 
-    <script>
+    {{-- <script>
         $(document).ready(function () {
-            $("#makeoffer").click(function (e) { 
+            $("#makeoffer").click(function (e) {
                 e.preventDefault();
                 var url = $(this).attr('href');
                 // var msg = "<input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Name'> <br> <input type='text' id='offeremail' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Email (Optional)'> <br> <input type='number' maxlength='10' id='offerphone' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Phone (Optional)'>";
@@ -252,7 +259,7 @@
                                         return false;
                                     }
                                     url = url+"&offerfor="+margin+"&offerphone="+offerphone+"&offeremail="+offeremail+"&offeralias="+alias+"&offerpersonname="+personname;
-                                    window.location.href = url;               
+                                    window.location.href = url;
                                     // console.log(url);
                             }
                         },
@@ -263,16 +270,16 @@
             });
 
 
-            
- 
+
+
             function copyTextToClipboard(text) {
                         if (!navigator.clipboard) {
                             fallbackCopyTextToClipboard(text);
                             return;
                         }
-                    
+
                         navigator.clipboard.writeText(text).then(function()
-                    
+
                     {
                             $.toast({
                                 heading: 'SUCCESS',
@@ -286,7 +293,7 @@
                             console.error('Failed to copy text to clipboard:', err);
                         });
                     }
-                    
+
                     $(".copybtn").click(function(e) {
                         e.preventDefault();
                         var link = $(this).val();
@@ -315,159 +322,161 @@
             //     e.preventDefault();
             //     var link = $(this).val();
             //     copyTextToClipboard(link);
-            
+
             // });
 
 
-            
+
         });
-        
+
+    </script> --}}
+
+    <script>
+        $(document).ready(function () {
+            // product-action
+            function myfunc() {
+                if ($(".input-check:checked").length > 0) {
+                    // any one is checked
+                    $("#quickaction").removeClass('d-none');
+                    getValues()
+                } else {
+                    $("#quickaction").addClass('d-none');
+                }
+            }
+
+            function getValues(){
+                let selected = []
+                let record = document.querySelectorAll(".input-check:checked");
+                record.forEach(element => {
+                    selected.push(element.dataset.record);
+                });
+                $(".selectedbtn").html(selected.length+' selected')
+                return selected;
+            }
+
+            $("#printQrbtn").click(function (e) {
+                e.preventDefault();
+                $("#needqr").val(getValues());
+                $("#qrform").submit()
+
+            });
+
+
+            $("#exportproductbtn").click(function (){
+                $("#products_export").val(getValues());
+                $("#products_exportform").submit();
+            })
+
+
+            $(".input-check").change(function (e) {
+                myfunc()
+            });
+
+
+            $("#checkallinp").change(function (e) {
+                $('.input-check').click();
+            });
+
+            $("#export-categrory").click(function (e) {
+                e.preventDefault();
+
+                let forminput = $('#choose_cat_ids');
+                let form = $('#export_category_product');
+                let arr = [];
+
+                if ($(".input-check:checked").length > 0) {
+                    $.each($(".input-check:checked"), function (indexInArray, valueOfElement) {
+                        arr.push(valueOfElement.value);
+                    });
+                    console.log(arr);
+                    forminput.val(arr)
+                    form.submit()
+                }
+
+
+            });
+
+
+
+            $("#deletecatbtn").click(function (e) {
+                e.preventDefault();
+                let forminput = $('#delete_ids');
+                let form = $('#categoryDeleteForm');
+                let arr = [];
+
+                if ($(".input-check:checked").length > 0) {
+                    $.each($(".input-check:checked"), function (indexInArray, valueOfElement) {
+                        arr.push(valueOfElement.value);
+                    });
+                    console.log(arr);
+                    forminput.val(arr)
+                    form.submit()
+                }
+            });
+
+            $("#deleteproposal").click(function (e) {
+                e.preventDefault();
+                let forminput = $('#delete_ids');
+                let form = $('#ProposalDeleteForm');
+                let arr = [];
+
+                if ($(".input-check:checked").length > 0) {
+                    $.each($(".input-check:checked"), function (indexInArray, valueOfElement) {
+                        arr.push(valueOfElement.value);
+                    });
+                    console.log(arr);
+                    forminput.val(arr)
+                    form.submit()
+                }
+            });
+
+
+            $('#status_check').change(function (e) {
+                let valsdue = $(this).val();
+                $("#status_sent").val(valsdue);
+                $("#jhgfdsare").click();
+                location.reload()
+
+            });
+
+            $('#search_buyer').on('input', function () {
+                let val2 = $(this).val();
+                $("#buyer").val(val2);
+                $("#jhgfdsare").click();
+                location.reload()
+
+                });
+
+                // function copyTextToClipboard(text) {
+                //         if (!navigator.clipboard) {
+                //             fallbackCopyTextToClipboard(text);
+                //             return;
+                //         }
+                //         navigator.clipboard.writeText(text).then(function() {
+                //         }, function(err) {
+                //         });
+                //         $.toast({
+                //             heading: 'SUCCESS',
+                //             text: "Offer link copied.",
+                //             showHideTransition: 'slide',
+                //             icon: 'success',
+                //             loaderBg: '#f96868',
+                //             position: 'top-right'
+                //         });
+                // }
+
+                // $(".copybtn").click(function (e) {
+                //     e.preventDefault();
+                //     var link = $(this).val();
+                //     copyTextToClipboard(link);
+                // });
+
+
+
+
+        });
     </script>
 
-<script>
-    $(document).ready(function () {
-        // product-action
-        function myfunc() {
-            if ($(".input-check:checked").length > 0) {
-                // any one is checked
-                $("#quickaction").removeClass('d-none');
-                getValues()
-            } else {
-                $("#quickaction").addClass('d-none');
-            }
-        }
 
-        function getValues(){
-            let selected = []
-            let record = document.querySelectorAll(".input-check:checked");
-            record.forEach(element => {
-                selected.push(element.dataset.record);
-            });
-            $(".selectedbtn").html(selected.length+' selected')
-            return selected;
-        }
-
-        $("#printQrbtn").click(function (e) { 
-            e.preventDefault();
-            $("#needqr").val(getValues());
-            $("#qrform").submit()
-            
-        });
-
-
-        $("#exportproductbtn").click(function (){
-            $("#products_export").val(getValues());
-            $("#products_exportform").submit();
-        })
-
-
-        $(".input-check").change(function (e) { 
-            myfunc()
-        });
-
-
-        $("#checkallinp").change(function (e) { 
-            $('.input-check').click();                
-        });
-
-        $("#export-categrory").click(function (e) { 
-            e.preventDefault();
-            
-            let forminput = $('#choose_cat_ids');
-            let form = $('#export_category_product');
-            let arr = [];
-
-            if ($(".input-check:checked").length > 0) {
-                $.each($(".input-check:checked"), function (indexInArray, valueOfElement) { 
-                    arr.push(valueOfElement.value);  
-                });
-                console.log(arr);
-                forminput.val(arr)
-                form.submit()
-            }
-            
-
-        });
-        
-        
-
-        $("#deletecatbtn").click(function (e) { 
-            e.preventDefault();
-            let forminput = $('#delete_ids');
-            let form = $('#categoryDeleteForm');
-            let arr = [];
-
-            if ($(".input-check:checked").length > 0) {
-                $.each($(".input-check:checked"), function (indexInArray, valueOfElement) { 
-                    arr.push(valueOfElement.value);  
-                });
-                console.log(arr);
-                forminput.val(arr)
-                form.submit()
-            }
-        });
-
-        $("#deleteproposal").click(function (e) { 
-            e.preventDefault();
-            let forminput = $('#delete_ids');
-            let form = $('#ProposalDeleteForm');
-            let arr = [];
-            
-            if ($(".input-check:checked").length > 0) {
-                $.each($(".input-check:checked"), function (indexInArray, valueOfElement) { 
-                    arr.push(valueOfElement.value);  
-                });
-                console.log(arr);
-                forminput.val(arr)
-                form.submit()
-            }
-        });
-
-        
-        $('#status_check').change(function (e) { 
-            let valsdue = $(this).val();
-            $("#status_sent").val(valsdue);
-            $("#jhgfdsare").click();
-            location.reload()
-            
-        });
-
-        $('#search_buyer').on('input', function () {
-            let val2 = $(this).val();
-            $("#buyer").val(val2);
-            $("#jhgfdsare").click();
-            location.reload()            
-            
-            });
-
-            // function copyTextToClipboard(text) {
-            //         if (!navigator.clipboard) {
-            //             fallbackCopyTextToClipboard(text);
-            //             return;
-            //         }
-            //         navigator.clipboard.writeText(text).then(function() {
-            //         }, function(err) {
-            //         });
-            //         $.toast({
-            //             heading: 'SUCCESS',
-            //             text: "Offer link copied.",
-            //             showHideTransition: 'slide',
-            //             icon: 'success',
-            //             loaderBg: '#f96868',
-            //             position: 'top-right'
-            //         });
-            // }
-
-            // $(".copybtn").click(function (e) {
-            //     e.preventDefault();
-            //     var link = $(this).val();
-            //     copyTextToClipboard(link);
-            // });
-
-                               
-                
-        
-    });
-</script>
     @endpush
 @endsection

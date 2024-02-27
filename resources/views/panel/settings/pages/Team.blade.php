@@ -236,7 +236,7 @@
                         <div class="col-md-12">
                             <div class="d-flex justify-content-between my-3">
                                 <h6>Team Members</h6>
-                                <a href="{{ route('panel.teams.create') }}{{ '?shop_id='.$user_shop->id }}" class="mb-2 btn btn-icon btn-sm btn-outline-primary" title="Add New Team Member"><i class="fa fa-plus" style="line-height: 2 !important;" aria-hidden="true"></i></a>
+                                <a href="{{ route('panel.teams.create') }}{{ '?shop_id='.$user_shop->id }}" class="mb-2 btn btn-icon btn-sm btn-outline-primary" title="Add New Team Member"><i class="fa fa-plus" aria-hidden="true"></i></a>
                             </div>
                                 @php
                                     $items = App\Models\Team::whereUserShopId($user_shop->id)->paginate(4);

@@ -22,7 +22,7 @@
 
 
 @php
-    $user = auth()->user();  
+    $user = auth()->user();
     $acc_permissions = json_decode($user->account_permission);
     $acc_permissions->mysupplier = $acc_permissions->mysupplier ?? 'no';
     $acc_permissions->offers = $acc_permissions->offers ?? 'no';
@@ -31,7 +31,7 @@
     $acc_permissions->pricegroup  = $acc_permissions->pricegroup  ?? 'no';
     $acc_permissions->managegroup  = $acc_permissions->managegroup  ?? 'no';
     $acc_permissions->bulkupload  = $acc_permissions->bulkupload  ?? 'no';
-    
+
 
     // Todo: Setting Up Permissions for Team USer
 
@@ -66,7 +66,7 @@
             $Team_pricegroup = true;
             $Team_categorygroup = true;
             $Team_bulkupload = true;
-            
+
         }
     }
     else{
@@ -100,7 +100,7 @@
             {{-- @if($pending_requests > 0)
                 <span class="badge badge-warning">{{ $pending_requests }}</span>
             @endif --}}
-        {{-- </a> 
+        {{-- </a>
     </div>
 @endif --}}
 
@@ -137,10 +137,10 @@
             @endif
         @endif --}}
 
-        
+
         {{-- @if($acc_permissions->bulkupload == "yes") --}}
             {{-- @if ($Team_bulkupload)
-                <a href="{{ route('panel.filemanager.index') }}" class="menu-item a-item">{{ __('File Manager')}}</a>   
+                <a href="{{ route('panel.filemanager.index') }}" class="menu-item a-item">{{ __('File Manager')}}</a>
             @endif --}}
         {{-- @endif --}}
 
@@ -148,7 +148,7 @@
         {{-- <a href="{{ route('panel.products.index') }}?action=nonbranded" class="menu-item a-item">{{ __('Manage')}}</a> --}}
 
         {{-- <a href="{{ route('panel.products.inventory.index') }}?action=nonbranded" class="menu-item a-item">{{ __('Inventory')}}</a> --}}
-        
+
         {{-- <a href="{{ route('panel.user_shop_items.create') }}" class="menu-item a-item">{{ __('Add Items')}}</a> --}}
 
         {{-- <a href="{{ route('panel.user_shop_items.create')."?type=direct&type_id=".auth()->id() }}" class="menu-item a-item {{ activeClassIfRoutes(['panel.user_shop_items.create'] ,'active open' ) }}">{{ __('On site products')}}</a> --}}
@@ -164,14 +164,14 @@
 
 
         {{-- <a href="{{ route('panel.currency.manage.index')."?user=". auth()->id()}}" class="menu-item a-item" >Currencies</a>
-        
+
 
         @if($acc_permissions->pricegroup == "yes")
             @if ($Team_pricegroup)
                 <a href="{{ route('panel.groups.index')."?user=". auth()->id()}}" class="menu-item a-item" >Price Group</a>
             @endif
         @endif --}}
-        
+
     {{-- </div>
 </div> --}}
 
@@ -202,8 +202,8 @@
     <a href="{{ route('contact.index')}}" class="a-item" ><i class="ik ik-help-circle"></i><span>{{ '121 Support' }}</span></a>
 </div> --}}
 <div class="nav-item {{ ($segment2 == 'contact') ? 'active' : '' }}">
-    <a href="https://forms.gle/JKe6p6bic7gjnuJq5" class="a-item" ><i class="ik ik-mail"></i><span>{{ '121 Support' }}</span></a>
-    {{-- <a href="{{ route('panel.support_ticket.index') }}" class="a-item" ><i class="ik ik-mail"></i><span>{{ '121 Support' }}</span></a> --}}
+    {{-- <a href="https://forms.gle/JKe6p6bic7gjnuJq5" class="a-item" ><i class="ik ik-mail"></i><span>{{ '121 Support' }}</span></a> --}}
+    <a href="{{ route('panel.support_ticket.index') }}" class="a-item" ><i class="ik ik-mail"></i><span>{{ '121 Support DB' }}</span></a>
 </div>
 {{-- <div class="nav-item {{ ($segment2 == 'subscription') ? 'active' : '' }}">
     <a href="{{ route('panel.subscription.index') }}" class="a-item" ><i class="ik ik-check-square"></i><span>{{ 'Subscription Plan' }}</span></a>

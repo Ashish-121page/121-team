@@ -1434,7 +1434,7 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="form-group">
-                                                <label for="">Select Variations</label>
+                                                <label for="">Select Variation Basis</label>
                                                 <div class="alert alert-warning" role="alert">
                                                    <i class="ik ik-info mr-1"></i> Select from dropdown on basis of which different sku are to be created.
                                                    e.g. if this item has Red,Blue,Green colour - Choose Variation : Colour.  <br>

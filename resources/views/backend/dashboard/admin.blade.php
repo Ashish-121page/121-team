@@ -54,6 +54,7 @@
         </div>
       
     </div>
+
     <div class="col-xl-4 col-md-8">
         <div class="card new-cust-card">
             <div class="card-header">
@@ -68,6 +69,48 @@
             </div>
            <div id="container" class="chart-shadow"></div>
         </div>
+        {{-- support ticket --}}
+        <div class="card new-cust-card">
+            <div class="card-header">
+                @php
+                    $supports = App\Models\SupportTicket::whereStatus(0)->latest()->get();                    
+                @endphp
+                <h3>{{ __('Support Tickets')}}</h3>
+            </div>
+            <div class="card-body">
+                @if ($supports->count() > 0)
+                <table class="table">
+                   <thead>
+                       <tr>
+                           <th>{{ __('Name')}}</th>
+                           <th>{{ __('Subject')}}</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       @foreach ($supports as $support)
+                           <tr>
+                               <td>
+                                   <a class="btn btn-link p-1 m-0" href="{{ route('panel.users.show',[$support->id,]) }}">
+
+                                    <a class="btn btn-link p-1 m-0" href="{{ route('panel.constant_management.support_ticket.show',[$support->id]) }}">
+                                       {{ NameById($support->user_id) }}
+                                   </a>
+                               </td>
+                               <td>{{ ($support->subject) }}</td>
+                           </tr>     
+                       @endforeach
+                   </tbody>
+               </table>
+                @else
+                    <div class="text-center">
+                        <img src="{{ asset('backend/img/Empty-pana.png') }}" style="height: 200px" alt="">
+                        <p class="text-muted mb-0 pb-0 mt-3">Not Any New Support Tickets Yet!!</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- support ticket end --}}
 
           <div class="card new-cust-card">
             <div class="card-header">

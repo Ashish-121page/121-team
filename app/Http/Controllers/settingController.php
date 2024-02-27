@@ -249,8 +249,10 @@ class settingController extends Controller
 
     public function customfields(Request $request) {
 
-        // echo "Original Request";
-        // magicstring($request->all());
+            // echo "Original Request";
+            // magicstring($request->all());
+            // return;
+
 
         try {
             $user = auth()->user();
@@ -293,7 +295,7 @@ class settingController extends Controller
             }
 
 
-            // ` Product Section Order we are using this to show Value
+        // ` Product Section Order we are using this to show Value
             // 1. Product Info > Essentials
             // 2. Product Info > Sale Price
             // 3. Product Info > Property
@@ -666,12 +668,15 @@ class settingController extends Controller
             $record = [];
 
             foreach (request()->all() as $key => $value) {
-                if ($key == 'user_id') {
+                if ($key == 'user_id' || $key == 'performa_mark_lg') {
                     continue;
                 }
                 $record[$key] = $value;
             }
 
+            if (request()->has('performa_mark_lg')) {
+                $record['performa_mark'] = request()->performa_mark_lg;
+            }
 
             $record = json_encode($record);
             $user->settings = $record;

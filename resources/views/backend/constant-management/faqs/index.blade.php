@@ -1,4 +1,4 @@
-@extends('backend.layouts.main') 
+@extends('backend.layouts.main')
 @section('title', 'Faqs')
 @section('content')
     @php
@@ -36,17 +36,17 @@
                         <h3>Faqs</h3>
                         <a href="{{ route('backend/constant-management.faqs.create') }}" class="btn btn-icon btn-sm btn-outline-primary" title="Add New Faq"><i class="fa fa-plus" aria-hidden="true"></i></a>
                     </div>
-                    <div class="card-body">                        
+                    <div class="card-body">
                         <div class="table-responsive">
                             <table id="table" class="table">
                                 <thead>
                                     <tr>
                                         <th class="text-center">#</th>
-                                        <th>Actions</th>                                            
+                                        <th>Actions</th>
                                         <th>Title</th>
                                         <th>Catagery</th>
                                         <th>Status</th>
-                                        
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -60,26 +60,26 @@
                                                         <li class="dropdown-item p-0"><a href="{{ route('backend/constant-management.faqs.edit', $faq->id) }}" title="Edit Faq" class="btn btn-sm">Edit</a></li>
                                                         <li class="dropdown-item p-0"><a href="{{ route('backend/constant-management.faqs.destroy', $faq->id) }}" title="Delete Faq" class="btn btn-sm delete-item">Delete</a></li>
                                                       </ul>
-                                                </div> 
+                                                </div>
                                             </td>
                                             <td>{{$faq->title }}</td>
-                                            
+
                                              <td>{{fetchFirst('App\Models\Category',$faq->category_id,'name','--') }}</td>
                                               <td>
                                                 @if($faq->is_publish == 1)
-                                                
-                                                     <span class="badge badge-success">Published</span>  
-                                                   
+
+                                                     <span class="badge badge-success">Published</span>
+
                                                    @else
-                                                   
-                                                    <span class="badge badge-danger">Unpublished</span>   
-                                                   
+
+                                                    <span class="badge badge-danger">Unpublished</span>
+
                                                 @endif
                                                     {{-- class="badge badge-{{ $faq->is_published == 0 ? 'danger' : 'success' }}">
                                                     {{ $faq->is_published == 1 ? 'Unpublished' : 'Published' }} --}}
                                              </td>
-                                          
-                                             
+
+
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -104,30 +104,7 @@
                         'bSortable': false,
                         'aTargets': ['nosort']
                     }],
-                    // dom: "<'row'<'col-sm-2'l><'col-sm-7 text-center'B><'col-sm-3'f>>tipr",
-                    // buttons: [
-                    //     {
-                    //         extend: 'excel',
-                    //         className: 'btn-sm btn-success',
-                    //         header: true,
-                    //         footer: true,
-                    //         exportOptions: {
-                    //             columns: ':visible',
-                    //         }
-                    //     },
-                    //     'colvis',
-                    //     {
-                    //         extend: 'print',
-                    //         className: 'btn-sm btn-primary',
-                    //         header: true,
-                    //         footer: false,
-                    //         orientation: 'landscape',
-                    //         exportOptions: {
-                    //             columns: ':visible',
-                    //             stripHtml: false
-                    //         }
-                    //     }
-                    // ]
+                
 
                 });
             });

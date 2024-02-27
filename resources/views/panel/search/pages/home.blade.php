@@ -10,7 +10,7 @@
                 <option>Name 4</option>
             </select>
         </div>
-        <div class="col-12 col-md-6 d-none">
+        <div class="col-12 col-md-6">
             <label for="productcatname">Product</label>
             <select name="productcatname[]" id="productcatname" class="form-control  select2" multiple>
                 <option selected>All</option>

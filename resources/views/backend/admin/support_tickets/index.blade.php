@@ -15,7 +15,7 @@
                     <div class="page-header-title">
                         <i class="ik ik-mail bg-blue"></i>
                         <div class="d-inline">
-                            <h5>Support Tickets</h5>
+                            <h5>Support Ticket</h5>
                             {{-- <span>List of Support Tickets</span> --}}
                         </div>
                     </div>
@@ -36,8 +36,16 @@
                                 @foreach (getSupportTicketStatus() as $status)
                                     <option value="{{ $status['id'] }}">{{ $status['name'] }}</option>                                
                                 @endforeach
+                                {{-- @if($status['id'] == request()->get('status'))
+                                    <option value="{{ $status['id'] }}" selected aria-readonly="true">{{ $status['name'] }}</option>
+                                @else
+                                    <option value="{{ $status['id'] }}" aria-readonly="true">{{ $status['name'] }}</option>
+                                @endif --}}
                             </select>
+
+                            
                         </div>
+                        <button class="btn btn-primary" id="export_table">Export</button>
                     </div>
                     <div class="card-body">                        
                         <div class="table-responsive">
@@ -97,6 +105,13 @@
                 </div>
             </div>
         </div>
+        {{-- <form action="{{ route('panel.proposals.index') }}" method="GET">
+            <input type="hidden" name="Sent" id="status_sent">
+            <input type="hidden"  id="buyer" name="Buyer_name">
+
+            <button type="submit" class="d-none" id="jhgfdsare"></button>
+
+        </form> --}}
     </div>
 
     <div class="modal" id="RaiseTicketModal" tabindex="-1">
@@ -137,7 +152,7 @@
             $(document).ready(function() {
                 $('#ticketStatus').on('change',function(){
                     var status = $(this).val();
-                    url = "{{ url('backend/support-tickets/index/') }}";
+                    url = "{{ url('panel/constant-management/support_ticket') }}";
                     window.location.href = url+'?status='+status;
                 });
                 var table = $('#table').DataTable({
@@ -176,6 +191,50 @@
 
                 });
             });
+
+            
+        </script>
+
+        <script>
+            $(document).on('click', '#export_table', function() {
+            // html_table_to_excel('xlsx');
+            let tableHeader = getTableData('table');
+            let tabledata = getTableData('table');
+
+            let filename =
+                "{{ 'support tickets' ?? 'Excel_export' }}_{{ Carbon\Carbon::now() }}.xlsx";
+            filename = filename.replace(/ /g, "_");
+
+            $.ajax({
+                type: "POST",
+                url: "{{ route('pages.proposal.excel') }}",
+                data: {
+                    'tabelcontent': JSON.stringify(tabledata),
+                    'filename': filename,
+                    'tableheader': JSON.stringify(tableHeader),
+                },
+                success: function(result) {
+                    let response = JSON.parse(result);
+                    if (response.message == 'File created') {
+                        var url = response.downloadLink;
+                        var fileName = response.fileName;
+
+                        // Create a new anchor element dynamically
+                        var downloadLink = $('<a></a>')
+                            .attr('href', response.downloadLink)
+                            .attr('download', fileName.split('/')[1])
+                            .appendTo('body');
+
+                        // Trigger click and remove element
+                        downloadLink[0].click();
+                        downloadLink.remove();
+                    } else {
+                        alert('Something went wrong. While Creating Excel File');
+                    }
+                }
+            });
+
+        });
         </script>
     @endpush
 

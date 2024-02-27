@@ -1,5 +1,5 @@
 @extends('backend.layouts.main') 
-@section('title', 'Team')
+@section('title', 'Edit Team Access')
 @section('content')
 @php
 

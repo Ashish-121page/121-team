@@ -14,25 +14,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row g-3">
-                        {{-- <div class="col-12 mb-3">
-                            <label for="address" class="form-label">Address Type</label>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-check">
-                                        <input id="home" name="type" value="0" type="radio" class="form-check-input"
-                                            required="">
-                                        <label class="form-check-label" for="home">Home</label>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-check">
-                                        <input id="office" name="type" value="1" type="radio" class="form-check-input"
-                                            required="">
-                                        <label class="form-check-label" for="office">Office</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
+
                         <div class="col-12 mb-3">
                             <label for="couponsname" class="form-label">Name</label>
                             <input type="text" class="form-control" id="couponsname" placeholder="Enter Coupons Name" required
@@ -69,7 +51,7 @@
                             <select class="form-select form-control" required id="appplan" name="appplan">
                                 {{-- <option value="all" selected>All Plans</option> --}}
                                 @foreach ($plans as $plan)
-                                    <option value="{{ $plan->id }}">{{ $plan->name }}</option>                                    
+                                    <option value="{{ $plan->id }}">{{ $plan->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -84,7 +66,7 @@
                             <label for="desc" class="form-label">Coupon Description (Optional)</label>
                             <textarea name="desc" id="desc" cols="30" rows="5" class="form-control" placeholder="Enter Coupon Description"></textarea>
                         </div>
-                      
+
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -1,5 +1,5 @@
 @extends('backend.layouts.main') 
-@section('title', 'Support Ticket')
+@section('title', 'Customer Support')
 @section('content')
 <style>
     .remove-ik-class{

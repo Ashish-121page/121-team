@@ -20,8 +20,13 @@ class SupportTicketController extends Controller
         if($request->has('status') && $request->get('status')){
             $support_tickets->where('status',$request->status);
         }
-        $support_tickets = $support_tickets->latest()->get();
+        $support_tickets = $support_tickets->latest()->get();   
+
        return view('backend.admin.support_tickets.index',compact('support_tickets'));
+
+
+
+
     }
     public function AdminShow(Request $request,$id)
     {
@@ -65,6 +70,17 @@ class SupportTicketController extends Controller
             $support_ticket->update([
                 'status' => $request->status
             ]);
+
+
+            $onsite_notification['user_id'] = $support_ticket->user_id;
+            $onsite_notification['title'] = "Support Ticket got responded on";
+            $onsite_notification['link'] = route('customer.ticket.show', $support_ticket->id);
+            $onsite_notification['notification'] = "Your Support Ticket has got a response. Click here to view the response.";
+
+
+            pushOnSiteNotification($onsite_notification);
+            
+
             return back()->with('success','Status Updated Successfully!');
         }
             return back()->with('error','SupportTicket not found');
@@ -76,7 +92,8 @@ class SupportTicketController extends Controller
 
     public function supportTicket()
     {
-        $supports = SupportTicket::where('user_id', auth()->id())->get();
+        $supports = SupportTicket::where('user_id', auth()->id())->get();   
+
         return view('backend.support-ticket.index',compact('supports'));
     }
 
@@ -154,6 +171,8 @@ class SupportTicketController extends Controller
      */
     public function show($id)
     {
+
+        
         //
     }
 

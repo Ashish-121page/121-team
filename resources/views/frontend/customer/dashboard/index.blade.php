@@ -193,15 +193,30 @@
         box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
     }
 
+
+    @media (min-width: 992px) {
+        .section {
+            height: 680px !important;
+        }
+    }
+
+
+    @media (max-width: 992px) {
+        .section {
+            max-height: 992px !important;
+        }
+    }
+
+
 </style>
 
 
-    <section class="section">
+    <section class="section" >
         <div class="container mt-5" style="max-width: 1340px !important;">
             <div class="row">
                 <div class="col-lg-3 toggle-area">
                     {{-- <div class="sticky-bar bg-white rounded  mb-0 pt-4"> --}}
-                        <div class="sticky-bar bg-white rounded shadow mb-0 pt-4">
+                    <div class="sticky-bar bg-white rounded shadow mb-0 pt-4">
                         <div class="mx-auto justify-content-center text-center pt-2">
                            <div style="height: 90px">
                                 @if($user->avatar != null)
@@ -517,7 +532,9 @@
                                     $count = App\Models\survey::where('user_id',auth()->id())->get()->count();
                                         // ` Current Progress
                                         $first_step = ($count == 1) ? true : false;
-                                        $second_step =  (auth()->user()->ekyc_status != 0   ) ? true : false;
+                                        // $second_step =  (auth()->user()->ekyc_status != 0 || ekyc_status != 2   ) ? true : false;
+                                        $second_step = (auth()->user()->ekyc_status != 0 && auth()->user()->ekyc_status != 2) ? true : false;
+
                                         // $third_step =  ($second) ? ((count(App\Models\Product::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
                                         // $forth_step =  ($third) ? ((count(App\Models\Proposal::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
                                     @endphp
@@ -2602,26 +2619,26 @@
     </section><!--end section-->
         <!-- End -->
 
-<div class="modal" id="detailTicketModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="TicketID"></h5>
-                <button type="button" class="btn btn-close" data-dismiss="modal" aria-label="Close">x</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="message">Message:</label>
-                    <p id="msg"></p>
+    <div class="modal" id="detailTicketModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="TicketID"></h5>
+                    <button type="button" class="btn btn-close" data-dismiss="modal" aria-label="Close">x</button>
                 </div>
-                <div class="form-group">
-                    <label for="subject">Reply:</label>
-                    <p id="reply"></p>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="message">Message:</label>
+                        <p id="msg"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Reply:</label>
+                        <p id="reply"></p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 <form action="{{ route('panel.user.update-numbers') }}" method="post" id="updateAdditionalNumber">
     @csrf
 </form>

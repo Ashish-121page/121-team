@@ -1,5 +1,6 @@
 @extends('backend.layouts.main')
-@section('title', 'Product')
+@section('title', 'Edit creation template')
+    {{-- @section('title', 'Edit <span>{{ $template->id->template_name }}<span> creation template') --}}
 @section('content')
 @php
 /**
@@ -281,7 +282,7 @@
 
                         <a class="btn btn-outline-primary px-5 close-button" href="{{ route('panel.products.create') }}?action=nonbranded&bulk_product">Cancel</a>
 
-                        <button class="btn btn-primary px-5">Save and Download</button>
+                        <button class="btn btn-primary px-5">Save</button>
                     </div>
                 </div>
 

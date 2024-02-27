@@ -1,4 +1,4 @@
-@extends('backend.layouts.main') 
+@extends('backend.layouts.main')
 @section('title', 'Manage Short URLs')
 @section('content')
     <!-- push external head elements to head -->
@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="{{ asset('backend/plugins/select2/dist/css/select2.min.css') }}">
     @endpush
 
-    
+
     <div class="container-fluid">
     	<div class="page-header">
             <div class="row align-items-end">
@@ -45,21 +45,21 @@
                     <div class="card-header"><h3>{{ __('Add Url')}}</h3></div>
                     <div class="card-body">
                             <div class="row">
-                                
+
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <a href="javascript:void(0);" class="btn btn-primary addCoupon" data-id="{{ auth()->id() }}">Add Coupon</a>
 
                                     </div>
                                 </div>
-                            
+
                             </div> {{--Row End--}}
                     </div>
                 </div>
             </div>
             @endcan
         </div>
-        
+
         <div class="row">
             <div class="col-md-12">
                 <div class="card p-3">
@@ -71,7 +71,7 @@
                             <button class="btn btn-primary mx-2" type="submit">search</button>
                         </div>
                     </form>
-                    
+
                     <div class="card-body">
                         <table id="url_table" class="table">
                             <thead>
@@ -103,7 +103,7 @@
                                             }
                                         @endphp
                                         <td>{{ $amt ?? ''}}</td>
-                                        
+
                                         <td>
                                             @php
                                                 $plansapps = json_decode($item->plan_id);
@@ -114,51 +114,51 @@
                                         <td>{{ $item->created_at }}</td>
 
                                     </tr>
-                                    
+
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-                
+
                 <div class="card-footer d-flex justify-content-between">
                     <div class="pagination">
-                        {{-- {{ $short_url->appends(request()->except('page'))->links() }} --}}
+                        {{ $short_url->appends(request()->except('page'))->links() }}
                     </div>
                     <div>
-                        {{-- @if($short_url->lastPage() > 1)
-                            <label for="">Jump To: 
+                        @if($short_url->lastPage() > 1)
+                            <label for="">Jump To:
                                 <select name="page" style="width:60px;height:30px;border: 1px solid #eaeaea;"  id="jumpTo">
                                     @for ($i = 1; $i <= $short_url->lastPage(); $i++)
                                         <option value="{{ $i }}" {{ $short_url->currentPage() == $i ? 'selected' : '' }}>{{ $i }}</option>
                                     @endfor
                                 </select>
                             </label>
-                        @endif --}}
+                        @endif
                     </div>
                 </div>
             </div>
             </div>
         </div>
     </div>
-    
-    
+
+
     @include('backend.admin.coupons.modal.add');
-    
+
     <!-- push external js -->
     @push('script')
     <script src="{{ asset('backend/plugins/select2/dist/js/select2.min.js') }}"></script>
-    
+
     <script>
 
-        
+
         $('.addCoupon').click(function(){
             user_id = $(this).data('id');
             $('#userId').val(user_id);
             $('#addCouponModal').removeAttr('tabindex');
             $('#addCouponModal').modal('show');
-        });   
+        });
 
-        $("#markupstyle").change(function (e) { 
+        $("#markupstyle").change(function (e) {
             e.preventDefault();
             if ($(this).val() == 'rupee') {
                 $("#amtpercent").addClass("d-none");
@@ -198,7 +198,7 @@
                     position: 'top-right'
                 });
             }
-        
+
     </script>
 
 

@@ -75,6 +75,7 @@ class NotificationController extends Controller
         $notification->update(['is_readed'=>1]);
         if ($notification->link != null && $notification->link != "#") {
             return redirect($notification->link);
+        
         } else {
             return back();
         }

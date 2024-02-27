@@ -20,6 +20,7 @@ use App\Models\AccessCode;
 use App\Models\Brand;
 use App\Models\NewsLetter;
 use App\Models\WebsitePage;
+use App\Models\SupportTicket;
 
 class HomeController extends Controller
 {
@@ -172,6 +173,7 @@ class HomeController extends Controller
     {
         // If for some reason route is getting hit without someone already logged in
         if (! auth()->user()) {
+            
             return redirect()->url('/');
         }
         

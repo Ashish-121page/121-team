@@ -1,5 +1,5 @@
 @extends('backend.layouts.main')
-@section('title', 'Product Create')
+@section('title', 'Add new Products')
 @section('content')
     @php
         /**
@@ -787,6 +787,9 @@
         function myfunc() {
             if ($(".my_attribute:checked").length > 0) {
                 $("#tableselected").removeClass('invisible');
+
+                var checkedAttributesCount = $(".my_attribute:checked").length + 9;
+                $("#countselect").text(checkedAttributesCount);
             } else {
                 $("#tableselected").addClass('invisible');
             }
@@ -794,8 +797,11 @@
 
         });
 
+        
 
         </script>
+
+
 
 
         <script>

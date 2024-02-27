@@ -812,7 +812,7 @@ function getSupportTicketStatus($id = -1)
             }else{
                 foreach(getSupportTicketStatus() as $row){
                 if($row['id'] == $id){
-                return $row;
+                    return $row;
                 }
             }
         }
@@ -1555,8 +1555,7 @@ if(!function_exists('getTotProAddInShopOfSupplier')){
 }
 if(!function_exists('getProductNameById')){
     function getProductNameById($p_id){
-
-        return $product = App\Models\Product::whereId($p_id)->first()->title;
+        return $product = App\Models\Product::whereId($p_id)->first()->title ;
     }
 }
 if(!function_exists('getProductByBrandId')){
@@ -1739,7 +1738,7 @@ if(!function_exists('shrinkurl')){
     function shrinkurl($destination_url,$url_key = null,$single_use = 0,$expire_at = null){
 
         if ($destination_url == "" || $destination_url == null) {
-            return "Invailed Request";
+            return "Invalid Request";
         }
 
         if ($url_key == null) {
@@ -2366,6 +2365,14 @@ if (!function_exists('convertToKilograms')) {
         }
     }
 
+}
+
+if (!function_exists('human_filesize')) {
+    function human_filesize($bytes, $decimals = 2) {
+        $sz = 'BKMGTP';
+        $factor = floor((strlen($bytes) - 1) / 3);
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+    }
 }
 
 

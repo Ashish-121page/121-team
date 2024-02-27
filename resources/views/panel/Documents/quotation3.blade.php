@@ -1,5 +1,5 @@
 @extends('backend.layouts.main')
-@section('title', 'Quotation Product Selection')
+@section('title', $Pagetitle)
 @section('content')
 
     <!-- push external head elements to head -->

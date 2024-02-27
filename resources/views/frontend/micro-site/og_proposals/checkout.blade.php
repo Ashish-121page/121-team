@@ -13,7 +13,7 @@
 		$meta_img = ' ';
         $customer = 1;
 
-     
+
 @endphp
 @section('content')
 

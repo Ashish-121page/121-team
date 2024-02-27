@@ -91,8 +91,6 @@
             $(this).addClass("active");
             $(this).addClass("disabled");
 
-
-
             let mediaid = $(this).data("mediaid");
             let file_name = $(this).data("file_name");
 

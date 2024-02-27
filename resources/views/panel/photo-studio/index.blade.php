@@ -9,7 +9,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
 
 
-        {{-- @if (!request()->has('refer'))
+        @if (!request()->has('refer'))
             <style>
                 .main-content {
                     padding-top: 0 !important;
@@ -20,7 +20,7 @@
                     display: none !important;
                 }
             </style>
-        @endif --}}
+        @endif
 
         <style>
 
@@ -1020,8 +1020,8 @@
 
     <script>
         document.getElementById('back98').addEventListener('click', function(e) {
-            e.preventDefault(); 
-            window.history.back(); 
+            e.preventDefault();
+            window.history.back();
         });
     </script>
 
@@ -1186,7 +1186,7 @@
                         old_path: $("#old_path").val(),
                         keepnamecheck: keepnamecheck
                     },
-                    
+
                     success: function(response) {
                         $.toast({
                             heading: 'SUCCESS',

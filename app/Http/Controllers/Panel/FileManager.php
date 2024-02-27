@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Response;
 
 class FileManager extends Controller
 {
+    // Old View of Filemanager
     public function index(Request $request){
         try{
            return view('panel.seller_files.index');

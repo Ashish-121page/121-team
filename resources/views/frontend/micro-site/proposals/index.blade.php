@@ -2,7 +2,7 @@
 @section('meta_data')
     @php
         $categoryName = fetchFirst('App\Models\Category', request()->get('category_id'), 'name') ?? 'All';
-        $meta_title = ' | ' . getSetting('app_name');
+        $meta_title = ' 1. Select Items | ' . getSetting('app_name');
         $meta_description = getSetting('seo_meta_description');
         $meta_keywords = '' ?? getSetting('seo_meta_keywords');
         $meta_motto = '' ?? getSetting('site_motto');
@@ -15,7 +15,6 @@
     @endphp
 @endsection
 @section('content')
-
     <style>
         @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css");
 
@@ -37,9 +36,8 @@
         }
 
         /*==================================================
-                remove the original arrow in select option dropdown
-                ==================================================*/
-
+                                                                                                    remove the original arrow in select option dropdown
+                                                                                                    ==================================================*/
         #selector {
             margin: 5px 10%;
             width: 100%;
@@ -128,7 +126,6 @@
         }
 
         /* custome Loader */
-
         .lds-roller {
             display: inline-block;
             position: absolute;
@@ -229,7 +226,6 @@
             left: 12px;
         }
 
-
         @keyframes lds-roller {
             0% {
                 transform: rotate(0deg);
@@ -281,7 +277,6 @@
             font-weight: 800;
             height: min-content;
         }
-
 
         .container-fluid .bx span {
             font-size: 0.8pc;
@@ -371,17 +366,97 @@
             padding: 0 0 !important
         }
 
-
         .btn-link.active {
             border-bottom: 2px solid #6666cc;
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
         }
+
+            {
+            width: 100%;
+        }
     </style>
+    {{-- <style>
+    .topnav {
+        position: fixed;
+        top: 0;
+        right: 0;
+        background-color: #f2f2f2;
+        overflow: hidden;
+    }
+    .topnav a {
+        float: left;
+        display: block;
+        color: #6666cc;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+    }
+    .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+    .topnav .icon {
+        display: none;
+    }
+    @media screen and (max-width: 600px) {
+        .topnav a:not(:first-child) {display: none;}
+        .topnav a.icon {
+            float: right;
+            display: block;
+        }
+    }
+    @media screen and (max-width: 600px) {
+        .topnav.responsive {position: relative;}
+        .topnav.responsive .icon {
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        .topnav.responsive a {
+            float: none;
+            display: block;
+            text-align: left;
+        }
+    }
+</style> --}}
 
-    <section class="section p-0">
-
-
+    {{-- <style>
+            /* Style the navigation menu */
+        .topnav1 {
+        overflow: hidden;
+        background-color: #333;
+        position: relative;
+        }
+        /* Hide the links inside the navigation menu (except for logo/home) */
+        .topnav1 #myLinks {
+        display: none;
+        }
+        /* Style navigation menu links */
+        .topnav1 a {
+        color: white;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+        display: block;
+        }
+        /* Style the hamburger menu */
+        .topnav1 a.icon {
+        background: black;
+        display: block;
+        position: absolute;
+        right: 0;
+        top: 0;
+        }
+        /* Add a grey background color on mouse-over */
+        .topnav1 a:hover {
+        background-color: #ddd;
+        color: black;
+        }
+    </style> --}}
+    {{-- <section class="section"> --}}
+    <section class="">
         {{-- Over The Layer Content --}}
         @if (isset($proposalid) && $proposalid != -1)
             <div class="ydfgwej">
@@ -391,22 +466,24 @@
                         <i class="fas fa-check-double"></i>
                     </span>
                 </button>
-                <a href="{{ route('pages.proposal.picked', ['proposal' => $proposalid, 'user_key' => $user_key]) }}?type=picked"
+                {{-- <a href="#" class="btn btn-outline-primary" type="button" class="btn btn-link text-primary mx-2 " data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                    <span class="d-block d-md-block d-sm-block">
+                        Filters <i class="fas fa-chevron-right"></i>
+                    </span>
+                </a> --}}
+                {{-- <a href="{{ route('pages.proposal.picked', ['proposal' => $proposalid, 'user_key' => $user_key]) }}?type=picked"
                     class="btn btn-outline-primary" target="">
-                    {{-- <span class="d-none d-md-none d-sm-none">Next</span> --}}
                     <span class="d-block d-md-block d-sm-block">
                         Next <i class="fas fa-chevron-right"></i>
                     </span>
-                </a>
+                </a> --}}
             </div>
         @endif
 
-
-        <div class="container mt-3">
-
-
+        <div class="container mt-3" style="margin: 100px; max-width:1440px!important;">
             <div class="row bg-white wdaqd ">
-                @if (isset($user_key))
+                {{-- original --}}
+                {{-- @if (isset($user_key))
                     <div class="col-12 d-flex justify-content-center align-items-center"
                         style="position: fixed;top:0% !important;left:0%;z-index: 88;padding: 0 0 25px 0 !important;background-color: #fff;">
                         <a href="#one" class="btn btn-link text-primary mx-2 active">1. Selection</a>
@@ -415,435 +492,144 @@
                         <a href="{{ inject_subdomain('proposal/export/' . $proposal->id . '/' . $user_key, $slug, false, false) }}"
                             class="btn btn-link text-primary mx-2">3. Generate</a>
                     </div>
-                @endif
-
-
-                {{-- Fixed NAvigation BAr --}}
-                <div class="col-12 col-md-12 bdhxzc" style="margin: 35px 0 0 0; ">
-                    <div class="row">
-                        <div class="col-12 d-flex justify-content-between align-items-center adwas">
-                            <div class="col-3 d-flex justify-content-start ">
-                                @if (isset($proposalid) && $proposalid != -1)
-                                    <button class="btn btn-outline-secondary" id="openqr" type="button">Scan QR
-                                        Codes</button>
-                                @else
-                                    @if ($manage_offer_guest || $manage_offer_verified)
-                                        @if (auth()->id() == 155)
-                                            @if ($manage_offer_guest)
-                                                <a class="btn mt-2 d-block btn-outline-primary w-auto float-end makeoffer"
-                                                    href="{{ route('pages.proposal.create') }}?shop={{ $user_shop->id }}"
-                                                    style="width: max-content !important;">
-                                                    Make Offer
-                                                </a>
-                                            @endif
-                                        @else
-                                            <a class="btn mt-2 d-block btn-outline-primary w-auto float-end makeoffer"
-                                                href="{{ route('pages.proposal.create') }}?shop={{ $user_shop->id }}"
-                                                style="width: max-content !important;">
-                                                Make Offer
-                                            </a>
-                                        @endif
-                                    @endif
-                                @endif
-
-                            </div>
-
-                            <div class="col-9 d-flex justify-content-start">
-                                <div class="input-group border rounded">
-                                    <input type="text" id="quicktitle" value="{{ request()->get('title') }}"
-                                        name="title" class="form-control border-0"
-                                        placeholder="Quick Search : Name, Model Code, Keywords">
-                                    <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit"><i
-                                            class="uil uil-search"></i></button>
-                                </div>
-                            </div>
-
-                            {{-- @if (isset($proposalid) && $proposalid != -1)
-                            <div class="">
-                                <button type="button" class="btn btn-outline-primary">
-                                    Collection <span>4</span>
-                                </button>
-                            </div>
-                        @endif --}}
+                @endif --}}
+                @if (isset($user_key))
+                    <div class="col-12 d-flex justify-content-center align-items-center"
+                        style="position: fixed;top:0% !important;left:0%;z-index: 88;padding: 0 0 25px 0 !important;background-color: #fff;">
+                        <a href="#" type="button" class="btn btn-link text-primary mx-2 " data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop">1. Search</a>
+                        <a href="{{ route('pages.proposal.picked', ['proposal' => $proposalid, 'user_key' => $user_key]) }}?type=picked"
+                            class="btn btn-link text-primary mx-2">2.Update</a>
+                        <a href="{{ inject_subdomain('proposal/export/' . $proposal->id . '/' . $user_key, $slug, false, false) }}"
+                            class="btn btn-link text-primary mx-2">3. Generate</a>
+                        <div class="dropdown text-end ml-5" style="margin-left:8rem;">
+                            <button type="button" class="btn btn-outline-primary dropdown-toggle" style="width: 100%;"
+                                data-bs-toggle="dropdown">
+                                Add to
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="#" class="dropdown-item" onclick="addToSelected('option1')">Option 1</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="dropdown-item" onclick="addToSelected('option2')">Option 2</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="dropdown-item" onclick="addToSelected('option3')">Option 3</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="selectedItemsContainer">
+                            <!-- Selected items will be added here -->
                         </div>
                     </div>
-                    <div class="row my-2">
-                        <div class=" @if (count($currency_record) != 0) col-md-8 @else col-md-12 @endif col-12">
-                            @if ($alll_searches != null)
-                                @foreach ($alll_searches[0] as $key => $extra)
-                                    @if ($extra != '')
-                                        <span class="badge bg-primary searchabletag mb-1">
-                                            {{-- {{ getAttruibuteValueById($extra)->attribute_value }} --}}
-                                            <span class="badge bg-primary">
-                                                @if ($loop->iteration == 1 || $loop->iteration == 2)
-                                                    {{ $key }}:
-                                                    {{ App\Models\Category::where('id', $extra)->first()->name ?? $extra }}
-                                                @else
-                                                    {{ $key }}: {{ $extra }}
-                                                @endif
-                                            </span>
-                                            <span class="remove-tag" data-color="{{ $extra }}"
-                                                title="click to Remove ">x</span>
-                                        </span>
-                                    @endif
-                                @endforeach
-                            @endif
+                @else
+                    {{-- ` Show in Microsite or Search Page --}}
 
-                            @foreach ($additional_attribute as $key => $item)
-                                @if (request()->has("searchVal_$key") && !empty(request()->get("searchVal_$key")))
-                                    @foreach (request()->get("searchVal_$key") as $Color)
-                                        @php
-                                            $name = getAttruibuteValueById($Color)->attribute_value;
-                                            // $parent =  getAttruibuteById(getAttruibuteValueById($Color)->parent_id)->name;
-                                        @endphp
-                                        <span class="badge bg-primary searchabletag mb-1">
-                                            {{-- {{ getAttruibuteValueById($Color)->attribute_value }} --}}
-                                            <span class="badge bg-primary">
-                                                {{ $name }}
-                                            </span>
-                                            <span class="remove-tag" data-color="{{ $Color }}"
-                                                title="click to Remove {{ $name }}">x</span>
-                                        </span>
-                                    @endforeach
-                                @endif
-                            @endforeach
+                    {{-- <div class="col-12">
+                        <button class="btn btn-secondary" onclick="window.history.back()" type="button">Back</button>
+                    </div> --}}
+                @endif
+            </div>
 
+            <div class="row mt-5 mb-2">
+                <div class="col-6">
+                    <div class="col-lg-4 input-group border rounded">
+                        <input type="text" id="quicktitle" value="" name="title" class="form-control border-0"
+                            placeholder="Search by Name or Model Code">
+                        <button type="submit" class="input-group-text bg-white border-0" id="searchsubmit">
+                            <svg width="18" height="18" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="currentColor"
+                                    d="m479.6 399.716l-81.084-81.084l-62.368-25.767A175.014 175.014 0 0 0 368 192c0-97.047-78.953-176-176-176S16 94.953 16 192s78.953 176 176 176a175.034 175.034 0 0 0 101.619-32.377l25.7 62.2l81.081 81.088a56 56 0 1 0 79.2-79.195M48 192c0-79.4 64.6-144 144-144s144 64.6 144 144s-64.6 144-144 144S48 271.4 48 192m408.971 264.284a24.028 24.028 0 0 1-33.942 0l-76.572-76.572l-23.894-57.835l57.837 23.894l76.573 76.572a24.028 24.028 0 0 1-.002 33.941">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <a href="#" id="openqr" class="btn btn-outline-primary ">
+                        Scan QR
+                    </a>
+                </div>
+                <div class="col-2">
+                    <a href="#" id="togglefilter" class="btn btn-outline-primary">
+                        Filter
+                    </a>
+                </div>
+                <div class="col-2">
+                    <a href="#home" class="btn active" style="color: #6666cc " onclick="myFunction()">
+                        <i class="fa fa-bars mx-2" style="color: #6666cc"></i>
+                    </a>
+                    <div id="searchmenu">
+                        <div class="d-grid gap-2 col-8 mx-auto  justify-content-start form-group">
+                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" style="padding: 10px;">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link btn-outline-danger" id="pills-Image_Search-tab"
+                                        data-bs-toggle="pill" data-bs-target="#pills-Image_Search" type="button"
+                                        role="tab" aria-controls="pills-Image_Search" style="color:red;"
+                                        aria-selected="false">Image Search</button>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                {{-- Fixed NAvigation Bar End --}}
             </div>
 
+            <div class="row my-2">
+                <div class=" @if (count($currency_record) != 0) col-md-8 @else col-md-12 @endif col-12">
+                    @if ($alll_searches != null)
+                        @foreach ($alll_searches[0] as $key => $extra)
+                            @if ($extra != '')
+                                <span class="badge bg-primary searchabletag mb-1">
+                                    {{-- {{ getAttruibuteValueById($extra)->attribute_value }} --}}
+                                    <span class="badge bg-primary">
+                                        @if ($loop->iteration == 1 || $loop->iteration == 2)
+                                            {{ $key }}:
+                                            {{ App\Models\Category::where('id', $extra)->first()->name ?? $extra }}
+                                        @else
+                                            {{ $key }}: {{ $extra }}
+                                        @endif
+                                    </span>
+                                    <span class="remove-tag" data-color="{{ $extra }}"
+                                        title="click to Remove ">x</span>
+                                </span>
+                            @endif
+                        @endforeach
+                    @endif
 
+                    @foreach ($additional_attribute as $key => $item)
+                        @if (request()->has("searchVal_$key") && !empty(request()->get("searchVal_$key")))
+                            @foreach (request()->get("searchVal_$key") as $Color)
+                                @php
+                                    $name = getAttruibuteValueById($Color)->attribute_value;
+                                    // $parent =  getAttruibuteById(getAttruibuteValueById($Color)->parent_id)->name;
+                                @endphp
+                                <span class="badge bg-primary searchabletag mb-1">
+                                    {{-- {{ getAttruibuteValueById($Color)->attribute_value }} --}}
+                                    <span class="badge bg-primary">
+                                        {{ $name }}
+                                    </span>
+                                    <span class="remove-tag" data-color="{{ $Color }}"
+                                        title="click to Remove {{ $name }}">x</span>
+                                </span>
+                            @endforeach
+                        @endif
+                    @endforeach
 
+                </div>
+            </div>
 
             <div class="row">
                 {{-- Side Bar --}}
-                <div class="col-md-4 col-lg-3  col-12 adwas">
-                    <div class="text-right pl-3 filterMobile" style="margin-top: 10%;">
-                        <i title="filter" class="uil uil-bars up_arrow show_mobile_filter" style="font-size: 23px;"></i>
-                        <i class="uil uil-times down_arrow close_mobile_filter" style="font-size: 23px;"></i>
-                    </div>
-
-                    <div class="card border-0 sidebar custom-scrollbar">
-                        <form form role="search" method="GET" id="searchform"
-                            class="card-body filter-body p-0 applyFilter d-none d-md-block mobile_filter">
-                            <input type="hidden" name="sort" value="" class="sortValue">
-                            <h5 class="widget-title pt-3 pl-15" style="display: inline-block;">Filters
-                            </h5>
-
-                            <h6 class="widget-title mt-2">Price</h6>
-                            <div class=" d-flex">
-                                <input style="width: 70px;height: 35px;"
-                                    @if (request()->has('from') && request()->get('from') != null) value="{{ request()->get('from') }}" @endif
-                                    type="text" name="from" class="form-control" placeholder=" Min  ">
-                                <input style="width: 70px;height: 35px;"
-                                    @if (request()->has('to') && request()->get('to') != null) value="{{ request()->get('to') }}" @endif
-                                    type="text" name="to" class="form-control ms-2" placeholder=" Max ">
-                                <button class="price_go_btn ms-2" type="submit">GO</button>
-                            </div>
-
-                            {{-- categories Ashish --}}
-                            <div class="widget">
-                                <!-- Categories -->
-                                <div class="widget bt-1 pt-3">
-                                    <div class="accordion-item my-2">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed" type="button"
-                                                data-bs-toggle="collapse" data-bs-target="#collapscatrgory"
-                                                aria-expanded="true" aria-controls="collapscatrgory"
-                                                style="height: 25px !important;">
-                                                <h6 class="widget-title mt-2">Categories</h6>
-                                            </button>
-                                        </h2>
-                                        <div id="collapscatrgory" class="accordion-collapse collapse"
-                                            data-bs-parent="#accordionExample">
-                                            <div class="accordion-body">
-                                                <ul class="list-unstyled mt-1 mb-0 custom-scrollbar"
-                                                    style="padding-left:1rem">
-                                                    <li>
-                                                        <h5 class="form-check">
-                                                            <input class="form-check-input" type="radio"
-                                                                @if (!request()->has('category_id') || request()->get('category_id') == null) checked @endif
-                                                                value="" id="categoryAll" name="category_id">
-                                                            <label for="categoryAll" class="form-check-label fltr-lbl">
-                                                                All</label>
-                                                        </h5>
-                                                    </li>
-                                                    @if (!empty($categories))
-                                                        @foreach ($categories as $item)
-                                                            @php
-                                                                $sub_category = App\Models\Category::whereId(request()->get('sub_category_id'))->first();
-                                                            @endphp
-                                                            <li>
-                                                                <h5 class="form-check"
-                                                                    style="display: flex;align-items: center;gap: 6px;">
-                                                                    <input class="form-check-input filterCategory"
-                                                                        type="radio" value="{{ $item->id }}"
-                                                                        id="category{{ $item->id }}"
-                                                                        name="category_id"
-                                                                        @if (request()->has('category_id') && request()->get('category_id') == $item->id) checked @endif>
-                                                                    <label for="category{{ $item->id }}"
-                                                                        class="form-check-label fltr-lbl mt-2">
-                                                                        {{ $item->name }}
-                                                                        {{--  Category Count --}}
-                                                                        <span
-                                                                            style="font-size: 11px">({{ getProductCountViaCategoryId($item->id, $user_shop->user_id) }})</span>
-                                                                    </label>
-                                                                </h5>
-                                                            </li>
-                                                            @if (request()->has('category_id') && request()->get('category_id') == $item->id)
-                                                                @php
-                                                                    $subcategories = getProductSubCategoryByShop($slug, $item->id, 0);
-                                                                @endphp
-                                                                <div
-                                                                    style="padding-left: 25px; display: flex;align-items: center;gap: 6px;">
-                                                                    <ul class="list-unstyled custom-scrollbar">
-                                                                        @foreach ($subcategories as $subcategorie)
-                                                                            <li>
-                                                                                <h5 class="form-check">
-                                                                                    <input
-                                                                                        class="form-check-input filterSubCategory"
-                                                                                        type="radio"
-                                                                                        value="{{ $subcategorie->id }}"
-                                                                                        id="category{{ $subcategorie->id }}"
-                                                                                        name="sub_category_id"
-                                                                                        @if (request()->has('sub_category_id') && request()->get('sub_category_id') == $subcategorie->id) checked @endif>
-                                                                                    <label
-                                                                                        for="category{{ $subcategorie->id }}"
-                                                                                        class="form-check-label fltr-lbl">
-                                                                                        {{ $subcategorie->name }}
-                                                                                        {{-- Sub Category Count --}}
-                                                                                        <span style="font-size: 11px">
-                                                                                            ({{ getProductCountViaSubCategoryId($subcategorie->id, $user_shop->user_id) }})
-                                                                                        </span>
-                                                                                    </label>
-                                                                                </h5>
-                                                                            </li>
-                                                                        @endforeach
-                                                                    </ul>
-                                                                </div>
-                                                            @endif
-                                                        @endforeach
-                                                    @endif
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{-- categories Ashish --}}
-
-
-                                <div class="accordion-item my-2 d-none">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapsesupplier"
-                                            aria-expanded="true" aria-controls="collapsesupplier"
-                                            style="height: 25px !important;">
-                                            <h6 class="widget-title mt-2">Supplier</h6>
-                                        </button>
-                                    </h2>
-                                    <div id="collapsesupplier" class="accordion-collapse collapse"
-                                        data-bs-parent="#accordionExample">
-                                        <div class="accordion-body">
-                                            @if (isset($suppliers) && $suppliers->count() >= 0)
-                                                <ul class="list-unstyled mt-2 mb-0 custom-scrollbar"
-                                                    style="height: 60px;">
-                                                    <li>
-                                                        <input class="form-check-input" type="checkbox" value="yes"
-                                                            id="ownproduct" name="ownproduct"
-                                                            @if ($request->has('ownproduct') == 'yes') checked @endif>
-                                                        <label for="ownproduct" class="form-check-label fltr-lbl ">Own
-                                                            Product</label>
-                                                    </li>
-                                                    @foreach ($suppliers as $supplier)
-                                                        @if ($supplier != '' || $supplier != null)
-                                                            <li>
-                                                                <h5 class="form-check">
-
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        value="{{ $supplier->id }}"
-                                                                        id="supplierid{{ $supplier->id }}"
-                                                                        name="supplier[]"
-                                                                        @if (request()->has('supplier')) @if (isset($supplier) && in_array($supplier->id, request()->get('supplier')))
-                                                                    checked @endif
-                                                                        @endif >
-                                                                    <label for="supplierid{{ $supplier->id }}"
-                                                                        class="form-check-label fltr-lbl ">
-                                                                        {{ $supplier->name }}
-                                                                    </label>
-                                                                </h5>
-                                                            </li>
-                                                        @endif
-                                                    @endforeach
-                                                </ul>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-
-                                @if (isset($TandADeliveryPeriod) && $TandADeliveryPeriod->count() > 0)
-                                    <div class="accordion-item my-2">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed" type="button"
-                                                data-bs-toggle="collapse" data-bs-target="#collapseDelivery"
-                                                aria-expanded="true" aria-controls="collapseDelivery"
-                                                style="height: 25px !important;">
-                                                <h6 class="widget-title mt-2">T&A</h6>
-                                            </button>
-                                        </h2>
-                                        <div id="collapseDelivery" class="accordion-collapse collapse"
-                                            data-bs-parent="#accordionExample">
-                                            <div class="accordion-body">
-                                                <ul class="list-unstyled mt-2 mb-0 custom-scrollbar"
-                                                    style="height: 120px;">
-                                                    <div class="widget my-2">
-                                                        <input style="height: 35px; width: 75px"
-                                                            @if (request()->has('quantity') && request()->get('quantity') != null) value="{{ request()->get('quantity') }}" @endif
-                                                            type="text" name="quantity" class="form-control"
-                                                            placeholder="Qty">
-                                                    </div>
-                                                    @foreach ($TandADeliveryPeriod as $color)
-                                                        @if ($color != '' || $color != null)
-                                                            <li>
-                                                                <h5 class="form-check">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        value="{{ $color }}"
-                                                                        id="deliveryID{{ $color }}"
-                                                                        name="delivery[]"
-                                                                        @if (request()->has('delivery')) @if (isset($color) && in_array($color, request()->get('delivery')))
-                                                            checked @endif
-                                                                        @endif >
-                                                                    <label for="deliveryID{{ $color }}"
-                                                                        class="form-check-label fltr-lbl ">
-                                                                        {{ $color . ' Days' }}
-                                                                    </label>
-                                                                </h5>
-                                                            </li>
-                                                        @endif
-                                                    @endforeach
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-
-                                {{-- Applying scoobooo layout in color and other attri --}}
-                                @if (isset($additional_attribute) && $additional_attribute->count() >= 0)
-                                    @foreach ($additional_attribute as $key => $item)
-                                        @php
-                                            $testchk = getAttruibuteById($item);
-                                        @endphp
-                                        @if (isset($testchk) && getAttruibuteById($item)->visibility == 1)
-                                            <div class="container mt-3">
-                                                <!-- Collapsible Button -->
-                                                <h6 class="collapsible" data-bs-toggle="collapse"
-                                                    data-bs-target="#AttributeList_{{ $key }}"
-                                                    aria-expanded="false"
-                                                    aria-controls="AttributeList_{{ $key }}">
-                                                    {{ getAttruibuteById($item)->name }}
-                                                    <i class="fas fa-chevron-down fa-xs"></i>
-                                                </h6>
-                                                @php
-                                                    $atrriBute_valueGet = getParentAttruibuteValuesByIds($item, $proIds);
-                                                @endphp
-                                                <div class="collapse" id="AttributeList_{{ $key }}">
-                                                    <ul class="list-unstyled mt-2 mb-0 custom-scrollbar">
-                                                        @foreach ($atrriBute_valueGet as $mater)
-                                                            @if ($mater != '' || $mater != null)
-                                                                <li>
-                                                                    <h5 class="form-check">
-                                                                        <input class="form-check-input" type="checkbox"
-                                                                            value="{{ $mater }}"
-                                                                            id="searchId{{ $mater }}"
-                                                                            name="searchVal_{{ $key }}[]"
-                                                                            @if (request()->has("searchVal_$key")) @if (isset($mater) && in_array($mater, request()->get("searchVal_$key")))
-                                                                        checked @endif
-                                                                            @endif >
-                                                                        <label for="searchId{{ $mater }}"
-                                                                            class="form-check-label fltr-lbl ">
-                                                                            {{ getAttruibuteValueById($mater)->attribute_value ?? '' }}
-                                                                        </label>
-                                                                    </h5>
-                                                                </li>
-                                                            @endif
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                @endif
-                                {{-- Applying scoobooo layout in color and other attri End --}}
-                                {{-- Exclusive Products --}}
-
-                                {{-- <h6 class="widget px-2">Exclusive Products</h6> --}}
-                                <div class="mx-2 d-flex">
-                                    <input type="checkbox" class="form-check-input visually-hidden" name="exclusive"
-                                        id="exclusive" @if ($request->get('exclusive')) checked @endif>
-                                    <label class="form-check-label mx-2" id="excl">Exclusive Items</label>
-                                    @if ($request->get('exclusive') == 'on')
-                                        <div class="text-success" style="font-weight: bolder">
-                                            <i class="uil-check-circle" style="font-size: 20px"></i>
-                                        </div>
-                                    @else
-                                        {{-- <div class="text-danger" style="font-weight: bolder"> OFF </div> --}}
-                                    @endif
-                                </div>
-
-                                <div class="mx-2 d-flex my-3">
-                                    <input type="checkbox" class="form-check-input " name="pinned" id="pinned"
-                                        @if ($request->get('pinned')) checked @endif>
-                                    <label class="form-check-label mx-2" id="pinnedbtn" for="pinned">Pinned Items
-                                        Only</label>
-                                    @if ($request->get('pinned') == 'on')
-                                        <div class="text-success" style="font-weight: bolder">
-                                            <i class="uil-check-circle" style="font-size: 20px"></i>
-                                        </div>
-                                    @else
-                                        {{-- <div class="text-danger" style="font-weight: bolder"> OFF </div> --}}
-                                    @endif
-                                </div>
-
-                                {{-- Exclusive Products --}}
-
-
-
-                            </div>
-                        </form>
-                    </div>
-                    {{-- <div class="col-md-3 col-lg-4"> --}}
-                    <div class="row justify-content-between">
-                        <div class="col-md-6 col-lg-6">
-                            <button type="submit" class="btn btn-sm mt-2 d-block btn-primary w-100" id="filterBtn"
-                                form="searchform">Filter</button>
-                        </div>
-                        <div class="col-md-6 col-lg-6">
-                            <a class="btn btn-sm mt-2 d-block btn-primary w-100" href="{{ route('pages.shop-index') }}"
-                                id="resetButton">Reset</a>
-                        </div>
-                    </div>
-                    {{-- <button type="submit" class="btn mt-2 d-block btn-primary w-100" id="filterBtn" form="searchform">Filter</button>
-                @if (isset($proposalid) && $proposalid != -1)
-                    <a class="btn mt-2 d-block btn-primary w-100" href="{{ route('pages.proposal.edit',['proposal' => $proposalid,'user_key' => $user_key]) }}?margin=0" id="resetButton">Reset</a>
-                @else
-                    <a class="btn mt-2 d-block btn-primary w-100" href="{{route('pages.shop-index')}}" id="resetButton">Reset</a>
-                @endif --}}
-                    {{-- </div> --}}
-
-
-                </div><!--end col-->
-
-
                 {{-- main Content Box --}}
-                <div class="col-lg-9 col-md-8 col-12 pt-2 mt-sm-0 pt-sm-0">
-
+                <div class="col-lg-8 col-md-8 col-12 pt-2 mt-sm-0 pt-sm-0">
                     <div class="row align-items-center">
-                        <div class="col-md-4 col-6 mt-sm-0 pt-2 pt-sm-0">
+                        <div class="col-3">
                             @if (count($currency_record) != 0)
                                 <div class="container" id="selector">
-                                    <select class="form-control select_box" id="changeCurrency" name="Currency">
-                                        <option aria-readonly="true" disabled>Change Currency</option>
+                                    <select class="form-control select_box changeCurrency" id="changeCurrency"
+                                        name="Currency" style="width: max-content;">
+                                        <option aria-readonly="true" disabled>Currency</option>
                                         @foreach ($currency_record as $item)
                                             <option value="{{ $item->id }}"
                                                 @if ($item->id == (Session::get('Currency_id') ?? 'INR')) selected @endif> {{ $item->currency }}
@@ -853,10 +639,10 @@
                                 </div>
                             @endif
                         </div>
-
-                        <div class="col-12 col-md-4">
+                        <div class="col-4 ">
                             <div class="container" id="selector">
-                                <select class="form-control input-lg select_box" id="productSort" name="sort">
+                                <select class="form-control input-lg select_box" id="productSort" name="sort"
+                                    style="width: max-content">
                                     <option @if (request()->get('sort') == 2) selected @endif value="2">Price: low
                                         to high</option>
                                     <option @if (request()->get('sort') == 1) selected @endif value="1">Latest First
@@ -864,12 +650,10 @@
                                     <option @if (request()->get('sort') == 3) selected @endif value="3">Price: high
                                         to low</option>
                                 </select>
-                                <i class="fa fa-chevron-down"></i>
                             </div>
                         </div>
-
-                        <div class="col-12 col-md-4 d-flex justify-content-end">
-                            <div class="m-2 d-flex gap-2">
+                        <div class="col-12 my-2 my-md-0  col-md-3 d-flex justify-content-end ">
+                            <div class="d-flex gap-2">
                                 <button id="gridview" class="btn btn-outline-primary"><i
                                         class="fas fa-th-large"></i></button>
                                 <button id="card" class="btn btn-outline-primary active"> <i
@@ -879,14 +663,11 @@
                     </div>
 
 
-
-
                     @if (isset($proposalid) && $proposalid != -1)
                         @include('frontend.micro-site.proposals.load')
                     @else
                         @include('frontend.micro-site.shop.loadIndex')
                     @endif
-
 
                     {{-- <div class="d-flex justify-content-center">
                             {{ $items->appends(request()->query())->links() }}
@@ -906,13 +687,34 @@
                 </div>
 
 
+                <div class="col-3">
+                    @include('frontend.micro-site.proposals.filter')
+
+                    <div class="image-search my-2">
+                        {{-- TODO: Add URL for Image Search form Action --}}
+                        <form action="#addUrlForImageSearch" class="d-none" id="submit_image_search">
+                            <input type="file" accept="image/*" id="img_for_search" class="d-none">
+                            <label for="img_for_search" class="btn btn-outline-danger">
+                                Select Image
+                            </label>
+                        </form>
+                    </div>
+                </div>
+
                 <!--end col-->
             </div><!--end row-->
+
+
+
+
+
+
+
+
         </div><!--end container-->
+
     </section>
-
     {{-- Custom Loader --}}
-
     <div class="lds-roller cloader">
         <div></div>
         <div></div>
@@ -923,34 +725,189 @@
         <div></div>
         <div></div>
     </div>
-
     {{-- Custom Loader --}}
-
     <div id="ajax-loading"
         style="display:none;background-color: green; color: white; position: fixed; bottom: 50px; right: 25px;padding: 10px; font-weight: 700; border-radius: 35px;">
         Please Wait...
     </div>
-@endsection
+    @include('frontend.micro-site.proposals.collectionbox')
+    @include('frontend.micro-site.proposals.modal.scanQR')
+    @include('frontend.micro-site.proposals.modal.openoffer')
 
-@include('frontend.micro-site.proposals.modal.scanQR')
-@include('frontend.micro-site.proposals.modal.openoffer')
+    {{-- @include('frontend.micro-site.og_proposals.modal.offerexpo') --}}
+
+@endsection
 
 <script src="{{ asset('backend/js/qrcode.js') }}"></script>
 @section('InlineScript')
+    {{-- @if (isset($proposalid) && $proposalid != -1) --}}
+    <script>
+        // Collection Script Starts Here
 
+        function togglecollection(e) {
+            var ButtonParent = $(e).parent();
+            var box = $("#collectionbox1");
+            if (box.width() > 0) {
+                box.animate({
+                    width: '0'
+                }, 100);
+
+                ButtonParent.animate({
+                    right: '0'
+                }, 100);
+            } else {
+                box.animate({
+                    width: '30vw'
+                }, 100);
+                ButtonParent.animate({
+                    right: '29vw'
+                }, 200);
+            }
+        }
+
+        // Loading Existing Images in Collection Box
+        $(document).ready(function() {
+            var data = localStorage.getItem('collectionboximages');
+            if (data != null) {
+                var images = data.split(',');
+                images.forEach(function(image) {
+                    if (image == "") {
+                        imgtag =
+                            `<div class="">You have not added any product to your collection box</div>`;
+                        $("#emptybox").append(imgtag);
+
+                    } else {
+                        var imgtag = '<div class="col-3 my-2 text-dark text-center "><img src="' + image +
+                            '" class="img-fluid rounded" style="height: 100px;width: 100px;object-fit: contain"><div class="remove-image" class="btn btn-link text-dark text-center " data-img="' +
+                            image + '">Remove</div></div>';
+                        $("#collectionbox").append(imgtag);
+                    }
+                });
+            } else {
+                imgtag =
+                    `<div class="col-12" id='emptybox'><div class="">You have not added any product to your collection box</div></div>`;
+                $("#emptybox").append(imgtag);
+            }
+        });
+
+        // Remove Image from Collection Box
+        $(document).on('click', '.remove-image', function() {
+            var img = $(this).data('img');
+            var data = localStorage.getItem('collectionboximages');
+            var images = data.split(',');
+            var index = images.indexOf(img);
+
+            var data2 = localStorage.getItem('collectionboxItems');
+            var items = data2.split(',');
+
+            if (index > -1) {
+                console.log(index);
+                images.splice(index, 1);
+                items.splice(index, 1);
+            }
+
+            if (images.length == 0) {
+                $("#emptybox").removeClass('d-none');
+            }
+
+
+            localStorage.setItem('collectionboximages', images.join(','));
+            localStorage.setItem('collectionboxItems', items.join(','));
+
+            $(this).parent().remove();
+        });
+
+        function addtocollection(e) {
+            $("#emptybox").addClass('d-none');
+
+            let pid = $(e).data('pid');
+            let img = $(e).parent().parent().find('img').attr('src');
+            let imgtag = '<div class="col-3 my-2 text-dark text-center "><img src="' + img +
+                '" class="img-fluid rounded" style="height: 100px;width: 100px;object-fit: contain"><div data-img="' +
+                img + '" class="btn btn-link text-dark text-center  ">Remove</div></div>';
+
+            // Retrieve and handle collectionboxItems
+            let collectionItems = localStorage.getItem('collectionboxItems');
+            let itemsArray = collectionItems ? collectionItems.split(',') : [];
+
+            console.log(itemsArray, pid);
+
+            if (!itemsArray.includes(pid.toString())) {
+                itemsArray.push(pid);
+                localStorage.setItem('collectionboxItems', itemsArray.join(','));
+
+                // Handle collectionboximages separately to prevent duplicate checks on images
+                let collectionImages = localStorage.getItem('collectionboximages');
+                let imagesArray = collectionImages ? collectionImages.split(',') : [];
+                imagesArray.push(img); // Assuming you want to add images regardless of PID duplication
+                localStorage.setItem('collectionboximages', imagesArray.join(','));
+
+                $("#collectionbox").append(imgtag);
+            }
+        }
+
+
+        $(".showalloffer").click(function (e) {
+            e.preventDefault();
+            let collectionItems = localStorage.getItem('collectionboxItems');
+            $("#collection_product_ids").val(collectionItems);
+            $("#showalloffer").modal('show');
+        });
+
+
+
+
+        // Collection Script Ends Here
+
+
+
+
+
+
+
+
+        $(document).ready(function() {
+            $("#staticBackdrop").modal('show');
+        });
+
+        $("#filterBtn").click(function(e) {
+            e.preventDefault();
+            $("#searchform").submit();
+        });
+
+        $("#togglefilter").click(function(e) {
+            e.preventDefault();
+            $("#adwas").toggleClass('d-none');
+        });
+
+        $("#pills-Image_Search-tab").click(function(e) {
+            e.preventDefault();
+            $("#submit_image_search").toggleClass('d-none');
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var filterBtn = document.getElementById('filterBtn');
+            filterBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                $('#staticBackdrop').modal('hide');
+            });
+        });
+    </script>
+    {{-- @endif --}}
 
     @if (isset($proposalid) && $proposalid != -1)
         <script>
             let viewarea = "List";
-
             $(document).ready(function() {
+                $(".select2").select2()
+
                 $("#openqr").click(function(e) {
                     e.preventDefault();
                     html5QrcodeScanner.render(onScanSuccess);
                     $("#barCodeModal").modal('show');
                 });
             });
-
             var resultContainer = document.getElementById('qr-reader-results');
             var lastResult, countResults = 0;
 
@@ -961,16 +918,101 @@
                 $("#openoffer").modal('show');
                 $("#barCodeModal").modal('hide');
             }
-
             var html5QrcodeScanner = new Html5QrcodeScanner(
                 "qr-reader", {
                     fps: 10,
                     qrbox: 250
                 });
-
             $(document).on('hide.bs.modal', '#barCodeModal', function() {
                 html5QrcodeScanner.clear();
             });
+        </script>
+    @else
+        <script>
+            // script.js file
+
+
+            const fileInp = document.getElementById("dosomething");
+            const infoText = document.getElementById("infoText");
+
+            function fetchRequest(file, formData) {
+                infoText.innerText = "Scanning QR Code...";
+                fetch("http://api.qrserver.com/v1/read-qr-code/", {
+                    method: 'POST',
+                    body: formData
+                }).then(res => res.json()).then(result => {
+                    result = result[0].symbol[0].data;
+                    infoText.innerText = result ? "Upload QR Code to Scan" : "Couldn't scan QR Code";
+                    if (!result) return;
+                    console.log(result);
+
+                    // Sending Data to Server for Adding Item...
+
+
+                    let new_formData = new FormData();
+                    new_formData.append('result', result);
+
+                    fetch("{{ inject_subdomain('qr-action', $slug, false, false) }}", {
+                        method: 'POST',
+                        body: new_formData
+                    }).then(res2 => res2.json()).then(result2 => {
+                        // result2 = result2[0].symbol[0].data;
+                        if (!result2) return;
+                        console.log(result2);
+
+                        if (result2.title == 'success') {
+                            $("#quicktitle").val(result2.model_code);
+                            $("#quicktitle").trigger('keyup');
+                            $("#barCodeModal").modal("hide")
+                        } else {
+                            infoText.innerText = "Couldn't scan QR Code. Try Again.";
+                        }
+                    });
+
+
+
+
+                }).catch(() => {
+                    infoText.innerText = "Couldn't scan QR Code";
+                });
+            }
+
+            fileInp.addEventListener("change", async e => {
+                let file = e.target.files[0];
+                if (!file) return;
+                let formData = new FormData();
+                formData.append('file', file);
+                fetchRequest(file, formData);
+            });
+
+
+
+
+            // var resultContainer = document.getElementById('qr-reader-results');
+            // var lastResult, countResults = 0;
+
+            $("#openqr").click(function(e) {
+                e.preventDefault();
+                // html5QrcodeScanner.render(onScanSuccess,onScanFailure);
+                $("#barCodeModal").modal('show');
+            });
+
+            // function onScanSuccess(decodedText, decodedResult) {
+            //     console.log(`Scan result ${decodedText}`, decodedResult);
+            //     // $("#myofferproduct").attr('src', url);
+            //     // $("#openoffer").modal('show');
+            //     // $("#barCodeModal").modal('hide');
+            // }
+
+            // function onScanFailure(error) {
+            //     console.error(`Code scan error = ${error}`);
+            // }
+
+            // var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {fps: 10,qrbox: 250});
+
+            // $(document).on('hide.bs.modal', '#barCodeModal', function() {
+            //     html5QrcodeScanner.clear();
+            // });
         </script>
     @endif
 
@@ -978,26 +1020,22 @@
         $(document).ready(function() {
             $("#gridview").click();
         });
-
         // LISt View
         $("#gridview").click(function(e) {
             e.preventDefault();
             // Change Class of Columns
             $(".col-3").addClass("col-4");
             $(".col-3").removeClass("col-3");
-
             // UnHide Text Below Image
             $(".ashu").removeClass("d-none")
             // Hide Second Colummn
             $(".send").addClass("d-none")
             $(".ashu1").addClass("d-none")
-
             // Add or remove Active Class
             $(this).addClass('active');
             $("#card").removeClass('active')
             viewarea = "Grid";
         });
-
 
         $("#card").click(function(e) {
             e.preventDefault();
@@ -1007,20 +1045,16 @@
             $(".ashu").addClass("d-none")
             $(".ashu1").removeClass("d-none")
 
-
             // Add or remove Active Class
             $(this).addClass('active');
             $("#gridview").removeClass('active')
             viewarea = "List";
-
         });
     </script>
-
     <script>
         var active_category = "{{ request()->get('category_id') }}";
         var active_sub_category = "{{ request()->get('sub_category_id') }}";
         $('.down_arrow').addClass('d-none');
-
         $('.filterCategory').on('click', function() {
             if (active_category == $(this).val()) {
                 $(this).val(null);
@@ -1030,14 +1064,12 @@
             }
             $('.applyFilter').submit();
         });
-
         $('.filterSubCategory').on('click', function() {
             if (active_sub_category == $(this).val()) {
                 $(this).val(null);
             }
             $('.applyFilter').submit();
         });
-
         $('#productSort').on('change', function() {
             var value = $(this).val();
             $('.sortValue').val(value);
@@ -1053,7 +1085,6 @@
             $('.down_arrow').addClass('d-none');
             $('.mobile_filter').addClass('d-none');
         });
-
         @if (isset($proposalid) && $proposalid != -1)
             $('#categoryAll').click(function() {
                 url =
@@ -1067,8 +1098,31 @@
             });
         @endif
     </script>
-
-
+    {{-- jaya --}}
+    <script>
+        /* Toggle between showing and hiding the navigation menu links when the user clicks on the hamburger menu / bar icon */
+        function myFunction() {
+            var x = document.getElementById("searchmenu");
+            if (x.style.display === "block") {
+                x.style.display = "none";
+            } else {
+                x.style.display = "block";
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+            var x = document.getElementById("searchmenu");
+            x.style.display = "none";
+        });
+    </script>
+    <script>
+        const triggerEl = document.querySelector('#pills-tab button[data-bs-target="#pills-scan_QR"]')
+        // bootstrap.Tab.getInstance(triggerEl).show();
+        const triggerE2 = document.querySelector('#pills-tab button[data-bs-target="#pills-Image_Search"]')
+        // bootstrap.Tab.getInstance(triggerE2).show();
+        const triggerE3 = document.querySelector('#pills-tab button[data-bs-target="#pills-By_Filters"]')
+        // bootstrap.Tab.getInstance(triggerE3).show()
+    </script>
+    {{-- jaya end --}}
 
     <script>
         $(document).on('click', '#excl', function(e) {
@@ -1092,7 +1146,6 @@
                                 $.alert('provide a valid name');
                                 return false;
                             }
-
                             $.ajax({
                                 type: "GET",
                                 url: "{{ route('pages.proposal.validatepass') }}",
@@ -1132,9 +1185,7 @@
             });
         });
     </script>
-
     {{-- Api Group --}}
-
     <script>
         $('.input-check').click(function() {
             if ($(this).prop('checked')) {
@@ -1169,7 +1220,6 @@
             }
         });
 
-
         $('.input-check1').click(function() {
             // console.log("You Cliked Me! 1")
             if ($(this).prop('checked')) {
@@ -1199,11 +1249,8 @@
                 });
             }
 
-
         });
-
         $('#select-all').click(function() {
-
             $(document).find('#ajax-loading').show();
             var interval = 10;
             $('.filterable-items').each(function() {
@@ -1219,8 +1266,6 @@
             });
         });
 
-
-
         $('.unSelectAll').click(function() {
             $(document).find('#ajax-loading').show();
             var interval = 10;
@@ -1234,7 +1279,6 @@
                         }, interval);
                         interval += 150;
                     }
-
                     setTimeout(() => {
                         $(document).find('#ajax-loading').hide();
                     }, 9000);
@@ -1242,22 +1286,16 @@
             }
         });
 
-
         // custom Loder
-
         window.addEventListener('load', () => {
             const cloader = $(".cloader")
             cloader.addClass('loader-hidden');
         })
-
         $(document).ready(function() {
             const cloader = $(".cloader")
             cloader.addClass('loader-hidden');
         });
     </script>
-
-
-
 
 
     @if (isset($proposalid) && $proposalid != -1)
@@ -1268,7 +1306,6 @@
             var total_page = {{ $items->lastPage() }};
             var contianer = $("#dfjrgd");
             var qsearch = false;
-
             $(".nextpage").click(function(e) {
                 e.preventDefault();
                 if (qsearch === false) {
@@ -1279,7 +1316,6 @@
                     }
                 }
             });
-
 
             function getData(pages) {
                 $.ajax({
@@ -1297,9 +1333,7 @@
                             $("#gridview").click();
                         }
 
-
                         // Code Start
-
                         $('.input-check').click(function() {
                             //
                             if ($(this).prop('checked')) {
@@ -1332,7 +1366,6 @@
                                 });
                             }
                         });
-
                         $('#select-all').click(function() {
                             $(document).find('#ajax-loading').show();
                             var interval = 10;
@@ -1353,11 +1386,9 @@
                 });
             }
 
-
             // ! OnKey Up Load Ajax...
             $("#quicktitle").keyup(function(e) {
                 let thisval = this.value;
-
                 if (thisval == '') {
                     qsearch = false;
                     $(".nextpage").removeClass('d-none')
@@ -1366,7 +1397,6 @@
                     qsearch = true;
                     $(".nextpage").addClass('d-none')
                 }
-
                 $.ajax({
                     type: "get",
                     url: URL,
@@ -1382,10 +1412,8 @@
                         } else {
                             $("#gridview").click();
                         }
-
                         // Code Start
                         $('.input-check').click(function() {
-
                             if ($(this).prop('checked')) {
                                 var route = "{{ route('pages.api.store') }}" + "?product_id=" + $(
                                         this).val() + '&proposal_id=' + "{{ $proposalid }}" +
@@ -1418,7 +1446,6 @@
                             }
                         });
 
-
                         $('#select-all').click(function() {
                             $(document).find('#ajax-loading').show();
                             var interval = 10;
@@ -1436,10 +1463,8 @@
                             });
                         });
                         // Code End
-
                     }
                 });
-
 
             });
         </script>
@@ -1451,7 +1476,6 @@
             var total_page = {{ $items->lastPage() }};
             var contianer = $("#dfjrgd");
             var qsearch = false;
-
             $(".nextpage").click(function(e) {
                 e.preventDefault();
                 if (qsearch === false) {
@@ -1466,7 +1490,6 @@
             function getData(pages) {
                 const queryString = window.location.search;
                 const urlParams = new URLSearchParams(queryString);
-
                 $.ajax({
                     type: "get",
                     url: URL,
@@ -1511,8 +1534,6 @@
                     qsearch = true;
                     $(".nextpage").addClass('d-none')
                 }
-                console.log(urlParams.get('exclusive') ?? 'off');
-
                 $.ajax({
                     type: "get",
                     url: URL,
@@ -1531,7 +1552,6 @@
                                     "searchVal_{{ $key }}[]"),
                             @endforeach
                         @endif
-
                     },
                     success: function(response) {
                         $(".dfjrgd").empty().html(response);
@@ -1543,13 +1563,9 @@
                     }
                 });
 
-
             });
         </script>
     @endif
-
-
-
 
 
     <script>
@@ -1559,18 +1575,15 @@
                 // Get the color value associated with the tag
                 var color = $(this).data("color");
                 var filterdata = $(`input[value=${color}]`)
-
                 if (filterdata.attr('type') == 'text' || filterdata.attr('type') == 'number') {
                     filterdata.val('');
                 }
                 $(this).parent().remove();
                 filterdata.click()
                 $("#searchform").submit()
-
             });
         });
     </script>
-
 
     <script>
         $(".makeoffer").click(function(e) {
@@ -1579,8 +1592,6 @@
             // var msg = "<input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Name'> <br> <input type='text' id='offeremail' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Email (Optional)'> <br> <input type='number' maxlength='10' id='offerphone' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Phone (Optional)'>";
             var msg =
                 "<input type='text' id='margin' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Buyer Name'> <br> <input type='text' id='alias' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Alias (optional)'> <br> <input type='text' id='offeremail' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Email (Optional)'> <br> <input type='number' maxlength='10' id='offerphone' class='w-100' class='form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #6666cc;' placeholder='Enter Phone (Optional)'>";
-
-
 
             $.confirm({
                 draggable: true,
@@ -1592,15 +1603,12 @@
                     tryAgain: {
                         text: 'Next',
                         btnClass: 'btn-primary',
-
                         action: function() {
                             let margin = $('#margin').val();
                             let offeremail = $('#offeremail').val();
                             let offerphone = $('#offerphone').val();
-
                             let alias = $('#alias').val();
                             let personname = $('#offerpersonname').val();
-
                             if (!margin) {
                                 $.alert('provide a valid name');
                                 return false;
@@ -1618,8 +1626,12 @@
         });
         // confirm
     </script>
-
-
-
-
+    <script>
+        function addToSelected(option) {
+            var selectedItemsContainer = document.getElementById('selectedItemsContainer');
+            var selectedItems = selectedItemsContainer.innerHTML;
+            selectedItems += '<div>' + option + '</div>';
+            selectedItemsContainer.innerHTML = selectedItems;
+        }
+    </script>
 @endsection

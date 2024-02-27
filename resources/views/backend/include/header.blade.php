@@ -28,6 +28,7 @@
     .mobile-menu .nav-item {
         font-size: 2rem;
     }
+
     .mobile-menu .nav-item.active a span {
         font-size: 2rem !important;
     }
@@ -36,7 +37,7 @@
         margin-left: 10%;
     }
 
-    .mobile-menu .nav-item a i{
+    .mobile-menu .nav-item a i {
         display: contents !important;
         font-size: 22px;
     }
@@ -188,7 +189,8 @@
                         </li>
 
                         @if ($permi->maya == 'yes')
-                            <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.image.designer'], 'active') }} d-none">
+                            <div
+                                class="nav-item ml-4 {{ activeClassIfRoutes(['panel.image.designer'], 'active') }} d-none">
                                 <a href="{{ route('panel.image.designer') }}" class="a-item px-lg-3"
                                     style="color:#ccd3e4;  ">
                                     {{-- AI GENERATE IMAGE --}}
@@ -200,7 +202,7 @@
 
                         <div
                             class="nav-item ml-4 {{ activeClassIfRoutes(['panel.user_shop_items.create'], 'active') }}">
-                            <a href="{{ route('panel.user_shop_items.create') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}"
+                            <a href="{{ route('panel.user_shop_items.create') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}&assetvault=true"
                                 class="a-item px-lg-3" style="color:#ccd3e4;  ">
                                 <i class="ik ik-shopping-bag"></i>
                                 <span>{{ 'Manage' }}</span>
@@ -212,15 +214,24 @@
                             <a href="{{ route('panel.search.index') }}" class="a-item px-lg-3"
                                 style="color:#ccd3e4;  ">
                                 <i class="ik ik-shopping-bag"></i>
-                                <span>{{ 'Search' }}</span>
+                                <span>{{ 'Search Image' }}</span>
                             </a>
                         </div>
+                        @php
+                            $request = request();
+                            $user_shop = getShopDataByUserId(auth()->id());
+                            $slug = $user_shop->slug;
+                        @endphp
 
-                        <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.check.display'], 'active') }}">
-                            <a href="{{ route('panel.check.display') }}" class="a-item px-lg-3"
+                        <div class="nav-item ml-4 {{ activeClassIfRoutes([ 'pages.proposal.picked'], 'active') }}">
+                        {{-- <div class="nav-item ml-4 {{ activeClassIfRoutes([ 'panel.check.display'], 'active') }}"> --}}
+                            {{-- <a href="{{ route('panel.check.display') }}" class="a-item px-lg-3"
+                                style="color:#ccd3e4; "> --}}
+                            <a href="{{ inject_subdomain('shop', $slug, true, false) }}" class="a-item px-lg-3"
                                 style="color:#ccd3e4; ">
                                 <i class="ik ik-upload"></i>
-                                <span>{{ 'Display' }}</span>
+                                {{-- <span>{{ 'Display' }}</span> --}}
+                                <span>{{ 'Search' }}</span>
                             </a>
                         </div>
 
@@ -230,6 +241,7 @@
                                 class="a-item px-lg-3" style="color:#ccd3e4; ">
                                 <i class="ik ik-tag"></i>
                                 <span>{{ 'Offer' }}</span>
+                                {{-- <span>{{ 'Search' }}</span> --}}
                             </a>
                         </div>
 
@@ -246,16 +258,100 @@
                     </ul>
                 </div>
             @else
-                <div class="top-menu"></div>
+            <div class="top-menu d-flex desktop-menu hdsgfweyfb d-none">
+                @php
+                    $user_shop = getShopDataByUserId(auth()->id());
+                @endphp
+                <ul class="nav nav-underline d-none">
+                    <div class="d-flex justify-content-start invisible  ml-4 align-items-center w-100 ">
+                        <button class="btn p-0  toggle-menubtn m-3" style="background-color: transparent;">
+                            <i class="fas fa-home"></i>
+                        </button>
+
+                    </div>
+                    <li class="nav-item {{ activeClassIfRoutes(['panel.dashboard'], 'active') }}">
+                        <a href="{{ route('panel.dashboard') }}"
+                            class="a-item px-lg-3 {{ activeClassIfRoutes(['panel.dashboard'], 'active') }}"
+                            style="color:#ccd3e4; ">
+                            <i class="fas fa-home"></i>
+                            <span>{{ __('Home') }}</span>
+                        </a>
+                    </li>
+
+                    @if ($permi->maya == 'yes')
+                        <div
+                            class="nav-item ml-4 {{ activeClassIfRoutes(['panel.image.designer'], 'active') }} d-none">
+                            <a href="{{ route('panel.image.designer') }}" class="a-item px-lg-3"
+                                style="color:#ccd3e4;  ">
+                                {{-- AI GENERATE IMAGE --}}
+                                <i class="fas fa-image"></i>
+                                <span>{{ 'Maya' }}</span>
+                            </a>
+                        </div>
+                    @endif
+
+                    <div
+                        class="nav-item ml-4 {{ activeClassIfRoutes(['panel.user_shop_items.create'], 'active') }}">
+                        <a href="{{ route('panel.user_shop_items.create') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}&assetvault=true"
+                            class="a-item px-lg-3" style="color:#ccd3e4;  ">
+                            <i class="ik ik-shopping-bag"></i>
+                            <span>{{ 'Manage' }}</span>
+                            {{-- Products --}}
+                        </a>
+                    </div>
+
+                    <div class="nav-item ml-4 {{ activeClassIfRoutes(['panel.search.index'], 'active') }}">
+                        <a href="{{ route('panel.search.index') }}" class="a-item px-lg-3"
+                            style="color:#ccd3e4;  ">
+                            <i class="ik ik-shopping-bag"></i>
+                            <span>{{ 'Search Image' }}</span>
+                        </a>
+                    </div>
+                    @php
+
+                        $request = request();
+                    $slug = $request->subdomain ?? 'ashish';
+                    @endphp
+
+                    <div class="nav-item ml-4 {{ activeClassIfRoutes([ 'pages.proposal.picked'], 'active') }}">
+                    {{-- <div class="nav-item ml-4 {{ activeClassIfRoutes([ 'panel.check.display'], 'active') }}"> --}}
+                        {{-- <a href="{{ route('panel.check.display') }}" class="a-item px-lg-3"
+                            style="color:#ccd3e4; "> --}}
+                        <a href="{{ inject_subdomain('proposal/create', $slug, true, false) }}" class="a-item px-lg-3"
+                            style="color:#ccd3e4; ">
+                            <i class="ik ik-upload"></i>
+                            {{-- <span>{{ 'Display' }}</span> --}}
+                            <span>{{ 'Search' }}</span>
+                        </a>
+                    </div>
+
+                    <div
+                        class="nav-item ml-4 {{ activeClassIfRoutes(['panel.proposals.index', 'pages.proposal.picked'], 'active') }}">
+                        <a href="{{ route('panel.proposals.index') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}"
+                            class="a-item px-lg-3" style="color:#ccd3e4; ">
+                            <i class="ik ik-tag"></i>
+                            <span>{{ 'Offer' }}</span>
+                            {{-- <span>{{ 'Search' }}</span> --}}
+                        </a>
+                    </div>
+
+                    @if ($permi->documentaion == 'yes')
+                        <div
+                            class="nav-item ml-4 {{ activeClassIfRoutes(['panel.Documents.Quotation'], 'active') }}">
+                            <a href="{{ route('panel.Documents.Quotation') }}" class="a-item px-lg-3"
+                                style="color:#ccd3e4; ">
+                                <i class="ik ik-archive"></i>
+                                <span>{{ 'Documentation' }}</span>
+                            </a>
+                        </div>
+                    @endif
+                </ul>
+            </div>
             @endif
 
             @if (getSetting('notification'))
                 @php
-                    $notification = App\Models\Notification::whereUserId(auth()->id())
-                        ->whereIsReaded(0)
-                        ->limit(5)
-                        ->latest()
-                        ->get();
+                    $notification = App\Models\Notification::whereUserId(auth()->id())->whereIsReaded(0)->limit(5)->latest()->get();
                 @endphp
             @endif
 
@@ -270,16 +366,23 @@
                     </button>
                 </div>
                 <div class="nav-item ml-4 EFD">
-                    <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank" class="a-item px-lg-3"
+                    {{-- <a href="https://forms.gle/JKe6p6bic7gjnuJq5" target="_blank" class="a-item px-lg-3"
                         style="color:#ccd3e4;">
                         <i class="uil uil-envelope h5 align-middle me-2 mr-3"></i>
                         <span style="align-items: flex-end">{{ '121 Support' }}</span>
+                    </a> --}}
+
+                    <a href="{{ route('panel.support_ticket.index') }}" target="" class="a-item px-lg-3"
+                    style="color:#ccd3e4;">
+                        <i class="uil uil-envelope h5 align-middle me-2 mr-3"></i>
+                        <span style="align-items: flex-end">{{ '121 Support' }}</span>
                     </a>
+
                 </div>
                 <div class="dropdown EFD">
                     <a class="nav-link dropdown-toggle" href="#" id="notiDropdown" role="button"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:#ccd3e4;"><i
-                            class="ik ik-bell" style="line-height:2.3 !important"></i>
+                            class="ik ik-bell" ></i>
                         @if ($notification->count() > 0)
                             <span class="badge bg-primary">{{ $notification->count() }}</span>
                         @endif
@@ -342,7 +445,8 @@
                                 {{ __('Dashboard') }}
                             </a>
                         @endif
-                        <a href="{{ route('panel.settings.index', encrypt(auth()->id())) }}" class="dropdown-item">
+                        <a href="{{ route('panel.settings.index', [encrypt(auth()->id()), 'open' => 'acc_info', 'active' => 'shop-details']) }}"
+                            class="dropdown-item">
                             <i class="ik ik-settings dropdown-icon"></i>
                             <span>{{ 'Settings' }}</span>
                         </a>

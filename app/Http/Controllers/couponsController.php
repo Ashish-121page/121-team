@@ -16,7 +16,7 @@ class couponsController extends Controller
         $coupons = Coupons::get();
         $plans = Package::get();
 
-        
+
         return view('backend.admin.coupons.index',compact('coupons','plans'));
     }
 
@@ -35,7 +35,7 @@ class couponsController extends Controller
         }elseif (isset($request->amtpercent) != null){
             $amt = $request->flat_price;
         }
-        
+
         if (isset($request->couponcode) == null) {
             $coupons_code = '121'.''.\Str::upper(\Str::random(4)).''.$amt;
         }else{
@@ -58,7 +58,7 @@ class couponsController extends Controller
 
 
     function usecoupon(Request $request) {
-        
+
         // magicstring($request->all());
 
         $chk = Coupons::where('coupon_code',$request->coupon)->first();
@@ -70,7 +70,7 @@ class couponsController extends Controller
                 'status' => "error",
                 'msg' => "Invalid Coupon",
                 'newprice' => $package->price
-            );    
+            );
             return $response;
         }
 
@@ -81,7 +81,7 @@ class couponsController extends Controller
                 'status' => "error",
                 'msg' => "Coupon Has Alreasy Expired",
                 'newprice' => $package->price
-            );    
+            );
             return $response;
         }
 
@@ -91,22 +91,10 @@ class couponsController extends Controller
                 'status' => "error",
                 'msg' => "Coupon Has Alreasy Expired",
                 'newprice' => $package->price
-            );    
+            );
             return $response;
         }
 
-
-        // // check if Coupon Package type
-        // if (json_decode($chk->plan_id) == $request->package) {
-        //     $response = array(
-        //         'status' => "error",
-        //         'msg' => "Coupon Has Alreasy Expired",
-        //         'newprice' => $package->price
-        //     );    
-        //     return $response;
-        // }
-
-        
 
 
         if ($chk->discount_amt != null) {
@@ -127,7 +115,7 @@ class couponsController extends Controller
             'msg' => "Coupon Applied",
             'newprice' => $amount
         );
-        
+
         // session()->put('coupon',$amount);
         session(['coupon' => $amount]);
         session(['couponname' => $request->coupon]);

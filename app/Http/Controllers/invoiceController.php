@@ -283,8 +283,18 @@ class invoiceController extends Controller
         }
 
 
+
+        $title_page = '';
+        if(request()->access == 'pi-data') {
+            $title_page = 'Listing - Proforma Invoices';
+        
+        } else{
+            $title_page = 'Listing - Quotation';
+        }
+
+
         $buyerDetails = $Quotation->pluck('customer_info')->toArray();
-        return view('panel.Documents.Quotation',compact('Quotation','pirecords','buyerDetails'));
+        return view('panel.Documents.Quotation',compact('Quotation','pirecords','buyerDetails','title_page'));
     }
 
 
@@ -319,16 +329,36 @@ class invoiceController extends Controller
             $consignee_record = json_decode($quotationRecord->consignee_details) ?? [];
             $consignee_details = Consignee::whereIn('id',$consignee_record)->get() ?? [];
 
+            $numofdoc= $additional_notes->number;
+        
+            
+            
+                $page_title = $numofdoc .'- Details';                           
+           
+            
+
         }else{
             $quotationRecord = null;
             $additional_notes = null;
             $entity_details = null;
             $bank_details = [];
             $consignee_details = [];
+
+            $page_title = ' Details';
         }
 
 
-        return view('panel.Documents.create-quotation',compact('entities','userShop','quotation_number','currency','terms_of_delivery','countries','offer_data','quotationRecord','additional_notes','entity_details','bank_details','consignee_details'));
+        // $numofdoc=$additional_notes->number;
+
+        // $page_title = '';
+        // if (request()->has('download') && request()->get('download') == 'ppt'){
+        //     $page_title = $numofdoc .' Details';                           
+        // } else {
+        //     $page_title = $numofdoc .' Details';
+        // }
+
+
+        return view('panel.Documents.create-quotation',compact('page_title','entities','userShop','quotation_number','currency','terms_of_delivery','countries','offer_data','quotationRecord','additional_notes','entity_details','bank_details','consignee_details'));
     }
 
     function checkslug() {
@@ -843,7 +873,10 @@ class invoiceController extends Controller
             $products = $products->whereIn('id',$QuotationItem)->paginate($pagelength);
         }
 
-        return view('panel.Documents.quotation3', compact('products', 'QuotationItem','QuotationRecord','showAll'));
+
+        $Pagetitle = "2. Document #"." - ".$QuotationRecord->user_slug;
+
+        return view('panel.Documents.quotation3', compact('products', 'QuotationItem','QuotationRecord','showAll','Pagetitle'));
 
 
     }
@@ -991,7 +1024,8 @@ class invoiceController extends Controller
         }
 
 
-        $pageTitle = $Userrecord->companyName." - ".$QuotationRecord->user_slug;
+        $pageTitle = "Download PDF"." - ".$QuotationRecord->user_slug;
+        // $pageTitle = $Userrecord->companyName." - ".$QuotationRecord->user_slug;
         $buyer = BuyerList::whereId($Userrecord->Buyer_Id)->first() ?? null;
 
         $usershop = UserShop::whereUserId($user->id)->first();

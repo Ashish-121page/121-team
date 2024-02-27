@@ -1,8 +1,8 @@
-@php
+{{-- @php
     DB::table('refer')
         ->where('id', 2) // Demo (BookSession)
         ->increment('view_count', 1);
-@endphp
+@endphp --}}
 
 
 @extends('frontend.layouts.main')
@@ -189,7 +189,7 @@
 
         }
 
-       
+
         @media screen and (min-width: 750px) {
             .cols {
                 display: flex;
@@ -219,10 +219,10 @@
                 width: 50%;
                 padding: 0 !important;
                 margin-top: 0 !important;
-            
+
             }
         }
-             
+
 
 
 
@@ -315,9 +315,8 @@
 
             <span class=" text-break my-3 px-3 h3 ti">Book 7 Minutes Online Demo</span>
 
-            <form
-                action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSejaBqSVzcFHQB4Zi2KTP4obPVjp_GMjJ6QmM74BCYKPL8FaA/formResponse"
-                method="post">
+            {{-- <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSejaBqSVzcFHQB4Zi2KTP4obPVjp_GMjJ6QmM74BCYKPL8FaA/formResponse" method="post"> --}}
+            <form action="{{ route('demoform.store') }}" method="post">
 
                 <!-- Hidden Section -->
                 <div class="hidden_content">
@@ -342,7 +341,7 @@
                         <small>Mr./Mrs.</small>
                         <input type="text" placeholder=". . . ." name="gname" class="my-2 form-control" id="gname"
                             required style="width:250px" >
-                        <button type="button" class="btn btn-primary" onclick="next()">Ok 
+                        <button type="button" class="btn btn-primary" onclick="next()">Ok
                             <i class="uil-check fs-5"></i>
                         </button>
                     </div>
@@ -356,7 +355,7 @@
                         <label for="gphone">Your Phone <span class="text-red">*</span></label>
                         <small class="fs-6">You'll Get Meeting Login Details on Whatsapp</small>
 
-                        <input type="text" placeholder="9 9 9 9 - 8 8 8 - 7 7 7" name="gphone" class="my-2 form-control" pattern="[0-9]{10}" 
+                        <input type="text" placeholder="9 9 9 9 - 8 8 8 - 7 7 7" name="gphone" class="my-2 form-control" pattern="[0-9]{10}"
                             maxlength="10" id="gphone" required style="width:250px" >
                         <button type="button" class="btn btn-primary" onclick="next()">Ok <i class="uil-check fs-5"></i></button>
 
