@@ -14,18 +14,38 @@
                     @csrf
                     <div class="col-md-12 col-12">
                         <div class="form-group {{ $errors->has('price') ? 'has-error' : '' }}">
+                            <label for="colour">Colour</label>
+                            <input type="text" class="form-control" name="colour" name="colour">
+
+                            <label for="size">Size</label>
+                            <input type="text" class="form-control" name="size" name="size">
+
+
+                            <label for="finish">Finish</label>
+                            <input type="text" class="form-control" name="finish" name="finish">
+
+                            <label for="MOQ">MOQ</label>
+                            <input type="text" class="form-control" name="MOQ" name="MOQ">
+
+                            <label for="Material ">Material </label>
+                            <input type="text" class="form-control" name="Material " name="Material ">
+
+                            <label for="remarks_offer">Remarks</label>
+                            <div class="form-floating">
+                                <textarea class="form-control" placeholder="Remarks by buyer" id="remarks_offer" name="remarks_offer"></textarea>
+                            </div>
+                        
                             <input type="hidden" name="product_id" value="" class="productId">
                             <label for="price" class="control-label">Offer Price</label>
                             <input class="form-control" name="price" min="0" type="text" pattern="^[0-9]+(\.[0-9]+)?$" id="price" placeholder="Enter price">
 
-
-                            <label for="remarks_offer">Customisation</label>
-                            <div class="form-floating">
-                                <textarea class="form-control" placeholder="Customisation requested by buyer" id="remarks_offer" name="remarks_offer"></textarea>
-                            </div>
-
                             <label for="attachment">Attachment</label>
                             <input type="file" class="form-control" name="attachment" name="attachment">
+
+                            
+                            <input type="hidden" name="product_id" value="" class="productId">
+                            <label for="others" class="control-label">Others</label>
+                            <input class="form-control" name="others"  type="text" pattern="" id="others" placeholder="others">
 
 
                             <label for="Customise_product" class="d-none">Customise</label>

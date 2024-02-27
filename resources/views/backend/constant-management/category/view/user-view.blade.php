@@ -74,7 +74,7 @@
                                                             <i class="fas fa-pencil-alt"></i>
                                                         </button>
                                                         <a href="{{ route('panel.constant_management.category.delete',encrypt($subcategory->id)) }}"  class="btn btn-outline-danger shadow-none btn-icon">
-                                                            <i class="fas fa-trash" style="line-height:2 !important;"></i>
+                                                            <i class="fas fa-trash"></i>
                                                         </a>
                                                     </div>
                                             </div>

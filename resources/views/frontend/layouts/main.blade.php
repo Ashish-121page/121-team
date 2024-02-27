@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+
+    <link rel="icon" href="{{ asset('storage/backend/logos/favicon-188.ico') }}" />
     @yield('meta_data')
     @include('frontend.include.head')
     {{-- @laravelPWA --}}
@@ -70,7 +72,7 @@
 
 
         $(document).ready(function() {
-            $("#changeCurrency").change(function(e) {
+            $(".changeCurrency").change(function(e) {
                 e.preventDefault();
                 $.ajax({
                     type: "get",

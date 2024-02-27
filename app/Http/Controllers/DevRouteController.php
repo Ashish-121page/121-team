@@ -76,10 +76,20 @@ class DevRouteController extends Controller
 
 
 
+        // Seller En-role Onsite
+        $onsite_notification['user_id'] = auth()->id();
+        $onsite_notification['title'] = "Suppport Ticket Resolved";
+        $onsite_notification['link'] = route('customer.ticket.show',18);
+        $onsite_notification['notification'] = "Your Suppport Ticket has been Resolved";
+
+
+        pushOnSiteNotification($onsite_notification);
+        
+
         if ($request->has('sendmail') ) {
 
             $user = User::where('id', auth()->id())->first();
-            $email = '121pagedesign3@gmail.com';
+            $email = $request->get('email','121pagedesign3@gmail.com');
 
             $mailcontent_data = MailSmsTemplate::where('code','=',"Welcome")->first();
             if($mailcontent_data){

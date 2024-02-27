@@ -396,6 +396,8 @@ class ProductController extends Controller
 
 
                 $medias = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->where('extension','!=','gif')->get();
+
+
                 $medias_gif = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Image')->where('extension','gif')->get();
                 $media_Video = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Video')->get();
                 $mediaAssets = Media::whereType('Product')->whereTypeId($product->id)->whereTag('Product_Asset')->get();
@@ -3090,7 +3092,19 @@ class ProductController extends Controller
                 $files = [];
             }
 
-            return view('panel.products.edit',compact('product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months','mainsku_prices_str','mainsku_mrp_str','mainsku_exclbuyer_str','mainsku_hsn_str','mainsku_hsnpercent_str','mainsku_grossweight_str','mainsku_netweight_str','mainsku_length_str','mainsku_selling_price_unit_str','mainsku_width_str','mainsku_height_str','mainsku_standard_carton_str','mainsku_carton_weight_str','mainsku_carton_length_str','mainsku_carton_width_str','mainsku_carton_height_str','mainsku_sourcedfrom_str','mainsku_vendor_price_str','mainsku_product_cost_unit_str','mainsku_vendor_currency_str','mainsku_remarks_str','length_uom','quantity_uom','weight_uom','user_custom_fields_types','paginator','files','folderPath','user_id','user'));
+
+            $pagetitle = '';
+            $model_code = substr($product->model_code, 0, 10);
+            $prod_name = substr($product->title, 0, 10);
+
+        
+            $pagetitle = 'Edit #' . $model_code .','. $prod_name;
+       
+
+            // magicstring($medias);
+            // return;
+
+            return view('panel.products.edit',compact('pagetitle','prod_name','product','category','product_record','medias','colors','sizes','shipping','variations','carton_details','prodextra','custom_attribute','groupIds','groupIds_all','productVarients','user_custom_col_list','attribute_value_id','media_Video','mediaAssets','medias_gif','mediaSize_Image','mediaSize_attachment','mediaSize_gif','mediaSize_video','product_variant_combo','available_products','user_shop_item','varient_basis','user_custom_fields','fileds_sections','fileds_sections_names','fileds_sections_ids','months','mainsku_prices_str','mainsku_mrp_str','mainsku_exclbuyer_str','mainsku_hsn_str','mainsku_hsnpercent_str','mainsku_grossweight_str','mainsku_netweight_str','mainsku_length_str','mainsku_selling_price_unit_str','mainsku_width_str','mainsku_height_str','mainsku_standard_carton_str','mainsku_carton_weight_str','mainsku_carton_length_str','mainsku_carton_width_str','mainsku_carton_height_str','mainsku_sourcedfrom_str','mainsku_vendor_price_str','mainsku_product_cost_unit_str','mainsku_vendor_currency_str','mainsku_remarks_str','length_uom','quantity_uom','weight_uom','user_custom_fields_types','paginator','files','folderPath','user_id','user'));
 
         }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -3519,15 +3533,21 @@ class ProductController extends Controller
                     $vip_group = getPriceGroupByGroupName(auth()->id(),"VIP");
                     $reseller_group = getPriceGroupByGroupName(auth()->id(),"Reseller");
 
-                    // Update VIP Price Group
-                    GroupProduct::whereGroupId($vip_group->id)->whereProductId($product->id)->update([
-                        'price' => $request->vip_group
-                    ]);
+                    if (isset($vip_group)) {
+                        // Update VIP Price Group
+                        GroupProduct::whereGroupId($vip_group->id)->whereProductId($product->id)->update([
+                            'price' => $request->vip_group
+                        ]);
+                    }
 
-                    // Update Reseller Price Group
-                    GroupProduct::whereGroupId($reseller_group->id)->whereProductId($product->id)->update([
-                        'price' => $request->reseller_group
-                    ]);
+                    if (isset($reseller_group)) {
+                        // Update Reseller Price Group
+                        GroupProduct::whereGroupId($reseller_group->id)->whereProductId($product->id)->update([
+                            'price' => $request->reseller_group
+                        ]);
+                    }
+
+
 
                     if($request->is_publish == 0){
                         UserShopItem::where('user_id','=',$product->user_id)->where('product_id',$product->id)->update(['is_published'=>0,'price' => $request->min_sell_pr_without_gst]);
@@ -4077,19 +4097,19 @@ class ProductController extends Controller
 
     public function searchassets() {
 
-        if (request()->ajax()) {
-
+        // if (request()->ajax()) {
             $page = request()->get('page', 1); // Default to page 1 if not set
             $folder = "storage/files/".auth()->id();
-
             $medias = Media::where('path', 'LIKE', "%" . request()->get('search') . "%")
                             ->where('path',"LIKE","%".$folder."%")
                             ->groupBy('path')
                             ->orderBy('created_at',"DESC")
                             ->paginate(10, ['*'], 'page', $page);
 
-            return view('panel.products.include.iframe.link-assets',compact('medias'));
-        }
+            $paginator = $medias;
+            return view('panel.products.include.iframe.link-assets',compact('medias','paginator'));
+
+        // }
 
     }
 

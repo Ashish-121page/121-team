@@ -29,6 +29,13 @@ class CurrencyController extends Controller
         try {
             $currency = UserCurrency::whereId($request->crrid)->first();
 
+
+            // ! Checkign Record Exist or Not...
+            $chk = UserCurrency::where('currency',$request->currencyname)->where('user_id',$request->userid)->get();
+            if ($chk->count() != 0) {
+                return back()->with('error',"$request->currencyname Already Exist in Your Account.");
+            }
+
             $currency->currency = $request->currencyname;
             $currency->exchange = $request->currencyvalue;
             $currency->save();
@@ -36,7 +43,7 @@ class CurrencyController extends Controller
             return back()->with('success',"Record Updated Success Fully");
 
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return back()->with('error',"Error While Upoading.");
         }
 

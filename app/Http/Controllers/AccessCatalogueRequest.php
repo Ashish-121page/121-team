@@ -54,17 +54,7 @@ class AccessCatalogueRequest extends Controller
         } catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
-
-
-
      }
-
-
-
-
-
-
-
 
     public function create()
     {

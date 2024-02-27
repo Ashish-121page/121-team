@@ -1,4 +1,53 @@
+{{-- @include('backend.include.header')  --}}
 <div class="row gx-3 flex-wrap dfjrgd">
+    {{-- <div class="col-12">
+        <div class="row">
+            <div class="col-3">
+                Asset Vault
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="Input 1">
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="Input 2">
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="Input 3">
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="row">
+            <div class="col-3">
+                Products
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="Input 1">
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="Input 2">
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="Input 3">
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="row">
+            <div class="col-3">
+                Filters
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="Input 1">
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="Input 2">
+            </div>
+            <div class="col-2">
+                <input type="text" class="form-control" placeholder="Input 3">
+            </div>
+        </div>
+    </div> --}}
 
 
     @forelse ($items as $products)
@@ -21,21 +70,18 @@
             }
             $productId= \Crypt::encrypt($products->id);
 
-
             $record = App\Models\UserCurrency::where('currency',$products->base_currency)->where('user_id',$user_shop->user_id)->first();
             $exhangerate = Session::get('Currency_exchange') ?? 1;
             $HomeCurrency = $record->exchange ?? 1;
             $currency_symbol = Session::get('currency_name') ?? $product->base_currency ?? 'INR';
             $price = exchangerate($price,$exhangerate,$HomeCurrency);
 
-
         @endphp
-
             <div class="col-12 col-md-6 col-lg-4 col-xl-3" >
                 <div class="shop-image position-relative overflow-hidden rounded">
-                    {{-- <a href="{{ route('pages.shop-show',$productId)."?pg=".request()->get('pg') }}"> --}}
+                    <a href="{{ route('pages.shop-show',$productId)."?pg=".request()->get('pg') }}">
                         <img src="{{ ( (getShopProductImage($products->id,'single') != null)  ? asset(getShopProductImage($products->id,'single')->path) : asset('frontend/assets/img/placeholder.png')) }}" class="img-fluid " style="height: 250px;width: 100%;object-fit: contain;" alt="">
-                    {{-- </a> --}}
+                    </a>
                     <ul class="list-unstyled shop-icons filterable-items ashu d-none">
                         <li class="mt-1">
                             <label class="custom-chk prdct-checked" data-select-all="boards" data-value="unselect">
@@ -46,12 +92,12 @@
                     </ul>
                 </div>
                 <div class="ashu mb-2 d-none">
-                    <div class="    ">{{ \Str::limit($products->title,30) }}</div>
                     <div>
-                        <a href="{{ route('pages.shop-show',$productId)."?pg=".request()->get('pg') }}">
+                        {{-- <a href="{{ route('pages.shop-show',$productId)."?pg=".request()->get('pg') }}"> --}}
                             Model Code: {{ \Str::limit($products->model_code,30) }}
-                        </a>
+                        {{-- </a> --}}
                     </div>
+                    <div class="    ">{{ \Str::limit($products->title,30) }}</div>
                     @if ($request->has('quantity') && $request->get('quantity') != null && $request->get('quantity') != 0)
                             <p class="mb-0">
                             <b>In Stock </b>
@@ -84,7 +130,6 @@
                         </p>
                     @endif
                     {{-- <div class="h5">{{ \Str::limit($products->title,30) }}</div> --}}
-
                     <div class="">
                         {{ $currency_symbol }}
                         @if($price == 0)
@@ -100,6 +145,24 @@
                     {{-- <p style="font-family: 'Nunito', sans-serif;line-height: 1.3;font-weight: 600;">
                         Colour: {{ $products->color }} ; Size: {{ $products->size }}
                     </p> --}}
+                    <div class="d-flex flex-column justify-content-center align-items-center">
+                        {{-- <a href="{{ route('pages.shop-show',$productId) }}" class="btn btn-link outline-primary" style="width: fit-content">View</a>                        --}}
+                          {{-- <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#edit_view">View</button> --}}
+
+                        {{-- <div class="dropdown">
+                            <button type="button" class="btn btn-link outline-primary dropdown-toggle" style="width: 100%;" data-bs-toggle="dropdown">
+                                Add to
+                            </button>
+                            @php
+                                $proposal = App\Models\Proposal::whereId($request->proposal_id)->first();
+                            @endphp
+                            <ul class="dropdown-menu">
+                                @if($proposal)
+                                    <li><a href="{{ route('proposals.pages.table', ['proposal_id' => $proposal->id]) }}">{{ $proposal->title }}</a></li>
+                                @endif
+                            </ul>
+                        </div> --}}
+                    </div>
                 </div>
             </div>
 
@@ -170,6 +233,7 @@
                     </label>
                 </ul>
             </div>
+
             <div class="ashu1" style="border-bottom: 2px solid #6666cc"></div>
             @empty
             <div class="col-lg-12 mx-auto text-center mt-3">
@@ -180,7 +244,30 @@
                         <p>Alter filter conditions, no products matching the search criteria.</p>
                     </div>
                 </div>
-            </div>
 
+            </div>
+            {{-- <div class="row">
+                <div class=" col-6 button-container text-start">
+                    <button type="button" class="btn btn-outline-primary ">Clear</button>
+                </div>
+                <div class="col-6 button-container text-end">
+                    <button type="button" class="btn btn-outline-primary ">Next</button>
+                </div>
+            </div> --}}
     @endforelse
 </div>
+<div class="row">
+    <div class=" col-6 button-container text-start">
+        <button type="button" class="btn btn-outline-primary ">Clear</button>
+    </div>
+    <div class="col-6 button-container text-end">
+        <a href="{{ route('pages.proposal.picked', ['proposal' => $proposalid, 'user_key' => $user_key]) }}?type=picked"
+            class="btn btn-outline-primary" target="">
+            {{-- <span class="d-none d-md-none d-sm-none">Next</span> --}}
+            <span class="d-block d-md-block d-sm-block">
+                Next <i class="fas fa-chevron-right"></i>
+            </span>
+        </a>
+    </div>
+</div>
+{{-- @include('frontend.micro-site.proposals.modal.edit_viewmodal') --}}

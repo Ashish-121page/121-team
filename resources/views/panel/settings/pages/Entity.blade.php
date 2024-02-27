@@ -375,10 +375,6 @@
 
 
                                         {{-- PI Section Start --}}
-                                    
-
-                                 
-
                                         <div class="col-12 col-md-6 col-lg-2 d-none d-lg-block"
                                             style="border-right: 1px solid #eaeaea;">
                                             <div class="row">
@@ -387,9 +383,10 @@
                                                         <label for="performa_mark" style="height:38.38px;">PI ID Prefix <span
                                                                 class="text-danger">*</span></label>
                                                         <input type="text" class="form-control"
-                                                            name="performa_mark" id="performa_mark"
+                                                            name="performa_mark_lg" id="performa_mark"
                                                             placeholder="PI Mark"
                                                             value="{{ $quot->performa_mark ?? '' }}">
+
                                                     </div>
                                                 </div>
 
@@ -431,6 +428,32 @@
                                                             name="performa_index" id="performa_index"
                                                             placeholder="PI index"
                                                             value="{{ $quot->performa_index ?? '1' }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-md-6 col-lg-2 d-lg-nosne"
+                                            style="border-right: 1px solid #eaeaea;">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group mx-1">
+                                                        <label for="model_code_mark">Model Code Prefix <span
+                                                                class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control"
+                                                            name="model_code_mark" id="model_code_mark"
+                                                            placeholder="Model Start"
+                                                            value="{{ $quot->model_code_mark ?? '' }}">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-6">
+                                                    <div class="form-group mx-2">
+                                                        <label for="model_code_index">Model Code Start></label>
+                                                        <input type="number" min="1" class="form-control"
+                                                            name="model_code_index" id="model_code_index"
+                                                            placeholder="Model Code Start"
+                                                            value="{{ $quot->model_code_index ?? '1' }}">
                                                     </div>
                                                 </div>
                                             </div>

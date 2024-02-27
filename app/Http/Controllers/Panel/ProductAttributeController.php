@@ -168,7 +168,7 @@ class ProductAttributeController extends Controller
     //         }
 
 
-    //         return redirect()->route('panel.product_attributes.index')->with('success','Product Attribute Created Successfully!');
+    //         return redirect()->route('panel.product_attributes.index')->with('success','Product Variant Created Successfully!');
     //     }catch(\Exception $e){
 
     //         if ($request->has('request_from')) {
@@ -268,7 +268,7 @@ class ProductAttributeController extends Controller
 
 
 
-            return redirect()->route('panel.product_attributes.index')->with('success','Product Attribute Created Successfully!');
+            return redirect()->route('panel.product_attributes.index')->with('success','Product Variant Created Successfully!');
         }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
 

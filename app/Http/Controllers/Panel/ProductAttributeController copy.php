@@ -11,7 +11,7 @@ use App\User;
 
 class ProductAttributeController extends Controller
 {
-    
+
 
     /**
      * Display a listing of the resource.
@@ -25,13 +25,13 @@ class ProductAttributeController extends Controller
              $length = $request->get('length');
          }
          $product_attributes = ProductAttribute::query();
-         
+
             if($request->get('search')){
                 $product_attributes->where('id','like','%'.$request->search.'%')
                 ->orWhere('name','like','%'.$request->search.'%')
                 ;
             }
-            
+
             if(AuthRole() != 'Admin') {
                 $product_attributes->where('user_id',auth()->id());
             }
@@ -49,19 +49,19 @@ class ProductAttributeController extends Controller
             $product_attributes = $product_attributes->paginate($length);
 
             if ($request->ajax()) {
-                return view('panel.product_attributes.load', ['product_attributes' => $product_attributes])->render();  
+                return view('panel.product_attributes.load', ['product_attributes' => $product_attributes])->render();
             }
- 
 
 
-            
+
+
         return view('panel.product_attributes.index', compact('product_attributes'));
     }
 
         public function print(Request $request){
             $product_attributes = collect($request->records['data']);
-                return view('panel.product_attributes.print', ['product_attributes' => $product_attributes])->render();  
-           
+                return view('panel.product_attributes.print', ['product_attributes' => $product_attributes])->render();
+
         }
 
     /**
@@ -73,7 +73,7 @@ class ProductAttributeController extends Controller
     {
         try{
             return view('panel.product_attributes.create');
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -86,13 +86,13 @@ class ProductAttributeController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         $this->validate($request, [
                         'name'     => 'required',
                         'type'     => 'sometimes',
                         'value'     => 'sometimes',
                     ]);
-        
+
         try{
             $UserRole = AuthRole();
 
@@ -127,10 +127,10 @@ class ProductAttributeController extends Controller
                 'value' => null,
                 'user_id' => $request->get('user_id'),
                 'user_shop_id' => $request->get('user_shop_id'),
-            ]);   
+            ]);
 
             magicstring($request->all());
-            
+
             foreach (explode(',',$request->value[0]) as $key => $value) {
                 // ` Attribuite Value Does Not Exits Need to Craete
                 echo $value.newline();
@@ -141,9 +141,9 @@ class ProductAttributeController extends Controller
                     'attribute_value' => $value,
                 ]);
             }
-            
-            return redirect()->route('panel.product_attributes.index')->with('success','Product Attribute Created Successfully!');
-        }catch(\Exception $e){            
+
+            return redirect()->route('panel.product_attributes.index')->with('success','Product Variant Created Successfully!');
+        }catch(\Exception $e){
             // return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
             ECHO $e;
 
@@ -160,7 +160,7 @@ class ProductAttributeController extends Controller
     {
         try{
             return view('panel.product_attributes.show',compact('product_attribute'));
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -172,16 +172,16 @@ class ProductAttributeController extends Controller
      * @return  \Illuminate\Http\Response
      */
     public function edit(ProductAttribute $product_attribute)
-    {   
+    {
         try{
-            
+
             if (AuthRole() != 'Admin') {
                 if ($product_attribute->user_id != auth()->id()) {
                     return back()->with('error',"Something went wrong.");
                 }
             }
             return view('panel.product_attributes.edit',compact('product_attribute'));
-        }catch(Exception $e){            
+        }catch(Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
         }
     }
@@ -195,15 +195,15 @@ class ProductAttributeController extends Controller
      */
     public function update(Request $request,ProductAttribute $product_attribute)
     {
-    //    return $request->all(); 
+    //    return $request->all();
         $this->validate($request, [
                         'name'     => 'required',
                         'type'     => 'sometimes',
                         'value'     => 'required',
                     ]);
-                
+
         try{
-            
+
             ProductAttributeValue::where('parent_id',$product_attribute->id)->delete();
 
             // ` Getttig Id of Product Attribute Values and Updating...
@@ -214,7 +214,7 @@ class ProductAttributeController extends Controller
                     'user_id' => auth()->id(),
                     'attribute_value' => $value,
                 ]);
-            
+
             }
 
             // ` IF USER CHANG NAME OF ATTRIBUTE UPDATE IN HIS RECORD FOR BULK UPLOAD....
@@ -233,21 +233,21 @@ class ProductAttributeController extends Controller
                         ECHO "ITS NOT EXIST".newline(2);
                         $searchIndex = array_search($product_attribute->name,json_decode($OLD_CUSTOM_FIELD));
                         $makeUnset = json_decode($OLD_CUSTOM_FIELD)[$searchIndex];
-                        unset($makeUnset);                        
+                        unset($makeUnset);
                         $NEW_CUSTOM_FIELDS = array_push(json_decode($OLD_CUSTOM_FIELD),$request->name);
                         $user->custom_attriute_columns = $NEW_CUSTOM_FIELDS;
                         $user->save();
                     }
                 }
-            
+
 
                 $product_attribute->name = $request->get('name');
                 $product_attribute->save();
             }
 
-            
+
             return back()->with('success','Product Attribute Updated !!')->withInput($request->all());
-        }catch(\Exception $e){            
+        }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage())->withInput($request->all());
         }
     }
@@ -262,7 +262,7 @@ class ProductAttributeController extends Controller
     {
         try{
             if($product_attribute){
-                                      
+
                 $product_attribute->delete();
                 return back()->with('success','Product Attribute deleted successfully');
             }else{

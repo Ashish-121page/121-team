@@ -88,7 +88,13 @@
             .col-md-6.flex-wrap {
                 flex-wrap: nowrap !important;
             }
+
+            .container{
+                max-width: 760px !important;
+            }
         }
+
+
 </style>
 
 {{-- @dd($user_shop_item) --}}
@@ -113,7 +119,7 @@
 
         </ul>
 
-        <ul class="nav position-absolute end-0 px-5">
+        {{-- <ul class="nav position-absolute end-0 px-5">
             <li><br>
                 <div class="row">
                     <div class="container ">
@@ -124,7 +130,7 @@
                     </div>
                 </div>
             </li>
-        </ul>
+        </ul> --}}
 
         <div class="container my-5">
             <div class="row pt-lg-0 pt-md-3 pt-3">
@@ -175,39 +181,18 @@
                         </div>
 
 
-                        <div class="col-12 col-sm-6 col-md-6 d-flex d-lg justify-content-between gap-3 w-100 mt-3 flex-wrap">
-                            {{-- @if ($user_shop->user_id == auth()->id()) --}}
-                            <a class="btn btn-outline-primary" aria-current="page"
-                                href="{{ route('panel.products.edit', $product->id) }}" target="_parent">Edit</a>
-                            {{-- @endif --}}
-                            <a class="btn btn-outline-primary" id="sharebtn" href="#sharemodal" role="button">
-                                Share
-                            </a>
-                            {{-- @if ($product->user_id == auth()->id()) --}}
-                            <a class="btn btn-outline-primary" id="demo01" href="#animatedModal" role="button"
-                                style="">Internal Details</a>
-                            {{-- @endif --}}
-                            {{-- <div class="row">
-                                {{-- <a href="{{ @asset(getMediaByIds($image_ids)->path ??'frontend/assets/img/placeholder.png') }}"  download="{{ $product->model_code }}" class="zoomBtn" style="background-color: transparent; top: 85%! important">
-                                    <i class="fas fa-download text-dark fs-3"></i>
-                                </a> --}}
-                            {{-- </div> --}}
-                            <a href="{{ @asset(getMediaByIds($image_ids)->path ?? 'frontend/assets/img/placeholder.png') }}"
-                                download="{{ $product->model_code }}" class=""
-                                style="background-color: transparent; top: 85%! important">
+                        <div class="col-12 d-flex justify-content-between flex-wrap mt-3">
+                            <a class="btn btn-outline-primary mb-2 d-none" aria-current="page" href="{{ route('panel.products.edit', $product->id) }}" target="_parent">Edit</a>
+                            <a class="btn btn-outline-primary mb-2" id="sharebtn" href="#sharemodal" role="button">Share</a>
+                            <a class="btn btn-outline-primary mb-2 d-none" id="demo01" href="#animatedModal" role="button">Internal Details</a>
+                            <a href="{{ @asset(getMediaByIds($image_ids)->path ?? 'frontend/assets/img/placeholder.png') }}" download="{{ $product->model_code }}" class="btn btn-outline-primary mb-2" style="background-color: transparent; margin-right:55px;">
                                 <i class="fas fa-download text-dark fs-3"></i>
                             </a>
-
                             @if ($proposalidrequest != 0)
-                                <a class="btn btn-outline-primary" id="addofferitem"
-                                    href="{{ route('pages.api.store') }}?product_id={{ $product->id }}&proposal_id={{ $proposalidrequest }}&hike=0">
-                                    Add in Offer
-                                </a>
+                                <a class="btn btn-outline-primary mb-2" id="addofferitem" href="{{ route('pages.api.store') }}?product_id={{ $product->id }}&proposal_id={{ $proposalidrequest }}&hike=0">Add in Offer</a>
                             @endif
-
-
-
                         </div>
+                        
 
                     </div>
                 </div>

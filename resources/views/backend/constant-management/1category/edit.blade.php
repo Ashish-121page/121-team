@@ -2,7 +2,7 @@
 @section('title', 'Category')
 @section('content')
 @php
-   if($level == 1){ $page_title = 'Categories';  $arr = null;}
+   if($level == 1){ $page_title = 'Categories 121';  $arr = null;}
      elseif($level == 2){ $page_title = 'Sub Categories'; $arr = ['name'=> fetchFirst('App\Models\Category',$parent_id,'name'), 'url'=> route('panel.constant_management.category.index',$type_id), 'class' => ''];}
      elseif($level == 3){$page_title = 'Sub Sub Categories'; $pre = $parent_id-1; $arr = ['name'=> fetchFirst('App\Models\Category',$parent_id,'name'), 'url'=> url('panel/constant-management/category/view/'.$type_id.'?level='.'2'.'&parent_id='.$pre), 'class' => ''];}
     $breadcrumb_arr = [

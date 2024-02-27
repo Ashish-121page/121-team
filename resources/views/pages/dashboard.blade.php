@@ -1,5 +1,5 @@
 @extends('backend.layouts.main') 
-@section('title', 'Dashboard')
+@section('title', 'Home | Dashboard')
 @section('content')
 <style>
     .row{

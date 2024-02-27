@@ -27,9 +27,9 @@ class BulkController extends Controller
         if(AuthRole() == "User"){
             if(!haveActivePackageByUserId(auth()->id())){
                 return back()->with('error','You do not have any active package!');
-            } 
-        }    
-        
+            }
+        }
+
         $count = 0;
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file);
         $worksheet = $spreadsheet->getActiveSheet();
@@ -46,10 +46,6 @@ class BulkController extends Controller
 
         $rows = array_slice($rows,4);
         $master = $rows;
-
-        // $head = array_shift($rows);
-        // $master = $rows;
-
 
         // Index Start
         $CategoryIndex = 0;
@@ -80,7 +76,7 @@ class BulkController extends Controller
         $SizeIndex = 25;
         $RateTypeIndex = 26;
         $RateIndex = 27;
-        // $MinimumSellingPriceWithoutGST = 26;        //minimum selling price Removed from Bulk Sheet
+
         $ShopPriceIndex = 28;               //SGW GST
         $VipPriceIndex = 29;
         $ResellerPriceIndex = 30;
@@ -91,15 +87,15 @@ class BulkController extends Controller
         $MetaKeywordsIndex = 35;
         $artwork_urlIndex = 36;
         $brandid_index = 37; // Get Brand Id for Product
-        
+
         // Index End
         // Index
         $MinimumSellingPriceWithoutGST = 0; // For No Error
 
         $productObj = null;
-        $brandid =  $item_temp[$brandid_index] ?? $request->brand_id; // ! Get Brand Id  
+        $brandid =  $item_temp[$brandid_index] ?? $request->brand_id; // ! Get Brand Id
 
-        
+
         $master_obj = collect($master);
         if(AuthRole() == "User"){
             $scoped_category = getProductCategoryByUserIndrustry(auth()->user()->industry_id);
@@ -120,7 +116,7 @@ class BulkController extends Controller
         }else{
             $product_uploads = 99999; // Give Unlimited Limit To Brand
         }
-        
+
 
 
 
@@ -133,7 +129,7 @@ class BulkController extends Controller
                 $colors_arr = $item_temp[$ColorIndex] != null ? array_unique(explode("^^",$item_temp[$ColorIndex])) : [];
                 $sizes_arr = $item_temp[$SizeIndex] != null ? array_unique(explode("^^",$item_temp[$SizeIndex])) : [];
                 // $rates = $item_temp[$RateIndex] != null ? array_unique(explode("^^",$item_temp[$RateIndex])) : [];
-                
+
                 $rates = $item_temp[$RateIndex] != null ? (explode("^^",$item_temp[$RateIndex])) : [];
                 $mrp = $item_temp[$MRPIndex] != null ? (explode("^^",$item_temp[$MRPIndex])) : [];
 
@@ -180,10 +176,10 @@ class BulkController extends Controller
                 }
 
 
-              
+
                 if($item_temp[$CategoryIndex] != null){
                     // Check Subcategory
-                   
+
                     $chk = Category::whereIn('id', $scoped_category->pluck('id'))->where('name',$item_temp[$CategoryIndex])->first();
                     if(!$chk){
                         return back()->with('error',$item_temp[$CategoryIndex]." is neither found in your category nor industry categories please check spelling and try again at Row:".$row_number);
@@ -223,29 +219,29 @@ class BulkController extends Controller
                              return back()->with('error',trim($size_temp).' Size is not exists at Row:'.$row_number);
                         }
                     }
-                
+
                     // return dd($sizes_arr);
                 if($rate_type){
-                   
+
                     if(($rate_type == "color" || $rate_type == "Color" || $rate_type == "Colour" || $rate_type == "colour") ){
                         if(count($colors_arr) != count($rates)){
-                          
+
                             return back()->with('error', 'Color & Rates Ratios is different at Row:'.$row_number);
                         }elseif(count($rates) == 0 || count($colors_arr) == 0){
-                   
+
                              return back()->with('error', 'You can not select rate type if no color variant added error in Row:'.$row_number);
                         }
                     }elseif($rate_type == "size" || $rate_type == "Size"){
                         if(count($sizes_arr) != count($rates)){
                              return back()->with('error', 'Size & Rates Ratios is different at Row:'.$row_number);
                         }elseif(count($rates) == 0 || count($sizes_arr) == 0){
-                             return back()->with('error', 'You cann\'t select rate type if no size varient added error in Row:'.$row_number);                            
+                             return back()->with('error', 'You cann\'t select rate type if no size varient added error in Row:'.$row_number);
                         }
                     }else{
                         return back()->with('error', 'Rate Type is wrong spell at Row:'.$row_number);
                     }
                 }
-        
+
                 // Hsn Percent
                 if (isset($item_temp[$HsnPercentIndex]) && is_numeric($item_temp[$HsnPercentIndex]) != 1) {
                      return back()->with('error', 'Please use only numeric value in Hsn Percent column'.$item_temp[$HsnPercentIndex]);
@@ -253,7 +249,7 @@ class BulkController extends Controller
             }elseif($item_temp[$TitleIndex] == null && $item_temp[$CategoryIndex] != null && $item_temp[$SubCategoryIndex] != null){
                 return back()->with('error',"Title can not be empty at Row:".$row_number);
             }
-            
+
         }
 
         // $productCount = UserShopItem::where('user_id',auth()->id())->get()->count();
@@ -279,11 +275,11 @@ class BulkController extends Controller
                 $rates = $item[$RateIndex] != null ? (explode("^^",$item[$RateIndex])) : [];
                 $rate_type = $item[$RateTypeIndex] != null ? $item[$RateTypeIndex] : null;
 
-                
+
                 $length_arr = $item_temp[$LengthIndex] != null ? (explode("^^",$item_temp[$LengthIndex])) : null;
                 $height_arr = $item_temp[$HeightIndex] != null ? (explode("^^",$item_temp[$HeightIndex])) : null;
                 $width_arr = $item_temp[$WidthIndex] != null ? (explode("^^",$item_temp[$WidthIndex])) : null;
-    
+
                 // Price Group
                 $shop_price_arr = $item_temp[$ShopPriceIndex] != null ? (explode("^^",$item_temp[$ShopPriceIndex])) : null;
                 $reseller_price_arr = $item_temp[$ResellerPriceIndex] != null ? (explode("^^",$item_temp[$ResellerPriceIndex])) : null;
@@ -306,7 +302,7 @@ class BulkController extends Controller
                         'type' => 0,
                     ]);
                 }
-                
+
 
                 $carton_details = [
                    'standard_carton' => $item[$StandardCartonIndex],
@@ -322,7 +318,7 @@ class BulkController extends Controller
                     'unit' => $item[$WeightUnitIndex],
                     'length_unit' => $item[$LengthUnitIndex],
                 ];
-         
+
                 $carton_details = json_encode($carton_details);
                 $shipping = json_encode($shipping);
 
@@ -354,7 +350,7 @@ class BulkController extends Controller
                                         $shopprice = $shop_price_arr[$color_index] ?? $price;
                                         $resellerp = $reseller_price_arr[$color_index] ?? $price;
                                         $vipp = $vip_price_arr0[$color_index] ?? $price;
-                                    } 
+                                    }
                                     // For Size Wise
                                     if($rate_type == "size" || $rate_type == "Size"){
                                         $price = $rates[$size_index] ?? $price;
@@ -382,7 +378,7 @@ class BulkController extends Controller
 
                                 $shipping = json_encode($shipping);
 
-    
+
 
                                 $productObj = Product::create([
                                     'title' => $item[$TitleIndex],
@@ -403,16 +399,16 @@ class BulkController extends Controller
                                     'status' => 0,
                                     'is_publish' => 1,
                                     'price' => trim($shopprice) ?? $price,
-                                    'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null, 
+                                    'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null,
                                     'hsn' => $item[$HSNTaxIndex] ?? null,
                                     'hsn_percent' => $item[$HsnPercentIndex] ?? null,
-                                    'mrp' => trim($mrp),                     
-                                    'video_url' => $item[$VideoURLIndex],                         
-                                    'tag1' => $item[$Tag1Index],                         
-                                    'tag2' => $item[$Tag2Index],                         
-                                    'tag3' => $item[$Tag3Index],                         
-                                    'meta_description' => $item[$MetaDescriptionIndex],                         
-                                    'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,  
+                                    'mrp' => trim($mrp),
+                                    'video_url' => $item[$VideoURLIndex],
+                                    'tag1' => $item[$Tag1Index],
+                                    'tag2' => $item[$Tag2Index],
+                                    'tag3' => $item[$Tag3Index],
+                                    'meta_description' => $item[$MetaDescriptionIndex],
+                                    'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,
                                     'artwork_url' => $item[$artwork_urlIndex] ?? null,
                                 ]);
 
@@ -427,13 +423,13 @@ class BulkController extends Controller
                                     'is_published'=>1,
                                     'price'=> $price,
                                 ]);
-    
+
                                 // if($rate_type == ''){
                                     $price = $item[$ResellerPriceIndex] ?? $price;
                                 // }
-    
+
                                 if($reseller_group){
-    
+
                                     // create Reseller Group record
                                   $g_p =  GroupProduct::create([
                                         'group_id'=>$reseller_group->id,
@@ -441,7 +437,7 @@ class BulkController extends Controller
                                         'price'=> $resellerp,
                                     ]);
                                 }
-                          
+
                                 // if($rate_type == ''){
                                     $price = $item[$VipPriceIndex] ?? 0;
                                 // }
@@ -455,7 +451,7 @@ class BulkController extends Controller
                                 }
                                 $arr_images = [];
                                 // New Create Media
-                                
+
                                 if(isset($item[$ImageMainIndex]) && $item[$ImageMainIndex] != null){
                                     $media = new Media();
                                     $media->tag = "Product_Image";
@@ -515,7 +511,7 @@ class BulkController extends Controller
                                     $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
                                     $media->save();
                                     $arr_images[] = $media->id;
-                                }   
+                                }
                                 if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
                                     $media = new Media();
                                     $media->tag = "Product_Image";
@@ -539,10 +535,10 @@ class BulkController extends Controller
 
 
                                 // ! Create Brand Product If Not Exists
-                                
+
                                 if ($brandid != null && $brandid != 0) {
                                     // ! Check Brand Product Exist or Not.
-                                    $chk_brand_product = DB::table('brand_product')->where('brand_id','=',$brandid)->where('model_code','=',$item[$ModelCodeIndex])->get(); 
+                                    $chk_brand_product = DB::table('brand_product')->where('brand_id','=',$brandid)->where('model_code','=',$item[$ModelCodeIndex])->get();
                                     if ($chk_brand_product->count() == 0){
                                             // ! Adding Product to Brand Products
                                             $productObj = brand_product::create([
@@ -560,21 +556,21 @@ class BulkController extends Controller
                                                 'manage_inventory' => null,
                                                 'status' => 0,
                                                 'price' => trim($shopprice) ?? $price,
-                                                'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null, 
+                                                'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null,
                                                 'hsn' => $item[$HSNTaxIndex] ?? null,
                                                 'hsn_percent' => $item[$HsnPercentIndex] ?? null,
-                                                'mrp' => trim($mrp),                     
-                                                'video_url' => $item[$VideoURLIndex],                         
-                                                'tag_1' => $item[$Tag1Index],                         
-                                                'tag_2' => $item[$Tag2Index],                         
-                                                'tag_3' => $item[$Tag3Index],                         
-                                                'meta_desc' => $item[$MetaDescriptionIndex],                         
-                                                'meta_key' => $item[$MetaKeywordsIndex] ?? null,  
+                                                'mrp' => trim($mrp),
+                                                'video_url' => $item[$VideoURLIndex],
+                                                'tag_1' => $item[$Tag1Index],
+                                                'tag_2' => $item[$Tag2Index],
+                                                'tag_3' => $item[$Tag3Index],
+                                                'meta_desc' => $item[$MetaDescriptionIndex],
+                                                'meta_key' => $item[$MetaKeywordsIndex] ?? null,
                                                 'artwork_url' => $item[$artwork_urlIndex] ?? null,
                                             ]);
 
                                             // ! New Create Media
-                                
+
                                             if(isset($item[$ImageMainIndex]) && $item[$ImageMainIndex] != null`){
                                                 $media = new Media();
                                                 $media->tag = "Product_Image";
@@ -634,7 +630,7 @@ class BulkController extends Controller
                                                 $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
                                                 $media->save();
                                                 $arr_images[] = $media->id;
-                                            }   
+                                            }
                                             if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
                                                 $media = new Media();
                                                 $media->tag = "Product_Image";
@@ -648,16 +644,16 @@ class BulkController extends Controller
                                                 $arr_images[] = $media->id;
                                             }
                                             // ! New Image Creation End
-                                        
+
                                     }
                                }
 
 
 
 
-                                
-                        }   
-                    } 
+
+                        }
+                    }
                 }elseif(count($colors_arr) > 0){
                     // return dd('b');
                     foreach ($colors_arr as $color_index => $color) {
@@ -691,24 +687,24 @@ class BulkController extends Controller
                             'is_publish' => 1,
                             'price' => $price,
                             'hsn' => $item[$HSNTaxIndex],
-                            'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null, 
+                            'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null,
                             'hsn_percent' => $item[$HsnPercentIndex],
-                            'mrp' => $item[$MRPIndex]??null,                     
-                            'video_url' => $item[$VideoURLIndex],                         
-                            'tag1' => $item[$Tag1Index],                         
-                            'tag2' => $item[$Tag2Index],                         
-                            'tag3' => $item[$Tag3Index],                         
-                            'meta_description' => $item[$MetaDescriptionIndex],                         
-                            'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,  
+                            'mrp' => $item[$MRPIndex]??null,
+                            'video_url' => $item[$VideoURLIndex],
+                            'tag1' => $item[$Tag1Index],
+                            'tag2' => $item[$Tag2Index],
+                            'tag3' => $item[$Tag3Index],
+                            'meta_description' => $item[$MetaDescriptionIndex],
+                            'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,
                             'artwork_url' => $item[$artwork_urlIndex] ?? null,
                         ]);
 
 
                         // ! Create Brand Product If Not Exists
-                                
+
                         if ($brandid != null && $brandid != 0) {
                         // ! Check Brand Product Exist or Not.
-                        $chk_brand_product = DB::table('products')->where('brand_id','=',$brandid)->where('model_code','=',$item[$ModelCodeIndex])->get(); 
+                        $chk_brand_product = DB::table('products')->where('brand_id','=',$brandid)->where('model_code','=',$item[$ModelCodeIndex])->get();
                         if ($chk_brand_product->count() == 0){
                                 // ! Adding Product to Brand Products
                                 $productObj = brand_product::create([
@@ -726,21 +722,21 @@ class BulkController extends Controller
                                     'manage_inventory' => null,
                                     'status' => 0,
                                     'price' => $price ?? 0,
-                                    'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null, 
+                                    'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null,
                                     'hsn' => $item[$HSNTaxIndex] ?? null,
                                     'hsn_percent' => $item[$HsnPercentIndex] ?? null,
-                                    'mrp' => trim($mrp),                     
-                                    'video_url' => $item[$VideoURLIndex],                         
-                                    'tag_1' => $item[$Tag1Index],                         
-                                    'tag_2' => $item[$Tag2Index],                         
-                                    'tag_3' => $item[$Tag3Index],                         
-                                    'meta_desc' => $item[$MetaDescriptionIndex],                         
-                                    'meta_key' => $item[$MetaKeywordsIndex] ?? null,  
+                                    'mrp' => trim($mrp),
+                                    'video_url' => $item[$VideoURLIndex],
+                                    'tag_1' => $item[$Tag1Index],
+                                    'tag_2' => $item[$Tag2Index],
+                                    'tag_3' => $item[$Tag3Index],
+                                    'meta_desc' => $item[$MetaDescriptionIndex],
+                                    'meta_key' => $item[$MetaKeywordsIndex] ?? null,
                                     'artwork_url' => $item[$artwork_urlIndex] ?? null,
                                 ]);
 
                                 // ! New Create Media
-                    
+
                                 if(isset($item[$ImageMainIndex]) && $item[$ImageMainIndex] != null){
                                     $media = new Media();
                                     $media->tag = "Product_Image";
@@ -800,7 +796,7 @@ class BulkController extends Controller
                                     $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
                                     $media->save();
                                     $arr_images[] = $media->id;
-                                }   
+                                }
                                 if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
                                     $media = new Media();
                                     $media->tag = "Product_Image";
@@ -814,7 +810,7 @@ class BulkController extends Controller
                                     $arr_images[] = $media->id;
                                 }
                                 // ! New Image Creation End
-                            
+
                         }
                         }
 
@@ -907,7 +903,7 @@ class BulkController extends Controller
                             $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
                             $media->save();
                             $arr_images[] = $media->id;
-                        }   
+                        }
                         if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
                             $media = new Media();
                             $media->tag = "Product_Image";
@@ -959,16 +955,16 @@ class BulkController extends Controller
                             'status' => 0,
                             'is_publish' => 1,
                             'price' => $price,
-                            'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null, 
+                            'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null,
                             'hsn' => $item[$HSNTaxIndex],
                             'hsn_percent' => $item[$HsnPercentIndex],
-                            'mrp' => $item[$MRPIndex]??null,                     
-                            'video_url' => $item[$VideoURLIndex],                         
-                            'tag1' => $item[$Tag1Index],                         
-                            'tag2' => $item[$Tag2Index],                         
-                            'tag3' => $item[$Tag3Index],                         
-                            'meta_description' => $item[$MetaDescriptionIndex],                         
-                            'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,  
+                            'mrp' => $item[$MRPIndex]??null,
+                            'video_url' => $item[$VideoURLIndex],
+                            'tag1' => $item[$Tag1Index],
+                            'tag2' => $item[$Tag2Index],
+                            'tag3' => $item[$Tag3Index],
+                            'meta_description' => $item[$MetaDescriptionIndex],
+                            'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,
                             'artwork_url' => $item[$artwork_urlIndex] ?? null,
                         ]);
 
@@ -1060,7 +1056,7 @@ class BulkController extends Controller
                             $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
                             $media->save();
                             $arr_images[] = $media->id;
-                        }   
+                        }
                         if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
                             $media = new Media();
                             $media->tag = "Product_Image";
@@ -1084,11 +1080,11 @@ class BulkController extends Controller
 
 
                         // ! Create Brand Product If Not Exists
-                                
+
                         if ($brandid != null && $brandid != 0) {
-                        
+
                             // ! Check Brand Product Exist or Not.
-                            $chk_brand_product = DB::table('brand_product')->where('brand_id','=',$brandid)->where('model_code','=',$item[$ModelCodeIndex])->get(); 
+                            $chk_brand_product = DB::table('brand_product')->where('brand_id','=',$brandid)->where('model_code','=',$item[$ModelCodeIndex])->get();
                             if ($chk_brand_product->count() == 0){
                                     // ! Adding Product to Brand Products
                                     $productObj = brand_product::create([
@@ -1106,21 +1102,21 @@ class BulkController extends Controller
                                         'manage_inventory' => null,
                                         'status' => 0,
                                         'price' => $price ?? 0,
-                                        'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null, 
+                                        'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null,
                                         'hsn' => $item[$HSNTaxIndex] ?? null,
                                         'hsn_percent' => $item[$HsnPercentIndex] ?? null,
-                                        'mrp' => trim($mrp),                     
-                                        'video_url' => $item[$VideoURLIndex],                         
-                                        'tag_1' => $item[$Tag1Index],                         
-                                        'tag_2' => $item[$Tag2Index],                         
-                                        'tag_3' => $item[$Tag3Index],                         
-                                        'meta_desc' => $item[$MetaDescriptionIndex],                         
-                                        'meta_key' => $item[$MetaKeywordsIndex] ?? null,  
+                                        'mrp' => trim($mrp),
+                                        'video_url' => $item[$VideoURLIndex],
+                                        'tag_1' => $item[$Tag1Index],
+                                        'tag_2' => $item[$Tag2Index],
+                                        'tag_3' => $item[$Tag3Index],
+                                        'meta_desc' => $item[$MetaDescriptionIndex],
+                                        'meta_key' => $item[$MetaKeywordsIndex] ?? null,
                                         'artwork_url' => $item[$artwork_urlIndex] ?? null,
                                     ]);
 
                                     // ! New Create Media
-                        
+
                                     if(isset($item[$ImageMainIndex]) && $item[$ImageMainIndex] != null){
                                         $media = new Media();
                                         $media->tag = "Product_Image";
@@ -1180,7 +1176,7 @@ class BulkController extends Controller
                                         $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
                                         $media->save();
                                         $arr_images[] = $media->id;
-                                    }   
+                                    }
                                     if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
                                         $media = new Media();
                                         $media->tag = "Product_Image";
@@ -1194,7 +1190,7 @@ class BulkController extends Controller
                                         $arr_images[] = $media->id;
                                     }
                                     // ! New Image Creation End
-                                
+
                             }
                         }
 
@@ -1223,16 +1219,16 @@ class BulkController extends Controller
                         'stock_qty' => 0,
                         'status' => 0,
                         'is_publish' => 1,
-                        'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? 0, 
+                        'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? 0,
                         'hsn' => $item[$HSNTaxIndex],
                         'hsn_percent' => $item[$HsnPercentIndex],
-                        'mrp' => $item[$MRPIndex]??null,                     
-                        'video_url' => $item[$VideoURLIndex],                         
-                        'tag1' => $item[$Tag1Index],                         
-                        'tag2' => $item[$Tag2Index],                         
-                        'tag3' => $item[$Tag3Index],                         
-                        'meta_description' => $item[$MetaDescriptionIndex],                         
-                        'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,  
+                        'mrp' => $item[$MRPIndex]??null,
+                        'video_url' => $item[$VideoURLIndex],
+                        'tag1' => $item[$Tag1Index],
+                        'tag2' => $item[$Tag2Index],
+                        'tag3' => $item[$Tag3Index],
+                        'meta_description' => $item[$MetaDescriptionIndex],
+                        'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,
                         'artwork_url' => $item[$artwork_urlIndex] ?? null,
                     ]);
 
@@ -1324,7 +1320,7 @@ class BulkController extends Controller
                         $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
                         $media->save();
                         $arr_images[] = $media->id;
-                    }   
+                    }
                     if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
                         $media = new Media();
                         $media->tag = "Product_Image";
@@ -1347,10 +1343,10 @@ class BulkController extends Controller
                     }
 
                         // ! Create Brand Product If BNot Exists
-                                
+
                         if ($brandid != null && $brandid != 0) {
                             // ! Check Brand Product Exist or Not.
-                            $chk_brand_product = DB::table('brand_product')->where('brand_id','=',$brandid)->where('model_code','=',$item[$ModelCodeIndex])->get(); 
+                            $chk_brand_product = DB::table('brand_product')->where('brand_id','=',$brandid)->where('model_code','=',$item[$ModelCodeIndex])->get();
                             if ($chk_brand_product->count() == 0){
                                     // ! Adding Product to Brand Products
                                     $productObj = brand_product::create([
@@ -1368,21 +1364,21 @@ class BulkController extends Controller
                                         'manage_inventory' => null,
                                         'status' => 0,
                                         'price' => $price ?? 0,
-                                        'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null, 
+                                        'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? null,
                                         'hsn' => $item[$HSNTaxIndex] ?? null,
                                         'hsn_percent' => $item[$HsnPercentIndex] ?? null,
-                                        'mrp' => trim($mrp),                     
-                                        'video_url' => $item[$VideoURLIndex],                         
-                                        'tag_1' => $item[$Tag1Index],                         
-                                        'tag_2' => $item[$Tag2Index],                         
-                                        'tag_3' => $item[$Tag3Index],                         
-                                        'meta_desc' => $item[$MetaDescriptionIndex],                         
-                                        'meta_key' => $item[$MetaKeywordsIndex] ?? null,  
+                                        'mrp' => trim($mrp),
+                                        'video_url' => $item[$VideoURLIndex],
+                                        'tag_1' => $item[$Tag1Index],
+                                        'tag_2' => $item[$Tag2Index],
+                                        'tag_3' => $item[$Tag3Index],
+                                        'meta_desc' => $item[$MetaDescriptionIndex],
+                                        'meta_key' => $item[$MetaKeywordsIndex] ?? null,
                                         'artwork_url' => $item[$artwork_urlIndex] ?? null,
                                     ]);
 
                                     // ! New Create Media
-                        
+
                                     if(isset($item[$ImageMainIndex]) && $item[$ImageMainIndex] != null){
                                         $media = new Media();
                                         $media->tag = "Product_Image";
@@ -1442,7 +1438,7 @@ class BulkController extends Controller
                                         $media->extension = explode('.',$item[$ImageSide2Index])[1] ?? '';
                                         $media->save();
                                         $arr_images[] = $media->id;
-                                    }   
+                                    }
                                     if(isset($item[$ImagePosterIndex]) && $item[$ImagePosterIndex] != null){
                                         $media = new Media();
                                         $media->tag = "Product_Image";
@@ -1456,9 +1452,9 @@ class BulkController extends Controller
                                         $arr_images[] = $media->id;
                                     }
                                     // ! New Image Creation End
-                                
+
                             }
-                        }   
+                        }
 
 
 
@@ -1469,7 +1465,7 @@ class BulkController extends Controller
     }
 
     public function categoryUpload(Request $request)
-    {   
+    {
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file);
         $worksheet = $spreadsheet->getActiveSheet();
         $rows = [];
@@ -1490,7 +1486,7 @@ class BulkController extends Controller
         $RemarkIndex = 1;
         $CategoryIndex = 2;
         $SubCategoryIndex = 3;
-        
+
         // Data Tree
         $IndustryIndexobj = null;
         $CategoryIndexobj = null;
@@ -1500,8 +1496,8 @@ class BulkController extends Controller
         $CategoryArr = [];
 
         $master_obj = collect($master);
-        
-            
+
+
             foreach($master as $index => $item){
                 $index = ++$index;
                 // Category
@@ -1513,7 +1509,7 @@ class BulkController extends Controller
                         'parent_id' => null,
                     ]);
                 }
-                
+
                 //Category
                 if($item[$CategoryIndex] != null){
                     $CategoryIndexobj = Category::create([
@@ -1532,8 +1528,8 @@ class BulkController extends Controller
                         'category_type_id' => 13,
                         'parent_id' => $CategoryIndexobj->id,
                     ]);
-                }    
-            ++$index;   
+                }
+            ++$index;
             }
             $count = $index;
             return back()->with('success', 'Done! '.$count.' records created successfully.');
@@ -1541,7 +1537,7 @@ class BulkController extends Controller
 
     public function productBulkUpdate(Request $request)
     {
-   
+
         $count = 0;
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file);
         $worksheet = $spreadsheet->getActiveSheet();
@@ -1615,7 +1611,7 @@ class BulkController extends Controller
                 // check is User Product?
                 if($item[$IdIndex]){
                     $chk = Product::whereId($item[$IdIndex])->whereUserId(auth()->id())->first();
-                  
+
                    if(!$chk){
                       return back()->with("error",$item[$TitleIndex]." Product was not found (Possibly Deleted) at Row:".$row_number);
                    }
@@ -1624,7 +1620,7 @@ class BulkController extends Controller
                 }
 
 
-                // Check Category & sub Category 
+                // Check Category & sub Category
                 if($item[$CategoryIndex]){
                     $chk = Category::whereIn('id', $scoped_category->pluck('id'))->where('name',$item[$CategoryIndex])->first();
                     if(!$chk){
@@ -1690,7 +1686,7 @@ class BulkController extends Controller
                 if ($item[$HsnPercentIndex] != null && is_numeric($item[$HsnPercentIndex]) != 1) {
                    return back()->with("error",'Please use only numeric value in Hsn Percent column'.$item[$HsnPercentIndex]);
                 }
-            }            
+            }
         }
 
         foreach ($master as $index => $item) {
@@ -1698,7 +1694,7 @@ class BulkController extends Controller
             $category = Category::whereIn('id', $scoped_category->pluck('id'))->where('name',$item[$CategoryIndex])->first();
             $subcategory = Category::where('parent_id', $category->id)->where('name',$item[$SubCategoryIndex])->first() ;
 
-            if ($item[$TitleIndex] != null) { 
+            if ($item[$TitleIndex] != null) {
                 $carton_details = [
                    'standard_carton' => $item[$StandardCartonIndex],
                    'carton_weight' => $item[$CartonWeightIndex],
@@ -1739,17 +1735,17 @@ class BulkController extends Controller
                          'min_sell_pr_without_gst' => $item[$MinimumSellingPriceWithoutGST] ?? 0,
                          'mrp' => $item[$MRPIndex]??null,
                          'hsn' => $item[$HSNTaxIndex],
-                         'hsn_percent' => $item[$HsnPercentIndex],                         
-                         'video_url' => $item[$VideoURLIndex],                         
-                         'tag1' => $item[$Tag1Index],                         
-                         'tag2' => $item[$Tag2Index],                         
-                         'tag3' => $item[$Tag3Index],                         
-                         'meta_description' => $item[$MetaDescriptionIndex],                         
-                         'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,          
-                         'artwork_url' => $item[$artwork_urlIndex] ?? null,               
+                         'hsn_percent' => $item[$HsnPercentIndex],
+                         'video_url' => $item[$VideoURLIndex],
+                         'tag1' => $item[$Tag1Index],
+                         'tag2' => $item[$Tag2Index],
+                         'tag3' => $item[$Tag3Index],
+                         'meta_description' => $item[$MetaDescriptionIndex],
+                         'meta_keywords' => $item[$MetaKeywordsIndex] ?? null,
+                         'artwork_url' => $item[$artwork_urlIndex] ?? null,
                     ]);
 
-                    
+
                     if($usi){
                         $usi->is_published = $item[$PublishIndex];
                         $usi->price = $item[$ShopPriceIndex];
@@ -1765,7 +1761,7 @@ class BulkController extends Controller
                         $vip_group_product->price = $item[$VipPriceIndex]??0;
                         $vip_group_product->save();
                     }
-                    
+
                     if(isset($productObj->medias[0]) && $productObj->medias[0]->id){
                         Media::whereId($productObj->medias[0]->id)->update([
                             'file_name' => $item[$ImageMainIndex],
@@ -1879,7 +1875,7 @@ class BulkController extends Controller
                             $media->save();
                         }
                     }
-                    
+
                  }
                 if($productObj){
                     ++$count;
@@ -1888,7 +1884,7 @@ class BulkController extends Controller
         }
         return back()->with('success', 'Good News! records Updated successfully!');
     }
-   
+
     public function productGroupBulkUpdate(Request $request)
     {
         $count = 0;
@@ -1914,7 +1910,7 @@ class BulkController extends Controller
         $sizeIndex = 4;
         $groupIndex = 5;
         $priceIndex = 6;
-       
+
         $group_productObj = null;
 
         foreach ($master as $index => $item) {
@@ -1930,7 +1926,7 @@ class BulkController extends Controller
                     ++$count;
                 }
             }
-            
+
         }
 
         return back()->with('success', 'Good News! ' .$count. ' records Updated successfully!');
@@ -1975,7 +1971,7 @@ class BulkController extends Controller
                     ++$count;
                 }
             }
-            
+
         }
 
         return back()->with('success', 'Good News! records Updated successfully!');
@@ -1985,7 +1981,7 @@ class BulkController extends Controller
 
     public function productBulkExport($products)
     {
-      
+
         // return $products;
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
@@ -2003,12 +1999,12 @@ class BulkController extends Controller
         } catch (Exception $e) {
             return;
         }
- 
+
     }
 
     function exportData(){
 
-        // Non Branded 
+        // Non Branded
         $products = Product::whereUserId(auth()->id())->get();
         $products_array [] = array("Id","Global Category","Global Sub Category","Product Name","Model Code","Image Main","Image Name Front","Image Name Back","Image Name Side1","Image Name Side2","Image Name Poster","Video URL","Tag 1","Tag 2","Tag 3","Description","Weight","Weight Unit","Length","Width","Height","Length Unit","Standard Carton PCs","Carton Weight","Carton Unit","Color","Size","Minimum Selling Price Without GST","Shop Price General Without GST","Shop Price VIP_Customer","Shop Price Reseller","MRP Incl Price","HSN Tax","HSN Percent","Meta Description","Meta Keywords",'artwork_url',"Stock (must be number)","Publish (it will be 0 for unpublish or 1 for publish)");
         $reseller_group = Group::whereUserId(auth()->id())->where('name',"Reseller")->first();
@@ -2019,7 +2015,7 @@ class BulkController extends Controller
              $reseller_group_product = GroupProduct::where('group_id',$reseller_group->id??0)->where('product_id',$product->id)->latest()->first();
 
             $vip_group_product = GroupProduct::where('group_id',$vip_group->id??0)->where('product_id',$product->id)->latest()->first();
-            
+
             if ( $product->shipping != null) {
                 $dimensions = json_decode($product->shipping);
                 $height = $dimensions->height ?? null;
@@ -2053,7 +2049,7 @@ class BulkController extends Controller
                     'is_published' => 0
                 ]);
             }
-           
+
             $products_array[] = array(
                 'Id' => $product->id,
                 "Global Category"=> $product->category->name ?? "",
@@ -2119,7 +2115,7 @@ class BulkController extends Controller
         } catch (Exception $e) {
             return;
         }
- 
+
     }
     public function groupProductBulkExport($group_products)
     {
@@ -2140,10 +2136,10 @@ class BulkController extends Controller
         } catch (Exception $e) {
             return;
         }
- 
+
     }
     function exportProductGroupData(){
-        
+
         $group_ids = Group::where('user_id',auth()->id())->pluck('id');
         $group_products = GroupProduct::whereIn('group_id',$group_ids)->get();
         $group_products_array [] = array("Id","Model Code","Product Name","Product Color","Product Size","Group Name","Customer Price");
@@ -2166,7 +2162,7 @@ class BulkController extends Controller
     }
 
     function exportInventoryStock(){
-        
+
         $products = Product::where('user_id',auth()->id())->get();
         $products_array[] = array("Id","Model No.","Product Name","Product Color","Product Size","Inventory");
         foreach($products as $product)
@@ -2186,8 +2182,8 @@ class BulkController extends Controller
         return back()->with('success',' Export Excel File Successfully');
     }
 
-    
 
-      
+
+
 }
 `

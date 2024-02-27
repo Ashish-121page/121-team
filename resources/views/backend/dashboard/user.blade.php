@@ -12,6 +12,8 @@
         }
     @endphp
     @if(isset($user_shop))
+        {{-- USELATER : QR Code Export and View Section --}}
+
         {{-- <div class="col-xl-4 col-lg-4 col-md-12 col-12">
                 <div class="card">
                     @if($user_shop->slug == auth()->user()->phone)
@@ -127,163 +129,157 @@
                     @endif
                 </div>
         </div> --}}
+
         {{-- @if(getSellerProgressStatistics(auth()->id()) != 100 || $user_shop->slug == auth()->user()->phone) --}}
-        @php
+
+        {{-- USELATER : Old Stepper for Account --}}
+
+        {{-- @php
             // ` Current Progress
             $first =  true;
-            // $first =  (auth()->user()->ekyc_status == 1) ? true : false;
             $second = ($first) ? ((count(App\Models\Category::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
             $third =  ($second) ? ((count(App\Models\Product::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
             $forth =  ($third) ? ((count(App\Models\Proposal::where('user_id',auth()->id())->get()) != 0) ? true : false) : false;
             $fifth =  false;
+        @endphp --}}
 
-        @endphp
+        {{-- <div class="col-xl-12 col-lg-12 col-md-12 col-12 justify-content-center  @if($first && $second && $third && $forth) d-none @endif">
+            <div class="progressmeter">
+                <div class="h4">Progress</div>
+                <div class="row">
+                    <div class="col bg-white shadow m-1 d-none">
+                        <a href="@if ($first) #complted @else {{ route('customer.dashboard') }}?active=account&subactive=business_profile&upload_gst=true @endif">
 
-            <div class="col-xl-12 col-lg-12 col-md-12 col-12 justify-content-center  @if($first && $second && $third && $forth) d-none @endif">
-                <div class="progressmeter">
-                    <div class="h4">Progress</div>
-                    <div class="row">
-                        {{-- Step 1  --}}
-                        <div class="col bg-white shadow m-1 d-none">
-                            <a href="@if ($first) #complted @else {{ route('customer.dashboard') }}?active=account&subactive=business_profile&upload_gst=true @endif">
-
-                                <div class="circle @if ($first) bg-success @else bg-primary @endif text-white">
-                                    <span>
-                                        @if ($first) <i class="fas fa-check-circle"></i> @else 1 @endif
-                                    </span>
-                                </div>
-                                <div class="h6 my-2"><b>Upload GST / IEC</b></div>
-                                <p>Kindly upload to activate your account</p>
-                            </a>
-                        </div>
-
-                        {{-- Step 2 --}}
-                        <div class="col bg-white shadow m-1"  @if (!$second) title="Complete step 1" @endif>
-                            <a href="@if ($first && $second) #complted @elseif($first) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }} @else #pending @endif" @if(!$first) style="cursor: not-allowed !important" @endif>
-                                <div class="circle text-white
-                                @if ($first && $second) bg-success @elseif($first) bg-primary @else bg-secondary @endif
-                                ">
-                                    <span>
-                                        @if ($first && $second) <i class="fas fa-check-circle"></i>  @else 1 @endif
-                                    </span>
-                                </div>
-                                <div class="h6 my-2"><b>Add category</b></div>
-                                <p>Create new category best suited for your products</p>
-                            </a>
-                        </div>
-
-                        {{-- Step 3  --}}
-                        <div class="col bg-white shadow m-1"  @if (!$third) title="Complete step 2" @endif>
-
-                            <a href="@if ($first && $second && $third) #completed @elseif($first && $second ) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true @else #pending @endif" @if(!$second) style="cursor: not-allowed !important" @endif>
-
-                                <div class="circle @if ($first && $second && $third) bg-success @elseif($first && $second) bg-primary @else bg-secondary @endif text-white">
-
-                                    <span>
-                                        @if ($first && $second && $third) <i class="fas fa-check-circle"></i> @else 2 @endif
-                                    </span>
-                                </div>
-                                <div class="h6 my-2"><b>Add Product</b></div>
-                                <p>Create new product with minimum of image and model code</p>
-                            </a>
-                        </div>
-
-                        {{-- Step 4  --}}
-                        <div class="col bg-white shadow m-1"  @if (!$forth) title="Complete step 3" @endif>
-                            <a href="@if ($first && $second && $third && $forth) #completed @elseif($first && $second && $third) {{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }} @else #pending @endif " @if(!$third) style="cursor: not-allowed !important" @endif>
-                                <div class="circle @if ($first && $second && $third && $forth) bg-success @elseif($first && $second && $third) bg-primary @else bg-secondary @endif text-white">
-                                    <span>
-                                        @if ($first && $second && $third && $forth) <i class="fas fa-check-circle"></i> @else 3 @endif
-                                    </span>
-                                </div>
-
-                                <div class="h6 my-2"><b>Make Offer</b></div>
-
-                                <p>Create fast offers for Buyers in any of ppt, pdf, excel formats</p>
-                            </a>
-                        </div>
-
-
+                            <div class="circle @if ($first) bg-success @else bg-primary @endif text-white">
+                                <span>
+                                    @if ($first) <i class="fas fa-check-circle"></i> @else 1 @endif
+                                </span>
+                            </div>
+                            <div class="h6 my-2"><b>Upload GST / IEC</b></div>
+                            <p>Kindly upload to activate your account</p>
+                        </a>
                     </div>
-                    <div class="bar"></div>
-                </div>
-            </div>
+                    <div class="col bg-white shadow m-1"  @if (!$second) title="Complete step 1" @endif>
+                        <a href="@if ($first && $second) #complted @elseif($first) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }} @else #pending @endif" @if(!$first) style="cursor: not-allowed !important" @endif>
+                            <div class="circle text-white
+                            @if ($first && $second) bg-success @elseif($first) bg-primary @else bg-secondary @endif
+                            ">
+                                <span>
+                                    @if ($first && $second) <i class="fas fa-check-circle"></i>  @else 1 @endif
+                                </span>
+                            </div>
+                            <div class="h6 my-2"><b>Add category</b></div>
+                            <p>Create new category best suited for your products</p>
+                        </a>
+                    </div>
+                    <div class="col bg-white shadow m-1"  @if (!$third) title="Complete step 2" @endif>
 
+                        <a href="@if ($first && $second && $third) #completed @elseif($first && $second ) {{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true @else #pending @endif" @if(!$second) style="cursor: not-allowed !important" @endif>
+
+                            <div class="circle @if ($first && $second && $third) bg-success @elseif($first && $second) bg-primary @else bg-secondary @endif text-white">
+
+                                <span>
+                                    @if ($first && $second && $third) <i class="fas fa-check-circle"></i> @else 2 @endif
+                                </span>
+                            </div>
+                            <div class="h6 my-2"><b>Add Product</b></div>
+                            <p>Create new product with minimum of image and model code</p>
+                        </a>
+                    </div>
+
+                    <div class="col bg-white shadow m-1"  @if (!$forth) title="Complete step 3" @endif>
+                        <a href="@if ($first && $second && $third && $forth) #completed @elseif($first && $second && $third) {{ route('panel.proposals.index')."?type=direct&type_ide=".encrypt(auth()->id()) }} @else #pending @endif " @if(!$third) style="cursor: not-allowed !important" @endif>
+                            <div class="circle @if ($first && $second && $third && $forth) bg-success @elseif($first && $second && $third) bg-primary @else bg-secondary @endif text-white">
+                                <span>
+                                    @if ($first && $second && $third && $forth) <i class="fas fa-check-circle"></i> @else 3 @endif
+                                </span>
+                            </div>
+
+                            <div class="h6 my-2"><b>Make Offer</b></div>
+
+                            <p>Create fast offers for Buyers in any of ppt, pdf, excel formats</p>
+                        </a>
+                    </div>
+
+
+                </div>
+                <div class="bar"></div>
+            </div>
+        </div> --}}
     @endif
 
-        {{--  three new cols for Dashboard --}}
-        @if ($third && $forth)
-            <div class="col-xl-12 col-lg-12 col-md-12 col-12 justify-content-center mt-3">
-                <div class="progressmeter">
-                    <div class="h5">
-                        Dashboard
-                    </div>
-                    <div class="row">
-                        {{-- All Products  --}}
-                        <div class="col bg-white shadow m-1">
-                            <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true" style="cursor: pointer !important">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="circle bg-none">
-                                        {{-- <div class="circle   bg-primary text-white "> --}}
-                                        <span>
-                                            <svg width="72" height="72" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill="#666ccc" d="m1344 2l704 352v785l-128-64V497l-512 256v258l-128 64V753L768 497v227l-128-64V354zm0 640l177-89l-463-265l-211 106zm315-157l182-91l-497-249l-149 75zm-507 654l-128 64v-1l-384 192v455l384-193v144l-448 224L0 1735v-676l576-288l576 288zm-640 710v-455l-384-192v454zm64-566l369-184l-369-185l-369 185zm576-1l448-224l448 224v527l-448 224l-448-224zm384 576v-305l-256-128v305zm384-128v-305l-256 128v305zm-320-288l241-121l-241-120l-241 120z"/>
-                                            </svg>
-                                        </span>
-                                    </div>
-                                    <div class="ml-3 mt-4 mb-3">
-                                        <div class="h6 my-2"><b>All Products</b></div>
-                                        <p>Add, Edit or Delete products</p>                                    
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
 
-                        {{-- Offers --}}
-                        <div class="col bg-white shadow m-1">
-                            <a href="{{ route('panel.proposals.index') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}" style="cursor: pointer !important">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="circle text-white bg-none mr-3">
-                                        <span>
-                                            <svg width="72" height="72" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill="none" stroke="#666ccc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m7.369 28.832l30.755-5.516l5.376-9.143l-8.245-5.958L4.5 13.73z"/>
-                                                <path fill="none" stroke="#666ccc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m10.494 28.272l7.997 11.513l23.522-15.73l1.487-9.882"/>
-                                                <circle cx="39.339" cy="14.912" r=".75" fill="currentColor"/>
-                                            </svg>
-                                        </span>
-                                        
-                                    </div>                                    
-                                        <div class="ml-3 mt-4 mb-3">
-                                            <div class="h6 my-2 text-start"><b>Create Offer for a Buyer</b></div>
-                                            <p class="text-right">Select products and create Offers</p>
-                                        </div>
-                                </div>
-                            </a>
+    {{--  three new cols for Dashboard --}}
+    <div class="col-xl-12 col-lg-12 col-md-12 col-12 justify-content-center mt-3">
+        <div class="progressmeter">
+            <div class="h5">
+                Dashboard
+            </div>
+            <div class="row">
+                {{-- All Products  --}}
+                <div class="col bg-white shadow m-1">
+                    <a href="{{ route('panel.user_shop_items.create') }}?type=direct&type_id={{ auth()->id() }}&productsgrid=true" style="cursor: pointer !important">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="circle bg-none">
+                                {{-- <div class="circle   bg-primary text-white "> --}}
+                                <span>
+                                    <svg width="72" height="72" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill="#666ccc" d="m1344 2l704 352v785l-128-64V497l-512 256v258l-128 64V753L768 497v227l-128-64V354zm0 640l177-89l-463-265l-211 106zm315-157l182-91l-497-249l-149 75zm-507 654l-128 64v-1l-384 192v455l384-193v144l-448 224L0 1735v-676l576-288l576 288zm-640 710v-455l-384-192v454zm64-566l369-184l-369-185l-369 185zm576-1l448-224l448 224v527l-448 224l-448-224zm384 576v-305l-256-128v305zm384-128v-305l-256 128v305zm-320-288l241-121l-241-120l-241 120z"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="ml-3 mt-4 mb-3">
+                                <div class="h6 my-2 text-center"><b>All Products</b></div>
+                                <p class="text-center" style="text-align:justify;">Add, Edit or Delete products</p>
+                            </div>
                         </div>
+                    </a>
+                </div>
 
-                        {{--` documentation  --}}
-                        <div class="col bg-white shadow m-1">
-                            <a href="{{ route('panel.Documents.Quotation') }}" style="cursor: pointer !important">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="circle bg-none text-white mr-3">
-                                        <span>
-                                            <svg width="72" height="72" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill="#666ccc" d="M1920 512v1408H768v-256H512v-256H256V0h731l256 256h421v256zm-896-128h165l-165-165zm256 896V512H896V128H384v1152zm256 256V384h-128v1024H640v128zm257-896h-129v1024H896v128h897z"/>
-                                            </svg>
-                                        </span>
-                                    </div>
-                                    <div class="ml-3 mt-4 mb-3">
-                                        <div class="h6 my-2"><b>Documentation</b></div>
-                                        <p>Create and maintain Quotation, PI and others</p>
-                                    </div>
+                {{-- Offers --}}
+                <div class="col bg-white shadow m-1">
+                    <a href="{{ route('panel.proposals.index') . '?type=direct&type_ide=' . encrypt(auth()->id()) }}" style="cursor: pointer !important">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="circle text-white bg-none mr-3">
+                                <span>
+                                    <svg width="72" height="72" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill="none" stroke="#666ccc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m7.369 28.832l30.755-5.516l5.376-9.143l-8.245-5.958L4.5 13.73z"/>
+                                        <path fill="none" stroke="#666ccc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m10.494 28.272l7.997 11.513l23.522-15.73l1.487-9.882"/>
+                                        <circle cx="39.339" cy="14.912" r=".75" fill="currentColor"/>
+                                    </svg>
+                                </span>
+
+                            </div>
+                                <div class="ml-3 mt-4 mb-3">
+                                    <div class="h6 my-2 text-center"><b>Create Offer for a Buyer</b></div>
+                                    <p class="text-center" style="text-align:justify;">Select products and create Offers</p>
                                 </div>
-                            </a>
                         </div>
-                    </div>
+                    </a>
+                </div>
+
+                {{--` documentation  --}}
+                <div class="col bg-white shadow m-1">
+                    <a href="{{ route('panel.Documents.Quotation') }}" style="cursor: pointer !important">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="circle bg-none text-white mr-3">
+                                <span>
+                                    <svg width="72" height="72" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill="#666ccc" d="M1920 512v1408H768v-256H512v-256H256V0h731l256 256h421v256zm-896-128h165l-165-165zm256 896V512H896V128H384v1152zm256 256V384h-128v1024H640v128zm257-896h-129v1024H896v128h897z"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="ml-3 mt-4 mb-3">
+                                <div class="h6 my-2 text-center"><b>Documentation</b></div>
+                                <p class="text-center" style="text-align:justify;">Create and maintain Quotation, PI and others</p>
+                            </div>
+                        </div>
+                    </a>
                 </div>
             </div>
-        @endif
-        {{--  end of three new cols for Dashboard --}}
+        </div>
+    </div>
+    {{--  end of three new cols for Dashboard --}}
 
 
     <!-- project-ticket end -->

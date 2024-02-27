@@ -16,7 +16,9 @@
 <script src="{{ asset('backend/plugins/DataTables/datatables.min.js') }}"></script>
 <script src="{{ asset('backend/js/datatables.js') }}"></script>
 {{-- Bootstrap CDN --}}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+{{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script> --}}
+
+<script src="{{ asset('backend\js\bootstrap.bundle.min.js') }}"></script>
 
 
 {{-- JQUERY CONFIRM CDN --}}
@@ -156,29 +158,69 @@
 </script>
 @endif
 <script>
-    $(document).on('click','.delete-item',function(e){
-        e.preventDefault();
-        var url = $(this).attr('href');
-        var msg = $(this).data('msg') ?? "You won't be able to revert back!";
-        $.confirm({
-            draggable: true,
-            title: 'Are You Sure!',
-            content: msg,
-            type: 'red',
-            typeAnimated: true,
-            buttons: {
-                tryAgain: {
-                    text: 'Delete',
-                    btnClass: 'btn-red',
-                    action: function(){
-                            window.location.href = url;
+    // $(document).on('click','.delete-item',function(e){
+    //     e.preventDefault();
+    //     var url = $(this).attr('href');
+    //     var msg = $(this).data('msg') ?? "You won't be able to revert back!";
+    //     $.confirm({
+    //         draggable: true,
+    //         title: 'Are You Sure!',
+    //         content: msg,
+    //         type: 'red',
+    //         typeAnimated: true,
+    //         buttons: {
+    //             tryAgain: {
+    //                 text: 'Delete',
+    //                 btnClass: 'btn-red',
+    //                 action: function(){
+    //                         window.location.href = url;
+    //                 }
+    //             },
+    //             close: function () {
+    //             }
+    //         }
+    //     });
+    // });
+
+
+
+    $(document).on('click', '.delete-item', function(e) {
+    e.preventDefault();
+    var url = $(this).attr('href');
+    var msg = "<span class='text-danger'>All Products will be Deleted, and You won't be able to revert back!</span><br/>" +
+              "To confirm, type <b>DELETE</b> in the input box below:<br>" +
+              "<input type='text' id='confirmationtext' class='w-100 form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #666ccc;' placeholder='DELETE'>";
+
+    $.confirm({
+        draggable: true,
+        title: 'Are You Sure!',
+        content: msg,
+        type: 'blue',
+        typeAnimated: true,
+        buttons: {
+            confirm: {
+                text: 'Confirm',
+                btnClass: 'btn-danger',
+                action: function() {
+                    var userInput = $('#confirmationtext').val();
+                    if (userInput === 'DELETE') {
+                        // Proceed with deletion by redirecting to the provided URL
+                        window.location.href = url;
+                    } else {
+                        $.alert('Type DELETE to Proceed');
                     }
-                },
-                close: function () {
                 }
+            },
+            cancel: function() {
+                // Do nothing on cancel
             }
-        });
+        }
     });
+});
+
+
+
+
     $(document).on('click','.confirm-btn',function(e){
         e.preventDefault();
         var url = $(this).attr('href');

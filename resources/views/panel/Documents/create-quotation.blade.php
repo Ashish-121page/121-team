@@ -20,7 +20,7 @@
 @endphp
 
 @extends('backend.layouts.main')
-@section('title', 'Quotation Edit')
+@section('title', $page_title)
 @section('content')
 
     <!-- push external head elements to head -->
@@ -40,7 +40,7 @@
 
         <div class="row mt-5">
             <div class="col-12">
-                <h1> PI / Quotation </h1>
+                {{-- <h1> PI / Quotation </h1> --}}
             </div>
         </div>
 
@@ -64,8 +64,7 @@
                             <div class="row">
                                 <div class="col-lg-6 col-md-8">
                                     <div class="d-flex align-items-center">
-                                        <button class="btn btn-outline-primary" onclick="goBack()" value="Back"
-                                            type="button">Back</button>
+                                        <a href="{{ route('panel.Documents.index') }}" class="btn btn-outline-primary ">Back</a>
                                         <h5 class="ms-3 mt-5 mb-0 quotation_number_sync"
                                             style="margin-left: 2rem !important;">
                                             PI-231</h5>
@@ -127,8 +126,12 @@
                                         <div class="card-header d-flex justify-content-between align-items-center"
                                             style="background-color: #f3f3f3">
                                             <h6>Entity Details</h6>
-                                            <a href="{{ route('panel.user_shops.edit', $userShop->id) }}?active=my-address"
+
+
+                                            <a href="{{ route('panel.settings.index', encrypt(auth()->id())) }}?open=entities"
                                                 class="btn-link">Add New</a>
+
+
                                         </div>
                                         <div class="card-body" id="cardBody">
                                             <div class="form-group mb-3">

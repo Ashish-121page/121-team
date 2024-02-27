@@ -1,5 +1,5 @@
 @extends('backend.layouts.main')
-@section('title', 'Proposal')
+@section('title', '2. Customisation / Notes for Buyer Offer')
 @section('content')
     @php
 
@@ -412,6 +412,7 @@
     @php
         $customer_details = json_decode($proposal->customer_details) ?? '';
         $customer_name = $customer_details->customer_name ?? '';
+        $offer_name = $customer_details->offer_name ?? '';
 
         if ($customer_name == auth()->user()->name) {
             $customer_name = '';
@@ -443,8 +444,8 @@
                         <a href="{{ inject_subdomain('proposal/export/' . $proposal->id . '/' . $user_key, $slug, false, false) }}"
                             class="btn btn-link text-primary mx-2">3. Generate</a>
                     </div>
-
-                    <div class="col-md-12 col-lg-12">
+                    Filters
+                    <div class="col-md-12 col-lg-12 mt-4">
 
                         <div class="card">
                             <div class="card-header">
@@ -470,11 +471,48 @@
                                 <input type="hidden" name="user_id" value="{{ decrypt($user_key) }}">
                                 <input type="hidden" name="user_shop_id"
                                     value="{{ getShopDataByUserId(decrypt($user_key))->id }}">
+                                    <div class="row" style="padding-left: 25px;">
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="offer_name" class="control-label">Offer Name <span class="text-danger">*</span></label>
+                                                <input class="form-control" name="offer_name" type="text" id="offer_name" value="{{ $offer_name }}" autocomplete="off" >
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="form-group {{ $errors->has('customer_name') ? 'has-error' : '' }}">
+                                                <label for="customer_name" class="control-label">Buyer Entity <span class="text-danger">*</span></label>
+                                                <input required class="form-control" name="customer_name" type="text" id="customer_name" value="{{ $customer_name }}" list="mycustomer" autocomplete="off" required>
+                                                <datalist id="mycustomer">
+                                                    @if ($my_resellers != null)
+                                                        @forelse ($my_resellers as $my_reseller)
+                                                            <option value="{{ App\User::whereId($my_reseller->user_id)->first()->name . ' ,' . UserShopNameByUserId($my_reseller->user_id) }}">
+                                                                {{ App\User::whereId($my_reseller->user_id)->first()->name . ' ,' . UserShopNameByUserId($my_reseller->user_id) }}
+                                                            </option>
+                                                        @empty
+                                                        @endforelse
+                                                    @endif
+                                                </datalist>
+                                            </div>
+                                            {{-- <div class="form-group">
+                                                <label for="buyer_entity" class="control-label" style="background-color: #ff0c0c">Buyer Entity <span class="text-danger">*</span></label>
+                                                <input required class="form-control" name="buyer_entity" type="text" id="buyer_entity" value="" autocomplete="off" >
+                                            </div> --}}
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="form-group {{ $errors->has('customer_alias') ? 'has-error' : '' }}">
+                                                <label for="customer_alias" class="control-label">Alias (optional)</label>
+                                                <input class="form-control" name="customer_alias" type="text" placeholder="Alias" id="customer_alias" value="{{ $customer_alias }}">
+                                            </div>
+                                        </div>
+                                    </div>
+
 
 
                                 <div class="accordion w-100" id="proposalAccordion">
                                     <div class="cardd">
-                                        <div class="card-header" id="proposalHeading">
+                                        <div class="card-header" id="proposalHeading" style="padding-top:0px !important;">
                                             <h2 class="mb-0">
                                                 <button class="btn btn-link text-primary " type="button"
                                                     data-toggle="collapse" data-target="#proposalCollapse"
@@ -503,44 +541,19 @@
 
                                                         <div class="col-md-12 col-12">
                                                             <div class="row">
-                                                                <div class="col-12 col-md-6">
+                                                                {{-- Person Name --}}
+                                                                <div class="col-12 col-md-6 col-lg-4">
                                                                     <div
-                                                                        class="form-group {{ $errors->has('customer_name') ? 'has-error' : '' }}">
-                                                                        <label for="customer_name"
-                                                                            class="control-label">Offer Name <span
-                                                                                class="text-danger">*</span></label>
-                                                                        <input required class="form-control"
-                                                                            name="customer_name" type="text"
-                                                                            id="customer_name" value="{{ $customer_name }}"
-                                                                            list="mycustomer" autocomplete="off" required>
-
-                                                                        <datalist id="mycustomer">
-                                                                            @if ($my_resellers != null)
-                                                                                @forelse ($my_resellers as $my_reseller)
-                                                                                    <option
-                                                                                        value="{{ App\User::whereId($my_reseller->user_id)->first()->name . ' ,' . UserShopNameByUserId($my_reseller->user_id) }}">
-                                                                                        {{ App\User::whereId($my_reseller->user_id)->first()->name . ' ,' . UserShopNameByUserId($my_reseller->user_id) }}
-                                                                                    </option>
-                                                                                @empty
-                                                                                @endforelse
-                                                                            @endif
-                                                                        </datalist>
+                                                                        class="form-group {{ $errors->has('person_name') ? 'has-error' : '' }}">
+                                                                        <label for="person_name"
+                                                                            class="control-label">Person Name</label>
+                                                                        <input class="form-control" name="person_name"
+                                                                            type="text" id="person_name"
+                                                                            value="{{ $person_name }}"
+                                                                            placeholder="Enter Person Name">
                                                                     </div>
                                                                 </div>
-
-                                                                {{-- original alias, phone and email --}}
-                                                                <div class="col-12 col-md-6">
-                                                                    <div
-                                                                        class="form-group {{ $errors->has('customer_alias') ? 'has-error' : '' }}">
-                                                                        <label for="customer_alias"
-                                                                            class="control-label">Alias (optional)</label>
-                                                                        <input class="form-control" name="customer_alias"
-                                                                            type="text" placeholder="Alias"
-                                                                            id="customer_alias"
-                                                                            value="{{ $customer_alias }}">
-                                                                    </div>
-                                                                </div>
-
+                                                                {{-- original, phone and email --}}
                                                                 <div class="col-12 col-md-6 col-lg-4">
                                                                     <div
                                                                         class="form-group {{ $errors->has('customer_mob_no') ? 'has-error' : '' }}">
@@ -568,19 +581,6 @@
                                                                                 value="{{ $customer_email }}"
                                                                                 placeholder="(Optional)">
                                                                         </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                {{-- Person Name --}}
-                                                                <div class="col-12 col-md-6 col-lg-4">
-                                                                    <div
-                                                                        class="form-group {{ $errors->has('person_name') ? 'has-error' : '' }}">
-                                                                        <label for="person_name"
-                                                                            class="control-label">Person Name</label>
-                                                                        <input class="form-control" name="person_name"
-                                                                            type="text" id="person_name"
-                                                                            value="{{ $person_name }}"
-                                                                            placeholder="Enter Person Name">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -647,6 +647,15 @@
                                                                         <div class="row">
                                                                             <div class="col-md-12 pt-2 text-center p-0"
                                                                                 style="margin-top: -15px;">
+
+
+
+                                                                            {{-- @if ($item->vault_type === 'asset')
+
+                                                                                {{ $item->vault_name }} <br>
+                                                                                Vault Name: {{ $item->vault_name }} <br>
+                                                                                File Name: {{ $item->file_name }}
+                                                                            @else --}}
 
                                                                                 <span title="{{ $product->title }}"
                                                                                     class="mb-0 ">{{ Str::limit($product->title, 30, '...') ?? '--' }}</span>
@@ -796,6 +805,7 @@
 
                                                                                     </div>
                                                                                 @endif
+                                                                            {{-- @endif --}}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -838,12 +848,12 @@
                                                     placeholder="Enter Offer Notes">{{ $proposal->proposal_note }}</textarea>
                                             </div>
                                         </div>
-                                        <div class="col-6">
+                                        {{-- <div class="col-6">
                                             <div class="form-group">
                                                 <label for="proposal_note"
                                                     class="control-label text-danger ">Attachments</label>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </div>
 
@@ -1123,13 +1133,6 @@
 
             });
         </script>
-
-
-
-
-
-
-
 
         <script>
             $(document).ready(function() {
@@ -1651,7 +1654,6 @@
 
 
         <script src="{{ asset('frontend/assets/js/animatedModal.min.js') }}"></script>
-
 
         <script>
             $(".jaya2").animatedModal({

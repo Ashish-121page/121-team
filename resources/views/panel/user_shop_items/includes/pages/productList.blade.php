@@ -148,7 +148,7 @@
                         }
                     @endphp --}}
                     {{-- <span> {{  $price == 0 ? 'Ask For Price' : format_price($price)  }}</span> --}}
-                <span class="d-block"><b>Model Code:</b> {{ ($scoped_product->model_code) }}</span>
+                <span class="d-block"><b>Model Code:</b> {{ Str::limit($scoped_product->model_code, 25, '...') }}</span>
                 {{-- <span class="mb-0 d-block"><b>Shop Price:</b><span> {{  isset($usi) ? format_price($usi->price) : '--' }}</span></span> --}}
                 {{-- <span class="d-block"><b>Ref ID:</b> {{ $proUsiExists ? $proUsiExists->id : '###' }}</span> --}}
                 <div class="">

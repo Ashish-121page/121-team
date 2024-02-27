@@ -189,14 +189,15 @@ class ProposalController extends Controller
             $selectedProp = [];
         }
 
-
+        $proposal_slug = $proposal_slug;
+        $slug_title = explode('-', $proposal_slug)[1];
         $pagetitle = '';
         if (request()->has('download') && request()->get('download') == 'ppt'){
-            $pagetitle = 'PPT Preview';
+            $pagetitle = 'Download PPT #' . $slug_title;
         } elseif (!request()->has('download') || request()->get('download') == null) {
-            $pagetitle = 'PDF Preview';
+            $pagetitle = 'Download PDF #' . $slug_title;
         } elseif (request()->has('download') && request()->get('download') == 'excel'){
-            $pagetitle = 'Excel Preview';                        
+            $pagetitle = 'Download Excel #' . $slug_title;
         } else {
             $pagetitle = 'Shop';
         }
@@ -424,6 +425,7 @@ class ProposalController extends Controller
             'customer_name'     => 'required',
             'user_shop_id'     => 'required'
         ]);
+
 
         if($request->customer_mob_no != null){
             $this->validate($request, [

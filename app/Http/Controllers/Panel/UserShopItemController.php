@@ -83,12 +83,11 @@ class UserShopItemController extends Controller
         return view('panel.user_shop_items.index', compact('user_shop_items'));
     }
 
+    public function print(Request $request){
+        $user_shop_items = collect($request->records['data']);
+            return view('panel.user_shop_items.print', ['user_shop_items' => $user_shop_items])->render();
+    }
 
-        public function print(Request $request){
-            $user_shop_items = collect($request->records['data']);
-                return view('panel.user_shop_items.print', ['user_shop_items' => $user_shop_items])->render();
-
-        }
     public function create(Request $request)
     {
         try{
@@ -219,22 +218,23 @@ class UserShopItemController extends Controller
 
             $title = '';
             if (request()->has('products')) {
-                $title = 'Products';
+                $title = 'Listing - Products';
             } elseif (request()->has('assetsafe')) {
                 $title = 'Assets safe';
             } elseif (request()->has('productsgrid')) {
-                $title = 'Product';
+                $title = 'Listing - Products';
             } elseif (request()->has('properties')) {
                 $title = 'Properties';
-            } else {
-                $title = 'Categories';
+            } elseif (request()->has('assetvault')) {
+                $title = 'Asset Vault';
+            } else{
+                $title = 'Listing - Categories';
             }
 
 
+            $vault_data = Media::where('path','LIKE',"storage/files/$access_id"."%")->where('vault_name','!=',null)->groupBy('vault_name')->pluck('vault_name');
 
-            return view('panel.user_shop_items.create',compact('scoped_products','pinned_items','parent_shop','title','categories','access_data','access_id','products','qr_products','type_id','price_group','title'));
-
-
+            return view('panel.user_shop_items.create',compact('scoped_products','pinned_items','parent_shop','title','categories','access_data','access_id','products','qr_products','type_id','price_group','title','vault_data'));
 
         }catch(\Exception $e){
             return back()->with('error', 'There was an error: ' . $e->getMessage());
@@ -544,6 +544,8 @@ class UserShopItemController extends Controller
 
     public function removebulk(Request $request)
     {
+
+
         try {
             $delete_request = $request->delproducts;
             $action = $request->delete_all;
@@ -584,6 +586,7 @@ class UserShopItemController extends Controller
                     DB::table('products')->where('id',$allpro->id)->delete();
                     // ! Deleting From Product extra info
                     ProductExtraInfo::where('product_id',$allpro->id)->delete();
+
                 }
                 return back()->with('success',count($result_product).' All Items of shop are Deleted Successfully!');
 

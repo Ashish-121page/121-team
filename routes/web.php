@@ -58,6 +58,8 @@ Route::group(['middleware' => 'subdomain'],  function () {
 
         Route::any('/proposal/export/excel', [Microproposals::class,'exportexcel'])->name('proposal.excel');
 
+        Route::any('/qr-action', [Microproposals::class,'qraction'])->name('qr.action');
+
         Route::get('api-store', [Microproposals::class,'apiStore'])->name('api.store');
         Route::get('api-remove', [Microproposals::class,'apiRemove'])->name('api.remove');
         Route::get('/proposal/picked/{proposal}/{user_key}', [Microproposals::class,'picked'])->name('proposal.picked');
@@ -146,9 +148,11 @@ Route::get('/user-shop-cs-filler', function () {
         Route::get('/now', [WebsiteController::class,'now'])->name('website.now');
         Route::get('/microsite-proxy', [WebsiteController::class,'microSiteProxy'])->name('microsite.proxy');
         Route::get('/demo', [WebsiteController::class,'demoform'])->name('demoform');
+        Route::post('/demo/save', [WebsiteController::class,'bookdemoStore'])->name('demoform.store');
         Route::get('/dtask', [WebsiteController::class,'formjaya'])->name('jayaform23');
 
         Route::get('/feedback', [WebsiteController::class,'feedbackform'])->name('feedbackform');
+        Route::post('/feedback/save', [WebsiteController::class,'feedbackformstore'])->name('feedbackform.store');
         Route::get('/about', [WebsiteController::class,'about'])->name('about');
         Route::get('/about1', [WebsiteController::class,'about_one'])->name('about-one');
         Route::get('/plans', [WebsiteController::class,'planIndex'])->name('plan.index');

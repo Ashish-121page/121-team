@@ -7,7 +7,7 @@
                 @foreach ($proposals as $proposal)
                     @php
                         $customer_detail = json_decode($proposal->customer_details);
-                        $customer_name = $customer_detail->customer_name ?? '--';
+                        $customer_name_ = $customer_detail->customer_name ?? '--';
                         $customer_mob_no = $customer_detail->customer_mob_no ?? '--';
                         $direct = $proposal->status == 0 ? '?direct=1' : '';
                         $user_key = encrypt(auth()->id());
@@ -35,9 +35,15 @@
             <div class="col-6 d-flex justify-content-end align-items-center">
                 {{-- <a href="?view=listview" class="btn btn-outline-primary mx-1 @if (request()->get('view') == 'listview') active @endif"><i class="fas fa-list"></i></a> --}}
                 {{-- <a href="?view=gridview" class="btn btn-outline-primary mx-1 @if (request()->get('view') == 'gridview') active @endif"><i class="fas fa-th-large"></i></a> --}}
+                
+                {{-- original --}}
                 <a href="{{ inject_subdomain('proposal/create', $slug, true, false) }}"
                     class="btn btn-outline-primary mx-1" @if (request()->has('active') && request()->get('active') == 'enquiry') active @endif
                     id="makeoffer">Make Offer</a>
+
+                    {{-- <a href="{{ inject_subdomain('proposal/create', $slug, true, false) }}" class="btn btn-outline-primary mx-1" class="btn btn-link text-primary mx-2 "
+                     @if (request()->has('active') && request()->get('active') == 'enquiry') active @endif
+                    >Make Offer</a> --}}
             </div>
 
         </div>
@@ -65,7 +71,7 @@
                         @foreach ($proposals as $proposal)
                             @php
                                 $customer_detail = json_decode($proposal->customer_details);
-                                $customer_name = $customer_detail->customer_name ?? '--';
+                                $customer_name1 = $customer_detail->customer_name ?? '--';
                                 $customer_mob_no = $customer_detail->customer_mob_no ?? '--';
                                 $direct = $proposal->status == 0 ? '?direct=1' : '';
                                 $user_key = encrypt(auth()->id());
@@ -84,7 +90,7 @@
                                 <td class="d-flex justify-content-between">
                                     <div class="mt-2 my-1 py-2">
                                         <span>
-                                            {{ $customer_name }}
+                                            {{ $customer_name1 }}
                                         </span>
                                     </div>
                                     <div class="d-lg-flex d-none justify-content-between" style="gap:10px;">
@@ -138,8 +144,8 @@
                                             </a>
 
                                             <a class="btn-link text-primary"
-                                                href="{{ inject_subdomain('proposal/edit/' . $proposal->id . '/' . $user_key, $slug, false, false) }}?margin={{ $proposal->margin ?? 10 }}"
-                                                target="_blank"
+                                                href="{{ inject_subdomain('proposal/picked/' . $proposal->id . '/' . $user_key, $slug, false, false) }}?type=picked"
+                                                target=""
                                                 style="text-decoration: none; padding:6px 5px!important;">
                                                 <i class="far fa-edit" title="Edit"></i>
                                             </a>
@@ -207,6 +213,10 @@
         </div>
     </div>
 </div>
+
+{{-- @include('frontend.micro-site.og_proposals.modal.offerexpo') --}}
+
+
 <script>
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))

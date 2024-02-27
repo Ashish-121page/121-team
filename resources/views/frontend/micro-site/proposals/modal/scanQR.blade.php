@@ -10,9 +10,15 @@
             </div>
             <div class="modal-body">
                 <div class="report-print">
-                    <div class="d-block mx-auto text-center">
+                    {{-- <div class="d-block mx-auto text-center">
                         <div id="qr-reader" style="mx-auto" style="width:500px"></div>
                         <div id="qr-reader-results"></div>
+                    </div> --}}
+                    <div class="d-block mx-auto ">
+                        <label for="dosomething" class="mb-3">Select Qr Code</label>
+                        <br>
+                        <input type="file" id="dosomething">
+                        <div class="h6" id="infoText"> </div>
                     </div>
                 </div>
             </div>

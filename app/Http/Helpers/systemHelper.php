@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  *
 
@@ -209,7 +209,8 @@ if (!function_exists('getSubjectOptions')) {
                 ['id'=>4,"name"=>'Subscription Update'],
                 ['id'=>5,"name"=>'Purchase'],
                 ['id'=>6,"name"=>'Refund'],
-                
+                ['id'=>7,"name"=>'Add new template'],
+
             ];
         }else{
             foreach(getSubjectOptions() as $row){
@@ -230,7 +231,7 @@ if (!function_exists('getPriorityStatus')) {
                 ['id'=>1,"name"=>'Low'],
                 ['id'=>2,"name"=>'Medium'],
                 ['id'=>3,"name"=>'High'],
-                
+
             ];
         }else{
             foreach(getPriorityStatus() as $row){
@@ -269,7 +270,7 @@ if (!function_exists('paymentStatus')) {
 if (!function_exists('NameById')) {
     function NameById($id)
     {
-        return \App\User::whereId($id)->first()->name ?? '-';
+        return \App\User::whereId($id)->first()->name ?? 'User Deleted';
     }
 }
 
@@ -421,7 +422,7 @@ if (!function_exists('fetchGetIN')) {
 
 if (!function_exists('short_code_parser')) {
     function short_code_parser($content, $replacements)
-    {    
+    {
         $content = preg_replace_callback(
                     '/{[^}]*\}/',
                     function (array $m) use ($replacements) {
@@ -459,14 +460,14 @@ function AmountInWordsNational(float $amount)
       if ($amount) {
        $add_plural = (($counter = count($string)) && $amount > 9) ? 's' : null;
        $amt_hundred = ($counter == 1 && $string[0]) ? ' and ' : null;
-       $string [] = ($amount < 21) ? $change_words[$amount].' '. $here_digits[$counter]. $add_plural.' 
-       '.$amt_hundred:$change_words[floor($amount / 10) * 10].' '.$change_words[$amount % 10]. ' 
+       $string [] = ($amount < 21) ? $change_words[$amount].' '. $here_digits[$counter]. $add_plural.'
+       '.$amt_hundred:$change_words[floor($amount / 10) * 10].' '.$change_words[$amount % 10]. '
        '.$here_digits[$counter].$add_plural.' '.$amt_hundred;
         }
    else $string[] = null;
    }
    $implode_to_Rupees = implode('', array_reverse($string));
-   $get_paise = ($amount_after_decimal > 0) ? "And " . ($change_words[$amount_after_decimal / 10] . " 
+   $get_paise = ($amount_after_decimal > 0) ? "And " . ($change_words[$amount_after_decimal / 10] . "
    " . $change_words[$amount_after_decimal % 10]) . ' Paise' : '';
    return ($implode_to_Rupees ? $implode_to_Rupees . 'Rupees' : '') . $get_paise;
 }
@@ -496,52 +497,52 @@ function AmountInWordsInternational($num)
         19 => "NINETEEN",
         "014" => "FOURTEEN"
     );
-    $tens = array( 
+    $tens = array(
         0 => "ZERO",
         1 => "TEN",
         2 => "TWENTY",
-        3 => "THIRTY", 
-        4 => "FORTY", 
-        5 => "FIFTY", 
-        6 => "SIXTY", 
-        7 => "SEVENTY", 
-        8 => "EIGHTY", 
-        9 => "NINETY" 
-    ); 
-    $hundreds = array( 
-        "HUNDRED", 
-        "THOUSAND", 
-        "MILLION", 
-        "BILLION", 
-        "TRILLION", 
-        "QUARDRILLION" 
+        3 => "THIRTY",
+        4 => "FORTY",
+        5 => "FIFTY",
+        6 => "SIXTY",
+        7 => "SEVENTY",
+        8 => "EIGHTY",
+        9 => "NINETY"
+    );
+    $hundreds = array(
+        "HUNDRED",
+        "THOUSAND",
+        "MILLION",
+        "BILLION",
+        "TRILLION",
+        "QUARDRILLION"
     ); /*limit t quadrillion */
-    $num = number_format($num,2,".",","); 
-    $num_arr = explode(".",$num); 
-    $wholenum = $num_arr[0]; 
-    $decnum = $num_arr[1]; 
-    $whole_arr = array_reverse(explode(",",$wholenum)); 
-    krsort($whole_arr,1); 
-    $rettxt = ""; 
+    $num = number_format($num,2,".",",");
+    $num_arr = explode(".",$num);
+    $wholenum = $num_arr[0];
+    $decnum = $num_arr[1];
+    $whole_arr = array_reverse(explode(",",$wholenum));
+    krsort($whole_arr,1);
+    $rettxt = "";
     foreach($whole_arr as $key => $i){
-        
+
     while(substr($i,0,1)=="0")
             $i=substr($i,1,5);
-        if($i < 20){ 
+        if($i < 20){
         /* echo "getting:".$i; */
-        $rettxt .= $ones[$i]; 
-        }elseif($i < 100){ 
-            if(substr($i,0,1)!="0")  $rettxt .= $tens[substr($i,0,1)]; 
-            if(substr($i,1,1)!="0") $rettxt .= " ".$ones[substr($i,1,1)]; 
-        }else{ 
-            if(substr($i,0,1)!="0") $rettxt .= $ones[substr($i,0,1)]." ".$hundreds[0]; 
-            if(substr($i,1,1)!="0")$rettxt .= " ".$tens[substr($i,1,1)]; 
-            if(substr($i,2,1)!="0")$rettxt .= " ".$ones[substr($i,2,1)]; 
-        } 
-        if($key > 0){ 
-        $rettxt .= " ".$hundreds[$key]." "; 
+        $rettxt .= $ones[$i];
+        }elseif($i < 100){
+            if(substr($i,0,1)!="0")  $rettxt .= $tens[substr($i,0,1)];
+            if(substr($i,1,1)!="0") $rettxt .= " ".$ones[substr($i,1,1)];
+        }else{
+            if(substr($i,0,1)!="0") $rettxt .= $ones[substr($i,0,1)]." ".$hundreds[0];
+            if(substr($i,1,1)!="0")$rettxt .= " ".$tens[substr($i,1,1)];
+            if(substr($i,2,1)!="0")$rettxt .= " ".$ones[substr($i,2,1)];
         }
-    } 
+        if($key > 0){
+        $rettxt .= " ".$hundreds[$key]." ";
+        }
+    }
     if($decnum > 0){
         $rettxt .= " Ringgit and ";
         if($decnum < 20){
@@ -907,7 +908,7 @@ if (!function_exists('activeClassIfRoute')){
 if (!function_exists('createOrder')){
     function createOrder($user_id, $order_items = [], $payment_gateway = "offline", $tax = 0, $discount = 0, $from = null,$to = null,$remark = null)
     {
-        
+
         if(empty($order_items)){
             $order_items = [
                 [

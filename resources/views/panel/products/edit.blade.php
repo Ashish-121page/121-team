@@ -1,5 +1,5 @@
 @extends('backend.layouts.main')
-@section('title', 'Product Edit')
+@section('title', $pagetitle)
 @section('content')
     @php
         /**
@@ -177,6 +177,7 @@
 
                             @php
                                 $image_ids = ($user_shop_item->images ?? null) != null ? explode(',', $user_shop_item->images) : [];
+
                             @endphp
 
                             <div class="row">
@@ -194,6 +195,10 @@
                                                         class="img-fluid"
                                                         style="height: 250px; width: 100%; object-fit: contain; cursor: pointer;"
                                                         alt="">
+                                                        {{-- <img src="{{ asset('frontend/assets/img/placeholder.png')) }}"
+                                                        class="img-fluid"
+                                                        style="height: 250px; width: 100%; object-fit: contain; cursor: pointer;"
+                                                        alt=""> --}}
                                                 </div>
                                             </a>
                                         </div>
@@ -547,7 +552,7 @@
                                                                     Price, without GST </label>
                                                                 <input class="form-control" name="vip_group"
                                                                     type="number" id="vip_group"
-                                                                    value="{{ getPriceByGroupIdProductId($vip_group->id, $product->id, 0) ?? '0' }}">
+                                                                    value="@if (isset($vip_group->id)) {{ getPriceByGroupIdProductId($vip_group->id, $product->id, 0) ?? '0' }} @else 0 @endif">
                                                             </div>
                                                         </div>
                                                         <div class="col-md-4 col-4 d-none">
@@ -556,7 +561,7 @@
                                                                     Price, without GST </label>
                                                                 <input class="form-control" name="reseller_group"
                                                                     type="number" id="reseller_group"
-                                                                    value="{{ getPriceByGroupIdProductId($reseller_group->id, $product->id, 0) ?? '0' }}">
+                                                                    value="@if (isset($reseller_group->id)) {{ getPriceByGroupIdProductId($reseller_group->id, $product->id, 0) ?? '0' }} @else 0 @endif">
                                                             </div>
                                                         </div>
                                                         <div class="col-md-4 col-4">
@@ -967,6 +972,8 @@
                                                             </thead>
                                                             <tbody>
                                                                 @forelse ($medias as $media)
+                                                                {{-- {{ magicstring($media); }} --}}
+
                                                                     @php
                                                                         $path = str_replace('storage', 'public', $media->path);
                                                                         if (Storage::exists($path)) {
@@ -975,10 +982,9 @@
                                                                             continue;
                                                                         }
 
-                                                                        if ($media->file_type != 'Image') {
+                                                                        if ($media->file_type != 'image' && $media->file_type != 'Image') {
                                                                             continue;
                                                                         }
-
                                                                     @endphp
                                                                     <tr>
                                                                         <td>
@@ -1001,7 +1007,7 @@
                                                                         <td>
                                                                             {{ date('Y-m-d H:i:s', Storage::lastModified($path)) }}
                                                                         </td>
-                                                                        <td>
+                                                                        <td style="display: flex;justify-content: start;align-items: center;flex-wrap: wrap;">
                                                                             <a href="{{ asset($media->path) }}"
                                                                                 download="{{ $media->file_name }}"
                                                                                 class="btn btn-link">Download</a>
@@ -1061,7 +1067,7 @@
                                                                         <td>
                                                                             {{ date('Y-m-d H:i:s', Storage::lastModified($path)) }}
                                                                         </td>
-                                                                        <td>
+                                                                        <td style="display: flex;justify-content: start;align-items: center;flex-wrap: wrap;">
                                                                             <a href="{{ asset($media->path) }}"
                                                                                 download="{{ $media->file_name }}"
                                                                                 class="btn btn-link">Download</a>
@@ -1121,7 +1127,7 @@
                                                                         <td>
                                                                             {{ date('Y-m-d H:i:s', Storage::lastModified($path)) }}
                                                                         </td>
-                                                                        <td>
+                                                                        <td style="display: flex;justify-content: start;align-items: center;flex-wrap: wrap;">
                                                                             <a href="{{ asset($media->path) }}"
                                                                                 download="{{ $media->file_name }}"
                                                                                 class="btn btn-link">Download</a>
@@ -1179,7 +1185,7 @@
                                                                         <td>
                                                                             {{ date('Y-m-d H:i:s', Storage::lastModified($path)) }}
                                                                         </td>
-                                                                        <td>
+                                                                        <td style="display: flex;justify-content: start;align-items: center;flex-wrap: wrap;">
                                                                             <a href="{{ asset($media->path) }}"
                                                                                 download="{{ $media->file_name }}"
                                                                                 class="btn btn-link">Download</a>
@@ -1557,7 +1563,7 @@
                                                         </label> &nbsp;&nbsp;&nbsp;
                                                         <input type="checkbox" data-open="weightboxbtn" id="weightbox"
                                                             class="hiddenbxbtn"
-                                                            @if ($shipping->gross_weight ?? ('' != '' || $shipping->weight ?? '' != '')) checked @endif>
+                                                            @if ($shipping->gross_weight ?? ('' != '' || ($shipping->weight ?? '') != '')) checked @endif>
                                                     </div>
                                                 </div>
                                                 <div class="row d-none" id="weightboxbtn">
@@ -1623,7 +1629,7 @@
                                                         </label> &nbsp;&nbsp;&nbsp;
                                                         <input type="checkbox" data-open="productdimensionsbox"
                                                             id="productdimensionsbx" class="hiddenbxbtn"
-                                                            @if ($shipping->length ?? ('' != '' || $shipping->width ?? ('' != '' || $shipping->height ?? '' != ''))) checked @endif>
+                                                            @if ($shipping->length ?? ('' != '' || ($shipping->width ?? '') ?? ('' != '' || $shipping->height ?? '' != ''))) checked @endif>
                                                     </div>
                                                 </div>
                                                 <div class="row d-none" id="productdimensionsbox">

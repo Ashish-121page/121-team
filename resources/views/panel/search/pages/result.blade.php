@@ -23,8 +23,6 @@
                             <span class="btn btn-outline-primary btn-pill mx-1" style="border-radius: 20px">No Asset
                                 Vault</span>
                         @endforelse
-                    </div>
-                    {{-- <div class="col-12 d-flex justify-content-center align-items-center d-none">
                         <h5 class="btn text-center">{{ __('Product') }}</h5>
                         @forelse ($productcatname as $producname)
                             <span class="btn btn-outline-primary btn-pill mx-1"
@@ -33,7 +31,7 @@
                             <span class="btn btn-outline-primary btn-pill mx-1" style="border-radius: 20px">No Asset
                                 Vault</span>
                         @endforelse
-                    </div> --}}
+                    </div>
                 </div>
             </div>
 
@@ -42,66 +40,99 @@
                     <div class="col-12 d-flex align-items-center  justify-content-between "
                         style="border-bottom: 1px solid #ccc">
                         <h6 class="text-muted ">Results</h6>
-                        <span class="text-muted ">3 Found</span>
+                        <span class="text-muted ">38 Found</span>
                     </div>
 
                     <div class="row d-flex flex-wrap ">
                         {{-- Product Card for Loop Start --}}
-                        @for ($i = 1; $i < 4; $i++)
-                        <div class="col d-flex justify-content-center ">
-                                <div class="card" style="width: min-content;height: max-content;">
-                                    <div class="card-body d-flex flex-column justify-content-start text-center "
-                                        style="width: min-content;">
-                                        <img src="{{ asset('frontend\assets\newuiimages\imagesearch\/' . $i . '.png') }}"
-                                            alt="Image Preview"
-                                            style="object-fit: contain;height: 100px;border-radius: 10px">
-                                        {{-- <span> Title </span>
-                                      <span> Model Code: Test sb </span>
-                                      <span> USD: 1.37 </span> --}}
-                                        @php
-                                            $random = generateRandomStringNative(10);
-                                        @endphp
-                                        <input type="checkbox" id="checkme_{{ $random }}" class="d-none"
-                                            name="checkproduct[]">
-                                        <label for="checkme_{{ $random }}" class="chekpro mb-1 d-none">
-                                            <a id="addvault" href="#searchview_modal" role="button"
-                                                class="btn btn-link addvault " data-itemtype="assetimg">
-                                                View
-                                            </a>
-                                        </label>
+                        <div class="col">
+                            <div class="card" style="width: min-content;height: max-content;">
+                                <div class="card-body d-flex flex-column justify-content-start text-center "
+                                    style="width: min-content;">
+                                    <img src="https://picsum.photos/100?random=1" alt="Image Preview"
+                                        style="object-fit: contain;height: 100px;border-radius: 10px">
+                                    <span> Title </span>
+                                    <span> Model Code: Test sb </span>
+                                    <span> USD: 1.37 </span>
+                                    @php
+                                        $random = generateRandomStringNative(10);
+                                    @endphp
+                                    <input type="checkbox" id="checkme_{{ $random }}" class="d-none"
+                                        name="checkproduct[]">
+                                    <label for="checkme_{{ $random }}" class="chekpro mb-1 ">
+                                        <a id="addvault" href="#searchview_modal" role="button"
+                                            class="btn btn-link addvault " data-itemtype="assetimg">
+                                            View
+                                        </a>
+                                    </label>
 
-                                        <input type="checkbox" id="selectme_{{ $random }}" class="d-none"
-                                            name="checkproduct[]">
-                                        <label for="selectme_{{ $random }}" class="chekpro my-3">
-                                            <div class="dropdown">
-                                                <button type="button" class="btn btn-outline-primary dropdown-toggle"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Add To Offer
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item notyou" href="#"> + New Offer</a></li>
-                                                    <li><a class="dropdown-item" href="#">Forever 21</a></li>
-                                                    <li><a class="dropdown-item" href="#">John Medeiros</a></li>
-                                                    <li><a class="dropdown-item" href="#">Kendra Scott</a></li>
-                                                    <li><a class="dropdown-item" href="#">Luxor </a></li>
-                                                    <li><a class="dropdown-item" href="#">Macy's</a></li>
-                                                </ul>
-                                            </div>
-                                        </label>
-                                    </div>
+                                    <input type="checkbox" id="selectme_{{ $random }}" class="d-none"
+                                        name="checkproduct[]">
+                                    <label for="selectme_{{ $random }}" class="chekpro my-3">
+                                        <div class="dropdown">
+                                            <button type="button" class="btn btn-outline-primary dropdown-toggle"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                Add To Offer
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item notyou" href="#"> + New Offer</a></li>
+                                                <li><a class="dropdown-item" href="#">Offer 1</a></li>
+                                                <li><a class="dropdown-item" href="#">Offer 2</a></li>
+                                                <li><a class="dropdown-item" href="#">Offer 3</a></li>
+                                            </ul>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
-                        @endfor
+                        </div>
                         {{-- Product Card for Loop Start --}}
+                        <div class="col">
+                            <div class="card" style="width: min-content;height: max-content;">
+                                <div class="card-body d-flex flex-column justify-content-start text-center "
+                                    style="width: min-content;">
+                                    <img src="https://picsum.photos/100?random=2" alt="Image Preview"
+                                        style="object-fit: contain;height: 100px;border-radius: 10px">
+                                    <span> Title </span>
+                                    <span> Model Code: Test sb </span>
+                                    <span> USD: 1.37 </span>
+                                    @php
+                                        $random = generateRandomStringNative(10);
+                                    @endphp
+                                    <input type="checkbox" id="checkme_{{ $random }}" class="d-none"
+                                        name="checkproduct[]">
+                                    <label for="checkme_{{ $random }}" class="chekpro mb-1 ">
+                                        <a id="addvault" href="#searchview_modal" role="button"
+                                            class="btn btn-link addvault " data-itemtype="product">
+                                            View
+                                        </a>
+                                    </label>
 
+                                    <input type="checkbox" id="selectme_{{ $random }}" class="d-none"
+                                        name="checkproduct[]">
+                                    <label for="selectme_{{ $random }}" class="chekpro my-3">
+                                        <div class="dropdown">
+                                            <button type="button" class="btn btn-outline-primary dropdown-toggle"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                Add To Offer
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item notyou" href="#"> + New Offer</a></li>
+                                                <li><a class="dropdown-item" href="#">Offer 1</a></li>
+                                                <li><a class="dropdown-item" href="#">Offer 2</a></li>
+                                                <li><a class="dropdown-item" href="#">Offer 3</a></li>
+                                            </ul>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
 
                 <div class="col-12 d-flex justify-content-between  align-item-center ">
                     <button class="btn btn-outline-primary ">Clear</button>
-                    {{-- <button class="btn btn-primary d-none gotonext" >Next</button> --}}
-                    <a href="http://demo2.localhost/project/121.page-Laravel/121.page/proposal/picked/9/eyJpdiI6ImdWamgweENJeFZ6cDJTQTdkejVuY0E9PSIsInZhbHVlIjoiOVNNOXlhQUFhUk93dEJoUUNtbkFOUT09IiwibWFjIjoiMTgxZDhkODk2NjE5ODAwNDZiZjZkZDM5ZTcxNDczY2ZkZDY5ZWNiNDM3ZDE1YTFlMDc0MmEyOTY4YjQ2YTBiYiIsInRhZyI6IiJ9?type=picked" class="btn btn-primary d-none gotonext"> Next </a>
+                    <button class="btn btn-primary d-none gotonext">Next</button>
                 </div>
 
 
@@ -129,7 +160,7 @@
                 src="{{ route('panel.user_shop_items.create', ['type' => 'direct', 'type_ide' => encrypt(auth()->id()), 'assetvault' => 'true']) }}"
                 frameborder="0" style="height: 100vh;width: 100vw" id="myframe" class="d-none"></iframe>
 
-            <iframe src="{{ route('panel.products.edit', [492, 'type' => encrypt('editmainksku')]) }}" frameborder="0"
+            <iframe src="{{ route('panel.products.edit', [9, 'type' => encrypt('editmainksku')]) }}" frameborder="0"
                 style="height: 100vh;width: 100vw" id="myframe2" class="d-none"></iframe>
 
         </div>

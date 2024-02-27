@@ -104,11 +104,6 @@ class NewBulkController extends Controller
         // ` Col LIst in Form of Array
         $main_Arr = array_keys((array) $col_list);
 
-        // magicstring($col_list);
-        // $variantion_col_temp = $col_list->{'One Piece Charecter'};
-        // echo $variantion_col_temp;
-        // return;
-
         // ` Start Indexing fo Column
         $ModelCodeIndex = $col_list->{'Model_Code'};
         $CategoryIndex = $col_list->{'Category'};
@@ -598,10 +593,6 @@ class NewBulkController extends Controller
             if ($item[$VariationAttributesIndex] != null) {
                 foreach ($variationType_array as $variation) {
                     $tmp_colindex = $col_list->{$variation};
-                    debugtext($debuging_mode,"The Column index of $variation is $tmp_colindex","green");
-
-                    debugtext($debuging_mode,"$variation variation Column Values","green");
-                    // magicstring(explode($Array_saprator,$item[$tmp_colindex]));
 
                     // ! Making Multidiamentional Array
                     array_push($myTmp_array,explode($Array_saprator,$item[$tmp_colindex]));
@@ -777,7 +768,6 @@ class NewBulkController extends Controller
                                 'manage_inventory' =>  0,
                                 'stock_qty' => 0,
                                 'status' => 0,
-                                // 'is_publish' => (in_array($item[$PublishIndex],$allowed_array)) ? 1 : 0,
                                 'is_publish' => 1,
                                 'price' => $price ?? 0,
                                 'min_sell_pr_without_gst' => ($product_exist != null && $item[$CustomerPriceIndex] == '') ? $product_exist->min_sell_pr_without_gst : $item[$CustomerPriceIndex],
@@ -790,18 +780,11 @@ class NewBulkController extends Controller
                                 'exclusive' => (in_array($item[$ExlusiveIndex],$allowed_array)) ? 1 : 0 ?? 0,
                                 'base_currency' => ($product_exist != null && $Currency == '') ? $product_exist->base_currency : $Currency,
                                 'SellingPriceunitIndex' => $item[$SellingPriceunitIndex] ?? '',
-                                // 'archive' => (in_array($item[$ArchiveIndex],$allowed_array)) ? 1 : 0,
                             ];
 
                             $product_obj = Product::create($product_obj);
 
-                            // debugtext($debuging_mode,"Printing Product Object","Red");
-                            // magicstring($product_obj);
-
                             array_push($Productids_array,$product_obj->id);
-
-                            debugtext($debuging_mode,"Printing Product Ids","Red");
-                            // magicstring($Productids_array);
 
                             $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
                             $third = strtolower($third);
@@ -849,36 +832,21 @@ class NewBulkController extends Controller
                                 ProductExtraInfo::create($product_extra_info_obj_user);
                             }
 
-                            debugtext($debuging_mode,"Printing Product Variation Object of User Defined Variaition for $product_att_val->attribute_value","Red");
-                            // magicstring($product_extra_info_obj_user);
-
-                            debugtext($debuging_mode,"Not User Define Variations","Red");
-                            // magicstring($user_custom_col_list);
-
 
                             // - Making Varitions That are not Defined in Variation Type..
                             if (count($user_custom_col_list) != 0) {
                                 foreach ($user_custom_col_list as $key => $attri) {
                                     $tmp_col = $col_list->{$attri};
                                     $col_value = $item[$tmp_col];
-
                                     $attribute_default = ProductAttribute::where('name',$attri)->where('user_id',null)->pluck('id');
                                     $attribute_custom = ProductAttribute::where('name',$attri)->where('user_id',$user->id)->pluck('id');
-
                                     if (count($attribute_default) == 0 ) {
                                         $attribute = $attribute_custom;
                                     }else{
                                         $attribute = $attribute_default;
                                     }
 
-
                                     $product_att_val = ProductAttributeValue::whereIn('parent_id',$attribute)->where('attribute_value',$col_value)->first();
-
-
-                                    // if ($product_att_val == null) {
-                                    //     return back()->with('error',"$col_value is not in $col_value Exist at Row $row, remove Previous Data for prevent Deblicate.");
-                                    // }
-
 
                                     if ($product_att_val != null) {
                                         $product_extra_info_obj = [
@@ -912,9 +880,6 @@ class NewBulkController extends Controller
                                         ];
 
                                         ProductExtraInfo::create($product_extra_info_obj);
-
-                                        debugtext($debuging_mode,"Printing Varitions That are not Defined in Variation Type..","Red");
-                                        // magicstring($product_extra_info_obj);
                                     }
                                 }
                             }
@@ -1285,13 +1250,8 @@ class NewBulkController extends Controller
 
                             $product_obj = Product::create($product_obj);
 
-                            // debugtext($debuging_mode,"Printing Product Object","Red");
-                            // magicstring($product_obj);
 
                             array_push($Productids_array,$product_obj->id);
-
-                            debugtext($debuging_mode,"Printing Product Ids","Red");
-                            // magicstring($Productids_array);
 
                             $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
                             $value2 = strtolower($value2);
@@ -1337,13 +1297,6 @@ class NewBulkController extends Controller
                             ];
 
                             ProductExtraInfo::create($product_extra_info_obj_user);
-
-                            debugtext($debuging_mode,"Printing Product Variation Object of User Defined Variaition for $product_att_val->attribute_value","Red");
-                            // magicstring($product_extra_info_obj_user);
-
-                            debugtext($debuging_mode,"Not User Define Variations","Red");
-                            // magicstring($user_custom_col_list);
-
 
                             // - Making Varitions That are not Defined in Variation Type..
                             if (count($user_custom_col_list) != 0) {
@@ -1399,9 +1352,6 @@ class NewBulkController extends Controller
                                         ];
 
                                         ProductExtraInfo::create($product_extra_info_obj);
-
-                                        debugtext($debuging_mode,"Printing Varitions That are not Defined in Variation Type..","Red");
-                                        // magicstring($product_extra_info_obj);
                                     }
                                 }
                             }
@@ -1701,13 +1651,8 @@ class NewBulkController extends Controller
 
                     $product_obj = Product::create($product_obj);
 
-                    // debugtext($debuging_mode,"Printing Product Object","Red");
-                    // magicstring($product_obj);
-
                     array_push($Productids_array,$product_obj->id);
 
-                    debugtext($debuging_mode,"Printing Product Ids","Red");
-                    // magicstring($Productids_array);
 
                     $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
                     $value2 = strtolower($value2);
@@ -1753,13 +1698,6 @@ class NewBulkController extends Controller
                     ];
 
                     ProductExtraInfo::create($product_extra_info_obj_user);
-
-                    debugtext($debuging_mode,"Printing Product Variation Object of User Defined Variaition for $product_att_val->attribute_value","Red");
-                    // magicstring($product_extra_info_obj_user);
-
-                    debugtext($debuging_mode,"Not User Define Variations","Red");
-                    // magicstring($user_custom_col_list);
-
 
                     // - Making Varitions That are not Defined in Variation Type..
                     if (count($user_custom_col_list) != 0) {
@@ -1814,9 +1752,6 @@ class NewBulkController extends Controller
                                 ];
 
                                 ProductExtraInfo::create($product_extra_info_obj);
-
-                                debugtext($debuging_mode,"Printing Varitions That are not Defined in Variation Type..","Red");
-                                // magicstring($product_extra_info_obj);
                             }
                         }
                     }
@@ -2276,12 +2211,6 @@ class NewBulkController extends Controller
 
     // ` Export Excel Sheet for Bulk Upload
     public function ProductSheetExport(Request $request,User $user_id){
-
-
-
-
-        // echo "Working in Progress";
-        // return;
         // Fetch All attriubutes
         $default_attribute = (array) json_decode(Setting::where('key','new_bulk_sheet_upload')->first()->value);
         $custom_attributes = (array) json_decode($user_id->custom_attriute_columns) ?? ['Colours','Size','Material'];
@@ -2330,6 +2259,30 @@ class NewBulkController extends Controller
             }
         }
 
+        $System_categories = [];
+        $User_categories = [];
+
+
+
+        $category = Category::where('category_type_id',13)->where('type',1)->where('user_id',null)->where('parent_id',null)->get();
+
+        foreach ($category as $key => $cat) {
+            $sub_category = Category::where('category_type_id',13)->where('type',1)->where('user_id',null)->where('parent_id',$cat->id)->get();
+            foreach ($sub_category as $key => $sub_cat) {
+                array_push($System_categories,$cat->name." > ".$sub_cat->name);
+            }
+        }
+
+        $category = Category::where('category_type_id',13)->where('type',1)->where('user_id',auth()->id())->where('parent_id',null)->get();
+
+        foreach ($category as $key => $cat) {
+            $sub_category = Category::where('category_type_id',13)->where('type',1)->where('user_id',auth()->id())->where('parent_id',$cat->id)->get();
+            foreach ($sub_category as $key => $sub_cat) {
+                array_push($User_categories,$cat->name." > ".$sub_cat->name);
+            }
+        }
+
+        $final_categories = array_merge($System_categories,$User_categories);
 
         // Merging All attributes
         $merged_array = array_merge($Export_columns,$custom_attributes);
@@ -2343,11 +2296,8 @@ class NewBulkController extends Controller
             $spreadsheet = new Spreadsheet();
             $actualWorkSheet = $spreadsheet->getActiveSheet();
             $actualWorkSheet->setTitle($FirstSheetName);
-
             $actualWorkSheet->getDefaultColumnDimension()->setWidth(20);
-
             $actualWorkSheet->fromArray($merged_array, null, 'A3');
-
             $actualWorkSheet->freezePane('B4');
 
 
@@ -2355,13 +2305,12 @@ class NewBulkController extends Controller
             $dropdownSheet = $spreadsheet->createSheet();
             $dropdownSheet->setTitle($SecondSheetName);
             $dropdownSheet->getDefaultColumnDimension()->setWidth(20);
-            $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
 
-            $new_items = ['carton_weight_unit^^system','Weight_unit^^system','carton_weight_unit^^system','Dimensions_unit^^system','Carton_Dimensions_unit^^system','unit^^system','Product_Cost_Unit^^system','Selling_Price_Unit^^system'];
+            // $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
 
+            $new_items = ['carton_weight_unit^^system','Weight_unit^^system','carton_weight_unit^^system','Dimensions_unit^^system','Carton_Dimensions_unit^^system','unit^^system','Product_Cost_Unit^^system','Selling_Price_Unit^^system','Category^^system'];
             $custom_attributes = array_merge($custom_attributes,$new_items);
 
-            // return;
             foreach ($custom_attributes as $key => $custom_attribute) {
                 $optionsArray = [];
                 $index = $key + 1;
@@ -2370,7 +2319,6 @@ class NewBulkController extends Controller
 
                 if (count($exploded) == 2) {
                     $attribute_values = [];
-
                     if ($exploded[1] == 'system') {
                         switch ($custom_attribute) {
                             case 'carton_weight_unit':
@@ -2386,6 +2334,9 @@ class NewBulkController extends Controller
                             case 'Product_Cost_Unit':
                             case 'Selling_Price_Unit':
                                 $attribute_values = getSetting('item_uom');
+                                break;
+                            case 'Category':
+                                $attribute_values = json_encode($final_categories);
                                 break;
                             default:
                                 $attribute_values = [];
@@ -2448,6 +2399,7 @@ class NewBulkController extends Controller
                     if ($ActualSheetColIndex != 'A') {
                         $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
                     }
+                    // echo "My Brother I'm Here...".newline();
                 }
             }
 
@@ -2487,6 +2439,14 @@ class NewBulkController extends Controller
                     }
                 }
             }
+
+
+
+
+
+
+            // return;
+
 
             // Prepare the response for a downloadable file
             return new StreamedResponse(function () use ($spreadsheet) {
@@ -2609,6 +2569,30 @@ class NewBulkController extends Controller
 
             }
 
+
+            // array_unshift($merged_array,'id');
+            $System_categories = [];
+            $User_categories = [];
+
+            $category = Category::where('category_type_id',13)->where('type',1)->where('user_id',null)->where('parent_id',null)->get();
+
+            foreach ($category as $key => $cat) {
+                $sub_category = Category::where('category_type_id',13)->where('type',1)->where('user_id',null)->where('parent_id',$cat->id)->get();
+                foreach ($sub_category as $key => $sub_cat) {
+                    array_push($System_categories,$cat->name." > ".$sub_cat->name);
+                }
+            }
+
+            $category = Category::where('category_type_id',13)->where('type',1)->where('user_id',auth()->id())->where('parent_id',null)->get();
+
+            foreach ($category as $key => $cat) {
+                $sub_category = Category::where('category_type_id',13)->where('type',1)->where('user_id',auth()->id())->where('parent_id',$cat->id)->get();
+                foreach ($sub_category as $key => $sub_cat) {
+                    array_push($User_categories,$cat->name." > ".$sub_cat->name);
+                }
+            }
+            $final_categories = array_merge($System_categories,$User_categories);
+
             $spreadSheet = new Spreadsheet();
             $actualWorkSheet = $spreadSheet->getActiveSheet();
             $actualWorkSheet->setTitle($FirstSheetName);
@@ -2622,12 +2606,11 @@ class NewBulkController extends Controller
             $dropdownSheet->setTitle($SecondSheetName);
             $dropdownSheet->getDefaultColumnDimension()->setWidth(20);
 
-            $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
+            // $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
 
-            $new_items = ['carton_weight_unit^^system','Weight_unit^^system','carton_weight_unit^^system','Dimensions_unit^^system','Carton_Dimensions_unit^^system','unit^^system','Product_Cost_Unit^^system','Selling_Price_Unit^^system'];
+            $new_items = ['carton_weight_unit^^system','Weight_unit^^system','carton_weight_unit^^system','Dimensions_unit^^system','Carton_Dimensions_unit^^system','unit^^system','Product_Cost_Unit^^system','Selling_Price_Unit^^system','Category^^system'];
 
             $custom_attributes = array_merge($custom_attributes,$new_items);
-
 
             foreach ($custom_attributes as $key => $custom_attribute) {
                 $optionsArray = [];
@@ -2654,6 +2637,9 @@ class NewBulkController extends Controller
                             case 'Selling_Price_Unit':
                                 $attribute_values = getSetting('item_uom');
                                 break;
+                            case 'Category':
+                                $attribute_values = json_encode($final_categories);
+                                break;
                             default:
                                 $attribute_values = [];
                                 break;
@@ -2672,18 +2658,17 @@ class NewBulkController extends Controller
                 $dropdownSheet->setCellValue([$index,'1'],$custom_attribute);
                 $optionsArray = array_chunk($attribute_values,1);
                 $excelColumn = $this->numToExcelColumn($index);
-                $startCell = $excelColumn . '2';
 
+                $startCell = $excelColumn . '2';
                 $dropdownSheet->fromArray(
                     $optionsArray,
                     null,
                     $startCell
                 );
 
-
                 // -- Add Validation and Dropdown
                 if ($withColumnsDropdown == true) {
-                    $ActualSheetColIndex = array_search($custom_attribute, $merged_array);
+                    $ActualSheetColIndex = array_search($custom_attribute, array_keys($products[0]))+1;
                     $ActualSheetColIndex = $this->numToExcelColumn($ActualSheetColIndex);
 
                     $validation = new \PhpOffice\PhpSpreadsheet\Cell\DataValidation();
@@ -2701,7 +2686,6 @@ class NewBulkController extends Controller
                     // Corrected the formula string
                     $validation->setFormula1("'$SecondSheetName'!$" . $excelColumn . "\$2:\$" . $excelColumn . "\$" . (count($attribute_values) + 1 ));
 
-
                     // Skip Validation for Any value and UOM in Custom Properties
                     if ($attribute_rec->value == 'any_value' || $attribute_rec->value == 'uom') {
                         continue;
@@ -2709,13 +2693,20 @@ class NewBulkController extends Controller
                     // Apply the validation to each cell in the range A1:A100
                     $dropdownlength = count($products) - 1 ?? 0;
                     for ($i = 1; $i <= $dropdownlength; $i++) {
+
                         $cellCoordinate = $ActualSheetColIndex . strval($i + 3);
+
                         if ($ActualSheetColIndex != 'A' && $ActualSheetColIndex != '') {
                             $actualWorkSheet->getCell($cellCoordinate)->setDataValidation(clone $validation);
                         }
+
                     }
                 }
             }
+
+
+
+            // return;
 
             $Excel_writer = new Xlsx($spreadSheet);
             $mytime = Carbon::now();
@@ -2743,8 +2734,6 @@ class NewBulkController extends Controller
     function exportData(Request $request,User $user_id){
 
 
-        // magicstring(request()->all());
-        // return;
         try {
 
             if ($request->has('products')) {
@@ -2947,7 +2936,7 @@ class NewBulkController extends Controller
                 $material_Val = [];
                 if ($material_array != null) {
                     foreach ($material_array as $key => $value) {
-                        $material_Val[$key] = getAttruibuteValueById($value)->attribute_value;
+                        $material_Val[$key] = getAttruibuteValueById($value)->attribute_value ?? '';
                     }
                 }else{
                     $material_Val = '';
@@ -2973,8 +2962,8 @@ class NewBulkController extends Controller
                     'id' => $product->id,
                     'Model_Code' => $product->model_code,
                     'Product_name' => $product->title ?? "",
-                    'Category' => $product->category->name ?? "",
-                    'Sub_Category' => $product->subcategory->name ?? "",
+                    'Category' => $product->category->name.' > '.$product->subcategory->name ?? "",
+                    // 'Sub_Category' => $product->subcategory->name ?? "",
                     'Group_ID' => $extraInfoData->Cust_tag_group ?? '',
                     'Base_currency' => $product->base_currency ?? 'INR',
                     'Selling_Price_Unit' => $product->Selling_Price_Unit ?? '',
@@ -3104,23 +3093,36 @@ class NewBulkController extends Controller
                 if (${'col_Category'} == null) {
                     return back()->with('error',"Category Column is Required");
                 }else{
-                    $chk = Category::where('name',$tmp_item[${'col_Category'} ])->get();
-                    if (count($chk) == 0) {
-                        return back()->with('error',"category is not Exist At Row $row");
+                    $spill_cat = explode(" > ",$tmp_item[${'col_Category'}]);
+                    if (isset($spill_cat[0])) {
+                        $chk = Category::where('name',$spill_cat[0])->get();
+                        if (count($chk) == 0) {
+                            return back()->with('error',"category is not Exist At Row $row");
+                        }
+                        $categoryID = $chk[0]->id;
                     }
-                    $categoryID = $chk[0]->id;
+                    if (isset($spill_cat[1])) {
+                        $chk = Category::where('name',$spill_cat[1])->where('parent_id',$categoryID)->get();
+                        if (count($chk) == 0) {
+                            return back()->with('error',"Sub category is not Exist At Row $row");
+                        }
+                        $SubCategoryId = $chk[0]->id;
+                    }else{
+                        return back()->with('error',"Sub Category is missing in column");
+                    }
                 }
 
-                if (${'col_Sub_Category'} == null) {
-                    return back()->with('error',"Sub Category Column is Required");
-                }else{
-                    $chk = Category::where('name',$tmp_item[${'col_Sub_Category'}])->where('parent_id',$categoryID)->get();
 
-                    if (count($chk) == 0) {
-                        return back()->with('error',"Sub category is not Exist At Row $row");
-                    }
-                    $SubCategoryId = $chk[0]->id;
-                }
+                // if (${'col_Sub_Category'} == null) {
+                //     return back()->with('error',"Sub Category Column is Required");
+                // }else{
+                //     $chk = Category::where('name',$tmp_item[${'col_Sub_Category'}])->where('parent_id',$categoryID)->get();
+
+                //     if (count($chk) == 0) {
+                //         return back()->with('error',"Sub category is not Exist At Row $row");
+                //     }
+                //     $SubCategoryId = $chk[0]->id;
+                // }
 
 
                 // ` Getting Custom Attribute
@@ -3141,7 +3143,7 @@ class NewBulkController extends Controller
                         // Getting Attribute Value Records from DB....
                         $search_value = $tmp_item[${'col_'.$custom_attribute}];
 
-                        // ` Converting Input value to Proper case
+                       // ` Converting Input value to Proper case
                         $search_value = strtolower($search_value);
                         $search_value = ucwords($search_value);
 
@@ -3191,9 +3193,6 @@ class NewBulkController extends Controller
                 }
             }
 
-
-            // magicstring($tmp_item);
-            // return;
             // ` Validating Loop End
 
             // ` Loop For Uploading Data start
@@ -3210,18 +3209,48 @@ class NewBulkController extends Controller
                 $custom_fields = CustomFields::where('product_id',$item[${'col_id'}])->get();
 
                 // Getting New Category
-                $chk = Category::where('name',$item[${'col_Category'} ])->get();
-                if (count($chk) == 0) {
-                    return back()->with('error',"category is not Exist At Row $row");
-                }
-                $categoryID = $chk[0]->id;
+                // $chk = Category::where('name',$item[${'col_Category'} ])->get();
+                // if (count($chk) == 0) {
+                //     return back()->with('error',"category is not Exist At Row $row");
+                // }
+                // $categoryID = $chk[0]->id;
 
-                $chk = Category::where('name',$item[${'col_Sub_Category'}])->where('parent_id',$categoryID)->get();
+                // $chk = Category::where('name',$item[${'col_Sub_Category'}])->where('parent_id',$categoryID)->get();
 
-                if (count($chk) == 0) {
-                    return back()->with('error',"Sub category is not Exist At Row $row");
+                // if (count($chk) == 0) {
+                //     return back()->with('error',"Sub category is not Exist At Row $row");
+                // }
+                // $SubCategoryId = $chk[0]->id;
+
+
+                if (${'col_Category'} == null) {
+                    return back()->with('error',"Category Column is Required");
+                }else{
+                    $spill_cat = explode(" > ",$item[${'col_Category'}]);
+                    if (isset($spill_cat[0])) {
+                        $chk = Category::where('name',$spill_cat[0])->get();
+                        if (count($chk) == 0) {
+                            return back()->with('error',"category is not Exist At Row $row");
+                        }
+                        $categoryID = $chk[0]->id;
+                    }
+                    if (isset($spill_cat[1])) {
+                        $chk = Category::where('name',$spill_cat[1])->where('parent_id',$categoryID)->get();
+                        if (count($chk) == 0) {
+                            return back()->with('error',"Sub category is not Exist At Row $row");
+                        }
+                        $SubCategoryId = $chk[0]->id;
+                    }else{
+                        return back()->with('error',"Sub Category is missing in column");
+                    }
                 }
-                $SubCategoryId = $chk[0]->id;
+
+
+
+
+
+
+
 
                 $carton_details = [
                     'standard_carton' => $item[${'col_standard_carton_pcs'}],
@@ -3243,8 +3272,6 @@ class NewBulkController extends Controller
                      'length_unit' => $item[${'col_Dimensions_unit'}],
                  ];
 
-                //  magicstring($shipping);
-                //  return;
                 $carton_details = json_encode($carton_details);
                 $shipping = json_encode($shipping);
 
@@ -3553,7 +3580,6 @@ class NewBulkController extends Controller
 
         try {
             $request['finaldata'] = array_merge($request->get('systemfiels'),$request->get('myfields') ?? []);
-            magicstring($request->all());
             $user_shop = getShopDataByUserId($user_id->id);
             $templatename =$request->get('template_name');
             $mytime = Carbon::now();
@@ -3580,8 +3606,6 @@ class NewBulkController extends Controller
     // ` For Uploaded New Custom Excel Data
     public function UploadDataCustom(Request $request,User $user_id) {
         try {
-
-
             if (!$request->hasFile('uploadcustomfield')) {
                 return back()->with('error',"Please Select Upload File");
             }
@@ -3613,10 +3637,6 @@ class NewBulkController extends Controller
             $with_header = array_slice($rows,2);
             $rows = array_slice($rows,3);
             $master = $rows;
-
-
-            magicstring($with_header[0]);
-            // Creating Variables
             foreach ($with_header[0] as $key => $value) {
                 ${"$value"} = $key;
             }
@@ -3632,8 +3652,6 @@ class NewBulkController extends Controller
             // @ Validating Loop
             foreach ($master as $tmp_key => $tmp_item) {
                     $row = $tmp_key+4;
-                    // magicstring($tmp_item);
-
                     if (isset(${'Model_Code'})) {
                         if ($tmp_item[${'Model_Code'}] == null) {
                                 return back()->with('error',"ModelCode Cannot be Blank At Row $row");
@@ -3673,32 +3691,52 @@ class NewBulkController extends Controller
                     if ($tmp_item[${'Category'}] == null) {
                         return back()->with('error',"Category Is Blank at Row $row");
                     }else{
-                        $chk = Category::where('name',$tmp_item[${'Category'}])->where('category_type_id',13)->get();
-                        if (count($chk) > 0) {
-                            $Category_id = $chk[0]->id;
+                        // Breaking Categories .....
+                        $spill_cat = explode(" > ",$tmp_item[${'Category'}]);
+
+                        if (isset($spill_cat[0])) {
+                            $chk = Category::where('name',$spill_cat[0])->where('category_type_id',13)->get();
+                            if (count($chk) > 0) {
+                                $Category_id = $chk[0]->id;
+                            }else{
+                                return back()->with('error',"Category is Not Exist at Row $row");
+                            }
+                        }
+
+                        if (isset($spill_cat[1])) {
+                            // $chk = Category::where('name',$spill_cat[1])->where('parent_id',$Category_id)->where('user_id',auth()->id())->orwhere('user_id',null)->get();
+                            $chk = Category::where('name',$spill_cat[1])->where('parent_id',$Category_id)->get();
+
+                            if ($chk->count() == 0) {
+                                return back()->with('error',"Sub category Is Mis-matched with Category at Row $row");
+                            }
+                            $sub_category_id = $chk[0]->id;
                         }else{
-                            return back()->with('error',"Category is Not Exist at Row $row");
+                            return back()->with('error',"Sub Category Is Missing at Row $row");
                         }
                     }
+
                 }else{
                     return back()->with('error',"Category Should Require Add That Field.");
                 }
 
-                // checking Category
-                if (isset(${'Sub_Category'})) {
-                    if ($tmp_item[${'Sub_Category'}] == null) {
-                        return back()->with('error',"Sub Category Is Blank at Row $row");
-                    }else{
-                        $chk = Category::where('name',$tmp_item[${'Sub_Category'}])->where('parent_id',$Category_id)->where('user_id',auth()->id())->orwhere('user_id',null)->get();
 
-                        if ($chk->count() == 0) {
-                            return back()->with('error',"Sub category Is Mis-matched with Category at Row $row");
-                        }
-                        $sub_category_id = $chk[0]->id;
-                    }
-                }else{
-                    return back()->with('error',"Sub category Should Require Add That Field.");
-                }
+                // Todo: Not in Use Due to Merging on Category and Subcategory in One Column
+                // checking Category
+                // if (isset(${'Sub_Category'})) {
+                //     if ($tmp_item[${'Sub_Category'}] == null) {
+                //         return back()->with('error',"Sub Category Is Blank at Row $row");
+                //     }else{
+                //         $chk = Category::where('name',$tmp_item[${'Sub_Category'}])->where('parent_id',$Category_id)->where('user_id',auth()->id())->orwhere('user_id',null)->get();
+
+                //         if ($chk->count() == 0) {
+                //             return back()->with('error',"Sub category Is Mis-matched with Category at Row $row");
+                //         }
+                //         $sub_category_id = $chk[0]->id;
+                //     }
+                // }else{
+                //     return back()->with('error',"Sub category Should Require Add That Field.");
+                // }
 
                 // ` Checking Currency
                 if (isset(${'Base_currency'})) {
@@ -4023,7 +4061,6 @@ class NewBulkController extends Controller
 
 
                                 if ($attribute_data->value == 'any_value') {
-                                    magicstring($gvalue);
                                     ProductAttributeValue::create([
                                         'parent_id' => $attribute_data->id,
                                         'user_id' => auth()->id() ?? null,
@@ -4058,21 +4095,11 @@ class NewBulkController extends Controller
                                 }
                             }
                         }
-
-
-
-
-
-
                     }
                 }
 
             }
 
-
-
-                // echo "Hello ";
-                // return;
             // @ End of Validating Loop
 
 
@@ -4248,16 +4275,33 @@ class NewBulkController extends Controller
 
 
 
+
                     //` checking Category
                     if (isset(${'Category'})) {
                         if ($item[${'Category'}] == null) {
                             return back()->with('error',"Category Is Blank at Row $row");
                         }else{
-                            $chk = Category::where('name',$item[${'Category'}])->where('category_type_id',13)->get();
-                            if (count($chk) > 0) {
-                                $Category_id = $chk[0]->id;
+
+                            $spill_cat = explode(" > ",$item[${'Category'}]);
+
+                            if (isset($spill_cat[0])) {
+                                $chk = Category::where('name',$spill_cat[0])->where('category_type_id',13)->get();
+                                if (count($chk) > 0) {
+                                    $Category_id = $chk[0]->id;
+                                }else{
+                                    return back()->with('error',"Category is Not Exist at Row $row");
+                                }
+                            }
+
+                            if (isset($spill_cat[1])) {
+                                // $chk = Category::where('name',$spill_cat[1])->where('parent_id',$Category_id)->where('user_id',auth()->id())->orwhere('user_id',null)->get();
+                                $chk = Category::where('name',$spill_cat[1])->where('parent_id',$Category_id)->get();
+                                if ($chk->count() == 0) {
+                                    return back()->with('error',"Sub category Is Mis-matched with Category at Row $row");
+                                }
+                                $sub_category_id = $chk[0]->id;
                             }else{
-                                return back()->with('error',"Category is Not Exist at Row $row");
+                                return back()->with('error',"Sub Category Is Missing at Row $row");
                             }
                         }
                     }else{
@@ -4265,22 +4309,22 @@ class NewBulkController extends Controller
                     }
 
 
-                      // checking Category
-                        if (isset(${'Sub_Category'})) {
-                            if ($item[${'Sub_Category'}] == null) {
-                                return back()->with('error',"Sub Category Is Blank at Row $row");
-                            }else{
-                                $chk = Category::where('name',$tmp_item[${'Sub_Category'}])->where('parent_id',$Category_id)->where('user_id',auth()->id())->orwhere('user_id',null)->get();
+                    // checking Category
+                    // if (isset(${'Sub_Category'})) {
+                    //     if ($item[${'Sub_Category'}] == null) {
+                    //         return back()->with('error',"Sub Category Is Blank at Row $row");
+                    //     }else{
+                    //         $chk = Category::where('name',$tmp_item[${'Sub_Category'}])->where('parent_id',$Category_id)->where('user_id',auth()->id())->orwhere('user_id',null)->get();
 
-                                if ($chk->count() == 0) {
-                                    return back()->with('error',"Sub category Is Mis-matched with Category at Row $row");
-                                }
+                    //         if ($chk->count() == 0) {
+                    //             return back()->with('error',"Sub category Is Mis-matched with Category at Row $row");
+                    //         }
 
-                                $sub_category_id = $chk[0]->id;
-                            }
-                        }else{
-                            return back()->with('error',"Sub category Should Require Add That Field.");
-                        }
+                    //         $sub_category_id = $chk[0]->id;
+                    //     }
+                    // }else{
+                    //     return back()->with('error',"Sub category Should Require Add That Field.");
+                    // }
 
 
 
@@ -4520,9 +4564,6 @@ class NewBulkController extends Controller
                                                 // $request[$customfieldID]
                                             }
 
-                                            // magicstring($request->get($customfieldID));
-                                            // continue;
-
 
                                             if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
                                                 echo "' $ogname ' It is an Array or HTML.".newline();
@@ -4554,14 +4595,7 @@ class NewBulkController extends Controller
                                     }
 
 
-
-                                    // debugtext($debuging_mode,"Printing Product Object","Red");
-                                    // magicstring($product_obj);
-
                                     array_push($Productids_array,$product_obj->id);
-
-                                    debugtext($debuging_mode,"Printing Product Ids","Red");
-                                    // magicstring($Productids_array);
 
                                     $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
                                     $third = strtolower($third);
@@ -4607,11 +4641,6 @@ class NewBulkController extends Controller
                                         ProductExtraInfo::create($product_extra_info_obj_user);
                                     }
 
-                                    echo "Selected In Excel File";
-                                    magicstring($selected_custom_attribute);
-
-                                    echo "Selected In Variation Column";
-                                    magicstring($variationType_array);
 
                                     // MAking Not Define Attribute
                                     if (count($selected_custom_attribute) != count($variationType_array)) {
@@ -5133,10 +5162,6 @@ class NewBulkController extends Controller
                                             // $request[$customfieldID]
                                         }
 
-                                        // magicstring($request->get($customfieldID));
-                                        // continue;
-
-
                                         if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
                                             echo "' $ogname ' It is an Array or HTML.".newline();
 
@@ -5166,13 +5191,7 @@ class NewBulkController extends Controller
                                     }
                                 }
 
-                                // debugtext($debuging_mode,"Printing Product Object","Red");
-                                // magicstring($product_obj);
-
                                 array_push($Productids_array,$product_obj->id);
-
-                                debugtext($debuging_mode,"Printing Product Ids","Red");
-                                // magicstring($Productids_array);
 
                                 $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
                                 $third = strtolower($third);
@@ -5218,11 +5237,6 @@ class NewBulkController extends Controller
                                     ProductExtraInfo::create($product_extra_info_obj_user);
                                 }
 
-                                echo "Selected In Excel File";
-                                magicstring($selected_custom_attribute);
-
-                                echo "Selected In Variation Column";
-                                magicstring($variationType_array);
 
                                 if (count($selected_custom_attribute) != count($variationType_array)) {
                                     foreach ($selected_custom_attribute as $chkkey => $checkval) {
@@ -5684,10 +5698,6 @@ class NewBulkController extends Controller
                                             // $request[$customfieldID]
                                         }
 
-                                        // magicstring($request->get($customfieldID));
-                                        // continue;
-
-
                                         if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
                                             echo "' $ogname ' It is an Array or HTML.".newline();
 
@@ -5718,9 +5728,6 @@ class NewBulkController extends Controller
                                 }
 
                                 array_push($Productids_array,$product_obj->id);
-
-                                debugtext($debuging_mode,"Printing Product Ids","Red");
-                                // magicstring($Productids_array);
 
                                 $attribute = ProductAttribute::where('user_id',$user->id)->orwhere('user_id',null)->pluck('id');
                                 $third = strtolower($third);
@@ -5765,12 +5772,6 @@ class NewBulkController extends Controller
 
                                     ProductExtraInfo::create($product_extra_info_obj_user);
                                 }
-
-                                echo "Selected In Excel File";
-                                magicstring($selected_custom_attribute);
-
-                                echo "Selected In Variation Column";
-                                magicstring($variationType_array);
 
                                 if (count($selected_custom_attribute) != count($variationType_array)) {
                                     foreach ($selected_custom_attribute as $chkkey => $checkval) {
@@ -6154,9 +6155,6 @@ class NewBulkController extends Controller
                                     // $request[$customfieldID]
                                 }
 
-                                // magicstring($request->get($customfieldID));
-                                // continue;
-
 
                                 if (is_array($request->get($customfieldID)) || is_html($request->get($customfieldID))) {
                                     echo "' $ogname ' It is an Array or HTML.".newline();
@@ -6190,12 +6188,6 @@ class NewBulkController extends Controller
                             // return;
 
                         array_push($Productids_array,$product_obj->id);
-
-                        echo "Selected In Excel File";
-                        magicstring($selected_custom_attribute);
-
-                        echo "Selected In Variation Column";
-                        magicstring($variationType_array);
 
 
                         if (count($selected_custom_attribute) != count($variationType_array)) {
@@ -6458,9 +6450,6 @@ class NewBulkController extends Controller
         ini_set('memory_limit', '4000M');
         try {
 
-                // magicstring(request()->all());
-                // return;
-
             $spreadsheet = new Spreadsheet();
 
             $FirstSheetName = "Entry Sheet";
@@ -6615,8 +6604,6 @@ class NewBulkController extends Controller
             $RemarkIndex = 2;
 
 
-            magicstring($with_header[0]);
-
             foreach ($master as $key => $item) {
 
                     $chk = UserCurrency::where('currency',$item[$CurrencyIndex])->where('user_id',$user->id)->get();
@@ -6676,9 +6663,6 @@ class NewBulkController extends Controller
             $CurrencyIndex = 1;
             $ExchangeRateIndex = 2;
             $RemarkIndex = 3;
-
-
-            magicstring($with_header[0]);
 
             foreach ($master as $key => $item) {
                     $row = $key +4;
@@ -6755,9 +6739,11 @@ class NewBulkController extends Controller
         return $char;
     }
 
-
-
-
-
 }
+
+
+
+// End of New-Bulk-Controller ...
+// Developed By Ashish ...
+// Development is Finish All Functions are Working Fine ...
 

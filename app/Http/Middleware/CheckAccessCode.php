@@ -14,13 +14,13 @@ class CheckAccessCode
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
      * @return mixed
+     * @ref Ashish
      */
     public function handle(Request $request, Closure $next)
     {
 
         return $next($request);
-
-
+        // ` Uncomment the code below to enable the middleware That Check if the user has redeemed an access code
         // if(auth()->check()){
         //     if(AuthRole() == "User"){
         //        $chk = AccessCode::where('redeemed_user_id',auth()->id())->first();

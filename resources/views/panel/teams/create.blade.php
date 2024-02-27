@@ -1,5 +1,5 @@
 @extends('backend.layouts.main') 
-@section('title', 'Team')
+@section('title', 'Team Access')
 @section('content')
 @php
 $usershop = App\Models\UserShop::whereId(request()->get('shop_id'))->first();

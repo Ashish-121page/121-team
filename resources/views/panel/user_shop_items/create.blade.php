@@ -288,13 +288,17 @@
 
                                 <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}"
                                     class="btn btn-outline-primary mx-1
-                                    @if (!request()->has('products') && !request()->has('assetvault') && !request()->has('assetsafe') && !request()->has('properties') && !request()->has('productsgrid')) active @endif
+                                    @if (!request()->has('products') && !request()->has('assetvault') && !request()->has('assetsafe') && !request()->has('properties') && !request()->has('productsgrid') && !request()->has('asset-link')) active @endif
                                     ">
                                     Categories
                                 </a>
                                 <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&productsgrid=true"
                                     class="btn btn-outline-primary mx-1 @if (request()->has('products') OR request()->has('productsgrid')) active @endif">
                                     Products
+                                </a>
+                                <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&asset-link=true"
+                                    class=" d-none btn btn-outline-primary mx-1 @if (request()->has('products') OR request()->has('asset-link')) active @endif">
+                                    Asset Link
                                 </a>
                                 {{-- <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&properties=true"
                                     class="btn btn-outline-primary mx-1 @if (request()->has('properties')) active @endif">
@@ -303,7 +307,7 @@
 
                                 {{-- ` UNHIDE IF REQURE ASSETS SAFE ... --}}
                                 <a href="?type={{ request()->get('type') }}&type_ide={{ encrypt(request()->get('type_id')) }}&assetsafe=true"
-                                    class="btn btn-outline-primary mx-1 @if (request()->has('assetsafe')) active @endif">
+                                    class="btn btn-outline-danger mx-1 @if (request()->has('assetsafe')) active @endif">
                                     Assets Safe
                                 </a>
                             </div>
@@ -337,9 +341,30 @@
                             @include('panel.user_shop_items.includes.show-product')
                         @elseif(request()->has('properties'))
                             @include('panel.user_shop_items.includes.Properties')
+                        @elseif(request()->has('asset-link'))
+                            @include('panel.user_shop_items.includes.asset-link.asset-link')
+
+
+
+                        @elseif(request()->has('delimiter-link'))
+                            @include('panel.user_shop_items.includes.asset-link.delimiter-link')
+                        @elseif(request()->has('file_name_is_model_code'))
+                            @include('panel.user_shop_items.includes.asset-link.file_modelcode')
+                        @elseif(request()->has('irrelevant-file-name'))
+                            @include('panel.user_shop_items.includes.asset-link.irrelevant-file-name')
+                        @elseif(request()->has('asset-link-final'))
+                            @include('panel.user_shop_items.includes.asset-link.final-step')
+
+
+
+
+                        @elseif(request()->has('create_sku'))
+                            @include('panel.user_shop_items.includes.asset-link.create_sku')
                         @else
                             @include('panel.user_shop_items.includes.show-category')
                         @endif
+
+
 
 
                     </div>
@@ -439,12 +464,6 @@
         <script src="{{ asset('backend/plugins/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
 
         <script>
-
-            //  Modal for Vault
-            $("#addvault").animatedModal({
-                color: 'FFFFFF',
-            });
-
 
             $("#addcategory").animatedModal({
                 animatedIn: 'lightSpeedIn',
@@ -782,7 +801,8 @@
                     }
                 });
 
-            $(document).on('click','#delete_all_dummy',function(e){
+
+                $(document).on('click','#delete_all_dummy',function(e){
                 e.preventDefault();
                 var msg = $(this).data('msg') ?? "All Product will be Deleted, And You won't be able to revert back!";
                 $.confirm({
@@ -805,11 +825,45 @@
                 });
             });
 
+                // $(document).on('click', '#delete_all_dummy', function(e) {
+                //     e.preventDefault();
+
+                //     var msg = $(this).data('msg')`
+                //     <span class="text-danger">All Product will be Deleted, And You won't be able to revert back!</span> <br/>
+                //     To confirm, type <b>DELETE ALL</b> in the input box below:<br>
+                //     <input type='text' id='confirmationInput' class='w-100 form-control my-3' style='margin-top: 10px;outline:none;border:none;border-bottom:1px solid #666ccc;' placeholder='DELETE ALL'>`;
+
+                //     $.confirm({
+                //         draggable: true,
+                //         title: 'Are You Sure!',
+                //         content: msg,
+                //         type: 'blue',
+                //         typeAnimated: true,
+                //         buttons: {
+                //             confirm: {
+                //                 text: 'Confirm',
+                //                 btnClass: 'btn-danger',
+                //                 action: function() {
+                //                     var userInput = $('#confirmationInput').val();
+                //                     if (userInput === 'DELETE ALL') {
+                //                         $("#delete_all").click();
+                //                     } else {
+                //                         $.alert('Type DELETE ALL to Proceed');
+                //                     }
+                //                 }
+                //             },
+                //             cancel: function() {
+                //                 // Do nothing on cancel
+                //             }
+                //         }
+                //     });
+                // });
+
             $("#delproduct_dummy").click(function (e) {
                 e.preventDefault();
                 let selected = $(".input-check:checked").length;
 
-                console.log(selected);
+                // console.log(selected);
                 let delete_type_INPUT = $("#delete_type");
                 var msg = `
                 <span class="text-danger">You are about to Delete ${selected} Products</span> <br/>

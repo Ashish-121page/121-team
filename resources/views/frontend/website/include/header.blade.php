@@ -89,6 +89,7 @@
         <!-- Logo container-->
         <a class="logo  list-inline-item mb-0 mt-2" href="{{ url('/') }}">
             <img src="{{ getBackendLogo(getSetting('app_white_logo')) }}" class="logo-light-mode" alt="">
+            {{-- <img src="{{ asset('frontend/assets/img/121.page.svg') }}" class="logo-light-mode" alt=""> --}}
             <img src="{{ getBackendLogo(getSetting('app_logo')) }}" class="logo-dark-mode" alt="">
         </a>
 

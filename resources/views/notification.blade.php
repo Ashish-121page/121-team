@@ -1,5 +1,5 @@
 @extends('backend.layouts.main') 
-@section('title', 'Notification')
+@section('title', 'Notifications')
 @section('content')
     @php
     $breadcrumb_arr = [

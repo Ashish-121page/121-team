@@ -24,7 +24,7 @@ class PaytmChecksum{
 
 	static public function decrypt($encrypted, $key) {
 		$key = html_entity_decode($key);
-		
+
 		if(function_exists('openssl_decrypt')){
 			$data = openssl_decrypt ( $encrypted , "AES-128-CBC" , $key, 0, self::$iv );
 		} else {
@@ -42,10 +42,10 @@ class PaytmChecksum{
 
 	static public function generateSignature($params, $key) {
 		if(!is_array($params) && !is_string($params)){
-			throw new Exception("string or array expected, ".gettype($params)." given");			
+			throw new Exception("string or array expected, ".gettype($params)." given");
 		}
 		if(is_array($params)){
-			$params = self::getStringByParams($params);			
+			$params = self::getStringByParams($params);
 		}
 		return self::generateSignatureByString($params, $key);
 	}
@@ -56,7 +56,7 @@ class PaytmChecksum{
 		}
 		if(is_array($params)){
 			$params = self::getStringByParams($params);
-		}		
+		}
 		return self::verifySignatureByString($params, $key, $checksum);
 	}
 
@@ -75,7 +75,7 @@ class PaytmChecksum{
 		$random = "";
 		srand((double) microtime() * 1000000);
 
-		$data = "9876543210ZYXWVUTSRQPONMLKJIHGFEDCBAabcdefghijklmnopqrstuvwxyz!@#$&_";	
+		$data = "9876543210ZYXWVUTSRQPONMLKJIHGFEDCBAabcdefghijklmnopqrstuvwxyz!@#$&_";
 
 		for ($i = 0; $i < $length; $i++) {
 			$random .= substr($data, (rand() % (strlen($data))), 1);
@@ -85,7 +85,7 @@ class PaytmChecksum{
 	}
 
 	static private function getStringByParams($params) {
-		ksort($params);		
+		ksort($params);
 		$params = array_map(function ($value){
 			return ($value == null) ? "" : $value;
 	  	}, $params);
@@ -121,12 +121,12 @@ define('PAYTM_ENVIRONMENT', 'https://securegw.paytm.in'); // For Production
 
 /**
 * Generate checksum by parameters we have
-* Find your Merchant ID, Merchant Key and Website in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys 
+* Find your Merchant ID, Merchant Key and Website in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys
 */
 define('PAYTM_MID', 'xEAvFk51161745698612');
-define('PAYTM_MERCHANT_KEY', 'U4TRXLzqhXFHCqr5');  
+define('PAYTM_MERCHANT_KEY', 'U4TRXLzqhXFHCqr5');
 
-// define('PAYTM_WEBSITE', 'WEBSTAGING');	
+// define('PAYTM_WEBSITE', 'WEBSTAGING');
 define('PAYTM_WEBSITE', 'DEFAULT'); // for production
 
 
@@ -134,7 +134,7 @@ define('PAYTM_WEBSITE', 'DEFAULT'); // for production
 function getTransactionToken(){
 
 	$generatedOrderID = "PYTM_BLINK_".time();
-    
+
     $coupon = session()->get('coupon');
 
 
@@ -181,7 +181,7 @@ function getTransactionToken(){
 			$result = array('success' => false, 'orderId' => $generatedOrderID, 'txnToken' => '', 'amount' => $amount, 'message' => $getcURLResponse['body']['resultInfo']['resultMsg']);
 		}
 		return $result;
-	
+
 	}
 
 
@@ -192,8 +192,8 @@ function getTransactionToken(){
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data_string);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json")); 
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
 		$response = curl_exec($ch);
 		return json_decode($response,true);
 	}
@@ -210,23 +210,23 @@ function getTransactionToken(){
 
 @section('meta_data')
     @php
-		$meta_title = 'Plans | '.getSetting('app_name');		
+		$meta_title = 'Plans | '.getSetting('app_name');
 		$meta_description = '' ?? getSetting('seo_meta_description');
 		$meta_keywords = '' ?? getSetting('seo_meta_keywords');
-		$meta_motto = '' ?? getSetting('site_motto');		
-		$meta_abstract = '' ?? getSetting('site_motto');		
-		$meta_author_name = '' ?? 'GRPL';		
-		$meta_author_email = '' ?? 'Hello@121.page';		
-		$meta_reply_to = '' ?? getSetting('frontend_footer_email');		
+		$meta_motto = '' ?? getSetting('site_motto');
+		$meta_abstract = '' ?? getSetting('site_motto');
+		$meta_author_name = '' ?? 'GRPL';
+		$meta_author_email = '' ?? 'Hello@121.page';
+		$meta_reply_to = '' ?? getSetting('frontend_footer_email');
 		$meta_img = ' ';
-        $website = 1;	
-        $user_address = App\Models\UserAddress::whereUserId(auth()->id())->with('userShop')->get();	
+        $website = 1;
+        $user_address = App\Models\UserAddress::whereUserId(auth()->id())->with('userShop')->get();
         $user_shop = App\Models\UserShop::whereUserId(auth()->id())->first();
         $full_address = json_decode($user_shop->address);
         $description = explode('^^',$package->description);
         $limits = json_decode($package->limit,true);
-        $days = $package->duration ?? 0	
-	@endphp 
+        $days = $package->duration ?? 0
+	@endphp
 @endsection
 
 @section('content')
@@ -241,10 +241,10 @@ function getTransactionToken(){
     #paytm-pg-spinner .bounce3 {-webkit-animation-delay: -0.32s;animation-delay: -0.32s;}
 
     #paytm-pg-spinner .bounce4 {-webkit-animation-delay: -0.16s;animation-delay: -0.16s;}
-    #paytm-pg-spinner .bounce4, #paytm-pg-spinner .bounce5{background-color: #48baf5;} 
+    #paytm-pg-spinner .bounce4, #paytm-pg-spinner .bounce5{background-color: #48baf5;}
     @-webkit-keyframes sk-bouncedelay {0%, 80%, 100% { -webkit-transform: scale(0) }40% { -webkit-transform: scale(1.0) }}
 
-    @keyframes sk-bouncedelay { 0%, 80%, 100% { -webkit-transform: scale(0);transform: scale(0); } 40% { 
+    @keyframes sk-bouncedelay { 0%, 80%, 100% { -webkit-transform: scale(0);transform: scale(0); } 40% {
         -webkit-transform: scale(1.0); transform: scale(1.0);}}
     .paytm-overlay{position: fixed;top: 0px;opacity: .4;height: 100%;background: #000;}
 
@@ -287,7 +287,7 @@ function getTransactionToken(){
                 <div class="row mt-4">
                     <div class="sticky-bar-lg col-md-5 col-lg-4 order-md-last">
                         <div class="card rounded shadow p-4 border-0 sticky-bar-lg">
-                            <div class="d-flex justify-content-between align-items-center mb-3"> 
+                            <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span class="h5 mb-0">Package Checkout</span>
                             </div>
                             <ul class="list-group mb-3 border">
@@ -314,7 +314,7 @@ function getTransactionToken(){
                                     <strong>{{ $limits['product_uploads'] }}</strong>
                                 </li>
 
-                                
+
                                 <input type="hidden" name="gdyufgb" id="ksdhfiusdhbc">
                                 <hr class="mb-2">
 
@@ -341,7 +341,7 @@ function getTransactionToken(){
                             </ul>
                         </div>
                     </div><!--end col-->
-                    
+
                     <div class="col-md-7 col-lg-8">
                         <div class="card rounded shadow p-4 border-0">
                             <div class="d-flex justify-content-left mb-2">
@@ -374,7 +374,7 @@ function getTransactionToken(){
                                                                     <p class="h6 text-muted">{{ $address_temp->address_2}}</p>
                                                                     <p class="h6 text-muted">
                                                                         {{ CountryById($address_temp->country) }},
-                                                                        {{ StateById( $address_temp->state) }}, 
+                                                                        {{ StateById( $address_temp->state) }},
                                                                         {{ CityById( $address_temp->city) }}
                                                                     </p>
                                                                 </div>
@@ -397,12 +397,12 @@ function getTransactionToken(){
                                         <a href="#" style="cursor: pointer;" id="new-address-btn" class="addAddress"><i class="mdi mdi-plus"></i> <span>Add a new address</span></a>
                                     </div>
                                 </div>
-                               
+
                                 {{-- <button class="w-100 btn btn-primary mt-3 submit-btn" disabled type="submit">Test pay</button> --}}
-                            </form> 
+                            </form>
                                 <form action="" method="POST" enctype="multipart/form-data">
                                     {!! csrf_field() !!}
-                    
+
                                     @if($message = Session::get('message'))
                                         <p>{!! $message !!}</p>
                                         <?php Session::forget('success'); ?>
@@ -410,15 +410,15 @@ function getTransactionToken(){
 
                                     <div class="couponbox">
                                         <label for="mycoupon" class="form-label">Coupon</label>
-                                        <div class="form-group d-flex">    
+                                        <div class="form-group d-flex">
                                             <input type="text" name="mycoupon" id="mycoupon" value="{{ session()->get('couponname') ?? "" }}" class="form-control" placeholder="Enter Coupon.."> {{-- For Coupan Input --}}
                                             <button type="button" class="btn btn-success mx-2 applycoupon">Apply</button>
                                         </div>
-                                        <small class="text-danger py-2 d-none" style="font-weight: 800" id="error">Invailed Coupon</small>
+                                        <small class="text-danger py-2 d-none" style="font-weight: 800" id="error">Invalid Coupon</small>
                                         <small class="text-success py-2 d-none" style="font-weight: 800" id="success">Coupon Applied</small>
                                     </div>
 
-                                    
+
                                     <button type="submit" disabled class="w-100 btn btn-primary mt-3 pay submit-btn">Pay now</button>
                                     <div class="check mt-2">
                                         <small for="check">
@@ -443,7 +443,7 @@ function getTransactionToken(){
         @include('frontend.website.plan.modals.add-address')
 @endsection
 @push('script')
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="http://localhost/project/121.page-Laravel/121.page/backend/plugins/select2/dist/js/select2.min.js"></script>
 
 <script>
@@ -522,22 +522,22 @@ function getTransactionToken(){
     }
 
 
-    $("#country").change(function (e) { 
+    $("#country").change(function (e) {
         e.preventDefault();
         getStates($(this).val());
     });
 
-    $("#state").change(function (e) { 
+    $("#state").change(function (e) {
         e.preventDefault();
         getCities($(this).val());
     });
 
-    
+
     $(document).ready(function () {
-        
+
         getStates($("#country").val());
         getCities($("#state").val());
-        
+
     });
 
     $('#state, #country, #city').css('width','100%').select2();
@@ -545,7 +545,7 @@ function getTransactionToken(){
     $(".select2insidemodal").select2({
         dropdownParent: $("#addAddressModal")
     });
-    
+
 
 
 </script>
@@ -557,15 +557,15 @@ function getTransactionToken(){
         <script type="application/javascript" crossorigin="anonymous" src="https:\\securegw.paytm.in\merchantpgpui\checkoutjs\merchants\<?php echo env('PAYTM_MERCHANT_ID')?>.js" ></script>
     @else
        <script type="application/javascript" crossorigin="anonymous" src="https:\\securegw-stage.paytm.in\merchantpgpui\checkoutjs\merchants\<?php echo env('PAYTM_MERCHANT_ID')?>.js" ></script>
-    @endif      
+    @endif
 
 
 
-    
+
 
     <script type="text/javascript">
-    //function openJsCheckout(){ 
-        
+    //function openJsCheckout(){
+
 
 
 
@@ -591,7 +591,7 @@ function getTransactionToken(){
             }
         };
         if (window.Paytm && window.Paytm.CheckoutJS) {
-            // initialze configuration using init method 
+            // initialze configuration using init method
             window.Paytm.CheckoutJS.init(config).then(function onSuccess() {
                 // after successfully updating configuration, invoke checkoutjs
                 window.Paytm.CheckoutJS.invoke();
@@ -605,9 +605,9 @@ function getTransactionToken(){
 
 
 
-    $(".pay").click(function(e){    
+    $(".pay").click(function(e){
         var add = $('.address-check').val();
-        
+
         if(add == "" || add == null || add== "undefined" ){
             alert("Please select address");
             return false;
@@ -640,13 +640,13 @@ function getTransactionToken(){
             }
             });
             e.preventDefault();
-    
+
     });
 
 
 
     // function invokeBlinkCheckoutPopup(orderId,txnToken,amount){
-    
+
     //     window.Paytm.CheckoutJS.init({
     //         "root": "",
     //         "flow": "DEFAULT",
@@ -658,7 +658,7 @@ function getTransactionToken(){
     //         },
     //         handler:{
     //                 transactionStatus:function(data){
-    //             } , 
+    //             } ,
     //             notifyMerchant:function notifyMerchant(eventName,data){
     //                 if(eventName=="APP_CLOSED")
     //                 {
@@ -667,7 +667,7 @@ function getTransactionToken(){
     //                   location.reload();
     //                 }
     //                 console.log("notify merchant about the payment state");
-    //             } 
+    //             }
     //             }
     //     }).then(function(){
     //         window.Paytm.CheckoutJS.invoke();
@@ -682,7 +682,7 @@ function getTransactionToken(){
     });
 
 
-    $("#submitaddress").click(function (e) { 
+    $("#submitaddress").click(function (e) {
         e.preventDefault();
         var gst_number = $("input[name=gst_number]").val();
         var entity_name = $("input[name=entity_name]").val();
@@ -707,21 +707,21 @@ function getTransactionToken(){
         };
 
         // console.log(dataarr);
-        
+
         $.ajax({
             type: "GET",
             url: "{{ route('customer.address.storeget') }}",
             data: dataarr,
             success: function (response) {
-                // console.log("data Inserted");                
+                // console.log("data Inserted");
             }
         });
-        
+
         location.reload();
 
     });
-    
 
-</script>   
+
+</script>
 
 @endpush

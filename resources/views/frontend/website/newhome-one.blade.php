@@ -2,7 +2,7 @@
 
 @section('meta_data')
     @php
-        $meta_title = 'Now | ' . getSetting('app_name');
+        $meta_title = 'Searchify all B2B catalogues |  Logo-fy products | ' . getSetting('app_name');
         $meta_description = '' ?? getSetting('seo_meta_description');
         $meta_keywords = '' ?? getSetting('seo_meta_keywords');
         $meta_motto = '' ?? getSetting('site_motto');

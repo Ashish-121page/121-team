@@ -6,7 +6,7 @@
                     <div class="row">
                         <div class="col-lg-4 col-12 mb-0 mb-md-4 pb-0 pb-md-2">
                             <a href="{{url('/')}}" class="logo-footer text-white">
-                                <img src="{{ getBackendLogo(getSetting('app_white_logo'))}}" alt="">
+                                <img src="{{ getBackendLogo(getSetting('app_white_logo'))}}" alt="" >
                             </a>
                             <p class="mt-4">{{ getSetting('frontend_footer_description') }}</p>
                             <ul class="list-unstyled social-icon foot-social-icon mb-0 mt-4">

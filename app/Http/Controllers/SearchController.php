@@ -40,4 +40,32 @@ class SearchController extends Controller
         return view('panel.search.index',compact('search','path','AssetVaultname','productcatname'));
 
     }
+
+
+    public function result1(Request $request)
+    {
+
+
+
+        $user = auth()->user();
+        if ($request->hasFile('searchimg')) {
+            $file= $request->file('searchimg');
+            $folderPath = "public/images/search/".$user->id;
+            // $filename = \Str::random(10) . '.' . str_replace(' ',"_",$file->getClientOriginalName());
+            $filename = str_replace(' ',"_",$file->getClientOriginalName());
+            $path = $file->storeAs($folderPath, $filename);
+            $path = str_replace("public","storage",$path);
+            $search = "ai-search";
+        }else{
+            $path = "";
+            $search = "ai-search";
+        }
+
+
+        $AssetVaultname = $request->input('AssetVaultname') ?? [];
+        $productcatname = $request->input('productcatname') ?? [];
+
+        return view('panel.search.pages.result1',compact('search','path','AssetVaultname','productcatname'));
+     
+    }
 }

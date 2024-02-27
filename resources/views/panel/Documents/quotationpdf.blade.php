@@ -1,5 +1,6 @@
 @extends('backend.layouts.main')
 @section('title', $pageTitle)
+{{-- @section('title', $pageTitle) --}}
 @section('content')
     <!-- push external head elements to head -->
     @push('head')

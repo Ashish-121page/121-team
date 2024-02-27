@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class MicroSiteController extends Controller
 {
@@ -131,10 +132,9 @@ class MicroSiteController extends Controller
     }
     public function shopIndex(Request $request)
     {
+
         $slug = $request->subdomain;
         $is_search = 0;
-
-
         $user_shop = UserShop::whereSlug($slug)->first();
         if (!$user_shop->shop_view && $user_shop->user_id != auth()->id()) {
             return back();
@@ -142,8 +142,6 @@ class MicroSiteController extends Controller
 
 
         $currency_record = UserCurrency::where('user_id',$user_shop->user_id)->get();
-
-
         $user_shop_items = Product::join('user_shop_items', 'products.id', '=', 'user_shop_items.product_id')
         ->selectRaw('products.id as products_id, products.title, products.sku ,products.model_code, products.price as product_price, user_shop_items.*');
 
@@ -293,13 +291,18 @@ class MicroSiteController extends Controller
 
 
 
+        $existing_offers = Proposal::where('user_id',$user_shop->user_id)->orderBy('updated_at','DESC')->get();
+        // magicstring(auth()->id());
+        // magicstring($user_shop);
+        // magicstring($existing_offers);
+        // return;
+
 
         if ($request->ajax()) {
-            return view('frontend.micro-site.shop.loadIndex',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','user_shop','alll_searches','currency_record'));
+            return view('frontend.micro-site.shop.loadIndex',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','user_shop','alll_searches','currency_record','existing_offers'));
         }
 
-        // return view('frontend.micro-site.shop.index',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','minID','maxID','user_shop','alll_searches','currency_record'));
-        return view('frontend.micro-site.proposals.index',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','minID','maxID','user_shop','alll_searches','currency_record','proposalid','request','manage_offer_guest','manage_offer_verified'));
+        return view('frontend.micro-site.proposals.index',compact('slug','categories','items','brands','group_id','user_shop','additional_attribute','proIds','minID','maxID','user_shop','alll_searches','currency_record','proposalid','request','manage_offer_guest','manage_offer_verified','existing_offers'));
 
     }
 

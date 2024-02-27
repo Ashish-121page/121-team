@@ -3,6 +3,8 @@
     style="color:black; background-color:#ffff;font-size: x-large;margin: 10px;display: flex;justify-content: space-between;">
         <h5>Select Properties You Wish to Export</h5>
         {{-- <i class="far fa-times-circle fa-rotate-270 fa-lg "></i> --}}
+
+        
     </div>
     <div class="modal-content custom-spacing modal-fullscreen" style="background-color:#ffff">
 
@@ -26,6 +28,8 @@
 
 
                         {{-- All Attributes Except System --}}
+                        
+                        
 
                         <div class="accordion-item" style="margin-top: 2rem">
                             <h2 class="accordion-header">
@@ -85,12 +89,19 @@
 
                     {{-- 2nd column --}}
 
-                        <di v class="col-md-6 col-12 h-100 invisible" style="overflow: auto; max-height: 80vh" id="tableselected">
+                    <div>
+                        <button class="btn btn-sm mx-1 "> <span id="countselect"></span> Selected</button>
+                         
+                    </div>
+
+                        <div class="col-md-5 col-12 h-100 invisible" style="overflow: auto; max-height: 80vh" id="tableselected">
 
                             <div class="d-flex flex-column gap-3 align-items-start justify-content-start">
-
+                                
 
                             </div>
+
+                            
                             <div class="accordion-item" style="margin-top:4rem">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsesystemattri"

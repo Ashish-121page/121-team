@@ -402,14 +402,14 @@
                                     @if ($manage_offer_guest || $manage_offer_verified)
                                         @if (auth()->id() == 155)
                                             @if ($manage_offer_guest)
-                                                <a class="btn mt-2 d-block btn-outline-primary w-auto float-end makeoffer" href="{{ route('pages.proposal.create') }}?shop={{$user_shop->id}}" style="width: max-content !important;">
+                                                {{-- <a class="btn mt-2 d-block btn-outline-primary w-auto float-end makeoffer" href="{{ route('pages.proposal.create') }}?shop={{$user_shop->id}}" style="width: max-content !important;">
                                                     Make Offer
-                                                </a>
+                                                </a> --}}
                                             @endif
                                         @else
-                                            <a class="btn mt-2 d-block btn-outline-primary w-auto float-end makeoffer" href="{{ route('pages.proposal.create') }}?shop={{$user_shop->id}}" style="width: max-content !important;">
+                                            {{-- <a class="btn mt-2 d-block btn-outline-primary w-auto float-end makeoffer" href="{{ route('pages.proposal.create') }}?shop={{$user_shop->id}}" style="width: max-content !important;">
                                                 Make Offer
-                                            </a>
+                                            </a> --}}
                                         @endif
                                     @endif
                                 @endif

@@ -148,15 +148,15 @@
 
                             <div class="d-flex align-content-center">
                                 <a href="{{ route('panel.filemanager.new.view') }}?view=grid&page={{ request()->get('page') ?? 1}}" class="btn btn-icon btn-outline-primary mx-1 @if (request()->get('view','default') == 'grid') active @endif">
-                                    <i class="fas fa-th-large" style="line-height: 2 !important;"></i>
+                                    <i class="fas fa-th-large"></i>
                                 </a>
                                 <a href="{{ route('panel.filemanager.new.view') }}?view=default&page={{ request()->get('page') ?? 1 }}" class="btn btn-icon btn-outline-primary mx-1 @if (request()->get('view','default') == 'default') active @endif">
-                                    <i class="fas fa-list" style="line-height: 2 !important;"></i>
+                                    <i class="fas fa-list"></i>
                                 </a>
 
                                 <button type="button" class="btn btn-outline-primary mx-1 openupload" data-bs-toggle="modal"
                                     data-bs-target="#uploadfiles" title="Upload Assets">
-                                    <i class="fas fa-cloud-upload-alt" style="line-height: 1 !important"></i> Upload
+                                    <i class="fas fa-cloud-upload-alt"></i> Upload
                                 </button>
 
                             </div>
@@ -479,58 +479,35 @@
                 // acceptedFiles: '.jpg, .jpeg, .png, .gif, .avif, .webp, .svg, .mkv, .mp4', // Accepted file types
                 dictDefaultMessage: 'Drag and drop your files here or click to upload',
                 success: function (file, response) {
-                    // console.log('File uploaded to: ' + response.path);
-                    // console.table(response)
-
-                    // Add the new file Filename
                     recentFilePaths.push(response.path);
                     recentFileName.push(response.Filename);
-
-                    console.log("On Success");
-                    console.log(response);
-
-
                     if (response.message !== 'File Exist') {
                         const maxPaths = 30;
                         if (recentFilePaths.length > maxPaths) {
                             recentFilePaths = recentFilePaths.slice(-maxPaths); // Keep only the last 'maxPaths' entries
                         }
-
                         localStorage.setItem("recentFilePaths", JSON.stringify(recentFilePaths));
-
                     }else{
-                        console.log("File already Exist");
-                        console.log("File Name: "+ response.Filename);
-                        console.log("File path: "+ response.path);
-                        alert(`${response.Filename} Already Exists on Server.`);
-                        this.removeFile(file);
+                        file.previewElement.classList.add('dz-error');
+                        file.previewElement.querySelector('.dz-error-message').textContent = `Files Exists on Server.`;
+                        file.previewElement.querySelector('.dz-error-message').style.opacity = '1';
                     }
-
-                    // Optionally, limit the number of stored paths to avoid localStorage overflow
-
                 },
                 error: function (file, response) {
                     if(response.error){
-                        // Create a reference to the Dropzone instance
                         var myDropzone = this;
-
-                        console.log("On Error");
-                        console.log(response);
-
                         myDropzone.removeFile(file);
-
-                        // Now add a new file preview with the error message
                         var mockFile = { name: file.name, size: file.size, status: Dropzone.ERROR, accepted: false };
                         myDropzone.files.push(mockFile);
                         myDropzone.emit("addedfile", mockFile);
                         myDropzone.emit("error", mockFile, res.error);
                         myDropzone.emit("complete", mockFile);
-
-
-
                     }
                 }
             };
+
+
+
 
             $("#linkgfyusebh").click(function (e) {
                 e.preventDefault();
