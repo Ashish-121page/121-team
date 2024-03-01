@@ -110,6 +110,10 @@
             width: 100% !important;
         }
 
+        .jq-toast-wrap.top-right{
+            z-index: 10000 !important;
+        }
+
         .closeanimate:hover {
             transform: rotate(180deg);
             cursor: pointer;
@@ -181,8 +185,8 @@
                 display: block;
             }
             .custom-chk .checkmark:after {
-                left: 6px;
-                top: 2px;
+                left: 9px;
+                top: 5px;
                 width: 7px;
                 height: 12px;
                 border: solid white;
@@ -343,9 +347,6 @@
                             @include('panel.user_shop_items.includes.Properties')
                         @elseif(request()->has('asset-link'))
                             @include('panel.user_shop_items.includes.asset-link.asset-link')
-
-
-
                         @elseif(request()->has('delimiter-link'))
                             @include('panel.user_shop_items.includes.asset-link.delimiter-link')
                         @elseif(request()->has('file_name_is_model_code'))
@@ -354,10 +355,6 @@
                             @include('panel.user_shop_items.includes.asset-link.irrelevant-file-name')
                         @elseif(request()->has('asset-link-final'))
                             @include('panel.user_shop_items.includes.asset-link.final-step')
-
-
-
-
                         @elseif(request()->has('create_sku'))
                             @include('panel.user_shop_items.includes.asset-link.create_sku')
                         @else
@@ -449,6 +446,36 @@
         </div>
     </div>
 
+
+        <!-- Modal -->
+        <div class="modal fade" id="addkeyWords" tabindex="-1" role="dialog" aria-labelledby="addkeyWordsLabel" aria-hidden="true" style="z-index: 9999 !important">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addkeyWordsLabel">Add Keywords</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ route('panel.asset-link.save.keywords') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="file_id" id="modal_file_id">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="asset_keywords">Asset Keywords</label>
+                                        <input type="text" class="form-control TAGGROUP" id="Modal_TAGGROUP" name="Modal_TAGGROUP" placeholder="Enter Keywords">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-outline-primary " type="submit"> {{ __('Submit') }} </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <!-- push external js -->
     @push('script')
 
@@ -465,48 +492,81 @@
 
         <script>
 
-            $("#addcategory").animatedModal({
-                animatedIn: 'lightSpeedIn',
-                animatedOut: 'lightSpeedOut',
-                color: 'FFFFFF',
-                height: 'max-content',
-                width: 'max-content',
-                top: '28%',
-                left: '20%',
+            $(document).on('input', '#search_asset', function (e) {
+                e.preventDefault();
+                let search = $(this).val();
+                let appendBox = $("#easdbfhewbuj");
+                let vault_name = $("#vaultname1").text();
+
+                $.ajax({
+                    type: "GET",
+                    url: "{{ route('panel.asset-link.search.asset') }}",
+                    data: {
+                        'search': search,
+                        'assetvault': vault_name,
+                    },
+                    success: function (response) {
+                        appendBox.html(response);
+                    },
+                    error:  function (response) {
+                        appendBox.html(response);
+                    }
+                });
+
+
             });
 
+            $(document).on('click','.openmod',function(e){
+                let selected = $(".input-check:checked").length;
+                let selected_rec = []
+                selected_rec.push($(this).data('recid'));
+
+                $.each($(".input-check:checked"), function (indexInArray, valueOfElement) {
+                    selected_rec.push($(valueOfElement).data('record'));
+                });
+                $('.TAGGROUP').tagsinput('removeAll');
+                $('.TAGGROUP').tagsinput('add', $(this).data('currval'));
+
+                // if (selected_rec == null) {
+                //     selected_rec = $(this).data('recid')
+                //     console.log("ites a Blank");
+                // }else{
+                //     console.log("ites a Not Blank");
+                // }
+
+                $("#modal_file_id").val(JSON.stringify(selected_rec));
+                $("#addkeyWords").modal('show');
+            })
+
+            try {
+                $("#addcategory").animatedModal({
+                    animatedIn: 'lightSpeedIn',
+                    animatedOut: 'lightSpeedOut',
+                    color: 'FFFFFF',
+                    height: 'max-content',
+                    width: 'max-content',
+                    top: '28%',
+                    left: '20%',
+                });
+                $("#demo01").animatedModal({
+                    animatedIn: 'lightSpeedIn',
+                    animatedOut: 'bounceOutDown',
+                    color: '#F6F7FB',
+                    width: "max-content",
+                    height: "max-content",
+                    transform: "translate(3%, -47%)",
+                    top: "35%",
+                    left: "25%",
+                    overflow: 'none',
+                });
+            } catch (error) {}
 
             $("#newcatname").change(function (e) {
                     e.preventDefault();
                     let newval = $(this).val();
                     let newvalue = newval.split(" > ")[1];
                     $(this).val(newval.split(" > ")[0])
-
-
                     $('#tags').tagsinput('add',newvalue);
-
-
-
-                    // $.ajax({
-                    //     type: "GET",
-                    //     url: "{{ route('panel.constant_management.category.check.global') }}",
-                    //     data: {
-                    //         "search": newval
-                    //     },
-                    //     success: function (response) {
-                    //         response = JSON.parse(response);
-                    //         console.table(response);
-                    //         if (response['status'] === 'SUCCESS') {
-                    //             console.log("SuccessFULL");
-
-                    //             console.log(response['DATA']);
-                    //             $("#tags").val(response['DATA']);
-
-                    //             $('#tags').tagsinput('refresh');
-
-                    //         }
-                    //     }
-                    // });
 
                 });
 
@@ -722,7 +782,7 @@
                                 id:id
                             },
                             success: function(res){
-                                console.log(res);
+                                // console.log(res);
                                 $('#sub_category_id').html(res);
                             }
                         })
@@ -978,7 +1038,7 @@
                         selected.push(element.dataset.record);
                     });
                     $(".selectedbtn").html(selected.length+' selected')
-                    console.log(selected)
+                    // console.log(selected)
 
                     return selected;
                 }
@@ -1051,7 +1111,7 @@
                         $.each($(".input-check:checked"), function (indexInArray, valueOfElement) {
                             arr.push(valueOfElement.value);
                         });
-                        console.log(arr);
+                        // console.log(arr);
                         forminput.val(arr)
                         form.submit()
                     }
@@ -1071,7 +1131,7 @@
                         $.each($(".input-check:checked"), function (indexInArray, valueOfElement) {
                             arr.push(valueOfElement.value);
                         });
-                        console.log(arr);
+                        // console.log(arr);
                         forminput.val(arr)
                         form.submit()
                     }
@@ -1082,18 +1142,6 @@
             });
         </script>
         <script>
-            $("#demo01").animatedModal({
-                animatedIn: 'lightSpeedIn',
-                animatedOut: 'bounceOutDown',
-                color: '#F6F7FB',
-                width: "max-content",
-                height: "max-content",
-                transform: "translate(3%, -47%)",
-                top: "35%",
-                left: "25%",
-                overflow: 'none',
-
-            });
 
             $(".opencateedit").click(function (e) {
                 e.preventDefault();

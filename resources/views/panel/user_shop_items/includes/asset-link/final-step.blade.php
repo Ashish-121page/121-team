@@ -32,7 +32,7 @@
                     <img src="{{ asset(getShopProductImage($get_product->id)->path ?? 'frontend/assets/img/placeholder.png' ) }}" alt="{{ $get_product->title ?? '--' }}"
                         class="img-fluid p-2"
                         style="height: 100px;width: 100px;object-fit: contain;border-radius: 10px !important">
-                    <span>Model: {{ Str::limit($get_product->model_code, 15, '...') ?? '--' }} </span>
+                    <span>Model: {{ Str::limit($get_product->model_code, 10, '...') ?? '--' }} </span>
                     <a href="{{ route('panel.products.edit',$get_product->id) }}" class="btn btn-link text-primary " target="_blank">
                         Fill Details <i class="fas fa-external-link-alt"></i>
                     </a>

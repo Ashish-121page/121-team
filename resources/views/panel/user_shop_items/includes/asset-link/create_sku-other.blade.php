@@ -73,33 +73,22 @@
                 3. Finish
             </div>
         </div>
-        <div class="">
-            <div class="col-12 d-flex justify-content-between mb-3">
-                <div class="row">
-                    <div class="h6 col-12 col-md-3 my-2">Vault: #
-                        <strong>
-                            <span> {{ $vault_name ?? '_____' }} </span>
-                        </strong>
-                    </div>
-                    <div class="h6 col-12 col-md-6 my-2">
-                        File name contains model code which is separated by: <strong> {{ $delimiter ?? '' }} </strong> on :
-                        <strong>
-                            @if (request()->get('delimeter_directiom', 0) == 0)
-                                Left
-                            @else
-                                Right
-                            @endif
-                        </strong> in the file name;
-                    </div>
 
 
-
-                    <div class="col-12 col-md-3 my-2">
-                        <div class="h6">Uploaded: #<span>{{ count($File_data) }}</span> assets</div>
-                    </div>
-                </div>
-
+        <div class="row d-flex justify-content-between mb-3">
+            <div class="h6 col-12 col-md-3 my-2">Vault: #
+                <strong>
+                    <span> {{ $vault_name ?? '_____' }} </span>
+                </strong>
             </div>
+            <div class="h6 col-12 col-md-6 my-2 ">
+                File name is Model Code
+            </div>
+            <div class="col-12 col-md-3 my-2">
+                <div class="h6">Uploaded: #<span>{{ count($File_data) }}</span> assets</div>
+            </div>
+        </div>
+        <div class="">
 
             <div class="accordion" id="accordionExample">
                 <div class="accordion-item">
@@ -126,40 +115,10 @@
                                         </div>
                                     </div>
                                     <div class="col-12 mb-3">
-                                        <div class="swiper">
-                                            <!-- Additional required wrapper -->
-                                            <div class="swiper-wrapper">
-                                                @foreach ($File_data as $i => $files)
-                                                    @php
-                                                        $sku = explode($delimiter, pathinfo($files->FileName, PATHINFO_FILENAME))[$delimeter_directiom];
-                                                        $sku = trim($sku);
-                                                    @endphp
-                                                    @if (!in_array($sku, $all_products_modelCodes))
-                                                        @continue
-                                                    @endif
-                                                    @if ($available_sku != $sku)
-                                                        @continue
-                                                    @endif
-                                                    <div class="item text-center ">
-                                                        <img src="{{ $files->FilePath ?? '' }}"
-                                                            alt="{{ $files->FileName ?? '' }}" class="img-fluid mb-1">
-                                                        <span>
-                                                            {{ Str::limit($files->FileName, 15, '...') ?? '----' }}
-                                                        </span>
-                                                    </div>
-                                                    @php
-                                                        $form_available_sku[] = $available_sku;
-                                                        $form_available_sku_files[] = $files;
-                                                    @endphp
-                                                @endforeach
-                                            </div>
-                                            <div class="swiper-pagination"></div>
-                                            <div class="swiper-scrollbar"></div>
-                                        </div>
-                                        {{-- <div class="owl-carousel owl-theme">
+                                        <div class="owl-carousel owl-theme">
                                             @foreach ($File_data as $i => $files)
                                                 @php
-                                                    $sku = explode($delimiter, pathinfo($files->FileName, PATHINFO_FILENAME))[$delimeter_directiom];
+                                                    $sku = pathinfo($files->FileName, PATHINFO_FILENAME);
                                                     $sku = trim($sku);
                                                 @endphp
                                                 @if (!in_array($sku, $all_products_modelCodes))
@@ -180,7 +139,7 @@
                                                     $form_available_sku_files[] = $files;
                                                 @endphp
                                             @endforeach
-                                        </div> --}}
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
@@ -218,7 +177,9 @@
                                                 <!-- Slides -->
                                                 @foreach ($File_data as $i => $files)
                                                     @php
-                                                        $sku = explode($delimiter, pathinfo($files->FileName, PATHINFO_FILENAME))[$delimeter_directiom] ?? '';
+                                                        // $sku = explode($delimiter, pathinfo($files->FileName, PATHINFO_FILENAME))[$delimeter_directiom] ?? '';
+                                                        // $sku = trim($sku);
+                                                        $sku = pathinfo($files->FileName, PATHINFO_FILENAME);
                                                         $sku = trim($sku);
                                                     @endphp
                                                     @if ($Notavailable_sku != $sku)
@@ -239,32 +200,8 @@
                                                 @endforeach
                                             </div>
                                             {{-- <div class="swiper-pagination"></div> --}}
-                                            <div class="swiper-scrollbar"></div>
+                                            {{-- <div class="swiper-scrollbar"></div> --}}
                                         </div>
-
-
-                                        {{-- <div class="owl-carousel slider2 owl-theme">
-                                            @foreach ($File_data as $i => $files)
-                                                @php
-                                                    $sku = explode($delimiter, pathinfo($files->FileName, PATHINFO_FILENAME))[$delimeter_directiom];
-                                                    $sku = trim($sku);
-                                                @endphp
-                                                @if ($Notavailable_sku != $sku)
-                                                    @continue
-                                                @endif
-                                                <div class="item text-center ">
-                                                    <img src="{{ $files->FilePath ?? '' }}"
-                                                        alt="{{ $files->FileName ?? '' }}" class="img-fluid mb-1">
-                                                    <span>
-                                                        {{ $files->FileName ?? '----' }}
-                                                    </span>
-                                                </div>
-                                                @php
-                                                    $form_not_available_sku[] = $Notavailable_sku;
-                                                    $form_not_available_sku_files[] = $files;
-                                                @endphp
-                                            @endforeach
-                                        </div> --}}
                                     </div>
                                 @empty
                                     <div class="col-12 text-center">
@@ -369,21 +306,29 @@
 
 
             <div class="col-12 mb-3 d-flex justify-content-center">
-                <form action="{{ route('panel.asset-link.fill.later') }}" method="POST">
-                    <input type="hidden" name="form_not_available_sku" id="form_not_available_sku"
-                        value="{{ json_encode($form_not_available_sku ?? []) }}">
-                    <input type="hidden" name="vault_name" value="{{ $vault_name }}">
-                    <input type="hidden" name="form_not_available_sku_files"
-                        value="{{ json_encode($form_not_available_sku_files ?? [], true) }}">
-                    <input type="hidden" name="form_available_sku" id="form_available_sku_val"
-                        value="{{ json_encode($form_available_sku ?? []) }}">
-                    <input type="hidden" name="form_available_sku_files"
-                        value="{{ json_encode($form_available_sku_files ?? []) }}">
-                    <input type="hidden" name="delimeter" value="{{ $delimiter }}">
-                    <input type="hidden" name="delimeter_directiom" value="{{ $delimeter_directiom }}">
 
-                    <button class="btn mx-2 btn-outline-primary" type="submit" name="fill_later">Finish</button>
-                    {{-- <button class="btn mx-2 btn-primary" type="submit" name="fill_now">Fill Details</button> --}}
+                @if ($workingType == 'filename_model_code')
+                    <form action="{{ route('panel.asset-link.model.filename') }}" method="POST">
+                    @else
+                        <form action="{{ route('panel.asset-link.irrelevant.filename') }}" method="POST">
+                @endif
+
+                <input type="hidden" id="fileData" name="fileData" value="{{ $Request_fileData ?? [] }}">
+
+                <input type="hidden" name="form_not_available_sku" id="form_not_available_sku"
+                    value="{{ json_encode($form_not_available_sku ?? []) }}">
+                <input type="hidden" name="vault_name" value="{{ $vault_name }}">
+                <input type="hidden" name="form_not_available_sku_files"
+                    value="{{ json_encode($form_not_available_sku_files ?? [], true) }}">
+                <input type="hidden" name="form_available_sku" id="form_available_sku_val"
+                    value="{{ json_encode($form_available_sku ?? []) }}">
+                <input type="hidden" name="form_available_sku_files"
+                    value="{{ json_encode($form_available_sku_files ?? []) }}">
+                <input type="hidden" name="delimeter" value="{{ $delimiter }}">
+                <input type="hidden" name="delimeter_directiom" value="{{ $delimeter_directiom }}">
+
+                <button class="btn mx-2 btn-outline-primary" type="submit" name="fill_later">Finish</button>
+                {{-- <button class="btn mx-2 btn-primary" type="submit" name="fill_now">Fill Details</button> --}}
                 </form>
             </div>
 

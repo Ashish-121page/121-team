@@ -356,11 +356,11 @@ class settingController extends Controller
                     $extra = '';
                 }
 
-                if ($request->has('must_field')) {
-                    $must_field = 'required';
-                } else {
+                // if ($request->has('must_field') && $request->get('must_field') == 1){
+                //     $must_field = 'required';
+                // } else {
                     $must_field = '';
-                }
+                // }
 
                 $value = array_filter($request->get('value'),function($value) {
                     return $value !== null && $value !== '';
@@ -679,6 +679,9 @@ class settingController extends Controller
             }
 
             $record = json_encode($record);
+            if($user->settings){
+                return back()->with('error',"already updated");
+            }
             $user->settings = $record;
             $user->save();
             return back()->with('success','Quotation Setting Updated');

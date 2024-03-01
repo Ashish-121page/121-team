@@ -2306,7 +2306,7 @@ class NewBulkController extends Controller
             $dropdownSheet->setTitle($SecondSheetName);
             $dropdownSheet->getDefaultColumnDimension()->setWidth(20);
 
-            // $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
+            $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
 
             $new_items = ['carton_weight_unit^^system','Weight_unit^^system','carton_weight_unit^^system','Dimensions_unit^^system','Carton_Dimensions_unit^^system','unit^^system','Product_Cost_Unit^^system','Selling_Price_Unit^^system','Category^^system'];
             $custom_attributes = array_merge($custom_attributes,$new_items);
@@ -2606,7 +2606,7 @@ class NewBulkController extends Controller
             $dropdownSheet->setTitle($SecondSheetName);
             $dropdownSheet->getDefaultColumnDimension()->setWidth(20);
 
-            // $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
+            $dropdownSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
 
             $new_items = ['carton_weight_unit^^system','Weight_unit^^system','carton_weight_unit^^system','Dimensions_unit^^system','Carton_Dimensions_unit^^system','unit^^system','Product_Cost_Unit^^system','Selling_Price_Unit^^system','Category^^system'];
 
@@ -6411,7 +6411,6 @@ class NewBulkController extends Controller
 
 
 
-            // http://localhost/project/121.page-Laravel/121.page/panel/user-shop-items/create?type=direct&type_ide=eyJpdiI6Ik16b3gwZ3lTZjh2Zm95cXhUcEM0d1E9PSIsInZhbHVlIjoiYlBnMElYanFkNlIwUGNCQlRld1lodz09IiwibWFjIjoiNmQwMDIxY2RjZDg1ZWE2MTJiZmEzM2JkN2JjMmI1N2NlZDE0NWQwZTRiMGUyY2I3MzhmZDE2ZmNiODAyZDI2NCIsInRhZyI6IiJ9&assetsafe=true
 
         } catch (\Throwable $th) {
             throw $th;

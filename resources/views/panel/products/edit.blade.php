@@ -2831,6 +2831,7 @@
                         $(`[name="${indexInArray}[unit]"]`).empty();
                         $(`[name="${indexInArray}[unit]"]`).append(length_unit);
                     }
+                    
 
                 });
             });
@@ -2844,10 +2845,6 @@
 
                 $.each(myarrval, function(indexInArray, valueOfElement) {
                     var decodedValue = valueOfElement;
-
-
-
-
                     // Check if the value is Base64-encoded
                     if (isBase64(valueOfElement)) {
                         decodedValue = atob(valueOfElement); // Decode Base64 string
@@ -2865,10 +2862,11 @@
                                         element.val(valu[key]).trigger(
                                             'change'); // Set value and trigg?er change for Select2
                                         element.select2();
-
+                                        element.removeAttr('required');
                                         // If you're using Select2, you may also need to re-initialize it
                                     } else if (element.is('input')) {
                                         element.val(valu[key]);
+                                        element.removeAttr('required');
                                     }
                                 }
                             }
@@ -2879,12 +2877,16 @@
                             let elementName = `${myarrid[indexInArray]}`;
                             var element = $(`[name="${elementName}"]`);
                             element.val(decodedValue);
+                            element.removeAttr('required');
+
                         }
                     } else {
                         // Handle values that are not Base64-encoded
                         let elementName = `${myarrid[indexInArray]}`;
                         var element = $(`[name="${elementName}"]`);
                         element.val(decodedValue);
+                        element.removeAttr('required');
+
                     }
                 });
 

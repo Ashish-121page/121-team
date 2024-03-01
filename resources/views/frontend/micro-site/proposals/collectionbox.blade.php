@@ -9,6 +9,7 @@
 
     <div class="col-12">
         <div class="h4">Collection Box</div>
+        <a href="#" class="clear_collection">Clear List</a>
     </div>
     <div class="col-12" id="emptybox"></div>
 
@@ -21,13 +22,14 @@
 
 
     <div class="col-12" id="workingcollection">
+
         <div class="dropdown text-end w-75">
             <button type="button" class="btn btn-outline-primary dropdown-toggle" style="width: 100%;"
                 data-bs-toggle="dropdown">
                 Add to
             </button>
             <ul class="dropdown-menu">
-                @forelse ($existing_offers as $offer)
+                @forelse ($existing_offers ?? [] as $offer)
                     @if ($loop->iteration == 4)
                     @break
                 @endif
@@ -41,9 +43,12 @@
                         onclick="addtooffer(this)">{{ $customer_details . ' - ' . $customer_name }}</a>
                 </li>
             @empty
+                <li>
+                    <a href="#addnew" class="dropdown-item addnewoffer">{{ __('Add New Offer') }}</a>
+                </li>
             @endforelse
             <li>
-                <a href="#addnew" class="dropdown-item addnewoffer">Add New Offer</a>
+                <a href="#addnew" class="dropdown-item addnewoffer">{{ __('Add New Offer') }}</a>
             </li>
             <li>
                 <button type="button" class="dropdown-item showalloffer"> {{ __('Show All Offers') }} </button>
@@ -54,3 +59,4 @@
 </div>
 
 @include('frontend.micro-site.proposals.modal.show-all-offer')
+@include('frontend.micro-site.proposals.modal.add-new-offer')

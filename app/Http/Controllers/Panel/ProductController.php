@@ -3097,9 +3097,9 @@ class ProductController extends Controller
             $model_code = substr($product->model_code, 0, 10);
             $prod_name = substr($product->title, 0, 10);
 
-        
+
             $pagetitle = 'Edit #' . $model_code .','. $prod_name;
-       
+
 
             // magicstring($medias);
             // return;
@@ -3477,57 +3477,63 @@ class ProductController extends Controller
                     $groupId = $product->sku;
                     // return;
 
-                    if ($request->properties != null && $request->properties != '') {
-                        foreach ($request->properties as $key => $value) {
-                            // return;
-                            // checking Product Attribute Exist Or Not in Records
-                            $attribute_record = getAttruibuteValueById($value);
-                            if ($attribute_record != null) {
-                                $chkwds = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$attribute_record->parent_id)->where('user_id',$request->user_id)->get();
-                                // magicstring($chkwds);
+                    // Running a Try Catch Block for Creating New Product Extra Info Records
+                    try {
+                        if ($request->properties != null && $request->properties != '') {
+                            foreach ($request->properties as $key => $value) {
                                 // return;
+                                // checking Product Attribute Exist Or Not in Records
+                                $attribute_record = getAttruibuteValueById($value);
+                                if ($attribute_record != null) {
+                                    $chkwds = ProductExtraInfo::where('product_id',$product->id)->where('attribute_id',$attribute_record->parent_id)->where('user_id',$request->user_id)->get();
+                                    // magicstring($chkwds);
+                                    // return;
 
-                                if ($chkwds->count() != 0) {
-                                    $newproduct = $chkwds[0];
-                                    $newproduct->attribute_value_id = $attribute_record->id;
-                                    $newproduct->attribute_id = $attribute_record->parent_id;
-                                    $newproduct->save();
-                                }else{
-                                    // Getting Records of Attribute
-                                    $attribute_record = getAttruibuteValueById($value);
-                                    // $clonedProduct = $product->replicate();
-                                    // $clonedProduct->created_at = Carbon::now();
-                                    // $clonedProduct->save();
+                                    if ($chkwds->count() != 0) {
+                                        $newproduct = $chkwds[0];
+                                        $newproduct->attribute_value_id = $attribute_record->id;
+                                        $newproduct->attribute_id = $attribute_record->parent_id;
+                                        $newproduct->save();
+                                    }else{
+                                        // Getting Records of Attribute
+                                        $attribute_record = getAttruibuteValueById($value);
+                                        // $clonedProduct = $product->replicate();
+                                        // $clonedProduct->created_at = Carbon::now();
+                                        // $clonedProduct->save();
 
-                                    $newproduct = $to_clone->replicate();
-                                    $newproduct->product_id = $product->id;
-                                    $newproduct->attribute_value_id = $attribute_record->id;
-                                    $newproduct->attribute_id = $attribute_record->parent_id;
-                                    $newproduct->group_id = $product->sku;
-                                    $newproduct->created_at = Carbon::now();
-                                    $newproduct->save();
+                                        $newproduct = $to_clone->replicate();
+                                        $newproduct->product_id = $product->id;
+                                        $newproduct->attribute_value_id = $attribute_record->id;
+                                        $newproduct->attribute_id = $attribute_record->parent_id;
+                                        $newproduct->group_id = $product->sku;
+                                        $newproduct->created_at = Carbon::now();
+                                        $newproduct->save();
+                                    }
                                 }
+
+                                // ` Create new Product Extra Info Record
+                                // if ($chkwds->count() == 0) {
+                                //     echo getAttruibuteValueById($value)->attribute_value;
+                                //     echo " Property Does Not Exist".newline();
+                                //     // Getting Records of Attribute
+                                //     $attribute_record = getAttruibuteValueById($value);
+                                //     // $clonedProduct = $product->replicate();
+                                //     // $clonedProduct->created_at = Carbon::now();
+                                //     // $clonedProduct->save();
+
+                                //     $newproduct = $to_clone->replicate();
+                                //     $newproduct->product_id = $product->id;
+                                //     $newproduct->attribute_value_id = $attribute_record->id;
+                                //     $newproduct->attribute_id = $attribute_record->parent_id;
+                                //     $newproduct->group_id = $product->sku;
+                                //     $newproduct->created_at = Carbon::now();
+                                //     $newproduct->save();
+                                // }
                             }
-
-                            // ` Create new Product Extra Info Record
-                            // if ($chkwds->count() == 0) {
-                            //     echo getAttruibuteValueById($value)->attribute_value;
-                            //     echo " Property Does Not Exist".newline();
-                            //     // Getting Records of Attribute
-                            //     $attribute_record = getAttruibuteValueById($value);
-                            //     // $clonedProduct = $product->replicate();
-                            //     // $clonedProduct->created_at = Carbon::now();
-                            //     // $clonedProduct->save();
-
-                            //     $newproduct = $to_clone->replicate();
-                            //     $newproduct->product_id = $product->id;
-                            //     $newproduct->attribute_value_id = $attribute_record->id;
-                            //     $newproduct->attribute_id = $attribute_record->parent_id;
-                            //     $newproduct->group_id = $product->sku;
-                            //     $newproduct->created_at = Carbon::now();
-                            //     $newproduct->save();
-                            // }
                         }
+                    } catch (\Throwable $th) {
+                        // if any error occur then it will return back with error
+                        // for Now It will not Return any Error, just Skip that block
                     }
 
                     $vip_group = getPriceGroupByGroupName(auth()->id(),"VIP");
