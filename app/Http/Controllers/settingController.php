@@ -679,6 +679,9 @@ class settingController extends Controller
             }
 
             $record = json_encode($record);
+            if($user->settings){
+                return back()->with('error',"already updated");
+            }
             $user->settings = $record;
             $user->save();
             return back()->with('success','Quotation Setting Updated');

@@ -56,38 +56,6 @@
             <div class="d-flex flex-column justify-content-center align-items-center">
                 <div style="margin-top: 10px;"></div>
                 <button type="buton" class="btn btn-outline-primary" style="width: 75%;" onclick="addtocollection(this)" data-pid="{{ $product->id }}">Add to</button>
-
-                {{-- <div class="dropdown text-end w-75">
-                    <button type="button" class="btn btn-outline-primary dropdown-toggle" style="width: 100%;"
-                        data-bs-toggle="dropdown">
-                        Add to
-                    </button>
-                    <ul class="dropdown-menu">
-                        @forelse ($existing_offers as $offer)
-                                @if ($loop->iteration == 4)
-                                @break
-                            @endif
-                            @php
-                                $customer_details = json_decode($offer->customer_details)->offer_name ?? 'No Offer Name';
-                                $customer_name = json_decode($offer->customer_details)->customer_name ?? 'No Buyer Name';
-                            @endphp
-                            <li>
-                                <a href="#" class="dropdown-item addtooffer" data-offer_rec="{{ $offer->id }}"
-                                    data-product_id="{{ $product->id }}"
-                                    onclick="addtooffer(this)">{{ $customer_details . ' - ' . $customer_name }}</a>
-                            </li>
-                        @empty
-                        @endforelse
-                        <li>
-                            <a href="#addnew" class="dropdown-item addnewoffer">Add New Offer</a>
-                        </li>
-                        <li>
-                            <a href="#Showall" class="dropdown-item showalloffer">Show All Offer</a>
-                        </li>
-
-                    </ul>
-                </div> --}}
-
         </div>
 
     </div>
@@ -168,21 +136,96 @@
 @push('script')
 <script>
     function addtooffer(e) {
-        console.log('addtooffer');
         let rec_id = $(e).data('offer_rec');
-        let product_id = $(e).data('product_id');
-        console.log(rec_id);
-
-        var route = "{{ route('pages.api.store') }}" + "?product_id=" + product_id + '&proposal_id=' + rec_id +
-            "&hike=0";
+        let product_ids = localStorage.getItem('collectionboxItems');
+        var route = "{{ route('pages.collection.add') }}";
         $.ajax({
             url: route,
             method: "get",
+            data: {
+                product_id: product_ids,
+                proposal_id: rec_id,
+                hike: 0
+            },
             success: function(res) {
+                res = JSON.parse(res);
+                console.log(res);
+                console.log(res.message);
+
+                if (res.code == '200') {
+                    $.toast({
+                        heading: 'Success',
+                        text: res.message,
+                        showHideTransition: 'slide',
+                        icon: 'success',
+                        loader: true,
+                        loaderBg: '#9EC600',
+                        position: 'top-right',
+                        hideAfter: 4000
+                    });
+                    window.location = res.sendto;
+                } else {
+                    $.toast({
+                        heading: 'Error',
+                        text: res.message,
+                        showHideTransition: 'fade',
+                        icon: 'error',
+                        loader: true,
+                        loaderBg: '#9EC600',
+                        position: 'top-right',
+                        hideAfter: 4000
+                    });
+                }
+            },
+            error: function(res) {
+                console.log(res);
+            }
+        });
 
 
 
+    }
+    function addtoofferfromall(e) {
+        let rec_id = $(e).data('offer_rec');
+        let product_ids = localStorage.getItem('collectionboxItems');
+        var route = "{{ route('pages.collection.add') }}";
+        $.ajax({
+            url: route,
+            method: "get",
+            data: {
+                product_id: product_ids,
+                proposal_id: rec_id,
+                hike: 0
+            },
+            success: function(res) {
+                res = JSON.parse(res);
+                console.log(res);
+                console.log(res.message);
 
+                if (res.code == '200') {
+                    $.toast({
+                        heading: 'Success',
+                        text: res.message,
+                        showHideTransition: 'slide',
+                        icon: 'success',
+                        loader: true,
+                        loaderBg: '#9EC600',
+                        position: 'top-right',
+                        hideAfter: 4000
+                    });
+                    window.location = res.sendto;
+                } else {
+                    $.toast({
+                        heading: 'Error',
+                        text: res.message,
+                        showHideTransition: 'fade',
+                        icon: 'error',
+                        loader: true,
+                        loaderBg: '#9EC600',
+                        position: 'top-right',
+                        hideAfter: 4000
+                    });
+                }
             },
             error: function(res) {
                 console.log(res);

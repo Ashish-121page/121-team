@@ -651,8 +651,6 @@ class Microproposals extends Controller
     }
 
 
-
-
     public function update(Request $request,Proposal $proposal)
     {
         // return magicstring($request->all());
@@ -746,87 +744,6 @@ class Microproposals extends Controller
         }
     }
 
-
-
-
-
-    // function samplecheckout(Request $request) {
-    //     // Function for propsal Enquiry
-    //     $new_price = 0;
-    //     $final_amt = 0;
-
-    //     if ($request->enquir!= null && isset($request->enquir)) {
-    //         foreach ($request->enquir as $key => $value) {
-    //             $price = ProposalItem::where('product_id',$value)->where('proposal_id',$request->proposal_id)->first()->price ?? null;
-    //             $margin = ProposalItem::where('product_id',$value)->where('proposal_id',$request->proposal_id)->first()->margin ?? 0;
-    //             $user_price = ProposalItem::where('product_id',$value)->where('proposal_id',$request->proposal_id)->first()->user_price ?? null;
-    //             $sampleCharges = json_decode(Proposal::whereId($request->proposal_id)->first()->customer_details)->sample_charge ?? 0;
-
-    //             if ($user_price == null) {
-    //                     $margin_factor = (100 - $margin) / 100;
-    //                     $submit_price = $price;
-    //                     $price = $price/$margin_factor;
-    //                 }
-    //                 else {
-    //                     $submit_price = $price;
-    //                     $price = $user_price;
-
-    //                 }
-    //                 $final_amt = $final_amt + $price;
-    //                 $new_price = $new_price + $submit_price;
-    //             }
-
-    //             $user_details = Proposal::whereId($request->proposal_id)->first()->customer_details;
-    //             $proposal_item_id = implode(",",$request->enquir);
-    //             $enquery_type = "sample";
-
-    //             $amount = $new_price;
-    //             $sample_count = count($request->enquir);
-
-
-    //             if ($sampleCharges != 0) {
-    //                 $sample_computaion_factor = (100 - $sampleCharges) / 100;
-    //                 $final_amt = $amount / $sample_computaion_factor;
-    //                 $amount = $final_amt/$sample_computaion_factor;
-    //             }
-
-    //             Proposalenquiry::create([
-    //                 'user_info' => $user_details,
-    //                 'proposal_id' => $request->proposal_id,
-    //                 'proposal_item_id' => $proposal_item_id,
-    //                 'enquery_type' => $enquery_type,
-    //                 'amount' => format_price($amount),
-    //                 'sample_count' => $sample_count
-    //             ]);
-
-    //             // magicstring($request->all());
-
-
-    //             $onsite_notification['user_id'] =  Proposal::whereId($request->proposal_id)->first()->user_id;
-    //             $onsite_notification['title'] = count($request->enquir)." Samples request for offer";
-    //             $onsite_notification['link'] =  remove_subdomain("customer/checksample/$request->proposal_id" , $request->get('subdomain'));
-    //             pushOnSiteNotification($onsite_notification);
-
-    //             $og_user = Proposal::whereId($request->proposal_id)->first()->user_id;
-
-    //             if (Proposal::whereId($request->proposal_id)->first()->relate_to != null) {
-    //                 $onsite_notification['user_id'] =  UserShop::whereId(Proposal::whereId($request->proposal_id)->first()->relate_to)->first()->user_id;
-    //                 $onsite_notification['title'] = count($request->enquir)." Samples request for offer";
-    //                 $onsite_notification['link'] =  remove_subdomain("customer/checksample/$request->proposal_id" , $request->get('subdomain'));
-    //                 pushOnSiteNotification($onsite_notification);
-    //                 $og_user =  UserShop::whereId(Proposal::whereId($request->proposal_id)->first()->relate_to)->first()->user_id;
-    //             }
-
-
-    //             $user = auth()->user();
-    //             $proposal = Proposal::whereId($request->proposal_id)->first();
-
-    //             $city = City::get();
-
-    //         }
-
-    //     return view('frontend.micro-site.proposals.checkout',compact('request','final_amt','og_user','sampleCharges','user','proposal','city'));
-    // }
 
 
     function samplecheckout(Request $request){
@@ -1128,6 +1045,148 @@ class Microproposals extends Controller
 
     }
 
+
+    /**
+     * Add Product to Collection
+     * @param  \Illuminate\Http\Request  $request
+     */
+
+    public function collectionadd(Request $request) {
+        try {
+            if (!$request->has('proposal_id')) {
+                return back()->with('error','Offer not found');
+            }
+            $count = 0;
+            $proposal = Proposal::whereId($request->proposal_id)->first();
+            foreach (explode(",",$request->product_id) as $key => $product) {
+                // check: Checking Proposal Item Exists or Not
+                $proposal_item = ProposalItem::where('proposal_id',$request->proposal_id)->where('product_id',$product)->first();
+                if ($proposal_item == null) {
+                    $product = Product::whereId($product)->first();
+                    $price = $product->price ?? '0';
+                    $proposalCount = ProposalItem::count();
+                    if($proposalCount == 0){
+                        $sequence = 1;
+                    }else{
+                        $pItem = ProposalItem::latest()->first();
+                        $sequence = $pItem->sequence + 1;
+                    }
+                    $notes = array(
+                        'Customise_product' => '',
+                        'remarks_offer' => $request->offernotes
+                    );
+                    $request['notes'] = json_encode($notes);
+                    $proposal_item = [
+                        'proposal_id' => $request->proposal_id,
+                        'product_id' => $product->id,
+                        'user_shop_item_id' => 0,
+                        'note' => $request->notes,
+                        'price' => round($price),
+                        'user_id' => auth()->id() ?? 155,
+                        'sequence' => $sequence,
+                        'margin' => $request->hike,
+                    ];
+                    $obj = ProposalItem::create($proposal_item);
+                    $count++;
+                }else{
+                    // echo "Already Exists";
+                }
+            }
+            $user_key = encrypt(auth()->id());
+            $slug = $request->subdomain;
+            $redirect_Url = inject_subdomain('proposal/picked/' . $request->proposal_id . '/' . $user_key, $slug, false, false).'?type=picked';
+
+            if ($request->has('requestBy') && $request->get('requestBy') == 'form') {
+                return redirect($redirect_Url)->with('success', $count.' Products Added Successfully!');
+            }
+            return json_encode(['status' => 'success','message' => $count.' Products Added Successfully!','sendto' => $redirect_Url,'code' => 200]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return json_encode(['status' => 'failed','message' => 'Something Went Wrong!!','code' => 400]);
+        }
+    }
+
+
+    public function collectionaddwithoffer(Request $request){
+
+        try {
+            $offer_title = $request->offer_title;
+            $buyer_name = $request->buyer_name;
+            $offer_alias = $request->offer_alias;
+            $slug = $request->subdomain;
+            $user_id = decrypt($request->user_id);
+            $user_shop_id = getShopDataByUserId($user_id)->id;
+            $proposal_slug = getUniqueProposalSlug("proposal".$user_id);
+            $count = 0;
+            $customer_details = [
+                'offer_name' => $offer_title ?? '',
+                'customer_alias' => $offer_alias,
+                'sample_charge' => 0,
+                'customer_mob_no' => '',
+                'customer_email' => '',
+                'customer_name' => $buyer_name,
+                'person_name' => ''
+            ];
+            $customer_details = json_encode($customer_details);
+            $record = [
+                'customer_details' => $customer_details,
+                'user_shop_id' => $user_shop_id,
+                'user_id' => $user_id,
+                'proposal_note' => $proposal_note ?? '',
+                'slug' => $proposal_slug,
+            ];
+
+            $proposal = Proposal::create($record);
+            foreach (explode(",",$request->product_id) as $key => $product) {
+                // check: Checking Proposal Item Exists or Not
+                $proposal_item = ProposalItem::where('proposal_id',$proposal->id)->where('product_id',$product)->first();
+                if ($proposal_item == null) {
+                    $product = Product::whereId($product)->first();
+                    $price = $product->price ?? '0';
+                    $proposalCount = ProposalItem::count();
+                    if($proposalCount == 0){
+                        $sequence = 1;
+                    }else{
+                        $pItem = ProposalItem::latest()->first();
+                        $sequence = $pItem->sequence + 1;
+                    }
+                    $notes = array(
+                        'Customise_product' => '',
+                        'remarks_offer' => $request->offernotes
+                    );
+                    $request['notes'] = json_encode($notes);
+                    $proposal_item = [
+                        'proposal_id' => $proposal->id,
+                        'product_id' => $product->id,
+                        'user_shop_item_id' => 0,
+                        'note' => $request->notes,
+                        'price' => round($price),
+                        'user_id' => auth()->id() ?? 155,
+                        'sequence' => $sequence,
+                        'margin' => $request->hike,
+                    ];
+                    $obj = ProposalItem::create($proposal_item);
+                    $count++;
+                }else{
+                    // echo "Already Exists";
+                }
+            }
+
+            $user_key = encrypt(auth()->id());
+            $slug = $request->subdomain;
+            $redirect_Url = inject_subdomain('proposal/picked/' . $proposal->id . '/' . $user_key, $slug, false, false).'?type=picked';
+            return redirect($redirect_Url)->with('success', $count.' Products Added Successfully!');
+
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+
+
+
+
+
+    }
 
 
 }

@@ -16,7 +16,7 @@
         tabindex="0">
         <div class="row">
             <div class="col-12 m-1 d-flex justify-content-end align-items-center ">
-                <button type="button" class="btn btn-primary mx-3"
+                <button type="button" id="next_vault"  class="btn btn-primary mx-3"
                     style="clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);">&nbsp;&nbsp;&nbsp;</button>
             </div>
 
@@ -41,13 +41,14 @@
                             @endfor
                         </div>
                     </div> --}}
-                    <div class="col-4">
+                    <div class="col-12 col-md-4">
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th>Nature</th>
                                     <th>No.</th>
                                     <th>Total Size</th>
+                                  
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,6 +70,7 @@
                                             @endphp
                                         @endisset
                                     </td>
+
                                 </tr>
                                 <tr class="toslide3">
                                     <td>Images
@@ -176,7 +178,7 @@
                                         <td> </td>
                                         <td>
                                             <a href="{{ asset($pdf->path) }}" download="{{ $pdf->file_name }}"
-                                                class="btn-link text-primary ">Dowload</a>
+                                                class="btn-link text-primary ">Download</a>
                                         </td>
                                     </tr>
                                 @empty
@@ -213,7 +215,7 @@
                                         <td>
                                             <a href="{{ asset($attachment->path) }}"
                                                 download="{{ $attachment->file_name }}"
-                                                class="btn-link text-primary ">Dowload</a>
+                                                class="btn-link text-primary ">Download</a>
                                         </td>
                                     </tr>
                                 @empty
@@ -248,7 +250,7 @@
                                         <td> </td>
                                         <td>
                                             <a href="{{ asset($gif->path) }}" download="{{ $gif->file_name }}"
-                                                class="btn-link text-primary ">Dowload</a>
+                                                class="btn-link text-primary ">Download</a>
                                         </td>
                                     </tr>
                                 @empty
@@ -284,7 +286,7 @@
                                         <td> </td>
                                         <td>
                                             <a href="{{ asset($video->path) }}" download="{{ $video->file_name }}"
-                                                class="btn-link text-primary ">Dowload</a>
+                                                class="btn-link text-primary ">Download</a>
                                         </td>
                                     </tr>
                                 @empty
@@ -331,71 +333,16 @@
         <div class="row">
             <div class="col-12 my-3 mx-2">
                 <div class="form-group ">
-                    <input type="text" class="form-control w-75" placeholder="Search by File Name">
+                    <input type="text" class="form-control w-75" placeholder="Search by File Name" id="search_asset">
                 </div>
             </div>
 
-            <div class="col-12">
-                <div class="row d-flex flex-wrap ">
-                    {{-- Product Card for Loop Start --}}
-
-                    @forelse ($image_rec ?? [] as $image)
-                        <div class="col-4 col-md-2 col-sm-3">
-                            <div class="card" style="width: min-content;height: max-content;">
-                                <div class="card-body d-flex flex-column justify-content-start text-center "
-                                    style="width: min-content;">
-                                    <img src="{{ asset($image->path) }}"
-                                        alt="Image Preview"
-                                        style="object-fit: contain;height: 100px;border-radius: 10px;width: 150px">
-                                    <span class="my-2">GBI_04
-                                        {{-- <a href="#link" class="btn-link ">Link</a> --}}
-                                    </span>
-                                    {{-- @php
-                                        $random = generateRandomStringNative(10);
-                                    @endphp
-                                    <input type="checkbox" id="checkme_{{ $random }}" class="d-none"
-                                        name="checkproduct[]">
-                                    <label for="checkme_{{ $random }}"
-                                        class="btn btn-outline-primary chekpro mb-1">
-                                        Select
-                                    </label> --}}
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="d-flex justify-content-center">
-                            <h6>Nothing to Show Here..</h6>
-                        </div>
-                    @endforelse
-
-                    {{-- Product Card for Loop End --}}
-                </div>
+            <div class="col-12" id="easdbfhewbuj">
+                @include('panel.user_shop_items.modal.load-asset')
             </div>
+
             <div class="col-12 d-flex justify-content-center my-3">
-                {{-- <div class="btn-group dropend">
-                    <button type="button" class="btn btn-primary shadow-none ">
-                        Add to Offer
-                    </button>
-                    <button type="button"
-                        class="btn btn-primary shadow-none  dropdown-toggle dropdown-toggle-split"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="visually-hidden">
-                            <svg width="9" height="15" viewBox="0 0 192 512"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill="currentColor"
-                                    d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662" />
-                            </svg>
-                        </span>
-                    </button>
-
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Add New</a></li>
-                    </ul>
-                </div> --}}
-
-                {{-- <button class="btn btn-secondary shadow-none  ">Add to Product</button> --}}
                 <button class="btn btn-primary shadow-none " id="showcard">Save</button>
-
             </div>
 
         </div>
@@ -403,3 +350,11 @@
     </div>
 
 </div> <!-- tab-content -->
+
+
+<script>
+</script>
+
+
+
+

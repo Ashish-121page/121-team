@@ -60,6 +60,11 @@ Route::group(['middleware' => 'subdomain'],  function () {
 
         Route::any('/qr-action', [Microproposals::class,'qraction'])->name('qr.action');
 
+        Route::any('collection-add', [Microproposals::class,'collectionadd'])->name('collection.add');
+        Route::any('collection-add/withoffer', [Microproposals::class,'collectionaddwithoffer'])->name('collection.add.offer');
+
+
+
         Route::get('api-store', [Microproposals::class,'apiStore'])->name('api.store');
         Route::get('api-remove', [Microproposals::class,'apiRemove'])->name('api.remove');
         Route::get('/proposal/picked/{proposal}/{user_key}', [Microproposals::class,'picked'])->name('proposal.picked');

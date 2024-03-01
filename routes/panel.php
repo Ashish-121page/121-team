@@ -178,7 +178,10 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::post('split/irrelevant',[AssetLinkConroller::class,'irrelevantFilename'])->name('irrelevant.filename');
         Route::any('split/final',[AssetLinkConroller::class,'finalview'])->name('final');
 
+        Route::any('add/keywords',[AssetLinkConroller::class,'storeKeywords'])->name('save.keywords');
 
+        Route::any('search/asset',[AssetLinkConroller::class,'searchasset'])->name('search.asset');
+        Route::any('search/assetcard',[AssetLinkConroller::class,'searchassetcard'])->name('search.asset.card');
 
 
     });

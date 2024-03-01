@@ -83,12 +83,13 @@
                 tabindex="0">
 
                 <div class="">
-                    <form action="{{ route('panel.asset-link.irrelevant.filename') }}" method="POST" id="splitform">
+                    <form action="{{ route('panel.asset-link.model.filename.preview') }}" method="POST" id="splitform">
                         <div class="col-12 d-flex justify-content-between mb-3">
 
                             <input type="hidden" class="vault_name" name="vault_name">
                             <input type="hidden" id="fileData" name="fileData">
                             <input type="hidden" name="ignore_files" id="form_ignored" value="1">
+                            <input type="hidden" id="workingType" name="workingType" value="irrelevant_filename">
 
 
                             <div class="h6">Vault Name: #<span class="vault_name"></span></div>
@@ -113,13 +114,13 @@
                     </div>
                     <div class="col-12 mb-3">
                         <div class="owl-carousel owl-theme" id="newasetsonly">
-                            @for ($i = 1; $i < 20; $i++)
+                            {{-- @for ($i = 1; $i < 20; $i++)
                                 <div class="item text-center ">
                                     <img src="https://picsum.photos/250?random={{ $i }}"
                                         alt="Test image {{ $i }}" class="img-fluid mb-1">
                                     <span>{{ generateRandomStringNative(rand(1, 10)) }}</span>
                                 </div>
-                            @endfor
+                            @endfor --}}
                         </div>
                     </div>
 
@@ -135,13 +136,13 @@
 
                     <div class="col-12 mb-3">
                         <div class="owl-carousel slider2 owl-theme" id="existingAsset">
-                            @for ($i = 21; $i < 40; $i++)
+                            {{-- @for ($i = 21; $i < 40; $i++)
                                 <div class="item text-center ">
                                     <img src="https://picsum.photos/250?random={{ $i }}"
                                         alt="Test image {{ $i }}" class="img-fluid mb-1">
                                     <span>{{ generateRandomStringNative(rand(1, 10)) }}</span>
                                 </div>
-                            @endfor
+                            @endfor --}}
                         </div>
                     </div>
 
@@ -174,13 +175,13 @@
                     </div>
                     <div class="col-12 mb-3">
                         <div class="owl-carousel owl-theme">
-                            @for ($i = 1; $i < 20; $i++)
+                            {{-- @for ($i = 1; $i < 20; $i++)
                                 <div class="item text-center ">
                                     <img src="https://picsum.photos/250?random={{ $i }}"
                                         alt="Test image {{ $i }}" class="img-fluid mb-1">
                                     <span>{{ generateRandomStringNative(rand(1, 10)) }}</span>
                                 </div>
-                            @endfor
+                            @endfor --}}
                         </div>
                     </div>
 
@@ -296,8 +297,8 @@
                     <div class="col-12 d-flex justify-content-center align-items-center flex-column">
                         <div class="alert alert-warning" role="alert">
                             <i class="ik ik-info mr-1" title="You can upload 50 files at a time"></i>
-                           You can upload 50 files at a time
-                         </div>
+                            You can upload 50 files at a time
+                        </div>
                         <div class="mb-3" style="height: 250px" id="uploadimage">
                             <label for="uploaddata">
                                 <img src="{{ asset('frontend\assets\website\ASSETVAULT.png') }}" alt="img"
@@ -445,7 +446,9 @@
             $(".vault_name").val(vaultname);
         })
 
-
+        function limitString(str, maxLength) {
+            return str.length > maxLength ? str.substring(0, maxLength) : str;
+        }
         $(document).on('click', '#pills-profile-tab', function() {
             let data = localStorage.getItem('uploadedFiles');
             if (data) {
@@ -461,7 +464,7 @@
                 for (let i = 0; i < data.length; i++) {
                     let tag = `<div class="item text-center ">
                                     <img src="${data[i].FilePath}" alt="${data[i].FileName}" class="img-fluid mb-1">
-                                    <span>${data[i].FileName}</span>
+                                    <span>${limitString(data[i].FileName,15)}</span>
                                 </div>`;
 
                     if (data[i].FileCode == 200) {

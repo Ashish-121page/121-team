@@ -36,8 +36,8 @@
         }
 
         /*==================================================
-                                                                                                    remove the original arrow in select option dropdown
-                                                                                                    ==================================================*/
+                                                                                                        remove the original arrow in select option dropdown
+                                                                                                        ==================================================*/
         #selector {
             margin: 5px 10%;
             width: 100%;
@@ -483,42 +483,16 @@
         <div class="container mt-3" style="margin: 100px; max-width:1440px!important;">
             <div class="row bg-white wdaqd ">
                 {{-- original --}}
-                {{-- @if (isset($user_key))
-                    <div class="col-12 d-flex justify-content-center align-items-center"
-                        style="position: fixed;top:0% !important;left:0%;z-index: 88;padding: 0 0 25px 0 !important;background-color: #fff;">
-                        <a href="#one" class="btn btn-link text-primary mx-2 active">1. Selection</a>
-                        <a href="{{ route('pages.proposal.picked', ['proposal' => $proposalid, 'user_key' => $user_key]) }}?type=picked"
-                            class="btn btn-link text-primary mx-2">2. Notes</a>
-                        <a href="{{ inject_subdomain('proposal/export/' . $proposal->id . '/' . $user_key, $slug, false, false) }}"
-                            class="btn btn-link text-primary mx-2">3. Generate</a>
-                    </div>
-                @endif --}}
                 @if (isset($user_key))
                     <div class="col-12 d-flex justify-content-center align-items-center"
-                        style="position: fixed;top:0% !important;left:0%;z-index: 88;padding: 0 0 25px 0 !important;background-color: #fff;">
+                        style="position: fixed;top:0% !important;left:0%;z-index: 1;padding: 0 0 0px 0 !important;background-color: #fff;">
                         <a href="#" type="button" class="btn btn-link text-primary mx-2 " data-bs-toggle="modal"
                             data-bs-target="#staticBackdrop">1. Search</a>
                         <a href="{{ route('pages.proposal.picked', ['proposal' => $proposalid, 'user_key' => $user_key]) }}?type=picked"
                             class="btn btn-link text-primary mx-2">2.Update</a>
                         <a href="{{ inject_subdomain('proposal/export/' . $proposal->id . '/' . $user_key, $slug, false, false) }}"
                             class="btn btn-link text-primary mx-2">3. Generate</a>
-                        <div class="dropdown text-end ml-5" style="margin-left:8rem;">
-                            <button type="button" class="btn btn-outline-primary dropdown-toggle" style="width: 100%;"
-                                data-bs-toggle="dropdown">
-                                Add to
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a href="#" class="dropdown-item" onclick="addToSelected('option1')">Option 1</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="dropdown-item" onclick="addToSelected('option2')">Option 2</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="dropdown-item" onclick="addToSelected('option3')">Option 3</a>
-                                </li>
-                            </ul>
-                        </div>
+
                         <div id="selectedItemsContainer">
                             <!-- Selected items will be added here -->
                         </div>
@@ -730,9 +704,14 @@
         style="display:none;background-color: green; color: white; position: fixed; bottom: 50px; right: 25px;padding: 10px; font-weight: 700; border-radius: 35px;">
         Please Wait...
     </div>
-    @include('frontend.micro-site.proposals.collectionbox')
+    @if (!isset($user_key))
+        @include('frontend.micro-site.proposals.collectionbox')
+    @endif
+
     @include('frontend.micro-site.proposals.modal.scanQR')
     @include('frontend.micro-site.proposals.modal.openoffer')
+
+
 
     {{-- @include('frontend.micro-site.og_proposals.modal.offerexpo') --}}
 
@@ -819,7 +798,6 @@
 
         function addtocollection(e) {
             $("#emptybox").addClass('d-none');
-
             let pid = $(e).data('pid');
             let img = $(e).parent().parent().find('img').attr('src');
             let imgtag = '<div class="col-3 my-2 text-dark text-center "><img src="' + img +
@@ -830,12 +808,9 @@
             let collectionItems = localStorage.getItem('collectionboxItems');
             let itemsArray = collectionItems ? collectionItems.split(',') : [];
 
-            console.log(itemsArray, pid);
-
             if (!itemsArray.includes(pid.toString())) {
                 itemsArray.push(pid);
                 localStorage.setItem('collectionboxItems', itemsArray.join(','));
-
                 // Handle collectionboximages separately to prevent duplicate checks on images
                 let collectionImages = localStorage.getItem('collectionboximages');
                 let imagesArray = collectionImages ? collectionImages.split(',') : [];
@@ -847,14 +822,27 @@
         }
 
 
-        $(".showalloffer").click(function (e) {
+        $(".showalloffer").click(function(e) {
             e.preventDefault();
             let collectionItems = localStorage.getItem('collectionboxItems');
             $("#collection_product_ids").val(collectionItems);
             $("#showalloffer").modal('show');
         });
 
+        $(".addnewoffer").click(function(e) {
+            e.preventDefault();
+            let collectionItems = localStorage.getItem('collectionboxItems');
+            $("#collection_product_ids_new").val(collectionItems);
+            $("#addnewoffer").modal('show');
+        });
 
+        $(document).on('click', '.clear_collection', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('collectionboxItems');
+            localStorage.removeItem('collectionboximages');
+            $("#collectionbox").empty();
+            $("#emptybox").removeClass('d-none');
+        })
 
 
         // Collection Script Ends Here
