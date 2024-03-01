@@ -63,6 +63,7 @@ class AssetLinkConroller extends Controller
         }
     }
 
+
     // -- Spiting Files With Delimiter via form Request
     public function splitfiles(Request $request) {
         $debug = false;
@@ -114,9 +115,6 @@ class AssetLinkConroller extends Controller
         $Notavailable_skus = [];
         $Invalid_files = [];
 
-
-
-
         foreach ($File_data as $key => $value) {
             if (strpos($value->FileName, $delimiter) !== false) {
                 $sku = explode($delimiter, pathinfo($value->FileName, PATHINFO_FILENAME));
@@ -132,10 +130,7 @@ class AssetLinkConroller extends Controller
             }
         }
 
-
-
         $Notavailable_skus  = array_unique($Notavailable_skus);
-
         // magicstring(request()->all());
         if ($request->get('ignore_files') == 1) {
             $ignored_files = $available_skus;
@@ -143,9 +138,6 @@ class AssetLinkConroller extends Controller
         }else{
             $ignored_files = [];
         }
-
-
-
 
         if ($debug) {
             echo "Invalid Files".newline();
@@ -157,11 +149,8 @@ class AssetLinkConroller extends Controller
             return;
         }
 
-
         $vault_name = $request->vault_name;
         $delimeter_directiom = $request->get('delimeter_directiom',0);
-
-
         return view('panel.user_shop_items.includes.asset-link.create_sku',compact('File_data','delimiter','vault_name','delimeter_directiom','all_products_modelCodes','Notavailable_skus','available_skus','Invalid_files','ignored_files'));
     }
 
@@ -272,7 +261,8 @@ class AssetLinkConroller extends Controller
 
                 foreach ($form_not_available_sku_files as $key => $form_not_available_sku_file) {
 
-                    $model_code = explode($request->delimeter, pathinfo($form_not_available_sku_file['FileName'], PATHINFO_FILENAME));
+                    $delimiter = $request->get('delimeter',' ') ?? ' '; // ! If Not Available then Space..
+                    $model_code = explode($delimiter, pathinfo($form_not_available_sku_file['FileName'], PATHINFO_FILENAME));
                     $file_model_code = $model_code[$request->get('delimeter_directiom',0)];
                     $file_model_code = trim($file_model_code);
 
@@ -347,7 +337,10 @@ class AssetLinkConroller extends Controller
 
 
                         $path_mime = storage_path("app/public/files/$user->id/vaults/".$form_not_available_sku_file['FileName']);
-                        $mime = mime_content_type("$path_mime");
+                        $mime = mime_content_type("$path_mime") ?? '';
+                        if ($mime == '') {
+                            continue;
+                        }
                         $file_type = $this->checkFileType(explode("/",$mime)[0]);
                         $type = 'Product';
                         $tag = $file_type;
@@ -413,9 +406,68 @@ class AssetLinkConroller extends Controller
 
 
 
+    public function previewPage(Request $request) {
+
+        // ` Available SKU's for Images .......
+        $vault_name = $request->vault_name;
+        $debug = true;
+        $available_skus = [];
+        $Notavailable_skus = [];
+        $Invalid_files = [];
+        if ($request->fileData == '') {
+            return back()->with('error','No Files Found');
+        }
+        $File_data = json_decode($request->fileData);
+
+        // ` Product Details....
+        $all_products = Product::where('user_id', auth()->user()->id)->get();
+        $all_products_modelCodes = $all_products->pluck('model_code','id')->toArray();
+
+        
+        foreach ($File_data as $key => $value) {
+            $sku = pathinfo($value->FileName, PATHINFO_FILENAME);
+            $sku = trim($sku);
+            if (in_array($sku, $all_products_modelCodes)) {
+                $available_skus[array_search($sku, $all_products_modelCodes)] = $sku;
+            }else{
+                $Notavailable_skus[] = $sku;
+            }
+        }
+
+        $Notavailable_skus  = array_unique($Notavailable_skus);
+        if ($request->get('ignore_files') == 1) {
+            $ignored_files = $available_skus;
+            $available_skus = [];
+        }else{
+            $ignored_files = [];
+        }
+
+        $delimiter = $request->get('delimeter',' ') ?? ' '; // ! If Not Available then Space..
+        $delimeter_directiom = $request->get('delimeter_directiom',0);
+
+        // if ($debug) {
+        //     magicstring(request()->all());
+        //     echo "Invalid Files".newline();
+        //     magicstring($Invalid_files);
+        //     echo "Not Available SKU's".newline();
+        //     magicstring($Notavailable_skus);
+        //     echo "Available SKU's".newline();
+        //     magicstring($available_skus);
+        //     return;
+        // }
+
+        return view('panel.user_shop_items.includes.asset-link.create_sku',compact('File_data','available_skus','Notavailable_skus','ignored_files','delimiter','delimeter_directiom','Invalid_files','all_products_modelCodes','all_products','vault_name'));
+
+
+
+    }
+
+
     // -- Assuming Model code is a File Name and Creating Products...
     public function modelCodeIsFilename(Request $request) {
         try {
+            magicstring(request()->all());
+            return;
 
             $fileData = json_decode($request->fileData);
             $user = auth()->user();

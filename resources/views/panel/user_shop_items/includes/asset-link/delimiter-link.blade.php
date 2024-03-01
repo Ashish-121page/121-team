@@ -40,6 +40,7 @@
             color: #6666cc !important;
         }
     </style>
+
 @endpush
 @section('content')
 
@@ -115,7 +116,7 @@
                                     </div>
 
                                     <div class="h6e">
-                                        <span class="my-2">File Name has model code                                             :
+                                        <span class="my-2 mb-4">File Name has model code On
                                             <span class="text-danger">*</span>
                                         </span>
 
@@ -130,13 +131,14 @@
                                             <option value="6">, (Comma)</option>
                                             <option value="7">. (Dot)</option>
                                             <option value="8"># (Hashtag)</option>
+                                            <option value="9"> (Space)</option>
                                         </select>
-                                        <span class="my-2 text-center" style="width: 100%;display: block;">On </span>
+                                        {{-- <span class="my-2 text-center" style="width: 100%;display: block;">On </span> --}}
+                                        <span class="my-2 text-center" style="width: 100%;display: block;">Separated by</span>
                                         <select id="delimeter_directiom" name="delimeter_directiom" class="form-control">
                                             <option value="0">Left</option>
                                             <option value="1">Right</option>
                                         </select>
-                                        <span class="my-2 text-center" style="width: 100%;display: block;">Separated by</span>
                                     </div>
                                     {{-- <div class="">
                                             <div class="h6">Uploaded: #<span id="totalUploaded"></span> assets</div>
@@ -244,8 +246,7 @@
                                 <div class="col-12 mb-3 text-start d-flex justify-content-between ">
                                     {{-- <div class="h6">Duplicate Assest (<span class="oldassetcount"></span>) </div> --}}
                                     {{-- <div class="h6">Invalid File Name (<span class="oldassetcount"></span>) </div> --}}
-                                    <div class="h6">
-                                        Duplicate Files on 121 (<span class="oldassetcount">0</span>)
+                                    <div class="h6">Duplicate Files on 121 (<span class="oldassetcount">0</span>)
                                     </div>
                                     <div class="">
                                         <input type="checkbox" checked id="ignored" value="1">
@@ -538,7 +539,7 @@
 
         async function initowl(owlclass) {
             $(owlclass).trigger(`destroy.${owlclass}`).owlCarousel({
-                loop: true,
+                // loop: true,
                 nav: true,
                 margin: 10,
                 responsiveClass: true,

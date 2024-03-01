@@ -494,7 +494,7 @@
 
         async function initowl(owlclass) {
             $(owlclass).trigger('destroy.owl.carousel').owlCarousel({
-                loop: true,
+                // loop: true,
                 nav: true,
                 margin: 10,
                 responsiveClass: true,

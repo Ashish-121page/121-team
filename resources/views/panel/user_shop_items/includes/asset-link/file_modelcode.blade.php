@@ -88,10 +88,11 @@
                 tabindex="0">
 
                 <div class="">
-                    <form action="{{ route('panel.asset-link.model.filename') }}" method="POST" id="splitform">
+                    <form action="{{ route('panel.asset-link.model.filename.preview') }}" method="POST" id="splitform">
                         <div class="col-12 d-flex justify-content-between mb-3">
                             <input type="hidden" class="vault_name" name="vault_name">
                             <input type="hidden" id="fileData" name="fileData">
+                            <input type="hidden" id="workingType" name="workingType" value="filename_model_code">
                             <input type="hidden" name="ignore_files" id="form_ignored" value="1">
 
                             <div class="h6">Vault Name: #<span class="vault_name"></span></div>
@@ -387,7 +388,7 @@
 
         async function initowl(owlclass) {
             $(owlclass).trigger('destroy.owl.carousel').owlCarousel({
-                loop: true,
+                // loop: true,
                 nav: true,
                 margin: 10,
                 responsiveClass: true,
