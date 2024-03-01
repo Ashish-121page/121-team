@@ -180,7 +180,7 @@
                                              </td>
                                              <td> </td>
                                              <td>
-                                                 <a href="#download" class="btn-link text-primary ">Dowload</a>
+                                                 <a href="#download" class="btn-link text-primary ">Download</a>
                                              </td>
                                          </tr>
                                          <tr>
@@ -193,7 +193,7 @@
                                              </td>
                                              <td> </td>
                                              <td>
-                                                 <a href="#download" class="btn-link text-primary ">Dowload</a>
+                                                 <a href="#download" class="btn-link text-primary ">Download</a>
                                              </td>
                                          </tr>
                                          <tr>
@@ -206,7 +206,7 @@
                                              </td>
                                              <td> </td>
                                              <td>
-                                                 <a href="#download" class="btn-link text-primary ">Dowload</a>
+                                                 <a href="#download" class="btn-link text-primary ">Download</a>
                                              </td>
                                          </tr>
                                      </tbody>
@@ -231,7 +231,7 @@
                                              </td>
                                              <td> </td>
                                              <td>
-                                                 <a href="#download" class="btn-link text-primary ">Dowload</a>
+                                                 <a href="#download" class="btn-link text-primary ">Download</a>
                                              </td>
                                          </tr>
                                          <tr>
@@ -244,7 +244,7 @@
                                              </td>
                                              <td> </td>
                                              <td>
-                                                 <a href="#download" class="btn-link text-primary ">Dowload</a>
+                                                 <a href="#download" class="btn-link text-primary ">Download</a>
                                              </td>
                                          </tr>
                                          <tr>
@@ -257,7 +257,7 @@
                                              </td>
                                              <td> </td>
                                              <td>
-                                                 <a href="#download" class="btn-link text-primary ">Dowload</a>
+                                                 <a href="#download" class="btn-link text-primary ">Download</a>
                                              </td>
                                          </tr>
                                      </tbody>
@@ -282,7 +282,7 @@
                                              </td>
                                              <td> </td>
                                              <td>
-                                                 <a href="#download" class="btn-link text-primary ">Dowload</a>
+                                                 <a href="#download" class="btn-link text-primary ">Download</a>
                                              </td>
                                          </tr>
                                          <tr>
@@ -295,7 +295,7 @@
                                              </td>
                                              <td> </td>
                                              <td>
-                                                 <a href="#download" class="btn-link text-primary ">Dowload</a>
+                                                 <a href="#download" class="btn-link text-primary ">Download</a>
                                              </td>
                                          </tr>
                                          <tr>
@@ -308,7 +308,7 @@
                                              </td>
                                              <td> </td>
                                              <td>
-                                                 <a href="#download" class="btn-link text-primary ">Dowload</a>
+                                                 <a href="#download" class="btn-link text-primary ">Download</a>
                                              </td>
                                          </tr>
                                      </tbody>

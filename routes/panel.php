@@ -170,6 +170,7 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::post('fill/now',[AssetLinkConroller::class,'fillnow'])->name('fill.now');
 
         // -- For FIlename Is a Model Code ...
+        Route::post('split/model_code/preview',[AssetLinkConroller::class,'previewPage'])->name('model.filename.preview');
         Route::post('split/model_code',[AssetLinkConroller::class,'modelCodeIsFilename'])->name('model.filename');
 
 
@@ -177,7 +178,10 @@ Route::group(['middleware' => 'auth','prefix' => 'panel', 'as' => 'panel.'], fun
         Route::post('split/irrelevant',[AssetLinkConroller::class,'irrelevantFilename'])->name('irrelevant.filename');
         Route::any('split/final',[AssetLinkConroller::class,'finalview'])->name('final');
 
+        Route::any('add/keywords',[AssetLinkConroller::class,'storeKeywords'])->name('save.keywords');
 
+        Route::any('search/asset',[AssetLinkConroller::class,'searchasset'])->name('search.asset');
+        Route::any('search/assetcard',[AssetLinkConroller::class,'searchassetcard'])->name('search.asset.card');
 
 
     });

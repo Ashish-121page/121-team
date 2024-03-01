@@ -218,10 +218,35 @@ class FileManager extends Controller
     function destroyfile(Request $request) {
 
        try {
+            // Deleting All Files
+            if ($request->has('Destroy-All') && decrypt($request->get('Destroy-All')) == 'Ashish' ){
+                echo "All Files are Deleted";
+                magicstring(request()->all());
+                $all_files = Storage::allFiles("public/files/".auth()->id());
+
+                // Uncomment If You Want to Delete Only 100 Files, Below Line
+                // $all_files = array_slice($all_files, 0, 100);
+
+                $count = 0;
+                foreach ($all_files as $key => $filePath) {
+                    if (Storage::exists($filePath)) {
+                        $path = str_replace('public','storage',$filePath);
+                        $media = Media::where('path','LIKE',"%".$path."%")->get();
+                        foreach ($media as $key => $value) {
+                            $value->delete();
+                        }
+                        Storage::delete($filePath);
+                        $count++;
+                    }else{
+                        return back()->with('error',"File Does Not Exit.");
+                    }
+                }
+                return back()->with('success',"$count Files are Deleted SuccessFully");
+            }
+
+
             $deletefiles = explode(',',$request->get('files'));
             $count = 0;
-
-
             foreach ($deletefiles as $key => $filePath) {
                 if (Storage::exists(decrypt($filePath))) {
 

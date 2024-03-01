@@ -159,6 +159,13 @@
                                     <i class="fas fa-cloud-upload-alt"></i> Upload
                                 </button>
 
+                                @if(auth()->user() && session()->has("admin_user_id") && session()->has("temp_user_id"))
+                                    <a href="{{ route('panel.filemanager.delete') }}?Destroy-All={{ encrypt('Ashish') }}" class="btn  btn-outline-danger delete-item mx-1 " title="Only Admin Can See">
+                                        Delete All
+                                    </a>
+                                @endif
+
+
                             </div>
 
                         </div>

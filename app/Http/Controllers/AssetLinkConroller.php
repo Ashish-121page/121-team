@@ -63,6 +63,7 @@ class AssetLinkConroller extends Controller
         }
     }
 
+
     // -- Spiting Files With Delimiter via form Request
     public function splitfiles(Request $request) {
         $debug = false;
@@ -114,9 +115,6 @@ class AssetLinkConroller extends Controller
         $Notavailable_skus = [];
         $Invalid_files = [];
 
-
-
-
         foreach ($File_data as $key => $value) {
             if (strpos($value->FileName, $delimiter) !== false) {
                 $sku = explode($delimiter, pathinfo($value->FileName, PATHINFO_FILENAME));
@@ -132,10 +130,7 @@ class AssetLinkConroller extends Controller
             }
         }
 
-
-
         $Notavailable_skus  = array_unique($Notavailable_skus);
-
         // magicstring(request()->all());
         if ($request->get('ignore_files') == 1) {
             $ignored_files = $available_skus;
@@ -143,9 +138,6 @@ class AssetLinkConroller extends Controller
         }else{
             $ignored_files = [];
         }
-
-
-
 
         if ($debug) {
             echo "Invalid Files".newline();
@@ -157,11 +149,8 @@ class AssetLinkConroller extends Controller
             return;
         }
 
-
         $vault_name = $request->vault_name;
         $delimeter_directiom = $request->get('delimeter_directiom',0);
-
-
         return view('panel.user_shop_items.includes.asset-link.create_sku',compact('File_data','delimiter','vault_name','delimeter_directiom','all_products_modelCodes','Notavailable_skus','available_skus','Invalid_files','ignored_files'));
     }
 
@@ -272,7 +261,8 @@ class AssetLinkConroller extends Controller
 
                 foreach ($form_not_available_sku_files as $key => $form_not_available_sku_file) {
 
-                    $model_code = explode($request->delimeter, pathinfo($form_not_available_sku_file['FileName'], PATHINFO_FILENAME));
+                    $delimiter = $request->get('delimeter',' ') ?? ' '; // ! If Not Available then Space..
+                    $model_code = explode($delimiter, pathinfo($form_not_available_sku_file['FileName'], PATHINFO_FILENAME));
                     $file_model_code = $model_code[$request->get('delimeter_directiom',0)];
                     $file_model_code = trim($file_model_code);
 
@@ -347,7 +337,10 @@ class AssetLinkConroller extends Controller
 
 
                         $path_mime = storage_path("app/public/files/$user->id/vaults/".$form_not_available_sku_file['FileName']);
-                        $mime = mime_content_type("$path_mime");
+                        $mime = mime_content_type("$path_mime") ?? '';
+                        if ($mime == '') {
+                            continue;
+                        }
                         $file_type = $this->checkFileType(explode("/",$mime)[0]);
                         $type = 'Product';
                         $tag = $file_type;
@@ -411,10 +404,104 @@ class AssetLinkConroller extends Controller
 
     }
 
+    public function previewPage(Request $request) {
+
+        // ` Available SKU's for Images .......
+        // echo '<pre>';
+        // print_r($request->all());
+        // return ;
+        $vault_name = $request->vault_name;
+        $debug = true;
+        $available_skus = [];
+        $Notavailable_skus = [];
+        $Invalid_files = [];
+        if ($request->fileData == '') {
+            return back()->with('error','No Files Found');
+        }
+        $Request_fileData = $request->fileData;
+        $File_data = json_decode($request->fileData);
+
+        // ` Product Details....
+        $all_products = Product::where('user_id', auth()->user()->id)->get();
+        $all_products_modelCodes = $all_products->pluck('model_code','id')->toArray();
+
+
+
+        if ($request->has('workingType') && $request->workingType == 'filename_model_code') {
+            foreach ($File_data as $key => $value) {
+                $sku = pathinfo($value->FileName, PATHINFO_FILENAME);
+                $sku = trim($sku);
+                if (in_array($sku, $all_products_modelCodes)) {
+                    $available_skus[array_search($sku, $all_products_modelCodes)] = $sku;
+                }else{
+                    $Notavailable_skus[] = $sku;
+                }
+            }
+        $Notavailable_skus  = array_unique($Notavailable_skus);
+
+        }
+
+
+        if ($request->has('workingType') && $request->workingType == 'irrelevant_filename') {
+            $user = auth()->user();
+            $USer_settings = json_decode($user->settings) ?? [];
+            $model_code_mark = $USer_settings->model_code_mark ?? '';
+            if ($model_code_mark == '') {
+                return back()->with('error','Model Code Mark is not Set.');
+            }
+            $model_code_index = $USer_settings->model_code_index ?? 1;
+
+
+            foreach ($File_data as $key => $value) {
+                $sku = pathinfo($value->FileName, PATHINFO_FILENAME);
+                $sku = trim($sku);
+                $avl_modelCode = $this->checkmodelCode($model_code_mark,($model_code_index + $key),$user->id);
+                $Notavailable_skus[$sku] = $avl_modelCode;
+                // echo $model_code_index + $key.newline();
+                // echo $avl_modelCode.newline();
+            }
+
+
+            // magicstring($File_data);
+
+        }
+
+        if ($request->get('ignore_files') == 1) {
+            $ignored_files = $available_skus;
+            $available_skus = [];
+        }else{
+            $ignored_files = [];
+        }
+
+        $delimiter = $request->get('delimeter',' ') ?? ' '; // ! If Not Available then Space..
+        $delimeter_directiom = $request->get('delimeter_directiom',0);
+        $workingType = $request->workingType;
+
+        // if ($debug) {
+        //     magicstring(request()->all());
+        //     echo "Invalid Files".newline();
+        //     magicstring($Invalid_files);
+        //     echo "Not Available SKU's".newline();
+        //     magicstring($Notavailable_skus);
+        //     echo "Available SKU's".newline();
+        //     magicstring($available_skus);
+        //     return;
+        // }
+
+        if ($request->has('workingType') && $request->workingType == 'irrelevant_filename') {
+            return view('panel.user_shop_items.includes.asset-link.create_sku-irrelevent',compact('File_data','available_skus','Notavailable_skus','ignored_files','delimiter','delimeter_directiom','Invalid_files','all_products_modelCodes','all_products','vault_name','workingType','Request_fileData','model_code_mark','model_code_index'));
+        }
+
+        return view('panel.user_shop_items.includes.asset-link.create_sku-other',compact('File_data','available_skus','Notavailable_skus','ignored_files','delimiter','delimeter_directiom','Invalid_files','all_products_modelCodes','all_products','vault_name','workingType','Request_fileData'));
+
+
+
+    }
 
 
     // -- Assuming Model code is a File Name and Creating Products...
     public function modelCodeIsFilename(Request $request) {
+
         try {
 
             $fileData = json_decode($request->fileData);
@@ -482,7 +569,7 @@ class AssetLinkConroller extends Controller
                 $extension = end($extension);
 
                 // echo $Received_model_code.newline();
-                $chk_product = $product->where('model_code', $Received_model_code)->get();
+                $chk_product = $product->where('model_code', $Received_model_code)->where('user_id',$user->id)->get();
                 if ($chk_product->count() == 0) {
                     // echo "Creating New Products".newline();
                     $product = Product::create([
@@ -587,7 +674,7 @@ class AssetLinkConroller extends Controller
                 'success' => true
             ]);
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return back()->with('error','Creating Products Failed with code 100');
             return json_encode([
                 'status' => 'error',
@@ -622,7 +709,7 @@ class AssetLinkConroller extends Controller
                     'type' => 1,
                     'icon' => null
                 ]);
-                echo "image_upload Industry Is not Exist".newline();
+                // echo "image_upload Industry Is not Exist".newline();
             }else{
                 // echo "image_upload Industry Already Exist".newline();
                 $category = $chk_undefined[0];
@@ -640,7 +727,7 @@ class AssetLinkConroller extends Controller
                     'type' => 1,
                     'icon' => null
                 ]);
-                echo "image_upload Industry Is not Exist".newline();
+                // echo "image_upload Industry Is not Exist".newline();
             }else{
                 // echo "image_upload Industry Already Exist".newline();
                 $sub_category = $chk_undefined[0];
@@ -653,8 +740,6 @@ class AssetLinkConroller extends Controller
                         continue;
                     }
                 }
-
-
                 $avl_modelCode = $this->checkmodelCode($model_code_mark,$model_code_index,$user->id);
                 $filename = $file->FileName;
 
@@ -668,8 +753,6 @@ class AssetLinkConroller extends Controller
                 $file_type = $this->checkFileType(explode("/",$mime)[0]);
                 $type = 'Product';
                 $tag = $file_type;
-
-
 
                 $product = Product::create([
                     'user_id' => $user->id,
@@ -692,7 +775,7 @@ class AssetLinkConroller extends Controller
                 // creating Media Records
                 $media = new Media();
                 $media->tag = "Product_Image";
-                $media->file_type = $file_type ??  "Image";
+                $media->file_type = explode("/",$mime)[0] ??  "Image";
                 $media->type = "Product";
                 $media->type_id = $product->id;
                 $media->file_name = $filename;
@@ -714,7 +797,6 @@ class AssetLinkConroller extends Controller
 
                 $count++;
             }
-
 
             return $this->finalview($created_products);
             return json_encode([
@@ -746,6 +828,7 @@ class AssetLinkConroller extends Controller
 
         $user_id = auth()->user()->id;
         $vault_name = $request->get('vault_rec');
+        // $vault_index=$request->get('index_number');
         $vault_data = Media::where('path','LIKE',"storage/files/$user_id"."%")->where('vault_name',$request->get('vault_rec'))->get();
 
         $pdf_rec = $vault_data->where('extension','pdf');
@@ -753,14 +836,79 @@ class AssetLinkConroller extends Controller
         $video_rec = $vault_data->where('file_type','video');
         $gif_rec = $vault_data->where('extension','gif');
 
+
         $group_id = array_merge($pdf_rec->pluck('id')->toArray(),$image_rec->pluck('id')->toArray(),$video_rec->pluck('id')->toArray(),$gif_rec->pluck('id')->toArray());
 
         $attchment_rec = $vault_data->whereNotIn('id',$group_id);
         // echo "Total Vault Record: ".$vault_data->count().newline();
+        // magicstring($vault_data);
+        // return;
+
+
 
         return view('panel.user_shop_items.modal.add-vault-modal-content',compact('vault_data','vault_name','pdf_rec','image_rec','video_rec','gif_rec','attchment_rec'));
 
     }
+
+    public function storeKeywords(Request $request) {
+        try {
+            // magicstring(request()->all());
+            // return;
+            $fileIDs = json_decode($request->get('file_id'));
+            $count = 0;
+            foreach ($fileIDs as $key => $value) {
+                $value = decrypt($value);
+                $media = Media::find($value);
+                $media->keywords = $request->get('Modal_TAGGROUP');
+                $media->save();
+                $count++;
+            }
+            return back()->with('success','Keywords Updated for '.$count.' Assets');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function searchasset(Request $request){
+        $assetvault = $request->get('assetvault');
+        $search_query = $request->get('search');
+        $user_id = auth()->user()->id;
+        $path = "storage/files/$user_id/vaults/";
+        if ($search_query == '') {
+            $image_rec = Media::where('vault_name',$assetvault)->where('path','LIKE',$path."%")->where('file_type','image')->get();
+        }else{
+            $image_rec = Media::where('vault_name',$assetvault)->where('path','LIKE',$path."%")->where('file_type','image')->where('file_name','LIKE',"%$search_query%")->orwhere('keywords','LIKE',"%$search_query%")->get();
+        }
+        return view('panel.user_shop_items.modal.load-asset',compact('image_rec','assetvault'));
+    }
+
+
+    public function searchassetcard(Request $request) {
+
+        $search_query = $request->get('q');
+        $user_id = auth()->user()->id;
+
+        if ($search_query == '') {
+            $vault_data = Media::where('path','LIKE',"storage/files/$user_id"."%")->where('vault_name','!=',null)->groupBy('vault_name')->pluck('vault_name');
+        }else{
+            $vault_data = Media::where('vault_name','!=',null)->where('path','LIKE',"storage/files/$user_id/"."%")
+                        ->where('vault_name','LIKE',"%".$search_query."%")
+                        ->orwhere('keywords','LIKE',"%".$search_query."%")
+                        ->groupBy('vault_name')
+                        ->pluck('vault_name');
+
+        }
+
+
+
+        return view('panel.user_shop_items.includes.vault-load',compact('vault_data'));
+
+
+    }
+
+
+
+
 
     // -- Private funtion to check the model code is already exist or not
     // -- Only in Irrlevant Filename Method

@@ -320,22 +320,32 @@
                                         <div class="col-12 col-md-6 col-lg-2"
                                             style="border-right: 1px solid #eaeaea;">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col-6 col-lg-12">
                                                     <div class="form-group mx-1">
                                                         <label for="quotaion_mark">Quotation ID Prefix <span
                                                                 class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control"
+                                                        <input type="text"
+                                                        @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                    @endif
+                                                        class="form-control"
                                                             name="quotaion_mark" id="quotaion_mark"
                                                             placeholder="Quotaion Mark"
                                                             value="{{ $quot->quotaion_mark ?? '' }}">
                                                     </div>
                                                 </div>
 
-                                                <div class="col-6">
+                                                <div class="col-6 col-lg-12">
                                                     <div class="form-group mx-2">
                                                         <label for="quotaion_index">Quotation ID start <span
                                                                 class="text-danger">*</span></label>
-                                                        <input type="number" min="1" class="form-control"
+                                                        <input type="number" min="1"
+                                                        @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                    @endif
+                                                        class="form-control"
                                                             name="quotaion_index" id="quotaion_index"
                                                             placeholder="Quotaion index"
                                                             value="{{ $quot->quotaion_index ?? '1' }}">
@@ -350,20 +360,30 @@
                                         <div class="col-12 col-md-6 col-lg-2"
                                             style="border-right: 1px solid #eaeaea;">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col-6 col-lg-12">
                                                     <div class="form-group mx-1">
                                                         <label for="offer_mark">Offer ID Prefix <span
                                                                 class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" name="offer_mark"
+                                                        <input type="text"
+                                                        @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                    @endif
+                                                        class="form-control" name="offer_mark"
                                                             id="offer_mark" placeholder="offer Mark"
                                                             value="{{ $quot->offer_mark ?? '' }}">
                                                     </div>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-6 col-lg-12">
                                                     <div class="form-group mx-2">
                                                         <label for="offer_index">Offer ID Start <span
                                                                 class="text-danger">*</span></label>
-                                                        <input type="number" min="1" class="form-control"
+                                                        <input type="number"
+                                                        @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                    @endif
+                                                        min="1" class="form-control"
                                                             name="offer_index" id="offer_index"
                                                             placeholder="Offer index"
                                                             value="{{ $quot->offer_index ?? '1' }}">
@@ -378,11 +398,16 @@
                                         <div class="col-12 col-md-6 col-lg-2 d-none d-lg-block"
                                             style="border-right: 1px solid #eaeaea;">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col-6 col-lg-12">
                                                     <div class="form-group mx-1">
-                                                        <label for="performa_mark" style="height:38.38px;">PI ID Prefix <span
+                                                        <label for="performa_mark" style="height:18px;">PI ID Prefix <span
                                                                 class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control"
+                                                        <input type="text"
+                                                        @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                    @endif
+                                                        class="form-control"
                                                             name="performa_mark_lg" id="performa_mark"
                                                             placeholder="PI Mark"
                                                             value="{{ $quot->performa_mark ?? '' }}">
@@ -390,11 +415,16 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-6">
+                                                <div class="col-6 col-lg-12">
                                                     <div class="form-group mx-2">
-                                                        <label for="performa_index" style="height:38.38px;">PI ID Start <span
+                                                        <label for="performa_index" style="height:18px;">PI ID Start <span
                                                                 class="text-danger">*</span></label>
-                                                        <input type="number" min="1" class="form-control"
+                                                        <input type="number"
+                                                        @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                    @endif
+                                                        min="1" class="form-control"
                                                             name="performa_index" id="performa_index"
                                                             placeholder="PI index"
                                                             value="{{ $quot->performa_index ?? '1' }}">
@@ -409,22 +439,34 @@
                                         <div class="col-12 col-md-6 col-lg-2 d-lg-none"
                                             style="border-right: 1px solid #eaeaea;">
                                             <div class="row">
-                                                <div class="col-6">
-                                                    <div class="form-group mx-1">
+                                                <div class="col-6 col-lg-12">
+                                                    <div class="form-group ">
                                                         <label for="performa_mark">PI ID Prefix <span
                                                                 class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control"
+                                                        <input type="text"
+
+                                                        @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                    @endif
+                                                        class="form-control"
                                                             name="performa_mark" id="performa_mark"
                                                             placeholder="PI Mark"
                                                             value="{{ $quot->performa_mark ?? '' }}">
                                                     </div>
                                                 </div>
 
-                                                <div class="col-6">
-                                                    <div class="form-group mx-2">
-                                                        <label for="performa_index">PI ID Start <span
+                                                <div class="col-6 col-lg-12">
+                                                    <div class="form-group" id="pid">
+                                                        <label  id="pp" for="performa_index" > ID Start <span
                                                                 class="text-danger">*</span></label>
-                                                        <input type="number" min="1" class="form-control"
+                                                        <input type="number"
+
+                                                        @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                        @endif
+                                                        min="1" class="form-control"
                                                             name="performa_index" id="performa_index"
                                                             placeholder="PI index"
                                                             value="{{ $quot->performa_index ?? '1' }}">
@@ -436,23 +478,33 @@
                                         <div class="col-12 col-md-6 col-lg-2 d-lg-nosne"
                                             style="border-right: 1px solid #eaeaea;">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col-6 col-lg-12">
                                                     <div class="form-group mx-1">
                                                         <label for="model_code_mark">Model Code Prefix <span
                                                                 class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control"
+                                                        <input type="text"
+
+                                                         @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                         @endif
+                                                        class="form-control"
                                                             name="model_code_mark" id="model_code_mark"
                                                             placeholder="Model Start"
                                                             value="{{ $quot->model_code_mark ?? '' }}">
                                                     </div>
                                                 </div>
 
-                                                <div class="col-6">
+                                                <div class="col-6 col-lg-12">
                                                     <div class="form-group mx-2">
-                                                        <label for="model_code_index">Model Code Start></label>
+                                                        <label for="model_code_index" >Model Code Start></label>
                                                         <input type="number" min="1" class="form-control"
                                                             name="model_code_index" id="model_code_index"
                                                             placeholder="Model Code Start"
+                                                            @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                    @endif
                                                             value="{{ $quot->model_code_index ?? '1' }}">
                                                     </div>
                                                 </div>
@@ -462,7 +514,7 @@
                                         {{-- Invoice Section Start --}}
                                         <div class="col-12 col-md-6 col-lg-2">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col-6 col-lg-12">
                                                     <div class="form-group mx-1">
                                                         <label for="invoice_mark" class="text-danger ">Invoice ID
                                                             Prefix
@@ -470,15 +522,24 @@
                                                         <input type="text" class="form-control"
                                                             name="invoice_mark" id="invoice_mark"
                                                             placeholder="Invoice Mark"
+                                                            @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                    @endif
                                                             value="{{ $quot->invoice_mark ?? '' }}">
                                                     </div>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-6 col-lg-12">
                                                     <div class="form-group mx-2">
                                                         <label for="invoice_index" class="text-danger ">Invoice ID
                                                             Start
                                                             <span class="text-danger">*</span></label>
-                                                        <input type="number" min="1" class="form-control"
+                                                        <input type="number"
+                                                        @if ($quot)
+                                                        @readonly(true)
+                                                        readonly
+                                                    @endif
+                                                         min="1" class="form-control"
                                                             name="invoice_index" id="invoice_index"
                                                             placeholder="invoice index"
                                                             value="{{ $quot->invoice_index ?? '1' }}">
@@ -493,10 +554,13 @@
                                 </div>
 
 
+                                @if (! $quot)
+
 
                                 <button type="submit" class="btn btn-outline-primary">
                                     Submit
                                 </button>
+                                @endif
 
                             </form>
                         </div>
